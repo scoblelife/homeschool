@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homeschool - Track Your Homeschool Journey</title>
+  <meta name="description" content="Free desktop app for homeschool families. Track progress, plan lessons, log activities, and manage your library. Works offline, no subscription.">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .hero .tagline {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      margin-bottom: 40px;
+    }
+
+    .download-section {
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: white;
+      color: #764ba2;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .platform-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .platform-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .platform-btn:hover {
+      background: rgba(255,255,255,0.25);
+    }
+
+    .platform-btn.active {
+      background: white;
+      color: #764ba2;
+    }
+
+    .version-info {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .version-info a {
+      color: white;
+      text-decoration: underline;
+    }
+
+    /* Features Section */
+    .features {
+      background: white;
+      border-radius: 24px;
+      padding: 50px 30px;
+      margin: 20px 0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+
+    .feature {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    .feature h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .feature p {
+      color: #666;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: white;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      opacity: 0.9;
+    }
+
+    footer a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    .footer-links {
+      margin-bottom: 20px;
+    }
+
+    .footer-note {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    /* Loading state */
+    .loading {
+      opacity: 0.6;
+    }
+
+    .error-msg {
+      background: rgba(255,100,100,0.2);
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero .tagline {
+        font-size: 1.1rem;
+      }
+
+      .features {
+        padding: 30px 20px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Homeschool</h1>
+      <p class="tagline">Track your homeschool journey with ease</p>
+
+      <div class="download-section">
+        <a href="#" id="mainDownload" class="btn btn-primary loading">
+          <span id="downloadText">Loading...</span>
+        </a>
+      </div>
+
+      <div class="platform-buttons" id="platformButtons">
+        <a href="#" class="platform-btn" data-os="mac">
+          <span>macOS</span>
+        </a>
+        <a href="#" class="platform-btn" data-os="win">
+          <span>Windows</span>
+        </a>
+        <a href="#" class="platform-btn" data-os="linux">
+          <span>Linux</span>
+        </a>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="version-info">
+        <span id="versionText">Checking for latest version...</span>
+        <br>
+        <a href="releases.html">View all releases</a>
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>Everything you need to homeschool</h2>
+
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="feature-icon">📊</div>
+          <h3>Track Progress K-12</h3>
+          <p>Monitor milestones and learning objectives for students from kindergarten through 12th grade.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📅</div>
+          <h3>Plan Your Week</h3>
+          <p>Create weekly lesson plans with smart milestone suggestions based on your student's grade level.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📝</div>
+          <h3>Log Activities Together</h3>
+          <p>Record learning activities for multiple students at once - perfect for families doing group lessons.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📚</div>
+          <h3>Manage Your Library</h3>
+          <p>Track books with ISBN scanning - just scan a QR code with your phone and add books instantly.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🚌</div>
+          <h3>Field Trip Planning</h3>
+          <p>Plan and track educational outings tied to subjects and learning goals.</p>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">💾</div>
+          <h3>Works Offline</h3>
+          <p>All data stored locally - no internet required, no subscriptions, your data stays yours.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-links">
+        <a href="help.html">Help & Documentation</a>
+        <a href="releases.html">All Releases</a>
+        <a href="https://github.com/scoblelife/homeschool">GitHub</a>
+      </div>
+      <p class="footer-note">Free and open source. Made for homeschool families.</p>
+    </footer>
+  </div>
+
+  <script>
+    const REPO = 'scoblelife/homeschool';
+    const CACHE_KEY = 'homeschool_releases';
+    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+    const mainDownload = document.getElementById('mainDownload');
+    const downloadText = document.getElementById('downloadText');
+    const platformButtons = document.getElementById('platformButtons');
+    const versionText = document.getElementById('versionText');
+    const errorMsg = document.getElementById('errorMsg');
+
+    let releases = [];
+    let latestRelease = null;
+
+    function detectOS() {
+      const ua = navigator.userAgent;
+      if (ua.includes('Mac')) return 'mac';
+      if (ua.includes('Win')) return 'win';
+      if (ua.includes('Linux')) return 'linux';
+      return null;
+    }
+
+    function getAssetForOS(assets, os) {
+      if (!assets) return null;
+      return assets.find(a => {
+        const name = a.name.toLowerCase();
+        if (os === 'mac') return name.endsWith('.dmg');
+        if (os === 'win') return name.endsWith('.exe');
+        if (os === 'linux') return name.endsWith('.appimage') || name.endsWith('.deb');
+        return false;
+      });
+    }
+
+    function getOSLabel(os) {
+      if (os === 'mac') return 'macOS';
+      if (os === 'win') return 'Windows';
+      if (os === 'linux') return 'Linux';
+      return 'Download';
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+    }
+
+    function getCachedReleases() {
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_TTL) {
+            return data;
+          }
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function cacheReleases(data) {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          data,
+          timestamp: Date.now()
+        }));
+      } catch (e) {}
+    }
+
+    async function fetchReleases() {
+      // Try cache first
+      const cached = getCachedReleases();
+      if (cached) {
+        return cached;
+      }
+
+      const response = await fetch(`https://api.github.com/repos/${REPO}/releases`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch releases');
+      }
+
+      const data = await response.json();
+      cacheReleases(data);
+      return data;
+    }
+
+    function updateUI() {
+      const userOS = detectOS();
+
+      // Find latest non-draft release with assets
+      latestRelease = releases.find(r => !r.draft && r.assets && r.assets.length > 0);
+
+      if (!latestRelease) {
+        downloadText.textContent = 'No releases available';
+        mainDownload.classList.remove('loading');
+        versionText.textContent = 'Check back soon for the first release';
+        return;
+      }
+
+      // Update version info
+      versionText.innerHTML = `Version ${latestRelease.tag_name} &middot; <a href="releases.html">View all releases</a>`;
+
+      // Update platform buttons
+      const buttons = platformButtons.querySelectorAll('.platform-btn');
+      buttons.forEach(btn => {
+        const os = btn.dataset.os;
+        const asset = getAssetForOS(latestRelease.assets, os);
+
+        if (asset) {
+          btn.href = asset.browser_download_url;
+          if (os === userOS) {
+            btn.classList.add('active');
+          }
+        } else {
+          btn.style.opacity = '0.4';
+          btn.style.pointerEvents = 'none';
+          btn.title = 'Not available for this platform';
+        }
+      });
+
+      // Update main download button
+      const primaryAsset = getAssetForOS(latestRelease.assets, userOS);
+      if (primaryAsset) {
+        mainDownload.href = primaryAsset.browser_download_url;
+        downloadText.textContent = `Download for ${getOSLabel(userOS)}`;
+      } else {
+        // No asset for detected OS, show generic
+        const firstAsset = latestRelease.assets[0];
+        if (firstAsset) {
+          mainDownload.href = firstAsset.browser_download_url;
+          downloadText.textContent = 'Download';
+        }
+      }
+
+      mainDownload.classList.remove('loading');
+    }
+
+    async function init() {
+      try {
+        releases = await fetchReleases();
+        updateUI();
+      } catch (err) {
+        console.error('Failed to load releases:', err);
+        mainDownload.classList.remove('loading');
+        downloadText.textContent = 'Download';
+        mainDownload.href = `https://github.com/${REPO}/releases`;
+        showError('Could not load releases. Click to view on GitHub.');
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
