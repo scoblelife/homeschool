@@ -24,8 +24,11 @@ export default function Activities(): JSX.Element {
   })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [filterType, setFilterType] = useState<ActivityType | ''>('')
-  const [formData, setFormData] = useState<Partial<CreateActivity>>({
-    studentId: selectedStudentId || '',
+  const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>(
+    selectedStudentId ? [selectedStudentId] : []
+  )
+  const [studentNotes, setStudentNotes] = useState<Record<string, string>>({})
+  const [formData, setFormData] = useState<Omit<Partial<CreateActivity>, 'studentId' | 'notes'>>({
     subjectId: '',
     activityType: 'worksheet',
     title: '',
@@ -34,7 +37,6 @@ export default function Activities(): JSX.Element {
     durationMinutes: null,
     grade: null,
     maxGrade: null,
-    notes: '',
     bookTitle: '',
     pagesRead: undefined,
     totalPages: undefined
@@ -46,32 +48,36 @@ export default function Activities(): JSX.Element {
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
-    if (!formData.studentId || !formData.subjectId || !formData.title) return
+    if (selectedStudentIds.length === 0 || !formData.subjectId || !formData.title) return
 
-    await createActivity({
-      studentId: formData.studentId,
-      subjectId: formData.subjectId,
-      sessionId: null,
-      activityType: formData.activityType || 'worksheet',
-      title: formData.title,
-      description: formData.description || '',
-      dateCompleted: formData.dateCompleted || format(new Date(), 'yyyy-MM-dd'),
-      durationMinutes: formData.durationMinutes || null,
-      grade: formData.grade || null,
-      maxGrade: formData.maxGrade || null,
-      notes: formData.notes || '',
-      bookTitle: formData.bookTitle,
-      pagesRead: formData.pagesRead,
-      totalPages: formData.totalPages
-    })
+    // Create an activity for each selected student with their specific notes
+    for (const studentId of selectedStudentIds) {
+      await createActivity({
+        studentId,
+        subjectId: formData.subjectId,
+        sessionId: null,
+        activityType: formData.activityType || 'worksheet',
+        title: formData.title,
+        description: formData.description || '',
+        dateCompleted: formData.dateCompleted || format(new Date(), 'yyyy-MM-dd'),
+        durationMinutes: formData.durationMinutes || null,
+        grade: formData.grade || null,
+        maxGrade: formData.maxGrade || null,
+        notes: studentNotes[studentId] || '',
+        bookTitle: formData.bookTitle,
+        pagesRead: formData.pagesRead,
+        totalPages: formData.totalPages
+      })
+    }
 
     setIsModalOpen(false)
     resetForm()
   }
 
   const resetForm = (): void => {
+    setSelectedStudentIds(selectedStudentId ? [selectedStudentId] : [])
+    setStudentNotes({})
     setFormData({
-      studentId: selectedStudentId || '',
       subjectId: '',
       activityType: 'worksheet',
       title: '',
@@ -80,7 +86,6 @@ export default function Activities(): JSX.Element {
       durationMinutes: null,
       grade: null,
       maxGrade: null,
-      notes: '',
       bookTitle: '',
       pagesRead: undefined,
       totalPages: undefined
@@ -215,20 +220,37 @@ export default function Activities(): JSX.Element {
               </div>
 
               <div>
-                <label className="label">Student</label>
-                <select
-                  value={formData.studentId}
-                  onChange={(e) => setFormData({ ...formData, studentId: e.target.value })}
-                  className="input"
-                  required
-                >
-                  <option value="">Select student...</option>
+                <label className="label">Students *</label>
+                <div className="flex flex-wrap gap-2">
                   {students.map((s) => (
-                    <option key={s.id} value={s.id}>
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => {
+                        if (selectedStudentIds.includes(s.id)) {
+                          setSelectedStudentIds(selectedStudentIds.filter((id) => id !== s.id))
+                          setStudentNotes((prev) => {
+                            const updated = { ...prev }
+                            delete updated[s.id]
+                            return updated
+                          })
+                        } else {
+                          setSelectedStudentIds([...selectedStudentIds, s.id])
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        selectedStudentIds.includes(s.id)
+                          ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-500'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
                       {s.name}
-                    </option>
+                    </button>
                   ))}
-                </select>
+                </div>
+                {selectedStudentIds.length === 0 && (
+                  <p className="text-sm text-red-500 mt-1">Select at least one student</p>
+                )}
               </div>
 
               <div>
@@ -371,15 +393,39 @@ export default function Activities(): JSX.Element {
                 </div>
               )}
 
-              <div>
-                <label className="label">Notes</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="input"
-                  rows={2}
-                />
-              </div>
+              {selectedStudentIds.length > 0 && (
+                <div className="space-y-3">
+                  <label className="label">
+                    Notes {selectedStudentIds.length > 1 && '(per student)'}
+                  </label>
+                  {selectedStudentIds.map((studentId) => {
+                    const student = students.find((s) => s.id === studentId)
+                    return (
+                      <div key={studentId}>
+                        {selectedStudentIds.length > 1 && (
+                          <label className={`text-sm font-medium ${
+                            student?.color === 'child1' ? 'text-fuchsia-600' : 'text-teal-600'
+                          }`}>
+                            {student?.name}
+                          </label>
+                        )}
+                        <textarea
+                          value={studentNotes[studentId] || ''}
+                          onChange={(e) =>
+                            setStudentNotes((prev) => ({ ...prev, [studentId]: e.target.value }))
+                          }
+                          className="input"
+                          rows={2}
+                          placeholder={selectedStudentIds.length > 1
+                            ? `What did ${student?.name} learn?`
+                            : 'Notes about this activity...'
+                          }
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
 
               <div className="flex justify-end gap-3 pt-4">
                 <button

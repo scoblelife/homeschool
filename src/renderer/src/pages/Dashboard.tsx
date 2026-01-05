@@ -8,10 +8,12 @@ const toDate = (date: string | Date): Date => {
   return parseISO(date)
 }
 import { useStore } from '../stores/useStore'
+import { useMilestones } from '../hooks/useDatabase'
 import type { Activity, Session, Milestone, FieldTrip, FamilyGoal } from '../../../shared/types'
 
 export default function Dashboard(): JSX.Element {
-  const { students, subjects, selectedStudentId, getStudentById, getSubjectById, milestones } = useStore()
+  const { students, subjects, selectedStudentId, getStudentById, getSubjectById } = useStore()
+  const { milestones } = useMilestones(selectedStudentId ?? undefined)
   const [todaySessions, setTodaySessions] = useState<Session[]>([])
   const [recentActivities, setRecentActivities] = useState<Activity[]>([])
   const [suggestedMilestones, setSuggestedMilestones] = useState<Milestone[]>([])

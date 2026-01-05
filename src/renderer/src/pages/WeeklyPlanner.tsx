@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, parseISO, eachDayOfInterval, isToday, addHours } from 'date-fns'
 import { Dialog, Tab } from '@headlessui/react'
 import { useStore } from '../stores/useStore'
+import { useMilestones } from '../hooks/useDatabase'
 import type { Milestone, MilestoneResource, CreateResource, CalendarSyncRecord, SubjectChoreMapping, StudentReward } from '../../../shared/types'
 
 // Helper to get current week start (Monday)
@@ -10,7 +11,8 @@ function getCurrentWeekStart(): Date {
 }
 
 export default function WeeklyPlanner(): JSX.Element {
-  const { selectedStudentId, getSelectedStudent, getSubjectById, milestones } = useStore()
+  const { selectedStudentId, getSelectedStudent, getSubjectById } = useStore()
+  const { milestones } = useMilestones(selectedStudentId ?? undefined)
   const selectedStudent = getSelectedStudent()
 
   const [currentWeekStart, setCurrentWeekStart] = useState(() =>
