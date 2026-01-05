@@ -23,11 +23,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-latest
+          - os: depot-macos-latest
             platform: mac
-          - os: blacksmith-2vcpu-windows-2025
+          - os: depot-windows-2025
             platform: win
-          - os: blacksmith-2vcpu-ubuntu-2204
+          - os: depot-ubuntu-24.04
             platform: linux
 
     runs-on: ${{ matrix.os }}
@@ -40,9 +40,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+
+      - name: Cache node_modules with native modules
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ runner.arch }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Build app
