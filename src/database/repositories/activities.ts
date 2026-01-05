@@ -91,9 +91,9 @@ export async function createActivity(data: CreateActivity): Promise<Activity> {
     data.grade,
     data.maxGrade,
     data.notes,
-    data.bookTitle,
-    data.pagesRead,
-    data.totalPages,
+    data.bookTitle ?? null,
+    data.pagesRead ?? null,
+    data.totalPages ?? null,
     now,
     now
   )
@@ -125,9 +125,9 @@ export async function updateActivity(id: string, data: UpdateActivity): Promise<
     updated.grade,
     updated.maxGrade,
     updated.notes,
-    updated.bookTitle,
-    updated.pagesRead,
-    updated.totalPages,
+    updated.bookTitle ?? null,
+    updated.pagesRead ?? null,
+    updated.totalPages ?? null,
     updated.updatedAt,
     id
   )
