@@ -1,7 +1,7 @@
-import { Database as DuckDBDatabase } from 'duckdb-async'
+import initSqlJs, { Database as SqlJsDatabase, BindParams } from 'sql.js'
 import path from 'path'
 import { app } from 'electron'
-import { existsSync, mkdirSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { homedir } from 'os'
 
 // Wrapper to provide a compatible interface
@@ -12,6 +12,8 @@ export interface Database {
 }
 
 let db: Database | null = null
+let sqliteDb: SqlJsDatabase | null = null
+let dbPath: string | null = null
 
 // Base directory for all app data
 export function getAppDataPath(): string {
@@ -39,23 +41,80 @@ export async function getDatabase(): Promise<Database> {
     mkdirSync(userDataPath, { recursive: true })
   }
 
-  const dbPath = path.join(userDataPath, 'homeschool.db')
-  const duckdb = await DuckDBDatabase.create(dbPath)
+  dbPath = path.join(userDataPath, 'homeschool.db')
+
+  // Initialize SQL.js
+  const SQL = await initSqlJs()
+
+  // Load existing database or create new one
+  if (existsSync(dbPath)) {
+    const fileBuffer = readFileSync(dbPath)
+    sqliteDb = new SQL.Database(fileBuffer)
+  } else {
+    sqliteDb = new SQL.Database()
+  }
 
   db = {
     async all<T = Record<string, unknown>>(sql: string, ...params: unknown[]): Promise<T[]> {
-      return duckdb.all(sql, ...params) as Promise<T[]>
+      if (!sqliteDb) throw new Error('Database not connected')
+
+      try {
+        const stmt = sqliteDb.prepare(sql)
+        if (params.length > 0) {
+          stmt.bind(params as BindParams)
+        }
+
+        const results: T[] = []
+        while (stmt.step()) {
+          const row = stmt.getAsObject() as T
+          results.push(row)
+        }
+        stmt.free()
+        return results
+      } catch (err) {
+        console.error('SQL error:', sql, params, err)
+        throw err
+      }
     },
     async run(sql: string, ...params: unknown[]): Promise<void> {
-      await duckdb.run(sql, ...params)
+      if (!sqliteDb) throw new Error('Database not connected')
+
+      try {
+        if (params.length > 0) {
+          sqliteDb.run(sql, params as BindParams)
+        } else {
+          sqliteDb.run(sql)
+        }
+        // Save after writes
+        saveDatabase()
+      } catch (err) {
+        console.error('SQL error:', sql, params, err)
+        throw err
+      }
     },
     async close(): Promise<void> {
-      await duckdb.close()
+      saveDatabase()
+      if (sqliteDb) {
+        sqliteDb.close()
+        sqliteDb = null
+      }
       db = null
     }
   }
 
   return db
+}
+
+function saveDatabase(): void {
+  if (!sqliteDb || !dbPath) return
+
+  try {
+    const data = sqliteDb.export()
+    const buffer = Buffer.from(data)
+    writeFileSync(dbPath, buffer)
+  } catch (err) {
+    console.error('Failed to save database:', err)
+  }
 }
 
 export async function closeDatabase(): Promise<void> {
