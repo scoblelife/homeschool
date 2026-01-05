@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { Dialog } from '@headlessui/react'
+import Markdown from 'react-markdown'
 import { useStore } from '../stores/useStore'
 import { useActivities } from '../hooks/useDatabase'
-import type { CreateActivity, ActivityType } from '../../../shared/types'
+import type { Activity, CreateActivity, ActivityType } from '../../../shared/types'
 
 const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
   { value: 'worksheet', label: 'Worksheet', icon: '📝' },
@@ -19,10 +20,11 @@ const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
 
 export default function Activities(): JSX.Element {
   const { students, subjects, selectedStudentId, getStudentById, getSubjectById } = useStore()
-  const { activities, createActivity, deleteActivity } = useActivities({
+  const { activities, createActivity, updateActivity, deleteActivity } = useActivities({
     studentId: selectedStudentId || undefined
   })
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null)
   const [filterType, setFilterType] = useState<ActivityType | ''>('')
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>(
     selectedStudentId ? [selectedStudentId] : []
@@ -48,14 +50,12 @@ export default function Activities(): JSX.Element {
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault()
-    if (selectedStudentIds.length === 0 || !formData.subjectId || !formData.title) return
+    if (!formData.subjectId || !formData.title) return
 
-    // Create an activity for each selected student with their specific notes
-    for (const studentId of selectedStudentIds) {
-      await createActivity({
-        studentId,
+    if (editingActivity) {
+      // Update existing activity
+      await updateActivity(editingActivity.id, {
         subjectId: formData.subjectId,
-        sessionId: null,
         activityType: formData.activityType || 'worksheet',
         title: formData.title,
         description: formData.description || '',
@@ -63,11 +63,32 @@ export default function Activities(): JSX.Element {
         durationMinutes: formData.durationMinutes || null,
         grade: formData.grade || null,
         maxGrade: formData.maxGrade || null,
-        notes: studentNotes[studentId] || '',
+        notes: studentNotes[editingActivity.studentId] || '',
         bookTitle: formData.bookTitle,
         pagesRead: formData.pagesRead,
         totalPages: formData.totalPages
       })
+    } else {
+      // Create new activity for each selected student
+      if (selectedStudentIds.length === 0) return
+      for (const studentId of selectedStudentIds) {
+        await createActivity({
+          studentId,
+          subjectId: formData.subjectId,
+          sessionId: null,
+          activityType: formData.activityType || 'worksheet',
+          title: formData.title,
+          description: formData.description || '',
+          dateCompleted: formData.dateCompleted || format(new Date(), 'yyyy-MM-dd'),
+          durationMinutes: formData.durationMinutes || null,
+          grade: formData.grade || null,
+          maxGrade: formData.maxGrade || null,
+          notes: studentNotes[studentId] || '',
+          bookTitle: formData.bookTitle,
+          pagesRead: formData.pagesRead,
+          totalPages: formData.totalPages
+        })
+      }
     }
 
     setIsModalOpen(false)
@@ -75,6 +96,7 @@ export default function Activities(): JSX.Element {
   }
 
   const resetForm = (): void => {
+    setEditingActivity(null)
     setSelectedStudentIds(selectedStudentId ? [selectedStudentId] : [])
     setStudentNotes({})
     setFormData({
@@ -90,6 +112,26 @@ export default function Activities(): JSX.Element {
       pagesRead: undefined,
       totalPages: undefined
     })
+  }
+
+  const openEditModal = (activity: Activity): void => {
+    setEditingActivity(activity)
+    setSelectedStudentIds([activity.studentId])
+    setStudentNotes({ [activity.studentId]: activity.notes || '' })
+    setFormData({
+      subjectId: activity.subjectId,
+      activityType: activity.activityType,
+      title: activity.title,
+      description: activity.description,
+      dateCompleted: activity.dateCompleted,
+      durationMinutes: activity.durationMinutes,
+      grade: activity.grade,
+      maxGrade: activity.maxGrade,
+      bookTitle: activity.bookTitle || '',
+      pagesRead: activity.pagesRead,
+      totalPages: activity.totalPages
+    })
+    setIsModalOpen(true)
   }
 
   const showReadingFields = formData.activityType === 'reading'
@@ -174,14 +216,26 @@ export default function Activities(): JSX.Element {
                       {Math.round((activity.grade / activity.maxGrade) * 100)}%)
                     </div>
                   )}
-                  {activity.notes && <p className="text-sm text-gray-600 mt-2">{activity.notes}</p>}
+                  {activity.notes && (
+                    <div className="text-sm text-gray-600 mt-2 prose prose-sm max-w-none">
+                      <Markdown>{activity.notes}</Markdown>
+                    </div>
+                  )}
                 </div>
-                <button
-                  onClick={() => deleteActivity(activity.id)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Delete
-                </button>
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => openEditModal(activity)}
+                    className="text-indigo-500 hover:text-indigo-700 text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteActivity(activity.id)}
+                    className="text-red-500 hover:text-red-700 text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             )
           })}
@@ -194,7 +248,7 @@ export default function Activities(): JSX.Element {
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
             <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
-              Log Activity
+              {editingActivity ? 'Edit Activity' : 'Log Activity'}
             </Dialog.Title>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -219,39 +273,48 @@ export default function Activities(): JSX.Element {
                 </div>
               </div>
 
-              <div>
-                <label className="label">Students *</label>
-                <div className="flex flex-wrap gap-2">
-                  {students.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => {
-                        if (selectedStudentIds.includes(s.id)) {
-                          setSelectedStudentIds(selectedStudentIds.filter((id) => id !== s.id))
-                          setStudentNotes((prev) => {
-                            const updated = { ...prev }
-                            delete updated[s.id]
-                            return updated
-                          })
-                        } else {
-                          setSelectedStudentIds([...selectedStudentIds, s.id])
-                        }
-                      }}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                        selectedStudentIds.includes(s.id)
-                          ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-500'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {s.name}
-                    </button>
-                  ))}
+              {editingActivity ? (
+                <div>
+                  <label className="label">Student</label>
+                  <div className="px-3 py-1.5 bg-gray-100 rounded-lg text-sm font-medium text-gray-700">
+                    {getStudentById(editingActivity.studentId)?.name}
+                  </div>
                 </div>
-                {selectedStudentIds.length === 0 && (
-                  <p className="text-sm text-red-500 mt-1">Select at least one student</p>
-                )}
-              </div>
+              ) : (
+                <div>
+                  <label className="label">Students *</label>
+                  <div className="flex flex-wrap gap-2">
+                    {students.map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => {
+                          if (selectedStudentIds.includes(s.id)) {
+                            setSelectedStudentIds(selectedStudentIds.filter((id) => id !== s.id))
+                            setStudentNotes((prev) => {
+                              const updated = { ...prev }
+                              delete updated[s.id]
+                              return updated
+                            })
+                          } else {
+                            setSelectedStudentIds([...selectedStudentIds, s.id])
+                          }
+                        }}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                          selectedStudentIds.includes(s.id)
+                            ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-500'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {s.name}
+                      </button>
+                    ))}
+                  </div>
+                  {selectedStudentIds.length === 0 && (
+                    <p className="text-sm text-red-500 mt-1">Select at least one student</p>
+                  )}
+                </div>
+              )}
 
               <div>
                 <label className="label">Subject</label>
@@ -439,7 +502,7 @@ export default function Activities(): JSX.Element {
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  Log Activity
+                  {editingActivity ? 'Save Changes' : 'Log Activity'}
                 </button>
               </div>
             </form>
