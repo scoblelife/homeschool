@@ -27,7 +27,7 @@ jobs:
             platform: mac
           - os: blacksmith-2vcpu-windows-2025
             platform: win
-          - os: ubuntu-latest
+          - os: blacksmith-2vcpu-ubuntu-2204
             platform: linux
 
     runs-on: ${{ matrix.os }}
