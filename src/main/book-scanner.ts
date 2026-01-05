@@ -1,16 +1,20 @@
 import { v4 as uuidv4 } from 'uuid'
 import QRCode from 'qrcode'
-import EventSource from 'eventsource'
+import { EventSource } from 'eventsource'
 import type { ScannedBook, ScannerSession } from '../shared/types'
 
 // GitHub Pages URL for the scanner web app
-const SCANNER_PAGE_URL = 'https://sscoble.github.io/homeschool-scanner'
+const SCANNER_PAGE_URL = 'https://wscoble.github.io/homeschool/scanner'
 
 interface SmeeEvent {
   body: {
     type: 'book' | 'ping'
     data?: ScannedBook
   }
+}
+
+interface MessageEvent {
+  data: string
 }
 
 class BookScanner {
@@ -40,18 +44,18 @@ class BookScanner {
     // Connect to smee.io channel to receive events
     this.eventSource = new EventSource(this.channelUrl)
 
-    this.eventSource.onmessage = (event) => {
+    this.eventSource.onmessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data) as SmeeEvent
         if (data.body?.type === 'book' && data.body.data && this.onBookCallback) {
           this.onBookCallback(data.body.data)
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Failed to parse smee event:', err)
       }
     }
 
-    this.eventSource.onerror = (err) => {
+    this.eventSource.onerror = (err: unknown) => {
       console.error('Smee EventSource error:', err)
     }
 

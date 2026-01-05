@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Dialog } from '@headlessui/react'
 import { useStore } from '../stores/useStore'
+import ScannerModal from '../components/ScannerModal'
 import type { Book, BookWithProgress, CreateBook, UpdateStudentBook, ReadingStatus } from '../../../shared/types'
 
 type StatusFilter = 'all' | 'not_started' | 'reading' | 'finished'
@@ -26,6 +27,7 @@ function BookCard({
   onUpdateProgress: (data: UpdateStudentBook) => void
   onLogReading: () => void
 }) {
+  const [showMenu, setShowMenu] = useState(false)
   const progress = book.studentProgress
   const status = progress?.status || 'not_started'
   const currentPage = progress?.currentPage || 0
@@ -33,100 +35,169 @@ function BookCard({
   const progressPercent = book.totalPages ? Math.round((currentPage / book.totalPages) * 100) : 0
 
   return (
-    <div className="p-4 rounded-lg border bg-white hover:shadow-md transition-shadow">
-      <div className="flex gap-4">
-        {/* Book cover placeholder */}
-        <div className="w-16 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 rounded flex items-center justify-center text-2xl flex-shrink-0">
-          {book.coverImagePath ? (
-            <img src={book.coverImagePath} alt={book.title} className="w-full h-full object-cover rounded" />
-          ) : (
-            '📚'
-          )}
+    <div className="group rounded-xl bg-white border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-200 overflow-hidden">
+      {/* Cover Image Section */}
+      <div className="relative aspect-[3/4] bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
+        {book.coverImagePath ? (
+          <img
+            src={`file://${book.coverImagePath}`}
+            alt={book.title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.currentTarget
+              target.style.display = 'none'
+              const fallback = target.parentElement?.querySelector('.cover-fallback') as HTMLElement
+              if (fallback) fallback.style.display = 'flex'
+            }}
+          />
+        ) : null}
+        <div
+          className="cover-fallback absolute inset-0 items-center justify-center text-5xl"
+          style={{ display: book.coverImagePath ? 'none' : 'flex' }}
+        >
+          📚
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <h3 className="font-medium text-gray-900 truncate">{book.title}</h3>
-              {book.author && <p className="text-sm text-gray-500">{book.author}</p>}
-            </div>
-            <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${statusInfo.bg} ${statusInfo.color}`}>
-              {statusInfo.label}
-            </span>
-          </div>
+        {/* Status Badge */}
+        <div className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.color}`}>
+          {statusInfo.label}
+        </div>
 
-          <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500">
-            {book.readingLevel && (
-              <span className="bg-gray-100 px-2 py-0.5 rounded">{book.readingLevel}</span>
-            )}
-            {book.genre && (
-              <span className="bg-gray-100 px-2 py-0.5 rounded">{book.genre}</span>
-            )}
-            {book.totalPages && (
-              <span className="bg-gray-100 px-2 py-0.5 rounded">{book.totalPages} pages</span>
-            )}
-          </div>
-
-          {/* Progress bar */}
-          {studentId && book.totalPages && (
-            <div className="mt-3">
-              <div className="flex justify-between text-xs text-gray-500 mb-1">
-                <span>Page {currentPage} of {book.totalPages}</span>
-                <span>{progressPercent}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-indigo-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="mt-3 flex flex-wrap gap-2">
-            {studentId && (
-              <>
-                <select
-                  value={status}
-                  onChange={(e) => onUpdateProgress({ status: e.target.value as ReadingStatus })}
-                  className="text-xs border border-gray-300 rounded px-2 py-1"
-                >
-                  <option value="not_started">Not Started</option>
-                  <option value="reading">Reading</option>
-                  <option value="finished">Finished</option>
-                </select>
-                {status !== 'finished' && book.totalPages && (
-                  <button
-                    onClick={onLogReading}
-                    className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
-                  >
-                    Log Reading
-                  </button>
-                )}
-              </>
+        {/* Quick Actions Overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <div className="flex gap-2">
+            {studentId && status !== 'finished' && book.totalPages && (
+              <button
+                onClick={onLogReading}
+                className="px-3 py-2 bg-white rounded-lg text-sm font-medium text-gray-900 hover:bg-gray-100 transition-colors shadow-lg"
+              >
+                Log Reading
+              </button>
             )}
             <button
               onClick={onEdit}
-              className="text-xs text-indigo-600 hover:text-indigo-800"
+              className="p-2 bg-white rounded-lg text-gray-600 hover:bg-gray-100 transition-colors shadow-lg"
+              title="Edit"
             >
-              Edit
-            </button>
-            <button
-              onClick={onDelete}
-              className="text-xs text-red-500 hover:text-red-700"
-            >
-              Delete
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
             </button>
           </div>
+        </div>
 
-          {/* Rating */}
-          {progress?.rating && (
-            <div className="mt-2 text-sm">
-              {'⭐'.repeat(progress.rating)}
-            </div>
+        {/* Progress Ring for books being read */}
+        {studentId && status === 'reading' && book.totalPages && (
+          <div className="absolute bottom-2 left-2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
+            <svg className="w-8 h-8 -rotate-90">
+              <circle cx="16" cy="16" r="12" fill="none" stroke="#e5e7eb" strokeWidth="3" />
+              <circle
+                cx="16" cy="16" r="12" fill="none" stroke="#6366f1" strokeWidth="3"
+                strokeDasharray={`${progressPercent * 0.754} 100`}
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="absolute text-[10px] font-bold text-indigo-600">{progressPercent}%</span>
+          </div>
+        )}
+      </div>
+
+      {/* Book Info Section */}
+      <div className="p-3">
+        <h3 className="font-semibold text-gray-900 leading-tight line-clamp-2 mb-1" title={book.title}>
+          {book.title}
+        </h3>
+        {book.author && (
+          <p className="text-sm text-gray-500 truncate">{book.author}</p>
+        )}
+
+        {/* Metadata Tags */}
+        <div className="mt-2 flex flex-wrap gap-1">
+          {book.totalPages && (
+            <span className="text-xs text-gray-400">{book.totalPages} pages</span>
+          )}
+          {book.totalPages && (book.genre || book.readingLevel) && (
+            <span className="text-xs text-gray-300">•</span>
+          )}
+          {book.genre && (
+            <span className="text-xs text-gray-400">{book.genre}</span>
+          )}
+          {book.readingLevel && (
+            <span className="text-xs px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded">{book.readingLevel}</span>
           )}
         </div>
+
+        {/* Student Progress Section */}
+        {studentId && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            {book.totalPages && (
+              <div className="mb-2">
+                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <span>Page {currentPage}</span>
+                  <span>{book.totalPages}</span>
+                </div>
+                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                  <div
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      status === 'finished' ? 'bg-green-500' : 'bg-indigo-500'
+                    }`}
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <select
+                value={status}
+                onChange={(e) => onUpdateProgress({ status: e.target.value as ReadingStatus })}
+                className="text-xs border-0 bg-gray-100 rounded-lg px-2 py-1.5 text-gray-700 focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="not_started">Not Started</option>
+                <option value="reading">Reading</option>
+                <option value="finished">Finished</option>
+              </select>
+
+              {/* More Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+                {showMenu && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                    <div className="absolute right-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[100px]">
+                      <button
+                        onClick={() => { onEdit(); setShowMenu(false) }}
+                        className="w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => { onDelete(); setShowMenu(false) }}
+                        className="w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Rating */}
+        {progress?.rating && (
+          <div className="mt-2 text-sm">
+            {'⭐'.repeat(progress.rating)}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -141,6 +212,7 @@ export default function Library(): JSX.Element {
 
   // Modal states
   const [showAddBook, setShowAddBook] = useState(false)
+  const [showScanner, setShowScanner] = useState(false)
   const [editingBook, setEditingBook] = useState<Book | null>(null)
   const [loggingBook, setLoggingBook] = useState<BookWithProgress | null>(null)
   const [logPagesRead, setLogPagesRead] = useState('')
@@ -289,9 +361,14 @@ export default function Library(): JSX.Element {
             <p className="text-sm text-gray-500 mt-1">{selectedStudent.name}'s Reading Progress</p>
           )}
         </div>
-        <button onClick={openAddModal} className="btn btn-primary">
-          + Add Book
-        </button>
+        <div className="flex gap-3">
+          <button onClick={() => setShowScanner(true)} className="btn btn-secondary">
+            Scan Books
+          </button>
+          <button onClick={openAddModal} className="btn btn-primary">
+            + Add Book
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -564,6 +641,13 @@ export default function Library(): JSX.Element {
           </Dialog.Panel>
         </div>
       </Dialog>
+
+      {/* Scanner Modal */}
+      <ScannerModal
+        isOpen={showScanner}
+        onClose={() => setShowScanner(false)}
+        onBookAdded={() => loadBooks()}
+      />
     </div>
   )
 }
