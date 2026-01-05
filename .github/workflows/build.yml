@@ -23,12 +23,19 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: depot-macos-15
+          - os: depot-macos-latest
             platform: mac
+            runner-type: depot
+          - os: macos-latest
+            platform: mac
+            runner-type: github
           - os: depot-windows-2025
             platform: win
+            runner-type: depot
           - os: depot-ubuntu-24.04
             platform: linux
+            runner-type: depot
+      fail-fast: false
 
     runs-on: ${{ matrix.os }}
 
@@ -61,7 +68,7 @@ jobs:
         if: matrix.platform == 'mac'
         uses: actions/upload-artifact@v4
         with:
-          name: Homeschool-mac
+          name: Homeschool-mac-${{ matrix.runner-type }}
           path: |
             dist/*.dmg
           if-no-files-found: error
@@ -87,7 +94,7 @@ jobs:
 
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: always() && startsWith(github.ref, 'refs/tags/v') && !cancelled()
     runs-on: depot-ubuntu-24.04
     permissions:
       contents: write
@@ -97,6 +104,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: Homeschool-*
+          merge-multiple: false
+
+      - name: List artifacts
+        run: find artifacts -type f | head -20
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
