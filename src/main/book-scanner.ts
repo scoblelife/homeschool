@@ -4,7 +4,7 @@ import { EventSource } from 'eventsource'
 import type { ScannedBook, ScannerSession } from '../shared/types'
 
 // GitHub Pages URL for the scanner web app
-const SCANNER_PAGE_URL = 'https://wscoble.github.io/homeschool/scanner'
+const SCANNER_PAGE_URL = 'https://scoblelife.github.io/homeschool/scanner'
 
 interface SmeeEvent {
   body: {
