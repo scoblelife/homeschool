@@ -1,7 +1,7 @@
 import initSqlJs, { Database as SqlJsDatabase, BindParams } from 'sql.js'
 import path from 'path'
 import { app } from 'electron'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSync } from 'fs'
 import { homedir } from 'os'
 
 // Wrapper to provide a compatible interface
@@ -48,8 +48,22 @@ export async function getDatabase(): Promise<Database> {
 
   // Load existing database or create new one
   if (existsSync(dbPath)) {
-    const fileBuffer = readFileSync(dbPath)
-    sqliteDb = new SQL.Database(fileBuffer)
+    try {
+      const fileBuffer = readFileSync(dbPath)
+      sqliteDb = new SQL.Database(fileBuffer)
+      // Test if it's a valid SQLite database
+      sqliteDb.exec('SELECT 1')
+    } catch (err) {
+      console.warn('Existing database is not SQLite format, backing up and creating new:', err)
+      // Backup old file (might be DuckDB format)
+      const backupPath = dbPath + '.duckdb.bak'
+      if (!existsSync(backupPath)) {
+        renameSync(dbPath, backupPath)
+      } else {
+        unlinkSync(dbPath)
+      }
+      sqliteDb = new SQL.Database()
+    }
   } else {
     sqliteDb = new SQL.Database()
   }
