@@ -4,7 +4,10 @@
   "description": "Homeschool management desktop application",
   "type": "module",
   "main": "./out/main/index.js",
-  "author": "",
+  "author": {
+    "name": "Scott Scoble",
+    "email": "scott@scoble.me"
+  },
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
