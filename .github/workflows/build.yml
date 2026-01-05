@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: depot-macos-latest
+          - os: depot-macos-15
             platform: mac
           - os: depot-windows-2025
             platform: win
