@@ -23,18 +23,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: depot-macos-latest
-            platform: mac
-            runner-type: depot
           - os: macos-latest
             platform: mac
-            runner-type: github
           - os: depot-windows-2025
             platform: win
-            runner-type: depot
           - os: depot-ubuntu-24.04
             platform: linux
-            runner-type: depot
       fail-fast: false
 
     runs-on: ${{ matrix.os }}
@@ -68,7 +62,7 @@ jobs:
         if: matrix.platform == 'mac'
         uses: actions/upload-artifact@v4
         with:
-          name: Homeschool-mac-${{ matrix.runner-type }}
+          name: Homeschool-mac
           path: |
             dist/*.dmg
           if-no-files-found: error
