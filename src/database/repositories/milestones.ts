@@ -224,6 +224,22 @@ export async function getSuggestedMilestones(
 ): Promise<Milestone[]> {
   const db = await getDatabase()
 
+  // Check if student has any milestones, if not auto-initialize them
+  const milestoneCount = await db.all<{ count: number }>(
+    'SELECT COUNT(*) as count FROM milestones WHERE student_id = ?',
+    studentId
+  )
+  if (milestoneCount[0].count === 0) {
+    // Get student's grade level and initialize milestones
+    const studentRows = await db.all(
+      'SELECT grade_level FROM students WHERE id = ?',
+      studentId
+    )
+    if (studentRows.length > 0 && studentRows[0].grade_level) {
+      await initializeStudentMilestones(studentId, studentRows[0].grade_level as GradeLevel)
+    }
+  }
+
   // Get all incomplete milestones grouped by subject
   const rows = await db.all(
     `SELECT * FROM milestones

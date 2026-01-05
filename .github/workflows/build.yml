@@ -104,6 +104,9 @@ jobs:
           pattern: Homeschool-*
           merge-multiple: false
 
+      - name: Remove unwanted files
+        run: find artifacts -type f \( -name '*.blockmap' -o -name '*.yml' \) -delete
+
       - name: List artifacts
         run: find artifacts -type f | head -20
 
