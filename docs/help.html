@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help - Homeschool</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f7;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      color: white;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      opacity: 0.9;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: white;
+      text-decoration: none;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+
+    .back-link:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .toc {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      margin: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .toc h2 {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .toc-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      list-style: none;
+    }
+
+    .toc-list a {
+      color: #667eea;
+      text-decoration: none;
+      padding: 8px 12px;
+      display: block;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .toc-list a:hover {
+      background: #f0f0f5;
+    }
+
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+
+    .section h3 {
+      font-size: 1.1rem;
+      color: #444;
+      margin: 25px 0 10px 0;
+    }
+
+    .section h3:first-of-type {
+      margin-top: 0;
+    }
+
+    .section p {
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 15px;
+    }
+
+    .section ul, .section ol {
+      color: #555;
+      line-height: 1.7;
+      margin-bottom: 15px;
+      padding-left: 25px;
+    }
+
+    .section li {
+      margin-bottom: 8px;
+    }
+
+    .tip {
+      background: #f0f9ff;
+      border-left: 4px solid #667eea;
+      padding: 15px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+
+    .tip strong {
+      color: #667eea;
+    }
+
+    .activity-types {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .activity-type {
+      background: #f8f8fa;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .activity-type .icon {
+      font-size: 1.5rem;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .activity-type .label {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .grade-levels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 15px 0;
+    }
+
+    .grade-level {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+
+    footer a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .section {
+        padding: 20px;
+      }
+
+      .toc-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="container">
+      <a href="./" class="back-link">&larr; Back to Home</a>
+      <h1>Help & Documentation</h1>
+      <p>Learn how to use Homeschool effectively</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <nav class="toc">
+      <h2>Quick Navigation</h2>
+      <ul class="toc-list">
+        <li><a href="#getting-started">Getting Started</a></li>
+        <li><a href="#students">Managing Students</a></li>
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#weekly-planner">Weekly Planner</a></li>
+        <li><a href="#learning-log">Learning Log</a></li>
+        <li><a href="#milestones">Milestones</a></li>
+        <li><a href="#library">Library</a></li>
+        <li><a href="#field-trips">Field Trips</a></li>
+        <li><a href="#calendar">Calendar</a></li>
+        <li><a href="#reports">Reports</a></li>
+      </ul>
+    </nav>
+
+    <section class="section" id="getting-started">
+      <h2>Getting Started</h2>
+
+      <h3>Installation</h3>
+      <ol>
+        <li>Download the installer for your operating system from the <a href="./">home page</a></li>
+        <li><strong>macOS:</strong> Open the .dmg file and drag Homeschool to your Applications folder</li>
+        <li><strong>Windows:</strong> Run the .exe installer and follow the prompts</li>
+        <li><strong>Linux:</strong> Use the AppImage (make it executable and run) or install the .deb package</li>
+      </ol>
+
+      <h3>First Launch</h3>
+      <p>When you first open Homeschool, you'll see an empty dashboard. Here's what to do first:</p>
+      <ol>
+        <li><strong>Add your students</strong> - Click "Settings" in the sidebar and add each child you're homeschooling</li>
+        <li><strong>Set grade levels</strong> - Assign the appropriate grade level to each student for personalized milestone suggestions</li>
+        <li><strong>Review subjects</strong> - Default subjects are pre-loaded, but you can customize them in Settings</li>
+      </ol>
+
+      <div class="tip">
+        <strong>Tip:</strong> Your data is stored locally on your computer. There's no cloud sync, which means your data stays private and you can use the app offline.
+      </div>
+    </section>
+
+    <section class="section" id="students">
+      <h2>Managing Students</h2>
+
+      <h3>Adding a Student</h3>
+      <ol>
+        <li>Go to <strong>Settings</strong> in the sidebar</li>
+        <li>Click <strong>Add Student</strong></li>
+        <li>Enter the student's name</li>
+        <li>Select their grade level</li>
+        <li>Choose a color (helps visually distinguish students)</li>
+      </ol>
+
+      <h3>Grade Levels</h3>
+      <p>Homeschool supports students from Pre-K through 12th grade. The grade level determines which milestone templates are available:</p>
+      <div class="grade-levels">
+        <span class="grade-level">Pre-K</span>
+        <span class="grade-level">K</span>
+        <span class="grade-level">1st</span>
+        <span class="grade-level">2nd</span>
+        <span class="grade-level">3rd</span>
+        <span class="grade-level">4th</span>
+        <span class="grade-level">5th</span>
+        <span class="grade-level">6th</span>
+        <span class="grade-level">7th</span>
+        <span class="grade-level">8th</span>
+        <span class="grade-level">9th</span>
+        <span class="grade-level">10th</span>
+        <span class="grade-level">11th</span>
+        <span class="grade-level">12th</span>
+      </div>
+
+      <h3>Switching Between Students</h3>
+      <p>Use the student selector at the top of the sidebar to switch between students. The selected student's data will be shown throughout the app.</p>
+    </section>
+
+    <section class="section" id="dashboard">
+      <h2>Dashboard</h2>
+
+      <p>The Dashboard provides an at-a-glance view of your homeschool progress:</p>
+      <ul>
+        <li><strong>Recent Activities</strong> - See the latest logged learning activities</li>
+        <li><strong>Upcoming Milestones</strong> - View milestones that are in progress or suggested</li>
+        <li><strong>Quick Stats</strong> - Track hours spent, activities completed, and more</li>
+      </ul>
+
+      <div class="tip">
+        <strong>Tip:</strong> The dashboard updates based on the currently selected student. Select "All Students" to see combined data.
+      </div>
+    </section>
+
+    <section class="section" id="weekly-planner">
+      <h2>Weekly Planner</h2>
+
+      <h3>Planning Your Week</h3>
+      <p>The Weekly Planner helps you organize learning activities for the week ahead:</p>
+      <ol>
+        <li>Select a student from the sidebar</li>
+        <li>Navigate to the week you want to plan</li>
+        <li>Click on a day to add activities</li>
+        <li>Use the <strong>suggested milestones</strong> to quickly add age-appropriate goals</li>
+      </ol>
+
+      <h3>Milestone Suggestions</h3>
+      <p>The planner suggests milestones based on your student's grade level. These are automatically generated from hundreds of educational objectives covering:</p>
+      <ul>
+        <li>Math</li>
+        <li>Reading</li>
+        <li>Writing</li>
+        <li>Science</li>
+        <li>Social Studies</li>
+        <li>Life Skills</li>
+        <li>Physical Education</li>
+        <li>Art & Music</li>
+      </ul>
+    </section>
+
+    <section class="section" id="learning-log">
+      <h2>Learning Log</h2>
+
+      <h3>Logging Activities</h3>
+      <p>The Learning Log is where you record completed educational activities. This creates a permanent record of your homeschool journey.</p>
+
+      <h3>Activity Types</h3>
+      <p>Choose from various activity types to categorize your learning:</p>
+      <div class="activity-types">
+        <div class="activity-type">
+          <span class="icon">📝</span>
+          <span class="label">Worksheet</span>
+        </div>
+        <div class="activity-type">
+          <span class="icon">🎬</span>
+          <span class="label">Video</span>
+        </div>
+        <div class="activity-type">
+          <span class="icon">📖</span>
+          <span class="label">Reading</span>
+        </div>
+        <div class="activity-type">
+          <span class="icon">✏️</span>
+          <span class="label">Writing</span>
+        </div>
+        <div class="activity-type">
+          <span class="icon">✍️</span>
+          <span class="label">Cursive</span>
+        </div>
+        <div class="activity-type">
+          <span class="icon">🎨</span>
+          <span class="label">Hands-on</span>
+        </div>
+        <div class="activity-type">
+          <span class="icon">🎮</span>
+          <span class="label">Game</span>
+        </div>
+        <div class="activity-type">
+          <span class="icon">📋</span>
+          <span class="label">Assessment</span>
+        </div>
+        <div class="activity-type">
+          <span class="icon">🚌</span>
+          <span class="label">Field Trip</span>
+        </div>
+      </div>
+
+      <h3>Multi-Student Logging</h3>
+      <p>Did multiple children do the same activity together? You can log a single activity for multiple students at once:</p>
+      <ol>
+        <li>Click <strong>Log Activity</strong></li>
+        <li>Select multiple students by clicking their names</li>
+        <li>Fill in the activity details</li>
+        <li>Add individual notes for each student (optional)</li>
+        <li>Submit - separate activity records are created for each student</li>
+      </ol>
+
+      <div class="tip">
+        <strong>Tip:</strong> Use per-student notes to record how each child responded differently to the same lesson. For example: "Really enjoyed the experiment" for one child and "Needed extra help with the math portion" for another.
+      </div>
+    </section>
+
+    <section class="section" id="milestones">
+      <h2>Milestones</h2>
+
+      <h3>What are Milestones?</h3>
+      <p>Milestones are learning objectives appropriate for your student's grade level. They help you track progress toward educational goals across different subjects.</p>
+
+      <h3>Milestone Status</h3>
+      <ul>
+        <li><strong>Not Started</strong> - Haven't begun working on this milestone</li>
+        <li><strong>In Progress</strong> - Currently working toward this goal</li>
+        <li><strong>Completed</strong> - Student has achieved this milestone</li>
+      </ul>
+
+      <h3>Pre-loaded Milestones</h3>
+      <p>Homeschool comes with hundreds of age-appropriate milestones for each grade level. When you add a new student, their milestones are automatically initialized based on their grade level.</p>
+    </section>
+
+    <section class="section" id="library">
+      <h2>Library</h2>
+
+      <h3>Managing Your Books</h3>
+      <p>Keep track of all the books in your homeschool library - textbooks, readers, reference materials, and more.</p>
+
+      <h3>Adding Books Manually</h3>
+      <ol>
+        <li>Go to <strong>Library</strong> in the sidebar</li>
+        <li>Click <strong>Add Book</strong></li>
+        <li>Enter the book details (title, author, pages)</li>
+        <li>Assign it to a student (optional)</li>
+      </ol>
+
+      <h3>Scanning Books with Your Phone</h3>
+      <p>Quickly add books by scanning their ISBN barcodes:</p>
+      <ol>
+        <li>Click <strong>Scan Books</strong> in the Library</li>
+        <li>A QR code appears on your screen</li>
+        <li>Scan the QR code with your phone's camera</li>
+        <li>Your phone opens a scanner page - point it at book barcodes</li>
+        <li>Books appear in your desktop app automatically!</li>
+      </ol>
+
+      <div class="tip">
+        <strong>Tip:</strong> The phone scanner can look up book details automatically using the ISBN. You can also take a photo of the book cover if the automatic cover isn't right.
+      </div>
+    </section>
+
+    <section class="section" id="field-trips">
+      <h2>Field Trips</h2>
+
+      <h3>Planning Educational Outings</h3>
+      <p>Field trips are a valuable part of homeschooling. Use this section to plan and track educational outings:</p>
+      <ul>
+        <li>Museums and science centers</li>
+        <li>Historical sites</li>
+        <li>Nature walks and parks</li>
+        <li>Community visits (fire station, library, etc.)</li>
+        <li>Cultural events</li>
+      </ul>
+
+      <h3>Recording Field Trips</h3>
+      <ol>
+        <li>Go to <strong>Field Trips</strong></li>
+        <li>Click <strong>Add Field Trip</strong></li>
+        <li>Enter the destination and date</li>
+        <li>Select which students attended</li>
+        <li>Link to relevant subjects and milestones</li>
+        <li>Add notes about what was learned</li>
+      </ol>
+    </section>
+
+    <section class="section" id="calendar">
+      <h2>Calendar</h2>
+
+      <p>The Calendar view shows all your scheduled activities, field trips, and milestones in a traditional calendar format. Use it to:</p>
+      <ul>
+        <li>See your week or month at a glance</li>
+        <li>Identify busy or light days</li>
+        <li>Plan ahead for field trips and special activities</li>
+        <li>Track completed vs. planned activities</li>
+      </ul>
+    </section>
+
+    <section class="section" id="reports">
+      <h2>Reports</h2>
+
+      <h3>Generating Reports</h3>
+      <p>Create reports to track progress over time or to satisfy state homeschool requirements:</p>
+      <ul>
+        <li><strong>Activity Summary</strong> - Hours spent per subject</li>
+        <li><strong>Milestone Progress</strong> - Completion rates by subject</li>
+        <li><strong>Reading Log</strong> - Books read and pages completed</li>
+      </ul>
+
+      <h3>Exporting Data</h3>
+      <p>Export your data for backup or sharing with umbrella schools:</p>
+      <ul>
+        <li>PDF reports for printing or emailing</li>
+        <li>CSV exports for spreadsheets</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>
+        Need more help? <a href="https://github.com/scoblelife/homeschool/issues">Report an issue on GitHub</a>
+      </p>
+      <p style="margin-top: 10px;">
+        <a href="./">Home</a> &middot;
+        <a href="releases.html">Downloads</a> &middot;
+        <a href="https://github.com/scoblelife/homeschool">GitHub</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
