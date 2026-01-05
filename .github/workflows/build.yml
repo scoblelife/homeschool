@@ -25,9 +25,9 @@ jobs:
         include:
           - os: macos-latest
             platform: mac
-          - os: blacksmith-2vcpu-windows-2025
+          - os: windows-latest
             platform: win
-          - os: blacksmith-2vcpu-ubuntu-2204
+          - os: ubuntu-latest
             platform: linux
 
     runs-on: ${{ matrix.os }}
@@ -81,7 +81,7 @@ jobs:
   release:
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     permissions:
       contents: write
 
