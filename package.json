@@ -1,0 +1,52 @@
+{
+  "name": "homeschool",
+  "version": "0.1.0",
+  "description": "Homeschool management desktop application",
+  "type": "module",
+  "main": "./out/main/index.js",
+  "author": "",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "postinstall": "electron-builder install-app-deps",
+    "build:mac": "npm run build && electron-builder --mac",
+    "build:win": "npm run build && electron-builder --win",
+    "build:linux": "npm run build && electron-builder --linux",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:renderer": "tsc --noEmit -p tsconfig.renderer.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:renderer",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+  },
+  "dependencies": {
+    "@electron-toolkit/utils": "^3.0.0",
+    "@headlessui/react": "^2.2.4",
+    "date-fns": "^4.1.0",
+    "duckdb-async": "^1.4.2",
+    "eventsource": "^4.1.0",
+    "googleapis": "^169.0.0",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.6.0",
+    "smee-client": "^5.0.0",
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.6",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.4.1",
+    "autoprefixer": "^10.4.21",
+    "electron": "^36.3.1",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^3.1.0",
+    "postcss": "^8.5.4",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  }
+}

@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-gray-900;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md focus:ring-indigo-500 active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-indigo-500 active:scale-[0.98];
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 hover:shadow-md focus:ring-red-500 active:scale-[0.98];
+  }
+
+  .input {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm hover:border-gray-400;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-shadow duration-200;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-indigo {
+    @apply bg-indigo-100 text-indigo-700;
+  }
+
+  .badge-green {
+    @apply bg-green-100 text-green-700;
+  }
+
+  .badge-amber {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .badge-gray {
+    @apply bg-gray-100 text-gray-600;
+  }
+}
+
+/* Print Styles */
+@media print {
+  /* Hide navigation and non-printable elements */
+  aside,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Show print-only elements */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Reset main content for printing */
+  main {
+    margin: 0 !important;
+    padding: 20px !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  /* Clean up cards for printing */
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+    page-break-inside: avoid;
+  }
+
+  /* Ensure good contrast */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hide buttons and interactive elements */
+  button,
+  select,
+  input[type="checkbox"] {
+    display: none !important;
+  }
+
+  /* Show checkbox state as text */
+  .completed-indicator::before {
+    content: "[x] ";
+  }
+
+  .not-completed-indicator::before {
+    content: "[ ] ";
+  }
+}

@@ -1,0 +1,538 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "version": 1,
+    "install": {
+      "duckdb": {
+        "pkg-path": "duckdb"
+      },
+      "git": {
+        "pkg-path": "git"
+      },
+      "nodejs_22": {
+        "pkg-path": "nodejs_22"
+      },
+      "python3": {
+        "pkg-path": "python3"
+      }
+    },
+    "vars": {
+      "ELECTRON_ENABLE_LOGGING": "1"
+    },
+    "hook": {
+      "on-activate": "  mkdir -p \"$FLOX_ENV_CACHE/npm\"\n  mkdir -p \"$FLOX_ENV_PROJECT/data\"\n\n  export npm_config_cache=\"$FLOX_ENV_CACHE/npm\"\n\n  if [ -f \"$FLOX_ENV_PROJECT/package.json\" ] && [ ! -d \"$FLOX_ENV_PROJECT/node_modules\" ]; then\n    echo \"Run 'npm install' to install dependencies\"\n  fi\n"
+    },
+    "profile": {
+      "common": "  alias dev=\"npm run dev\"\n  alias build=\"npm run build\"\n  alias db=\"duckdb data/homeschool.db\"\n"
+    },
+    "options": {}
+  },
+  "packages": [
+    {
+      "attr_path": "duckdb",
+      "broken": false,
+      "derivation": "/nix/store/y73xam13wd8kicr93xv1jg3ir91zp2gk-duckdb-1.4.1.drv",
+      "description": "Embeddable SQL OLAP Database Management System",
+      "install_id": "duckdb",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "duckdb-1.4.1",
+      "pname": "duckdb",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:02:52.718648Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.4.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/m5mm1rffayrivyzrca91fc1dxbgbrgmr-duckdb-1.4.1-dev",
+        "lib": "/nix/store/6ksy72b8yyj5lfknfn2sfd969496y0wz-duckdb-1.4.1-lib",
+        "out": "/nix/store/ynk98bb07554wap622sqy8b296y3l2hp-duckdb-1.4.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "duckdb",
+      "broken": false,
+      "derivation": "/nix/store/bwrcf36z9plf853y89a8bicxxx71ll6s-duckdb-1.4.1.drv",
+      "description": "Embeddable SQL OLAP Database Management System",
+      "install_id": "duckdb",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "duckdb-1.4.1",
+      "pname": "duckdb",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:18:50.895483Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.4.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/f9kq9nm5a4i06rlxrqcjfi67c8z6gkhz-duckdb-1.4.1-dev",
+        "lib": "/nix/store/rhvh4b09xkpl9zpkyzhdqndv30p3cwv1-duckdb-1.4.1-lib",
+        "out": "/nix/store/iqwwmyjs6m5007c54km6gk4sir2h2bi1-duckdb-1.4.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "duckdb",
+      "broken": false,
+      "derivation": "/nix/store/g7v6fj62jcdkgf7h9lgy5l8xynr73600-duckdb-1.4.1.drv",
+      "description": "Embeddable SQL OLAP Database Management System",
+      "install_id": "duckdb",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "duckdb-1.4.1",
+      "pname": "duckdb",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:34:49.353271Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.4.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/88jp0gi14hikgmpz1sgsxqvhipw5fghg-duckdb-1.4.1-dev",
+        "lib": "/nix/store/2dsi1ngla9q6vhrbbzc807676ia1n9v2-duckdb-1.4.1-lib",
+        "out": "/nix/store/xs0f0k4vlxl79zifyfd6jb1x5ji8py8l-duckdb-1.4.1"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "duckdb",
+      "broken": false,
+      "derivation": "/nix/store/c15qg0as7msv6jlc5v6fk6qwgvpb30qy-duckdb-1.4.1.drv",
+      "description": "Embeddable SQL OLAP Database Management System",
+      "install_id": "duckdb",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "duckdb-1.4.1",
+      "pname": "duckdb",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:50:45.781623Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.4.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/9bgp0ciy3xsd2dsprcxcn030b6d9qn1q-duckdb-1.4.1-dev",
+        "lib": "/nix/store/ccnsh2hvmj9xvmcwmzr1vkdmn3mlmriv-duckdb-1.4.1-lib",
+        "out": "/nix/store/b8rja3v2xjiyidqa401qhj48v5c4ipjk-duckdb-1.4.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/iljbks0y8x34b38iyr6cp45w40y7i5fk-git-2.52.0.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "git-2.52.0",
+      "pname": "git",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:02:53.170166Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.52.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/1518yqnr4z0p65jfv8skw2qwc30ad5la-git-2.52.0-doc",
+        "out": "/nix/store/1xy62wrp3m91snd3cazxgg0yrplb6sav-git-2.52.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/vfyf0r08fdqp19g4542inp1sbsa51i3m-git-2.52.0.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "git-2.52.0",
+      "pname": "git",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:18:51.600483Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.52.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/q0lq2fczq1y9q9028k4ripf38mfy3n42-git-2.52.0-debug",
+        "doc": "/nix/store/lm1plgvh8qlv0amm8wiz8l00ky298hws-git-2.52.0-doc",
+        "out": "/nix/store/mfbr42w740arf759n51nhki221lang5z-git-2.52.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/1gr7bffbw1vx7q9n1cirxw76py4nqhbg-git-2.52.0.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "git-2.52.0",
+      "pname": "git",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:34:49.780236Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.52.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/a9903b6q3clvx61l8drkpr262fb5qmik-git-2.52.0-doc",
+        "out": "/nix/store/0lxp1s4hb0xb0di1a5jg08rr8hk0cvz8-git-2.52.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "git",
+      "broken": false,
+      "derivation": "/nix/store/38ld2rqc31vsfzm9d20h6wdpkj3sy0v1-git-2.52.0.drv",
+      "description": "Distributed version control system",
+      "install_id": "git",
+      "license": "GPL-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "git-2.52.0",
+      "pname": "git",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:50:46.555882Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.52.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/q6m51s4q8kddlh9b9rb63v1yqvlv3xgp-git-2.52.0-debug",
+        "doc": "/nix/store/n4zq81winwf8d5y2ra7fjznwl6cnhggz-git-2.52.0-doc",
+        "out": "/nix/store/fryiyyhhilpqhx2wc4b6l5gnxc8w18rg-git-2.52.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs_22",
+      "broken": false,
+      "derivation": "/nix/store/whhh07d470j6jd9h6r45rqpx078xazql-nodejs-22.21.1.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs_22",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "nodejs-22.21.1",
+      "pname": "nodejs_22",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:03:15.785814Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "22.21.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/c0dkki0c7s00jcyq2g6z98n6k9hh2d0b-nodejs-22.21.1-dev",
+        "libv8": "/nix/store/zy38qjrn2d88cpy0q07x82arwczdhzlv-nodejs-22.21.1-libv8",
+        "out": "/nix/store/62f9psq9vn4drfx5q74w9wccqkixxv05-nodejs-22.21.1"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs_22",
+      "broken": false,
+      "derivation": "/nix/store/jldmic3v05115dsnf5vi49jjkmr789mk-nodejs-22.21.1.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs_22",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "nodejs-22.21.1",
+      "pname": "nodejs_22",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:19:26.565736Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "22.21.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/gmxpamhp410525lh2g866sxidff6hxhm-nodejs-22.21.1-dev",
+        "libv8": "/nix/store/39h0zlshb9hn5ic9mf05rkadnd208wbw-nodejs-22.21.1-libv8",
+        "out": "/nix/store/i5qxc7v6zwfi2bdykm892wdpq8lj0h4v-nodejs-22.21.1"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs_22",
+      "broken": false,
+      "derivation": "/nix/store/61ccpb6j0vzvp993h45vi4d0rdhlppba-nodejs-22.21.1.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs_22",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "nodejs-22.21.1",
+      "pname": "nodejs_22",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:35:12.538241Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "22.21.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/8jq5r2kjib78i3qk55m3n7kd53lhzcqc-nodejs-22.21.1-dev",
+        "libv8": "/nix/store/ydyp4wgf6jz6iir44plrcvw8wgiwqmpz-nodejs-22.21.1-libv8",
+        "out": "/nix/store/jipg8fyr8vwaqp145v68616f0yzg3z8x-nodejs-22.21.1"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nodejs_22",
+      "broken": false,
+      "derivation": "/nix/store/adlv7777hxxkw74dds8hffxgdmmrs3yz-nodejs-22.21.1.drv",
+      "description": "Event-driven I/O framework for the V8 JavaScript engine",
+      "install_id": "nodejs_22",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "nodejs-22.21.1",
+      "pname": "nodejs_22",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:51:24.161781Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "22.21.1",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "dev": "/nix/store/3z6003brc34nnsfah9cs6k2rr2l5al7f-nodejs-22.21.1-dev",
+        "libv8": "/nix/store/9hwr1f2fsr45zl7lxny83xv41czk0gdz-nodejs-22.21.1-libv8",
+        "out": "/nix/store/h0rwbhyq01dy7yaf2aimbnrbq7p254db-nodejs-22.21.1"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python3",
+      "broken": false,
+      "derivation": "/nix/store/4lyx38kvkyv0w29n42zchi7kknxsj75j-python3-3.13.11.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "python3-3.13.11",
+      "pname": "python3",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:03:31.649720Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.13.11",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/48ak878425b9wyrkwd826d2043m3ii36-python3-3.13.11"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python3",
+      "broken": false,
+      "derivation": "/nix/store/cr0kp31yfvjasbxv0pgy6ca9gmq09fy6-python3-3.13.11.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "python3-3.13.11",
+      "pname": "python3",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:19:44.134428Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.13.11",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/6chjr6ibi9zgngvldl6ian0rpx2z3acn-python3-3.13.11-debug",
+        "out": "/nix/store/y88crn50yx35fiiwcjx6xqwi6ahk7mlq-python3-3.13.11"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python3",
+      "broken": false,
+      "derivation": "/nix/store/qzpa9qsprcb4z8bf9rdkb40pmnxa0m89-python3-3.13.11.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "python3-3.13.11",
+      "pname": "python3",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:35:25.708552Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.13.11",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/s0z3ix6qf9gz6b8wz909lwnlnykr1nlj-python3-3.13.11"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "python3",
+      "broken": false,
+      "derivation": "/nix/store/2s2zik6gyc4s3pf1nm7lbfii8699dsab-python3-3.13.11.drv",
+      "description": "High-level dynamically-typed programming language",
+      "install_id": "python3",
+      "license": "Python-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "python3-3.13.11",
+      "pname": "python3",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:51:42.432657Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.13.11",
+      "outputs_to_install": [
+        "out",
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/jzjb5519pa3fmarkvk0wj6swh0k1kqi6-python3-3.13.11-debug",
+        "out": "/nix/store/qzc04a3npl70cyyy6flnnrb2ig3kayxm-python3-3.13.11"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}
