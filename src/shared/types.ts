@@ -10,7 +10,7 @@ export type ActivityType =
   | 'assessment'
   | 'field_trip'
 
-export type GradeLevel = 'pre-k' | '1st' | '2nd'
+export type GradeLevel = 'pre-k' | 'k' | '1st' | '2nd' | '3rd' | '4th' | '5th' | '6th' | '7th' | '8th' | '9th' | '10th' | '11th' | '12th'
 
 export interface Student {
   id: string
