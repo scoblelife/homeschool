@@ -17,6 +17,10 @@ let dbPath: string | null = null
 
 // Base directory for all app data
 export function getAppDataPath(): string {
+  // Allow override via environment variable for testing multiple instances
+  if (process.env.HOMESCHOOL_DATA_DIR) {
+    return process.env.HOMESCHOOL_DATA_DIR
+  }
   if (app.isPackaged) {
     return app.getPath('userData')
   }

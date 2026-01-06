@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initializeSchema, seedDefaultSubjects, seedMilestoneTemplates, closeDatabase } from '../database'
 import { registerIpcHandlers } from './ipc'
+import { registerSyncIPC, shutdownSync } from './sync-ipc'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -49,6 +50,7 @@ app.whenReady().then(async () => {
 
   // Register IPC handlers
   registerIpcHandlers()
+  registerSyncIPC()
 
   createWindow()
 
@@ -58,6 +60,7 @@ app.whenReady().then(async () => {
 })
 
 app.on('window-all-closed', async () => {
+  await shutdownSync()
   await closeDatabase()
   if (process.platform !== 'darwin') {
     app.quit()

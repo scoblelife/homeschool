@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { Dialog } from '@headlessui/react'
 import { useStudents } from '../hooks/useDatabase'
+import { SyncSettings } from '../components/sync'
 import type { CreateStudent, GradeLevel, GoogleCalendarInfo, Subject, SubjectChoreMapping } from '../../../shared/types'
 
 export default function Settings(): JSX.Element {
@@ -27,8 +28,6 @@ export default function Settings(): JSX.Element {
   const [calendars, setCalendars] = useState<GoogleCalendarInfo[]>([])
   const [selectedCalendarId, setSelectedCalendarId] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
-  const [showCredentialsModal, setShowCredentialsModal] = useState(false)
-  const [credentialsForm, setCredentialsForm] = useState({ client_id: '', client_secret: '' })
 
   // Skylight Chore Mapping state
   const [subjects, setSubjects] = useState<Subject[]>([])
@@ -92,14 +91,6 @@ export default function Settings(): JSX.Element {
       const savedCalendarId = await window.api.getSetting('google_calendar_id')
       setSelectedCalendarId(savedCalendarId)
     }
-  }
-
-  const handleSaveCredentials = async (): Promise<void> => {
-    if (!credentialsForm.client_id || !credentialsForm.client_secret) return
-    await window.api.saveGoogleCredentials(credentialsForm)
-    setShowCredentialsModal(false)
-    setCredentialsForm({ client_id: '', client_secret: '' })
-    loadGoogleAuthStatus()
   }
 
   const handleConnectGoogle = async (): Promise<void> => {
@@ -215,7 +206,7 @@ export default function Settings(): JSX.Element {
                   <div className="font-semibold text-gray-900">{student.name}</div>
                   <div className="text-sm text-gray-500">
                     {student.gradeLevel === 'pre-k' ? 'Pre-K' : student.gradeLevel === '1st' ? '1st Grade' : '2nd Grade'} •{' '}
-                    Born {format(new Date(student.dateOfBirth), 'MMMM d, yyyy')}
+                    Born {format(parseISO(student.dateOfBirth), 'MMMM d, yyyy')}
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -238,6 +229,11 @@ export default function Settings(): JSX.Element {
         )}
       </div>
 
+      {/* Family Sync Section */}
+      <div className="mb-8">
+        <SyncSettings />
+      </div>
+
       {/* Google Calendar Section */}
       <div className="card mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Google Calendar Sync</h2>
@@ -247,45 +243,18 @@ export default function Settings(): JSX.Element {
 
         {googleAuthStatus === null ? (
           <div className="text-gray-500">Loading...</div>
-        ) : !googleAuthStatus.hasCredentials ? (
-          <div className="space-y-4">
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <p className="text-sm text-amber-800 mb-3">
-                To use Google Calendar sync, you need to set up OAuth credentials from the Google Cloud Console.
-              </p>
-              <ol className="text-sm text-amber-700 list-decimal list-inside space-y-1 mb-3">
-                <li>Go to console.cloud.google.com</li>
-                <li>Create a project and enable the Google Calendar API</li>
-                <li>Create OAuth 2.0 credentials (Desktop App)</li>
-                <li>Copy the Client ID and Client Secret below</li>
-              </ol>
-            </div>
-            <button onClick={() => setShowCredentialsModal(true)} className="btn btn-primary">
-              Configure Google Credentials
-            </button>
-          </div>
         ) : !googleAuthStatus.isAuthenticated ? (
           <div className="space-y-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-800">
-                Credentials configured. Click below to connect your Google account.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={handleConnectGoogle}
-                disabled={isConnecting}
-                className="btn btn-primary"
-              >
-                {isConnecting ? 'Connecting...' : 'Connect Google Calendar'}
-              </button>
-              <button
-                onClick={() => setShowCredentialsModal(true)}
-                className="btn btn-secondary"
-              >
-                Update Credentials
-              </button>
-            </div>
+            <button
+              onClick={handleConnectGoogle}
+              disabled={isConnecting}
+              className="btn btn-primary flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+              </svg>
+              {isConnecting ? 'Connecting...' : 'Connect Google Calendar'}
+            </button>
           </div>
         ) : (
           <div className="space-y-4">
@@ -392,9 +361,9 @@ export default function Settings(): JSX.Element {
       <div className="card">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">About</h2>
         <div className="text-sm text-gray-600 space-y-2">
-          <p><strong>Homeschool Manager</strong> v0.1.0</p>
+          <p><strong>Homeschool Manager</strong> v0.1.3</p>
           <p>A desktop application for managing homeschool education.</p>
-          <p>Data is stored locally in DuckDB.</p>
+          <p>Data is stored locally on your device. Family sync uses encrypted peer-to-peer connections - your data never touches our servers.</p>
         </div>
       </div>
 
@@ -503,65 +472,6 @@ export default function Settings(): JSX.Element {
         </div>
       </Dialog>
 
-      {/* Google Credentials Modal */}
-      <Dialog open={showCredentialsModal} onClose={() => setShowCredentialsModal(false)} className="relative z-50">
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
-              Google OAuth Credentials
-            </Dialog.Title>
-
-            <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-sm text-blue-800">
-                  Create OAuth 2.0 credentials in the Google Cloud Console for a "Desktop App" and paste them below.
-                </p>
-              </div>
-
-              <div>
-                <label className="label">Client ID</label>
-                <input
-                  type="text"
-                  value={credentialsForm.client_id}
-                  onChange={(e) => setCredentialsForm({ ...credentialsForm, client_id: e.target.value })}
-                  className="input font-mono text-sm"
-                  placeholder="xxxxx.apps.googleusercontent.com"
-                />
-              </div>
-
-              <div>
-                <label className="label">Client Secret</label>
-                <input
-                  type="password"
-                  value={credentialsForm.client_secret}
-                  onChange={(e) => setCredentialsForm({ ...credentialsForm, client_secret: e.target.value })}
-                  className="input font-mono text-sm"
-                  placeholder="GOCSPX-..."
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowCredentialsModal(false)}
-                  className="btn btn-secondary"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveCredentials}
-                  disabled={!credentialsForm.client_id || !credentialsForm.client_secret}
-                  className="btn btn-primary"
-                >
-                  Save Credentials
-                </button>
-              </div>
-            </div>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { format, parseISO } from 'date-fns'
 import { Dialog, Tab } from '@headlessui/react'
 import { useStore } from '../stores/useStore'
 import { useMilestones } from '../hooks/useDatabase'
@@ -101,7 +102,7 @@ function MilestoneCard({
           <p className="text-sm text-gray-600 mt-1">{milestone.description}</p>
           {milestone.targetDate && (
             <p className="text-xs text-gray-400 mt-2">
-              Target: {new Date(milestone.targetDate).toLocaleDateString()}
+              Target: {format(parseISO(milestone.targetDate), 'MMM d, yyyy')}
             </p>
           )}
           {milestone.evidenceNotes && (

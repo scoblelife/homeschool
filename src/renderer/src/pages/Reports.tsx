@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { format, subDays, startOfMonth } from 'date-fns'
+import { format, parseISO, subDays, startOfMonth } from 'date-fns'
 import { useStore } from '../stores/useStore'
 import type { ActivitySummary, DailySummary } from '../../../shared/types'
 
@@ -184,7 +184,7 @@ export default function Reports(): JSX.Element {
                       >
                         <div>
                           <div className="font-medium text-gray-900">
-                            {format(new Date(day.date), 'EEEE, MMMM d')}
+                            {format(parseISO(day.date), 'EEEE, MMMM d')}
                           </div>
                           <div className="text-sm text-gray-500">
                             {day.activitiesCount} activities • {day.totalMinutes} min
