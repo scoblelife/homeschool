@@ -1,5 +1,6 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useStore } from '../stores/useStore'
+import { SyncStatusIndicator } from '../components/sync'
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: '🏠' },
@@ -14,6 +15,7 @@ const navItems = [
 
 export default function MainLayout(): JSX.Element {
   const { students, selectedStudentId, setSelectedStudentId, isLoading } = useStore()
+  const navigate = useNavigate()
 
   if (isLoading) {
     return (
@@ -29,7 +31,10 @@ export default function MainLayout(): JSX.Element {
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
         {/* Header */}
         <div className="p-4 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-900">Homeschool</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold text-gray-900">Homeschool</h1>
+            <SyncStatusIndicator onClick={() => navigate('/settings')} />
+          </div>
         </div>
 
         {/* Child Selector */}

@@ -20,6 +20,7 @@
     "src/preload/**/*",
     "src/database/**/*",
     "src/shared/**/*",
+    "src/sync/**/*",
     "electron.vite.config.ts"
   ]
 }

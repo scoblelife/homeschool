@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { Dialog } from '@headlessui/react'
 import Markdown from 'react-markdown'
 import { useStore } from '../stores/useStore'
@@ -201,7 +201,7 @@ export default function Activities(): JSX.Element {
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
                     {subject?.name} • {student?.name} •{' '}
-                    {format(new Date(activity.dateCompleted), 'MMM d, yyyy')}
+                    {format(parseISO(activity.dateCompleted), 'MMM d, yyyy')}
                     {activity.durationMinutes && ` • ${activity.durationMinutes} min`}
                   </div>
                   {activity.bookTitle && (

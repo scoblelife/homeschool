@@ -28,7 +28,19 @@ export interface GoogleTokens {
 let oauth2Client: InstanceType<typeof google.auth.OAuth2> | null = null
 
 /**
- * Load credentials from user's config directory
+ * Get bundled credentials from environment variables (set at build time)
+ */
+function getBundledCredentials(): GoogleCredentials | null {
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+  if (clientId && clientSecret) {
+    return { client_id: clientId, client_secret: clientSecret }
+  }
+  return null
+}
+
+/**
+ * Load credentials from user's config directory (fallback for development)
  */
 export function loadCredentials(): GoogleCredentials | null {
   const credPath = getCredentialsPath()
@@ -41,6 +53,18 @@ export function loadCredentials(): GoogleCredentials | null {
     }
   }
   return null
+}
+
+/**
+ * Get credentials - prefers bundled, falls back to user-provided
+ */
+function getCredentials(): GoogleCredentials | null {
+  // Prefer bundled credentials (from env vars at build time)
+  const bundled = getBundledCredentials()
+  if (bundled) return bundled
+
+  // Fall back to user-provided credentials file (for development)
+  return loadCredentials()
 }
 
 /**
@@ -57,7 +81,7 @@ export function saveCredentials(credentials: GoogleCredentials): void {
 function getOAuth2Client(): InstanceType<typeof google.auth.OAuth2> | null {
   if (oauth2Client) return oauth2Client
 
-  const credentials = loadCredentials()
+  const credentials = getCredentials()
   if (!credentials) return null
 
   oauth2Client = new google.auth.OAuth2(
@@ -100,10 +124,10 @@ function saveTokens(tokens: GoogleTokens): void {
 }
 
 /**
- * Check if we have valid credentials configured
+ * Check if we have valid credentials configured (bundled or user-provided)
  */
 export function hasCredentials(): boolean {
-  return loadCredentials() !== null
+  return getCredentials() !== null
 }
 
 /**

@@ -562,8 +562,60 @@ export interface CalendarSyncRecord {
   syncedAt: string
 }
 
+// Family Sync Types
+export interface SyncPeerInfo {
+  peerId: string
+  deviceName?: string
+  lastSeen: number
+  isOnline: boolean
+}
+
+export interface SyncFamilyStatus {
+  isConfigured: boolean
+  isCreator: boolean
+  familyId: string | null
+  deviceId: string | null
+  deviceName: string | null
+}
+
+export interface SyncStatus {
+  isEnabled: boolean
+  isConnected: boolean
+  familyStatus: SyncFamilyStatus
+  connectedPeers: SyncPeerInfo[]
+  pendingEvents: number
+}
+
+export interface SyncLogStats {
+  length: number
+  lastEventId: string | null
+}
+
+export interface SyncAPI {
+  // Initialization
+  syncInitialize: () => Promise<{ success: boolean }>
+
+  // Status
+  syncGetStatus: () => Promise<SyncStatus>
+  syncGetPeers: () => Promise<SyncPeerInfo[]>
+  syncGetLogStats: () => Promise<SyncLogStats>
+
+  // Family Management
+  syncCreateFamily: (deviceName: string) => Promise<{ success: boolean; config?: unknown; error?: string }>
+  syncJoinFamily: (qrData: string, deviceName: string) => Promise<{ success: boolean; config?: unknown; error?: string }>
+  syncLeaveFamily: () => Promise<{ success: boolean; error?: string }>
+  syncGetQRCode: () => Promise<{ success: boolean; qrData?: string }>
+  syncUpdateDeviceName: (name: string) => Promise<{ success: boolean; error?: string }>
+
+  // Event listeners
+  onSyncPeerConnected: (callback: (peerId: string) => void) => () => void
+  onSyncPeerDisconnected: (callback: (peerId: string) => void) => () => void
+  onSyncEventReceived: (callback: (data: { event: unknown; fromPeer: string }) => void) => () => void
+  onSyncCompleted: (callback: (data: { peerId: string; eventsReceived: number }) => void) => () => void
+}
+
 declare global {
   interface Window {
-    api: DatabaseAPI
+    api: DatabaseAPI & SyncAPI
   }
 }

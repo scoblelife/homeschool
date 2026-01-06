@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type {
   DatabaseAPI,
+  SyncAPI,
   CreateStudent,
   UpdateStudent,
   CreateSession,
@@ -37,7 +38,7 @@ import type {
   Book
 } from '../shared/types'
 
-const api: DatabaseAPI = {
+const api: DatabaseAPI & SyncAPI = {
   // Students
   getStudents: () => ipcRenderer.invoke('db:students:getAll'),
   getStudent: (id: string) => ipcRenderer.invoke('db:students:get', id),
@@ -254,6 +255,46 @@ const api: DatabaseAPI = {
     return () => {
       ipcRenderer.removeListener('scanner:book-added', handler)
     }
+  },
+
+  // Family Sync
+  syncInitialize: () => ipcRenderer.invoke('sync:initialize'),
+  syncGetStatus: () => ipcRenderer.invoke('sync:get-status'),
+  syncCreateFamily: (deviceName: string) => ipcRenderer.invoke('sync:create-family', deviceName),
+  syncJoinFamily: (qrData: string, deviceName: string) =>
+    ipcRenderer.invoke('sync:join-family', qrData, deviceName),
+  syncLeaveFamily: () => ipcRenderer.invoke('sync:leave-family'),
+  syncGetQRCode: () => ipcRenderer.invoke('sync:get-qr-code'),
+  syncUpdateDeviceName: (name: string) => ipcRenderer.invoke('sync:update-device-name', name),
+  syncGetPeers: () => ipcRenderer.invoke('sync:get-peers'),
+  syncGetLogStats: () => ipcRenderer.invoke('sync:get-log-stats'),
+  syncShareInvite: (method: 'email' | 'sms', inviteCode: string) =>
+    ipcRenderer.invoke('sync:share-invite', method, inviteCode),
+  syncGetInviteMessage: (inviteCode: string) =>
+    ipcRenderer.invoke('sync:get-invite-message', inviteCode),
+  syncIsManager: () => ipcRenderer.invoke('sync:is-manager') as Promise<boolean>,
+  syncKickMember: (deviceId: string, deviceName: string, reason?: string) =>
+    ipcRenderer.invoke('sync:kick-member', deviceId, deviceName, reason),
+  syncGetKickedMembers: () => ipcRenderer.invoke('sync:get-kicked-members'),
+  onSyncPeerConnected: (callback: (peerId: string) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, peerId: string) => callback(peerId)
+    ipcRenderer.on('sync:peer-connected', handler)
+    return () => ipcRenderer.removeListener('sync:peer-connected', handler)
+  },
+  onSyncPeerDisconnected: (callback: (peerId: string) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, peerId: string) => callback(peerId)
+    ipcRenderer.on('sync:peer-disconnected', handler)
+    return () => ipcRenderer.removeListener('sync:peer-disconnected', handler)
+  },
+  onSyncEventReceived: (callback: (data: { event: unknown; fromPeer: string }) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, data: { event: unknown; fromPeer: string }) => callback(data)
+    ipcRenderer.on('sync:event-received', handler)
+    return () => ipcRenderer.removeListener('sync:event-received', handler)
+  },
+  onSyncCompleted: (callback: (data: { peerId: string; eventsReceived: number }) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, data: { peerId: string; eventsReceived: number }) => callback(data)
+    ipcRenderer.on('sync:completed', handler)
+    return () => ipcRenderer.removeListener('sync:completed', handler)
   }
 }
 

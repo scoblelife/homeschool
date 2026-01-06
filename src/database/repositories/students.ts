@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { getDatabase } from '../connection'
 import type { Student, CreateStudent, UpdateStudent, GradeLevel } from '../../shared/types'
+import { emitSyncEvent } from '../syncEmitter'
 
 function rowToStudent(row: Record<string, unknown>): Student {
   return {
@@ -44,6 +45,18 @@ export async function createStudent(data: CreateStudent): Promise<Student> {
     now
   )
 
+  // Emit sync event
+  await emitSyncEvent({
+    type: 'student.created',
+    data: {
+      id,
+      name: data.name,
+      dateOfBirth: data.dateOfBirth,
+      gradeLevel: data.gradeLevel,
+      color: data.color
+    }
+  })
+
   return (await getStudent(id))!
 }
 
@@ -66,10 +79,25 @@ export async function updateStudent(id: string, data: UpdateStudent): Promise<St
     id
   )
 
+  // Emit sync event with changed fields
+  await emitSyncEvent({
+    type: 'student.updated',
+    data: {
+      id,
+      changes: data
+    }
+  })
+
   return (await getStudent(id))!
 }
 
 export async function deleteStudent(id: string): Promise<void> {
   const db = await getDatabase()
   await db.run('DELETE FROM students WHERE id = ?', id)
+
+  // Emit sync event
+  await emitSyncEvent({
+    type: 'student.deleted',
+    data: { id }
+  })
 }

@@ -440,7 +440,7 @@ export default function Dashboard(): JSX.Element {
                       </div>
                     </div>
                     <div className="text-sm text-gray-400">
-                      {format(new Date(activity.dateCompleted), 'MMM d')}
+                      {format(parseISO(activity.dateCompleted), 'MMM d')}
                     </div>
                   </li>
                 )
