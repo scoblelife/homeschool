@@ -13,7 +13,7 @@ import { FamilyManager, createFamilyManager, type FamilyStatus, type QRCodePaylo
 import { EventLog, createEventLog } from '../sync/eventLog'
 import { EventProjector, createProjector } from '../sync/projector'
 import { SwarmManager, createSwarmManager } from '../sync/swarm'
-import type { SyncEvent } from '../sync/events'
+import { createEventId, type SyncEvent } from '../sync/events'
 import type { PeerInfo } from '../sync/mesh/protocol'
 import { setSyncEmitter } from '../database/syncEmitter'
 import { needsMigration, migrateExistingData } from '../sync/migration'
@@ -332,6 +332,7 @@ export function registerSyncIPC(): void {
     try {
       // Create and append the kick event
       const kickEvent = await eventLog.append({
+        id: createEventId(),
         type: 'member.kicked',
         data: {
           kickedDeviceId: deviceId,

@@ -5,6 +5,23 @@ import { useStudents } from '../hooks/useDatabase'
 import { SyncSettings } from '../components/sync'
 import type { CreateStudent, GradeLevel, GoogleCalendarInfo, Subject, SubjectChoreMapping } from '../../../shared/types'
 
+// Student color palette
+const STUDENT_COLORS = [
+  { id: 'fuchsia', name: 'Fuchsia', bg: 'bg-fuchsia-500', ring: 'ring-fuchsia-500', bgLight: 'bg-fuchsia-50', border: 'border-l-fuchsia-500', text: 'text-fuchsia-600' },
+  { id: 'teal', name: 'Teal', bg: 'bg-teal-500', ring: 'ring-teal-500', bgLight: 'bg-teal-50', border: 'border-l-teal-500', text: 'text-teal-600' },
+  { id: 'blue', name: 'Blue', bg: 'bg-blue-500', ring: 'ring-blue-500', bgLight: 'bg-blue-50', border: 'border-l-blue-500', text: 'text-blue-600' },
+  { id: 'orange', name: 'Orange', bg: 'bg-orange-500', ring: 'ring-orange-500', bgLight: 'bg-orange-50', border: 'border-l-orange-500', text: 'text-orange-600' },
+  { id: 'purple', name: 'Purple', bg: 'bg-purple-500', ring: 'ring-purple-500', bgLight: 'bg-purple-50', border: 'border-l-purple-500', text: 'text-purple-600' },
+  { id: 'green', name: 'Green', bg: 'bg-green-500', ring: 'ring-green-500', bgLight: 'bg-green-50', border: 'border-l-green-500', text: 'text-green-600' },
+] as const
+
+export function getStudentColor(colorId: string) {
+  // Handle legacy 'child1'/'child2' values
+  if (colorId === 'child1') return STUDENT_COLORS[0]
+  if (colorId === 'child2') return STUDENT_COLORS[1]
+  return STUDENT_COLORS.find(c => c.id === colorId) || STUDENT_COLORS[0]
+}
+
 export default function Settings(): JSX.Element {
   const { students, createStudent, updateStudent, deleteStudent } = useStudents()
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -13,7 +30,7 @@ export default function Settings(): JSX.Element {
     name: string
     dateOfBirth: string
     gradeLevel: GradeLevel
-    color: 'child1' | 'child2'
+    color: string
     calendarFeedUrl: string
   }>({
     name: '',
@@ -126,7 +143,7 @@ export default function Settings(): JSX.Element {
       name: '',
       dateOfBirth: '',
       gradeLevel: 'pre-k',
-      color: students.length === 0 ? 'child1' : 'child2',
+      color: STUDENT_COLORS[students.length % STUDENT_COLORS.length].id,
       calendarFeedUrl: ''
     })
     setIsModalOpen(true)
@@ -192,12 +209,12 @@ export default function Settings(): JSX.Element {
               <div
                 key={student.id}
                 className={`flex items-center gap-4 p-4 bg-gray-50 rounded-lg border-l-4 ${
-                  student.color === 'child1' ? 'border-l-fuchsia-500' : 'border-l-teal-500'
+                  getStudentColor(student.color).border
                 }`}
               >
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold ${
-                    student.color === 'child1' ? 'bg-fuchsia-500' : 'bg-teal-500'
+                    getStudentColor(student.color).bg
                   }`}
                 >
                   {student.name.charAt(0)}
@@ -417,31 +434,27 @@ export default function Settings(): JSX.Element {
 
               <div>
                 <label className="label">Color</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, color: 'child1' })}
-                    className={`p-3 rounded-lg flex items-center gap-3 transition-colors ${
-                      formData.color === 'child1'
-                        ? 'ring-2 ring-fuchsia-500 bg-fuchsia-50'
-                        : 'bg-gray-50 hover:bg-gray-100'
-                    }`}
-                  >
-                    <div className="w-6 h-6 rounded-full bg-fuchsia-500" />
-                    <span>Fuchsia</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, color: 'child2' })}
-                    className={`p-3 rounded-lg flex items-center gap-3 transition-colors ${
-                      formData.color === 'child2'
-                        ? 'ring-2 ring-teal-500 bg-teal-50'
-                        : 'bg-gray-50 hover:bg-gray-100'
-                    }`}
-                  >
-                    <div className="w-6 h-6 rounded-full bg-teal-500" />
-                    <span>Teal</span>
-                  </button>
+                <div className="grid grid-cols-3 gap-2">
+                  {STUDENT_COLORS.map((color) => {
+                    const isSelected = formData.color === color.id ||
+                      (formData.color === 'child1' && color.id === 'fuchsia') ||
+                      (formData.color === 'child2' && color.id === 'teal')
+                    return (
+                      <button
+                        key={color.id}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, color: color.id })}
+                        className={`p-2 rounded-lg flex items-center gap-2 transition-colors ${
+                          isSelected
+                            ? `ring-2 ${color.ring} ${color.bgLight}`
+                            : 'bg-gray-50 hover:bg-gray-100'
+                        }`}
+                      >
+                        <div className={`w-5 h-5 rounded-full ${color.bg}`} />
+                        <span className="text-sm">{color.name}</span>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 

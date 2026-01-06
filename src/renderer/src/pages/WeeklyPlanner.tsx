@@ -5,6 +5,19 @@ import { useStore } from '../stores/useStore'
 import { useMilestones } from '../hooks/useDatabase'
 import type { Milestone, MilestoneResource, CreateResource, CalendarSyncRecord, SubjectChoreMapping, StudentReward } from '../../../shared/types'
 
+// Map student colors to Google Calendar color IDs
+// See: https://developers.google.com/calendar/api/v3/reference/colors
+const GOOGLE_CALENDAR_COLORS: Record<string, string> = {
+  fuchsia: '4',  // Flamingo (pink)
+  child1: '4',   // Legacy
+  teal: '7',     // Peacock (teal)
+  child2: '7',   // Legacy
+  blue: '9',     // Blueberry
+  orange: '6',   // Tangerine
+  purple: '3',   // Grape
+  green: '10',   // Basil
+}
+
 // Helper to get current week start (Monday)
 function getCurrentWeekStart(): Date {
   return startOfWeek(new Date(), { weekStartsOn: 1 })
@@ -138,8 +151,7 @@ export default function WeeklyPlanner(): JSX.Element {
       const subjectNames: Record<string, string> = {}
 
       // Map student color to Google Calendar colorId
-      // 4 = Flamingo (pink), 7 = Peacock (teal)
-      const colorId = selectedStudent.color === 'child1' ? '4' : '7'
+      const colorId = GOOGLE_CALENDAR_COLORS[selectedStudent.color] || '4'
 
       // Process each selected milestone
       for (const milestoneId of selectedMilestoneIds) {
