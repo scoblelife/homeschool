@@ -58,6 +58,12 @@
       margin-top: 0;
     }
 
+    .content h3 {
+      font-size: 1.1rem;
+      margin: 20px 0 10px 0;
+      color: #444;
+    }
+
     .content p {
       color: #555;
       line-height: 1.7;
@@ -151,13 +157,47 @@
       </ul>
 
       <h2>Google Calendar Integration</h2>
-      <p>If you choose to connect Google Calendar, the app will:</p>
+      <p>If you choose to connect Google Calendar, the following describes how we handle your Google user data:</p>
+
+      <h3>Google User Data Accessed</h3>
+      <p>Homeschool requests access to the following Google API scopes:</p>
       <ul>
-        <li>Request permission to create, modify, and delete calendar events</li>
-        <li>Send milestone titles, descriptions, and dates to Google Calendar</li>
-        <li>Store an authentication token locally on your device</li>
+        <li><strong>calendar.events</strong> - Allows the app to create, read, update, and delete calendar events</li>
+        <li><strong>calendar.readonly</strong> - Allows the app to read your list of calendars so you can choose which calendar to sync to</li>
       </ul>
-      <p>This integration is optional. Google's use of your data is governed by <a href="https://policies.google.com/privacy">Google's Privacy Policy</a>. You can disconnect Google Calendar at any time from the Settings page, which removes the stored authentication token.</p>
+      <p>The app only accesses calendar data. It does not access your email, contacts, files, or any other Google services.</p>
+
+      <h3>How Google User Data Is Used</h3>
+      <p>Your Google Calendar data is used solely to:</p>
+      <ul>
+        <li>Display a list of your calendars so you can select where to sync milestones</li>
+        <li>Create calendar events for your weekly learning milestones</li>
+        <li>Update existing milestone events when you make changes</li>
+        <li>Delete calendar events when milestones are removed from your weekly plan</li>
+      </ul>
+      <p>The app syncs milestone titles, descriptions, dates, and student names to your chosen Google Calendar. No other processing or analysis of your Google data occurs.</p>
+
+      <h3>Google User Data Sharing</h3>
+      <p><strong>We do not share your Google user data with any third parties.</strong> Your data flows directly between your device and Google's servers. We do not have servers that receive, process, or store your Google data.</p>
+
+      <h3>Google User Data Storage &amp; Protection</h3>
+      <p>When you connect Google Calendar:</p>
+      <ul>
+        <li>OAuth tokens (access token and refresh token) are stored locally on your device in an encrypted configuration file</li>
+        <li>Tokens are never transmitted to our servers (we don't have any)</li>
+        <li>Calendar event data from Google is only held in memory during the sync operation and is not persisted locally</li>
+        <li>The connection uses Google's secure OAuth 2.0 protocol with HTTPS encryption</li>
+      </ul>
+
+      <h3>Google User Data Retention &amp; Deletion</h3>
+      <p>We retain Google authentication tokens only on your local device for as long as you keep the Google Calendar integration enabled. To delete your Google user data:</p>
+      <ul>
+        <li><strong>Disconnect from Settings:</strong> Go to Settings → Google Calendar Sync → click "Disconnect". This immediately deletes the stored OAuth tokens from your device.</li>
+        <li><strong>Revoke access from Google:</strong> Visit <a href="https://myaccount.google.com/permissions">Google Account Permissions</a> to revoke Homeschool's access to your Google account.</li>
+        <li><strong>Delete calendar events:</strong> Events created by Homeschool remain in your Google Calendar until you delete them (either through Homeschool or directly in Google Calendar).</li>
+        <li><strong>Uninstall the app:</strong> Removing the application deletes all locally stored data including OAuth tokens.</li>
+      </ul>
+      <p>This integration is optional. Google's use of your data is governed by <a href="https://policies.google.com/privacy">Google's Privacy Policy</a>.</p>
 
       <h2>No Analytics or Tracking</h2>
       <p>Homeschool does not include any analytics, telemetry, or tracking software. We do not collect:</p>
@@ -194,7 +234,7 @@
       <h2>Changes to This Policy</h2>
       <p>If we make changes to this privacy policy, we will update the date below and include the changes in our release notes.</p>
 
-      <p class="updated">Last updated: January 5, 2026</p>
+      <p class="updated">Last updated: January 6, 2026</p>
     </div>
 
     <footer>
