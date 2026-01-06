@@ -8,6 +8,7 @@ import type {
   GradeLevel
 } from '../../shared/types'
 import { milestoneTemplates } from '../milestones-data'
+import { seedDefaultSubjects } from '../schema'
 
 function rowToMilestoneTemplate(row: Record<string, unknown>): MilestoneTemplate {
   return {
@@ -161,7 +162,6 @@ export async function initializeStudentMilestones(
   const subjectCount = await db.all('SELECT COUNT(*) as count FROM subjects')
   if (subjectCount[0].count === 0) {
     // Seed subjects if missing
-    const { seedDefaultSubjects } = await import('../schema')
     await seedDefaultSubjects()
   }
 
