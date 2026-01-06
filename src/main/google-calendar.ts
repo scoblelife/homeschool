@@ -14,6 +14,7 @@ export interface CalendarEvent {
   start: string // ISO date or datetime
   end: string // ISO date or datetime
   allDay: boolean
+  colorId?: string // Google Calendar color ID (1-11)
 }
 
 /**
@@ -56,7 +57,8 @@ export async function createEvent(
 
   const eventBody: calendar_v3.Schema$Event = {
     summary: event.summary,
-    description: event.description
+    description: event.description,
+    colorId: event.colorId
   }
 
   if (event.allDay) {
@@ -90,7 +92,8 @@ export async function updateEvent(
 
   const eventBody: calendar_v3.Schema$Event = {
     summary: event.summary,
-    description: event.description
+    description: event.description,
+    colorId: event.colorId
   }
 
   if (event.allDay) {
