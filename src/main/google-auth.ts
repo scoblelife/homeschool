@@ -92,6 +92,16 @@ function getOAuth2Client(): InstanceType<typeof google.auth.OAuth2> | null {
     REDIRECT_URI
   )
 
+  // Set up token refresh handler once
+  oauth2Client.on('tokens', (newTokens) => {
+    const existingTokens = loadTokens()
+    const mergedTokens = {
+      ...existingTokens,
+      ...newTokens
+    } as GoogleTokens
+    saveTokens(mergedTokens)
+  })
+
   // Load existing tokens if available
   const tokens = loadTokens()
   if (tokens) {
@@ -239,16 +249,5 @@ export function getAuthenticatedClient(): InstanceType<typeof google.auth.OAuth2
   if (!tokens) return null
 
   client.setCredentials(tokens)
-
-  // Set up token refresh handler
-  client.on('tokens', (newTokens) => {
-    const existingTokens = loadTokens()
-    const mergedTokens = {
-      ...existingTokens,
-      ...newTokens
-    } as GoogleTokens
-    saveTokens(mergedTokens)
-  })
-
   return client
 }
