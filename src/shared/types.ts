@@ -17,7 +17,7 @@ export interface Student {
   name: string
   dateOfBirth: string
   gradeLevel: GradeLevel
-  color: 'child1' | 'child2'
+  color: string
   calendarFeedUrl?: string
   createdAt: string
   updatedAt: string
@@ -551,6 +551,7 @@ export interface GoogleCalendarEvent {
   start: string
   end: string
   allDay: boolean
+  colorId?: string
 }
 
 export interface CalendarSyncRecord {
@@ -606,6 +607,13 @@ export interface SyncAPI {
   syncLeaveFamily: () => Promise<{ success: boolean; error?: string }>
   syncGetQRCode: () => Promise<{ success: boolean; qrData?: string }>
   syncUpdateDeviceName: (name: string) => Promise<{ success: boolean; error?: string }>
+  syncShareInvite: (method: 'email' | 'sms', inviteCode: string) => Promise<void>
+  syncGetInviteMessage: (inviteCode: string) => Promise<{ success: boolean; message: string }>
+
+  // Member Management
+  syncIsManager: () => Promise<boolean>
+  syncKickMember: (deviceId: string, deviceName: string, reason?: string) => Promise<{ success: boolean; error?: string }>
+  syncGetKickedMembers: () => Promise<Array<{ deviceId: string; deviceName: string; kickedAt: string; reason?: string }>>
 
   // Event listeners
   onSyncPeerConnected: (callback: (peerId: string) => void) => () => void

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { format, parseISO, isFuture, isToday } from 'date-fns'
 import { Link } from 'react-router-dom'
+import { getStudentColor } from './Settings'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -399,7 +400,7 @@ export default function Dashboard(): JSX.Element {
                   <li key={session.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        student?.color === 'child1' ? 'bg-fuchsia-500' : 'bg-teal-500'
+                        getStudentColor(student?.color || 'fuchsia').bg
                       }`}
                     />
                     <div className="flex-1">
@@ -430,7 +431,7 @@ export default function Dashboard(): JSX.Element {
                   <li key={activity.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        student?.color === 'child1' ? 'bg-fuchsia-500' : 'bg-teal-500'
+                        getStudentColor(student?.color || 'fuchsia').bg
                       }`}
                     />
                     <div className="flex-1">
@@ -507,13 +508,13 @@ export default function Dashboard(): JSX.Element {
                 <div
                   key={student.id}
                   className={`card border-l-4 hover:shadow-md transition-shadow ${
-                    student.color === 'child1' ? 'border-l-fuchsia-500' : 'border-l-teal-500'
+                    getStudentColor(student.color).border
                   }`}
                 >
                   <div className="flex items-center gap-4">
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold ${
-                        student.color === 'child1' ? 'bg-fuchsia-500' : 'bg-teal-500'
+                        getStudentColor(student.color).bg
                       }`}
                     >
                       {student.name.charAt(0)}

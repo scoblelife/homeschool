@@ -4,6 +4,7 @@ import { Dialog } from '@headlessui/react'
 import Markdown from 'react-markdown'
 import { useStore } from '../stores/useStore'
 import { useActivities } from '../hooks/useDatabase'
+import { getStudentColor } from './Settings'
 import type { Activity, CreateActivity, ActivityType } from '../../../shared/types'
 
 const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
@@ -188,7 +189,7 @@ export default function Activities(): JSX.Element {
               <div
                 key={activity.id}
                 className={`card flex items-start gap-4 border-l-4 ${
-                  student?.color === 'child1' ? 'border-l-fuchsia-500' : 'border-l-teal-500'
+                  getStudentColor(student?.color || 'fuchsia').border
                 }`}
               >
                 <div className="text-2xl">{typeInfo?.icon}</div>
@@ -467,7 +468,7 @@ export default function Activities(): JSX.Element {
                       <div key={studentId}>
                         {selectedStudentIds.length > 1 && (
                           <label className={`text-sm font-medium ${
-                            student?.color === 'child1' ? 'text-fuchsia-600' : 'text-teal-600'
+                            getStudentColor(student?.color || 'fuchsia').text
                           }`}>
                             {student?.name}
                           </label>
