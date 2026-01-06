@@ -5,8 +5,10 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 // OAuth2 configuration
-// Users will need to create their own Google Cloud project and OAuth credentials
-const SCOPES = ['https://www.googleapis.com/auth/calendar.events']
+const SCOPES = [
+  'https://www.googleapis.com/auth/calendar.events',
+  'https://www.googleapis.com/auth/calendar.readonly'
+]
 const REDIRECT_PORT = 8089
 const REDIRECT_URI = `http://localhost:${REDIRECT_PORT}/oauth2callback`
 

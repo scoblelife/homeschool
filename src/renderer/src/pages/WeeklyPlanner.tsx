@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, parseISO, eachDayOfInterval, isToday, addHours } from 'date-fns'
+import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, parseISO, eachDayOfInterval, isToday, addHours, addDays } from 'date-fns'
 import { Dialog, Tab } from '@headlessui/react'
 import { useStore } from '../stores/useStore'
 import { useMilestones } from '../hooks/useDatabase'
@@ -127,7 +127,7 @@ export default function WeeklyPlanner(): JSX.Element {
 
   // Sync milestones to Google Calendar
   const syncToCalendar = useCallback(async () => {
-    if (!calendarId || !selectedStudentId) return
+    if (!calendarId || !selectedStudentId || !selectedStudent) return
 
     setIsSyncing(true)
     try {
@@ -136,6 +136,10 @@ export default function WeeklyPlanner(): JSX.Element {
 
       // Get subjects for milestone titles
       const subjectNames: Record<string, string> = {}
+
+      // Map student color to Google Calendar colorId
+      // 4 = Flamingo (pink), 7 = Peacock (teal)
+      const colorId = selectedStudent.color === 'child1' ? '4' : '7'
 
       // Process each selected milestone
       for (const milestoneId of selectedMilestoneIds) {
@@ -148,20 +152,31 @@ export default function WeeklyPlanner(): JSX.Element {
           subjectNames[milestone.subjectId] = subject?.name || 'Unknown'
         }
 
-        // Build event
+        // Build event with student name
         const isCompleted = milestone.status === 'completed'
         const eventTitle = isCompleted
-          ? `✓ [${subjectNames[milestone.subjectId]}] ${milestone.title}`
-          : `[${subjectNames[milestone.subjectId]}] ${milestone.title}`
+          ? `✓ ${selectedStudent.name}: [${subjectNames[milestone.subjectId]}] ${milestone.title}`
+          : `${selectedStudent.name}: [${subjectNames[milestone.subjectId]}] ${milestone.title}`
 
         const description = [
+          `Student: ${selectedStudent.name}`,
           `Subject: ${subjectNames[milestone.subjectId]}`,
           `Status: ${milestone.status}`,
           '',
           milestone.description || ''
         ].join('\n')
 
-        const eventDate = currentWeekStart // Use week start for now
+        // Use milestone's targetDate if set, otherwise distribute across weekdays
+        let eventDate: string
+        if (milestone.targetDate) {
+          eventDate = milestone.targetDate
+        } else {
+          // Distribute milestones across Mon-Fri based on their index
+          const milestoneIndex = selectedMilestoneIds.indexOf(milestoneId)
+          const dayOffset = milestoneIndex % 5 // 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri
+          const weekStart = parseISO(currentWeekStart)
+          eventDate = format(addDays(weekStart, dayOffset), 'yyyy-MM-dd')
+        }
         let start: string, end: string
 
         if (syncAllDay) {
@@ -183,7 +198,8 @@ export default function WeeklyPlanner(): JSX.Element {
             description,
             start,
             end,
-            allDay: syncAllDay
+            allDay: syncAllDay,
+            colorId
           })
         } else {
           // Create new event
@@ -192,7 +208,8 @@ export default function WeeklyPlanner(): JSX.Element {
             description,
             start,
             end,
-            allDay: syncAllDay
+            allDay: syncAllDay,
+            colorId
           })
           await window.api.upsertCalendarSyncRecord(milestoneId, currentWeekStart, eventId, calendarId)
         }
@@ -200,11 +217,16 @@ export default function WeeklyPlanner(): JSX.Element {
         currentRecordMap.delete(milestoneId)
       }
 
-      // Delete events for milestones no longer in the plan
+      // Delete events for milestones no longer in the plan (only for current student)
       const remainingRecords = Array.from(currentRecordMap.values())
       for (const record of remainingRecords) {
-        await window.api.deleteGoogleCalendarEvent(calendarId, record.googleEventId)
-        await window.api.deleteCalendarSyncRecord(record.milestoneId, currentWeekStart)
+        // Only delete if this milestone belongs to the current student
+        const milestone = milestones.find(m => m.id === record.milestoneId)
+        if (milestone) {
+          await window.api.deleteGoogleCalendarEvent(calendarId, record.googleEventId)
+          await window.api.deleteCalendarSyncRecord(record.milestoneId, currentWeekStart)
+        }
+        // If milestone not found in current student's milestones, leave it alone (belongs to another student)
       }
 
       await loadSyncRecords()
