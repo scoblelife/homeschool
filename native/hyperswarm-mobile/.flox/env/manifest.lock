@@ -1,0 +1,211 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "version": 1,
+    "install": {
+      "cargo-ndk": {
+        "pkg-path": "cargo-ndk"
+      },
+      "rustup": {
+        "pkg-path": "rustup"
+      },
+      "sccache": {
+        "pkg-path": "sccache"
+      }
+    },
+    "vars": {
+      "CARGO_HOME": "$FLOX_ENV_CACHE/cargo",
+      "RUSTC_WRAPPER": "sccache",
+      "RUSTUP_HOME": "$FLOX_ENV_CACHE/rustup",
+      "SCCACHE_DIR": "$FLOX_ENV_CACHE/sccache"
+    },
+    "hook": {
+      "on-activate": "setup_rust_targets() {\n    local cache_dir=\"${FLOX_ENV_CACHE:-$PWD/.cache}\"\n    mkdir -p \"$cache_dir\"\n\n    export RUSTUP_HOME=\"$cache_dir/rustup\"\n    export CARGO_HOME=\"$cache_dir/cargo\"\n    export PATH=\"$CARGO_HOME/bin:$PATH\"\n\n    # Install stable toolchain if not present\n    if [ ! -d \"$RUSTUP_HOME/toolchains/stable-\"* ] 2>/dev/null; then\n        rustup default stable\n    fi\n\n    # Add mobile targets (only if not already installed)\n    local targets_file=\"$cache_dir/.targets_installed\"\n    if [ ! -f \"$targets_file\" ]; then\n        rustup target add aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim 2>/dev/null || true\n        rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android 2>/dev/null || true\n        touch \"$targets_file\"\n    fi\n}\n\nsetup_rust_targets\n"
+    },
+    "profile": {
+      "common": "export PATH=\"$CARGO_HOME/bin:$PATH\"\n\n# Build helpers\nbuild-ios() {\n    ./build-ios.sh\n}\n\nbuild-android() {\n    ./build-android.sh\n}\n\nbuild-all() {\n    build-ios && build-android\n}\n"
+    },
+    "options": {
+      "systems": [
+        "aarch64-darwin",
+        "x86_64-darwin"
+      ]
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "cargo-ndk",
+      "broken": false,
+      "derivation": "/nix/store/xl7v3j1gsn56fcvw4cqhc6c6k0p9zz8n-cargo-ndk-4.1.2.drv",
+      "description": "Cargo extension for building Android NDK projects",
+      "install_id": "cargo-ndk",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=5912c1772a44e31bf1c63c0390b90501e5026886",
+      "name": "cargo-ndk-4.1.2",
+      "pname": "cargo-ndk",
+      "rev": "5912c1772a44e31bf1c63c0390b90501e5026886",
+      "rev_count": 923638,
+      "rev_date": "2026-01-07T06:26:47Z",
+      "scrape_date": "2026-01-08T02:56:33.601517Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.1.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/nbi779p2y1fwi2bpbfv72xvg5n2x3ia8-cargo-ndk-4.1.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "cargo-ndk",
+      "broken": false,
+      "derivation": "/nix/store/vb6fpafnjzllqdmymsanm152fq474zkb-cargo-ndk-4.1.2.drv",
+      "description": "Cargo extension for building Android NDK projects",
+      "install_id": "cargo-ndk",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=5912c1772a44e31bf1c63c0390b90501e5026886",
+      "name": "cargo-ndk-4.1.2",
+      "pname": "cargo-ndk",
+      "rev": "5912c1772a44e31bf1c63c0390b90501e5026886",
+      "rev_count": 923638,
+      "rev_date": "2026-01-07T06:26:47Z",
+      "scrape_date": "2026-01-08T03:23:30.099463Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "4.1.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/x0hnq2l2c5z8lg3jg6l0pbplfr7nc503-cargo-ndk-4.1.2"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "rustup",
+      "broken": false,
+      "derivation": "/nix/store/c2pbkfd90fcw2qwkisnr2agn7vdrr1jn-rustup-1.28.2.drv",
+      "description": "Rust toolchain installer",
+      "install_id": "rustup",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=5912c1772a44e31bf1c63c0390b90501e5026886",
+      "name": "rustup-1.28.2",
+      "pname": "rustup",
+      "rev": "5912c1772a44e31bf1c63c0390b90501e5026886",
+      "rev_count": 923638,
+      "rev_date": "2026-01-07T06:26:47Z",
+      "scrape_date": "2026-01-08T02:57:59.003717Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.28.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/v0cfpbl35r8y950rx1l17xs8i09pjq1b-rustup-1.28.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "rustup",
+      "broken": false,
+      "derivation": "/nix/store/x24w36lw26xz0wb9g0grlgxh1dgh1hsp-rustup-1.28.2.drv",
+      "description": "Rust toolchain installer",
+      "install_id": "rustup",
+      "license": "[ Apache-2.0, MIT ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=5912c1772a44e31bf1c63c0390b90501e5026886",
+      "name": "rustup-1.28.2",
+      "pname": "rustup",
+      "rev": "5912c1772a44e31bf1c63c0390b90501e5026886",
+      "rev_count": 923638,
+      "rev_date": "2026-01-07T06:26:47Z",
+      "scrape_date": "2026-01-08T03:24:56.034371Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.28.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/60xn8pb5myf7kddr1wg7q0fpr0g2fl2y-rustup-1.28.2"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "sccache",
+      "broken": false,
+      "derivation": "/nix/store/7lq1k5hg0zij2572jd9i3wp2p2dm3bs6-sccache-0.12.0.drv",
+      "description": "Ccache with Cloud Storage",
+      "install_id": "sccache",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=5912c1772a44e31bf1c63c0390b90501e5026886",
+      "name": "sccache-0.12.0",
+      "pname": "sccache",
+      "rev": "5912c1772a44e31bf1c63c0390b90501e5026886",
+      "rev_count": 923638,
+      "rev_date": "2026-01-07T06:26:47Z",
+      "scrape_date": "2026-01-08T02:58:13.059795Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.12.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/zp5zw2adb92yj88lf5nwnb1dw5dkk92l-sccache-0.12.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "sccache",
+      "broken": false,
+      "derivation": "/nix/store/283svwp9ppp1dby8a78x2zcjyx114xv0-sccache-0.12.0.drv",
+      "description": "Ccache with Cloud Storage",
+      "install_id": "sccache",
+      "license": "Apache-2.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=5912c1772a44e31bf1c63c0390b90501e5026886",
+      "name": "sccache-0.12.0",
+      "pname": "sccache",
+      "rev": "5912c1772a44e31bf1c63c0390b90501e5026886",
+      "rev_count": 923638,
+      "rev_date": "2026-01-07T06:26:47Z",
+      "scrape_date": "2026-01-08T03:25:10.229999Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.12.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/bhry0d9rw97r64kicsm2v747sfkn9byk-sccache-0.12.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}
