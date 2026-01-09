@@ -1,0 +1,68 @@
+# Flox manifest for Hyperswarm Mobile native development
+version = 1
+
+[install]
+# Rust toolchain
+rustup.pkg-path = "rustup"
+
+# Android build tools
+cargo-ndk.pkg-path = "cargo-ndk"
+
+# Build caching
+sccache.pkg-path = "sccache"
+
+# rust-analyzer comes via rustup component add
+
+[vars]
+RUSTUP_HOME = "$FLOX_ENV_CACHE/rustup"
+CARGO_HOME = "$FLOX_ENV_CACHE/cargo"
+SCCACHE_DIR = "$FLOX_ENV_CACHE/sccache"
+RUSTC_WRAPPER = "sccache"
+
+[hook]
+on-activate = '''
+setup_rust_targets() {
+    local cache_dir="${FLOX_ENV_CACHE:-$PWD/.cache}"
+    mkdir -p "$cache_dir"
+
+    export RUSTUP_HOME="$cache_dir/rustup"
+    export CARGO_HOME="$cache_dir/cargo"
+    export PATH="$CARGO_HOME/bin:$PATH"
+
+    # Install stable toolchain if not present
+    if [ ! -d "$RUSTUP_HOME/toolchains/stable-"* ] 2>/dev/null; then
+        rustup default stable
+    fi
+
+    # Add mobile targets (only if not already installed)
+    local targets_file="$cache_dir/.targets_installed"
+    if [ ! -f "$targets_file" ]; then
+        rustup target add aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim 2>/dev/null || true
+        rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android 2>/dev/null || true
+        touch "$targets_file"
+    fi
+}
+
+setup_rust_targets
+'''
+
+[profile]
+common = '''
+export PATH="$CARGO_HOME/bin:$PATH"
+
+# Build helpers
+build-ios() {
+    ./build-ios.sh
+}
+
+build-android() {
+    ./build-android.sh
+}
+
+build-all() {
+    build-ios && build-android
+}
+'''
+
+[options]
+systems = ["aarch64-darwin", "x86_64-darwin"]

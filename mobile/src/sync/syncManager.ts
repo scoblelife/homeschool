@@ -7,6 +7,7 @@ import { HybridLogicalClock } from './hlc'
 import { EventLog } from './eventLog'
 import { FamilyManager } from './family'
 import { EventProjector } from './projector'
+import { Hyperswarm, createTopic, EventType as SwarmEventType } from './hyperswarm'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const HLC_STATE_KEY = '@homeschool/hlc_state'
@@ -37,14 +38,17 @@ export class SyncManager {
   private eventLog: EventLog
   private familyManager: FamilyManager
   private projector: EventProjector
+  private swarm: Hyperswarm | null = null
 
   private peers: Map<string, SyncPeer> = new Map()
   private connected = false
   private lastSyncTime: number | null = null
+  private currentTopic: string | null = null
 
   private eventHandlers: Set<SyncEventHandler> = new Set()
   private peerConnectedHandlers: Set<PeerEventHandler> = new Set()
   private peerDisconnectedHandlers: Set<PeerEventHandler> = new Set()
+  private swarmEventCleanup: (() => void) | null = null
 
   private initialized = false
 
@@ -236,30 +240,204 @@ export class SyncManager {
   }
 
   /**
-   * Connect to sync network (placeholder - would use WebSocket/P2P in production)
+   * Connect to sync network via Hyperswarm P2P
    */
-  connect(): void {
+  async connect(): Promise<void> {
     if (!this.familyManager.isSyncEnabled()) {
-      console.log('Sync not enabled')
+      console.log('[SyncManager] Sync not enabled')
       return
     }
 
-    // In a real implementation, this would:
-    // 1. Connect to a relay server or use WebRTC
-    // 2. Discover other family members
-    // 3. Exchange events
+    const deviceId = this.familyManager.getDeviceId()
+    const familyId = this.familyManager.getFamilyId()
 
-    this.connected = true
-    console.log('Sync connected (simulated)')
+    if (!deviceId || !familyId) {
+      console.log('[SyncManager] Missing device or family ID')
+      return
+    }
+
+    // Create and start swarm
+    try {
+      this.swarm = new Hyperswarm()
+      await this.swarm.create({ deviceId })
+
+      // Set up event handlers
+      this.swarmEventCleanup = this.swarm.onAny((event) => {
+        this.handleSwarmEvent(event)
+      })
+
+      await this.swarm.start()
+
+      // Join the family topic
+      this.currentTopic = createTopic(familyId)
+      await this.swarm.join(this.currentTopic)
+
+      this.connected = true
+      const mode = this.swarm.isSimulationMode() ? '(simulation mode)' : '(native)'
+      console.log(`[SyncManager] Connected to P2P network ${mode}`)
+    } catch (error) {
+      console.error('[SyncManager] Failed to connect:', error)
+      this.connected = false
+    }
   }
 
   /**
    * Disconnect from sync network
    */
-  disconnect(): void {
+  async disconnect(): Promise<void> {
+    if (this.swarmEventCleanup) {
+      this.swarmEventCleanup()
+      this.swarmEventCleanup = null
+    }
+
+    if (this.swarm) {
+      if (this.currentTopic) {
+        try {
+          await this.swarm.leave(this.currentTopic)
+        } catch (e) {
+          // Ignore leave errors during disconnect
+        }
+        this.currentTopic = null
+      }
+      await this.swarm.stop()
+      this.swarm.destroy()
+      this.swarm = null
+    }
+
     this.connected = false
     this.peers.clear()
-    console.log('Sync disconnected')
+    console.log('[SyncManager] Disconnected from P2P network')
+  }
+
+  /**
+   * Handle events from the Hyperswarm network
+   */
+  private handleSwarmEvent(event: { type: SwarmEventType; peerId?: string; data?: string }): void {
+    switch (event.type) {
+      case SwarmEventType.Ready:
+        console.log('[SyncManager] Swarm ready')
+        // Request sync from any existing peers
+        this.requestSync()
+        break
+
+      case SwarmEventType.PeerConnected:
+        if (event.peerId) {
+          const peer: SyncPeer = {
+            deviceId: event.peerId,
+            deviceName: `Device ${event.peerId.substring(0, 8)}`,
+            isOnline: true,
+            lastSeen: Date.now(),
+          }
+          this.peers.set(event.peerId, peer)
+          this.notifyPeerConnected(peer)
+          console.log('[SyncManager] Peer connected:', event.peerId)
+
+          // Request sync from new peer
+          this.sendSyncRequest(event.peerId)
+        }
+        break
+
+      case SwarmEventType.PeerDisconnected:
+        if (event.peerId) {
+          const peer = this.peers.get(event.peerId)
+          if (peer) {
+            peer.isOnline = false
+            this.peers.delete(event.peerId)
+            this.notifyPeerDisconnected(peer)
+            console.log('[SyncManager] Peer disconnected:', event.peerId)
+          }
+        }
+        break
+
+      case SwarmEventType.Data:
+        if (event.data && event.peerId) {
+          this.handlePeerData(event.peerId, event.data)
+        }
+        break
+
+      case SwarmEventType.Error:
+        console.error('[SyncManager] Swarm error')
+        break
+    }
+  }
+
+  /**
+   * Handle data received from a peer
+   */
+  private async handlePeerData(peerId: string, data: string): Promise<void> {
+    try {
+      const message = JSON.parse(data)
+
+      switch (message.type) {
+        case 'sync_request':
+          // Peer is requesting events after a certain timestamp
+          await this.handleSyncRequest(peerId, message.afterTimestamp)
+          break
+
+        case 'sync_response':
+          // Peer is sending events in response to our request
+          for (const event of message.events) {
+            await this.receiveEvent(event)
+          }
+          break
+
+        case 'event':
+          // Single event from peer
+          await this.receiveEvent(message.event)
+          break
+
+        case 'device_info':
+          // Update peer device name
+          const peer = this.peers.get(peerId)
+          if (peer) {
+            peer.deviceName = message.deviceName
+          }
+          break
+      }
+    } catch (error) {
+      console.error('[SyncManager] Failed to parse peer data:', error)
+    }
+  }
+
+  /**
+   * Send sync request to a specific peer
+   */
+  private async sendSyncRequest(peerId: string): Promise<void> {
+    if (!this.swarm) return
+
+    const latestTimestamp = await this.eventLog.getLatestTimestamp()
+    const message = {
+      type: 'sync_request',
+      afterTimestamp: latestTimestamp,
+    }
+
+    await this.swarm.send(peerId, JSON.stringify(message))
+
+    // Also send our device info
+    const deviceName = this.familyManager.getDeviceName()
+    if (deviceName) {
+      await this.swarm.send(peerId, JSON.stringify({
+        type: 'device_info',
+        deviceName,
+      }))
+    }
+  }
+
+  /**
+   * Handle sync request from a peer
+   */
+  private async handleSyncRequest(peerId: string, afterTimestamp: string | null): Promise<void> {
+    if (!this.swarm) return
+
+    // Get events after the requested timestamp
+    const events = await this.eventLog.getEventsAfter(afterTimestamp)
+
+    const message = {
+      type: 'sync_response',
+      events,
+    }
+
+    await this.swarm.send(peerId, JSON.stringify(message))
   }
 
   /**
@@ -306,9 +484,23 @@ export class SyncManager {
     )
   }
 
-  private broadcastEvent(event: SyncEvent): void {
-    // In production, would send event to all connected peers
-    console.log('Broadcasting event:', event.type)
+  private async broadcastEvent(event: SyncEvent): Promise<void> {
+    if (!this.swarm || !this.connected) {
+      console.log('[SyncManager] Cannot broadcast - not connected')
+      return
+    }
+
+    const message = {
+      type: 'event',
+      event,
+    }
+
+    try {
+      await this.swarm.broadcast(JSON.stringify(message))
+      console.log('[SyncManager] Broadcast event:', event.type)
+    } catch (error) {
+      console.error('[SyncManager] Failed to broadcast:', error)
+    }
   }
 
   private notifyEventHandlers(event: SyncEvent): void {
