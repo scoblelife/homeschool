@@ -148,3 +148,66 @@ This builds Mac, Windows, and Linux versions and creates a draft GitHub Release 
 - Two children with different grade levels - UI uses colors (fuchsia for child1, teal for child2)
 - Preload script must be CJS format (outputs as `.cjs`) due to "type": "module" in package.json
 - Nevada has minimal homeschool reporting requirements but app generates portfolio-ready documentation
+
+## Mobile App (iOS & Android)
+
+The `mobile/` directory contains a React Native Expo app for iOS and Android.
+
+### Mobile Tech Stack
+- **Framework**: React Native with Expo
+- **Navigation**: Expo Router (file-based)
+- **Database**: expo-sqlite (SQLite)
+- **State Management**: Zustand
+- **UI**: Custom mobile-first component library
+
+### Mobile Commands
+
+```bash
+# Install mobile dependencies
+npm run mobile:install
+
+# Start Expo development server
+npm run mobile
+
+# Run on iOS simulator
+npm run mobile:ios
+
+# Run on Android emulator
+npm run mobile:android
+
+# Build for iOS (requires EAS CLI)
+npm run mobile:build:ios
+
+# Build for Android
+npm run mobile:build:android
+```
+
+### Mobile Architecture
+
+```
+mobile/
+├── app/                    # Expo Router pages
+│   ├── _layout.tsx        # Root layout with initialization
+│   └── (tabs)/            # Tab navigation screens
+│       ├── index.tsx      # Dashboard
+│       ├── activities.tsx # Activity logging
+│       ├── milestones.tsx # Milestone tracking
+│       ├── field-trips.tsx# Event planning
+│       └── settings.tsx   # Student management
+├── src/
+│   ├── components/        # Reusable components
+│   │   └── ui/           # Design system (Button, Card, etc.)
+│   ├── database/          # SQLite layer (mirrors desktop)
+│   ├── stores/            # Zustand state
+│   └── types/             # TypeScript types
+├── app.json              # Expo configuration
+└── eas.json              # EAS Build configuration
+```
+
+### Mobile Features
+- Dashboard with today's activities, stars, and upcoming events
+- Quick activity logging with subject selection
+- Milestone tracking with star rewards
+- Field trip and event planning
+- Student management with customizable colors
+- Offline-first with local SQLite database

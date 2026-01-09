@@ -1,0 +1,66 @@
+{
+  "expo": {
+    "name": "Homeschool",
+    "slug": "homeschool",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "homeschool",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.scoblelife.homeschool",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to scan book barcodes.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to the photo library to save book cover images.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.scoblelife.homeschool",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.CAMERA"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-asset",
+      "expo-barcode-scanner"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "61b79595-640b-4390-9fa0-fe40e8aede5d"
+      }
+    },
+    "owner": "scoblelife",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/61b79595-640b-4390-9fa0-fe40e8aede5d"
+    }
+  }
+}
