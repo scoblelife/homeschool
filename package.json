@@ -19,7 +19,13 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:renderer": "tsc --noEmit -p tsconfig.renderer.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:renderer",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "mobile": "cd mobile && npm start",
+    "mobile:ios": "cd mobile && npm run ios",
+    "mobile:android": "cd mobile && npm run android",
+    "mobile:install": "cd mobile && npm install",
+    "mobile:build:ios": "cd mobile && npm run build:ios",
+    "mobile:build:android": "cd mobile && npm run build:android"
   },
   "dependencies": {
     "@electron-toolkit/utils": "^3.0.0",
