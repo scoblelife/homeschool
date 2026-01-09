@@ -19,8 +19,21 @@ export function QRScanner({ onScan, onCancel }: QRScannerProps) {
 
   useEffect(() => {
     const getCameraPermissions = async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync()
-      setHasPermission(status === 'granted')
+      try {
+        // First check if we already have permission
+        const { status: existingStatus } = await Camera.getCameraPermissionsAsync()
+        if (existingStatus === 'granted') {
+          setHasPermission(true)
+          return
+        }
+
+        // If not granted, request permission
+        const { status } = await Camera.requestCameraPermissionsAsync()
+        setHasPermission(status === 'granted')
+      } catch (error) {
+        console.error('Error getting camera permissions:', error)
+        setHasPermission(false)
+      }
     }
 
     getCameraPermissions()
