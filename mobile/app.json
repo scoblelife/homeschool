@@ -41,8 +41,7 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-asset",
-      "expo-barcode-scanner"
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
