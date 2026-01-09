@@ -1,0 +1,30 @@
+# Node modules (EAS will install fresh)
+node_modules
+
+# Build outputs
+dist
+android/app/build
+ios/build
+ios/Pods
+
+# Local environment files
+.env.local
+.env*.local
+
+# IDE
+.idea
+.vscode
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage
+
+# Expo
+.expo

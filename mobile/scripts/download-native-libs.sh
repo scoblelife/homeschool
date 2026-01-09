@@ -3,10 +3,27 @@
 
 set -e
 
+# Parse arguments (EAS may pass --platform <platform>)
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --platform)
+            PLATFORM="$2"
+            shift 2
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
+# Use EAS_BUILD_PLATFORM env var if available, otherwise use passed argument
+PLATFORM="${EAS_BUILD_PLATFORM:-$PLATFORM}"
+
 GITHUB_REPO="sscoble/homeschool"
 NATIVE_LIBS_DIR="$PWD/native-libs"
 
 echo "[Hyperswarm] Downloading native libraries..."
+echo "[Hyperswarm] Platform: $PLATFORM"
 
 # Create directory
 mkdir -p "$NATIVE_LIBS_DIR"
@@ -30,12 +47,12 @@ rm "$NATIVE_LIBS_DIR/libs.tar.gz"
 echo "[Hyperswarm] Native libraries downloaded successfully"
 
 # Platform-specific setup
-if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
+if [ "$PLATFORM" = "android" ]; then
     echo "[Hyperswarm] Setting up Android JNI libraries..."
     mkdir -p "$PWD/android/app/src/main/jniLibs"
     cp -r "$NATIVE_LIBS_DIR/android/jniLibs/"* "$PWD/android/app/src/main/jniLibs/"
     echo "[Hyperswarm] Android setup complete"
-elif [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
+elif [ "$PLATFORM" = "ios" ]; then
     echo "[Hyperswarm] iOS libraries will be linked during build..."
     # Copy header to a location Xcode can find
     mkdir -p "$PWD/ios/Homeschool"
