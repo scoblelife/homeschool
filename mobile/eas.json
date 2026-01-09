@@ -6,9 +6,8 @@
   "build": {
     "base": {
       "env": {
-        "HYPERSWARM_NATIVE": "1"
-      },
-      "prebuildCommand": "chmod +x ./scripts/download-native-libs.sh && ./scripts/download-native-libs.sh"
+        "HYPERSWARM_NATIVE": "0"
+      }
     },
     "development": {
       "extends": "base",

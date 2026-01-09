@@ -41,8 +41,7 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-asset",
-      "./plugins/hyperswarm/withHyperswarm"
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
