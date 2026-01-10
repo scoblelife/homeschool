@@ -28,3 +28,4 @@ npm-debug.log*
 # Environment
 .env.local
 .env.*.local
+native/hyperswarm-mobile/target/
