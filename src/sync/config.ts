@@ -9,4 +9,4 @@
 export const USE_WEBSOCKET = process.env.HOMESCHOOL_USE_WEBSOCKET === '1'
 
 // Relay server URL for WebSocket transport
-export const RELAY_URL = process.env.HOMESCHOOL_RELAY_URL || 'ws://localhost:8080'
+export const RELAY_URL = process.env.HOMESCHOOL_RELAY_URL || 'ws://localhost:9090'

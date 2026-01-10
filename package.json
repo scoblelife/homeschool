@@ -31,6 +31,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@headlessui/react": "^2.2.4",
     "@tailwindcss/typography": "^0.5.19",
+    "@types/ws": "^8.18.1",
     "b4a": "^1.7.3",
     "date-fns": "^4.1.0",
     "eventsource": "^4.1.0",
@@ -47,6 +48,7 @@
     "sodium-universal": "^5.0.1",
     "sql.js": "^1.13.0",
     "uuid": "^11.1.0",
+    "ws": "^8.19.0",
     "zustand": "^5.0.5"
   },
   "devDependencies": {
