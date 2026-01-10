@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sync Test - Browser</title>
+  <style>
+    body { font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto; }
+    .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 4px; }
+    .success { background: #d4edda; }
+    .error { background: #f8d7da; }
+    .info { background: #d1ecf1; }
+    button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    #output { white-space: pre-wrap; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>WebSocket Sync Test (Browser)</h1>
+  <p>This tests the WebSocket relay from a browser context.</p>
+
+  <div>
+    <button onclick="connect()">Connect to Relay</button>
+    <button onclick="joinFamily()">Join Family</button>
+    <button onclick="requestSync()">Request Sync</button>
+    <button onclick="sendTestEvent()">Send Test Event</button>
+    <button onclick="disconnect()">Disconnect</button>
+  </div>
+
+  <h3>Status: <span id="status">Disconnected</span></h3>
+  <div id="output"></div>
+
+  <script>
+    const RELAY_URL = 'ws://localhost:9090';
+    const FAMILY_CONFIG = {
+      familyId: "2b2082df-d6d9-4f88-afdb-1af249750998",
+      publicKey: "302a300506032b65700321008643436c95418b8ae3cbba2f6b515e94e7a111f465edba4ed4234352ffbdb924"
+    };
+
+    const testDevice = {
+      deviceId: crypto.randomUUID(),
+      deviceName: 'Browser Test Device'
+    };
+
+    let ws = null;
+    let eventCount = 0;
+
+    function log(msg, type = '') {
+      const output = document.getElementById('output');
+      const div = document.createElement('div');
+      div.className = 'log ' + type;
+      div.textContent = new Date().toISOString().substr(11, 8) + ' - ' + msg;
+      output.insertBefore(div, output.firstChild);
+    }
+
+    function setStatus(status) {
+      document.getElementById('status').textContent = status;
+    }
+
+    function connect() {
+      if (ws) {
+        log('Already connected', 'info');
+        return;
+      }
+
+      log('Connecting to ' + RELAY_URL + '...', 'info');
+      ws = new WebSocket(RELAY_URL);
+
+      ws.onopen = () => {
+        log('Connected to relay!', 'success');
+        setStatus('Connected');
+      };
+
+      ws.onclose = () => {
+        log('Disconnected from relay', 'info');
+        setStatus('Disconnected');
+        ws = null;
+      };
+
+      ws.onerror = (err) => {
+        log('WebSocket error: ' + err.message, 'error');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          handleMessage(msg);
+        } catch (e) {
+          log('Raw message: ' + event.data, 'info');
+        }
+      };
+    }
+
+    function handleMessage(msg) {
+      switch (msg.type) {
+        case 'welcome':
+          log('Joined family! Members: ' + (msg.familyMembers?.length || 0), 'success');
+          if (msg.familyMembers) {
+            msg.familyMembers.forEach(m => {
+              log('  - ' + m.deviceName + ' (' + m.deviceId.substr(0, 8) + '...)', 'info');
+            });
+          }
+          break;
+
+        case 'peer_joined':
+          log('Peer joined: ' + msg.deviceName, 'success');
+          break;
+
+        case 'peer_left':
+          log('Peer left: ' + msg.deviceId.substr(0, 8), 'info');
+          break;
+
+        case 'event':
+          eventCount++;
+          log('Event received [' + eventCount + ']: ' + msg.event?.type + ' from ' + msg.fromPeer?.substr(0, 8), 'info');
+          break;
+
+        case 'sync_request':
+          log('Sync requested from peer', 'info');
+          // Send empty response (we have no events)
+          ws.send(JSON.stringify({ type: 'sync_response', events: [], done: true }));
+          break;
+
+        case 'sync_response':
+          const count = msg.events?.length || 0;
+          log('Sync response: ' + count + ' events', 'success');
+          if (count > 0 && count <= 10) {
+            msg.events.forEach(e => {
+              log('  - ' + e.type + ' (' + e.id?.substr(0, 8) + '...)', 'info');
+            });
+          } else if (count > 10) {
+            log('  (showing first 5 and last 5)', 'info');
+            msg.events.slice(0, 5).forEach(e => {
+              log('  - ' + e.type + ' (' + e.id?.substr(0, 8) + '...)', 'info');
+            });
+            log('  ... ' + (count - 10) + ' more events ...', 'info');
+            msg.events.slice(-5).forEach(e => {
+              log('  - ' + e.type + ' (' + e.id?.substr(0, 8) + '...)', 'info');
+            });
+          }
+          break;
+
+        default:
+          log('Unknown message type: ' + msg.type, 'info');
+      }
+    }
+
+    function joinFamily() {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        log('Not connected. Connect first.', 'error');
+        return;
+      }
+
+      log('Joining family ' + FAMILY_CONFIG.familyId.substr(0, 8) + '...', 'info');
+      ws.send(JSON.stringify({
+        type: 'join',
+        familyId: FAMILY_CONFIG.familyId,
+        deviceId: testDevice.deviceId,
+        deviceName: testDevice.deviceName
+      }));
+    }
+
+    function requestSync() {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        log('Not connected. Connect first.', 'error');
+        return;
+      }
+
+      log('Requesting sync...', 'info');
+      ws.send(JSON.stringify({
+        type: 'sync_request',
+        afterTimestamp: null
+      }));
+    }
+
+    function sendTestEvent() {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        log('Not connected. Connect first.', 'error');
+        return;
+      }
+
+      const event = {
+        id: crypto.randomUUID(),
+        type: 'test.browser_ping',
+        data: {
+          message: 'Hello from browser!',
+          userAgent: navigator.userAgent.substr(0, 50),
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date().toISOString(),
+        deviceId: testDevice.deviceId,
+        version: 1
+      };
+
+      log('Sending test event...', 'info');
+      ws.send(JSON.stringify({
+        type: 'event',
+        event: event
+      }));
+    }
+
+    function disconnect() {
+      if (ws) {
+        ws.close();
+        ws = null;
+        log('Disconnected', 'info');
+        setStatus('Disconnected');
+      }
+    }
+
+    // Log initial state
+    log('Test device: ' + testDevice.deviceName + ' (' + testDevice.deviceId.substr(0, 8) + '...)', 'info');
+    log('Target family: ' + FAMILY_CONFIG.familyId.substr(0, 8) + '...', 'info');
+  </script>
+</body>
+</html>
