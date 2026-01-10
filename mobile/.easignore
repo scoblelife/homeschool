@@ -1,19 +1,22 @@
 # Node modules (EAS will install fresh)
-node_modules
+node_modules/
 
 # Build outputs
-dist
-android/app/build
-ios/build
-ios/Pods
+dist/
+android/app/build/
+ios/build/
+ios/Pods/
+
+# Native Rust libraries (downloaded during prebuild)
+native-libs/
 
 # Local environment files
 .env.local
 .env*.local
 
 # IDE
-.idea
-.vscode
+.idea/
+.vscode/
 
 # OS files
 .DS_Store
@@ -24,7 +27,13 @@ Thumbs.db
 npm-debug.log*
 
 # Test coverage
-coverage
+coverage/
 
 # Expo
-.expo
+.expo/
+
+# Git
+.git/
+
+# TypeScript build info
+*.tsbuildinfo
