@@ -274,18 +274,22 @@ export function registerSyncIPC(): void {
     try {
       const config = await familyManager!.createFamily(deviceName)
 
-      // Initialize event log and swarm for new family
+      // Initialize event log for new family
       eventLog = await createEventLog(config.deviceId)
-      swarmManager = await createSwarmManager({
-        deviceId: config.deviceId,
-        deviceName: config.deviceName,
-        familyId: config.familyId,
-        eventLog,
-        projector: projector!
-      })
 
-      // Set up event forwarding to renderer
-      setupSwarmEventForwarding()
+      // Use WebSocket transport or Hyperswarm based on config
+      if (USE_WEBSOCKET) {
+        await initializeWebSocket(config)
+      } else {
+        swarmManager = await createSwarmManager({
+          deviceId: config.deviceId,
+          deviceName: config.deviceName,
+          familyId: config.familyId,
+          eventLog,
+          projector: projector!
+        })
+        setupSwarmEventForwarding()
+      }
 
       return { success: true, config }
     } catch (err) {
@@ -301,18 +305,22 @@ export function registerSyncIPC(): void {
       const payload = FamilyManager.parseQRCodeData(qrData)
       const config = await familyManager!.joinFamily(payload, deviceName)
 
-      // Initialize event log and swarm for joined family
+      // Initialize event log for joined family
       eventLog = await createEventLog(config.deviceId)
-      swarmManager = await createSwarmManager({
-        deviceId: config.deviceId,
-        deviceName: config.deviceName,
-        familyId: config.familyId,
-        eventLog,
-        projector: projector!
-      })
 
-      // Set up event forwarding to renderer
-      setupSwarmEventForwarding()
+      // Use WebSocket transport or Hyperswarm based on config
+      if (USE_WEBSOCKET) {
+        await initializeWebSocket(config)
+      } else {
+        swarmManager = await createSwarmManager({
+          deviceId: config.deviceId,
+          deviceName: config.deviceName,
+          familyId: config.familyId,
+          eventLog,
+          projector: projector!
+        })
+        setupSwarmEventForwarding()
+      }
 
       return { success: true, config }
     } catch (err) {
@@ -325,7 +333,11 @@ export function registerSyncIPC(): void {
     await initializeSync()
 
     try {
-      // Stop swarm first
+      // Stop active transport first
+      if (wsTransport) {
+        await wsTransport.stop()
+        wsTransport = null
+      }
       if (swarmManager) {
         await swarmManager.stop()
         swarmManager = null
