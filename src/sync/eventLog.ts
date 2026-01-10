@@ -237,6 +237,42 @@ export class EventLog {
   }
 
   /**
+   * Get all events in the log
+   */
+  async getAll(): Promise<SyncEvent[]> {
+    return this.getFrom(0)
+  }
+
+  /**
+   * Get events after a specific HLC timestamp
+   */
+  async getAfterTimestamp(timestampStr: string | null): Promise<SyncEvent[]> {
+    if (!timestampStr) {
+      return this.getAll()
+    }
+
+    await this.ready
+
+    const events: SyncEvent[] = []
+    const len = this.core!.length
+
+    for (let i = 0; i < len; i++) {
+      const event = await this.get(i)
+      if (event) {
+        // Compare timestamps - simple string comparison works for HLC format
+        const eventTs = typeof event.timestamp === 'string'
+          ? event.timestamp
+          : JSON.stringify(event.timestamp)
+        if (eventTs > timestampStr) {
+          events.push(event)
+        }
+      }
+    }
+
+    return events
+  }
+
+  /**
    * Close the event log
    */
   async close(): Promise<void> {

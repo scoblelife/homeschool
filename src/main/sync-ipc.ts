@@ -13,6 +13,8 @@ import { FamilyManager, createFamilyManager, type FamilyStatus, type QRCodePaylo
 import { EventLog, createEventLog } from '../sync/eventLog'
 import { EventProjector, createProjector } from '../sync/projector'
 import { SwarmManager, createSwarmManager } from '../sync/swarm'
+import { WebSocketTransport, createWebSocketTransport } from '../sync/websocketTransport'
+import { USE_WEBSOCKET, RELAY_URL } from '../sync/config'
 import { createEventId, type SyncEvent } from '../sync/events'
 import type { PeerInfo } from '../sync/mesh/protocol'
 import { setSyncEmitter } from '../database/syncEmitter'
@@ -23,6 +25,7 @@ let familyManager: FamilyManager | null = null
 let eventLog: EventLog | null = null
 let projector: EventProjector | null = null
 let swarmManager: SwarmManager | null = null
+let wsTransport: WebSocketTransport | null = null
 let initPromise: Promise<void> | null = null
 
 export interface SyncStatus {
@@ -56,11 +59,12 @@ async function doInitializeSync(): Promise<void> {
   // Initialize projector (this also ensures sync_state table exists)
   projector = await createProjector()
 
-  // If we're part of a family, initialize event log and swarm
+  // If we're part of a family, initialize event log and transport
   if (familyManager.isConfigured()) {
     const config = familyManager.getConfig()!
     console.log('[Sync] Initializing for family:', config.familyId.slice(0, 8) + '...')
     console.log('[Sync] Device:', config.deviceName, '(' + config.deviceId.slice(0, 8) + '...)')
+    console.log('[Sync] Transport mode:', USE_WEBSOCKET ? 'WebSocket' : 'Hyperswarm P2P')
 
     try {
       eventLog = await createEventLog(config.deviceId)
@@ -75,36 +79,111 @@ async function doInitializeSync(): Promise<void> {
         console.log(`[Sync] Projector state reloaded: lastIndex=${projector.getState().lastProcessedIndex}`)
       }
 
-      swarmManager = await createSwarmManager({
-        deviceId: config.deviceId,
-        deviceName: config.deviceName,
-        familyId: config.familyId,
-        eventLog,
-        projector
-      })
-      console.log('[Sync] SwarmManager initialized')
-
-      // Set up event forwarding to renderer
-      setupSwarmEventForwarding()
-
-      // Enable sync emitter for repositories
-      // Note: We don't apply locally-created events to projector because
-      // the repository already made the DB change. We just log and broadcast.
-      setSyncEmitter(async (eventData) => {
-        if (!eventLog || !swarmManager) return
-
-        const fullEvent = await eventLog.append(eventData)
-        // Update projector state without re-applying (DB change already done)
-        const index = (await eventLog.length()) - 1
-        projector!.updateStateOnly(fullEvent.id, index)
-        await swarmManager.broadcast(fullEvent)
-        console.log('[Sync] Broadcast event:', fullEvent.type)
-      })
+      // Use WebSocket transport or Hyperswarm based on config
+      if (USE_WEBSOCKET) {
+        await initializeWebSocket(config)
+      } else {
+        await initializeHyperswarm(config)
+      }
     } catch (err) {
       console.error('[Sync] Failed to initialize:', err)
       // Don't throw - allow app to work without sync
     }
   }
+}
+
+/**
+ * Initialize WebSocket transport
+ */
+async function initializeWebSocket(config: { deviceId: string; deviceName: string; familyId: string }): Promise<void> {
+  wsTransport = createWebSocketTransport({
+    deviceId: config.deviceId,
+    deviceName: config.deviceName,
+    familyId: config.familyId,
+    relayUrl: RELAY_URL,
+    onEvent: async (event, fromPeer) => {
+      if (!eventLog || !projector) return
+
+      try {
+        await eventLog.appendReceived(event)
+        const index = (await eventLog.length()) - 1
+        await projector.apply(event, index)
+
+        // Notify renderer
+        broadcastToWindows('sync:event-received', { event, fromPeer })
+        console.log('[Sync] Event received via WebSocket:', event.type, 'from', fromPeer.slice(0, 8))
+      } catch (err) {
+        console.error('[Sync] Failed to process WS event:', err)
+      }
+    },
+    onPeerConnected: (peerId, deviceName) => {
+      console.log('[Sync] Peer connected via WebSocket:', deviceName, peerId.slice(0, 8))
+      broadcastToWindows('sync:peer-connected', peerId)
+    },
+    onPeerDisconnected: (peerId) => {
+      console.log('[Sync] Peer disconnected:', peerId.slice(0, 8))
+      broadcastToWindows('sync:peer-disconnected', peerId)
+    }
+  })
+
+  // Handle sync requests
+  wsTransport.on('sync:request', async (fromPeer: string, afterTimestamp: string | null) => {
+    if (!eventLog) return
+
+    // Get events after the timestamp and send back
+    const events = afterTimestamp
+      ? await eventLog.getAfterTimestamp(afterTimestamp)
+      : await eventLog.getAll()
+
+    await wsTransport!.sendSyncResponse(events, false)
+  })
+
+  wsTransport.on('sync:completed', (peerId: string, eventsReceived: number) => {
+    console.log('[Sync] Sync completed with', peerId.slice(0, 8), '-', eventsReceived, 'events')
+    broadcastToWindows('sync:completed', { peerId, eventsReceived })
+  })
+
+  await wsTransport.start()
+  console.log('[Sync] WebSocket transport initialized, connected to', RELAY_URL)
+
+  // Enable sync emitter for repositories
+  setSyncEmitter(async (eventData) => {
+    if (!eventLog || !wsTransport) return
+
+    const fullEvent = await eventLog.append(eventData)
+    const index = (await eventLog.length()) - 1
+    projector!.updateStateOnly(fullEvent.id, index)
+    await wsTransport.broadcast(fullEvent)
+    console.log('[Sync] Broadcast event via WebSocket:', fullEvent.type)
+  })
+}
+
+/**
+ * Initialize Hyperswarm P2P transport
+ */
+async function initializeHyperswarm(config: { deviceId: string; deviceName: string; familyId: string }): Promise<void> {
+  swarmManager = await createSwarmManager({
+    deviceId: config.deviceId,
+    deviceName: config.deviceName,
+    familyId: config.familyId,
+    eventLog: eventLog!,
+    projector: projector!
+  })
+  console.log('[Sync] SwarmManager initialized')
+
+  // Set up event forwarding to renderer
+  setupSwarmEventForwarding()
+
+  // Enable sync emitter for repositories
+  setSyncEmitter(async (eventData) => {
+    if (!eventLog || !swarmManager) return
+
+    const fullEvent = await eventLog.append(eventData)
+    const index = (await eventLog.length()) - 1
+    projector!.updateStateOnly(fullEvent.id, index)
+    await swarmManager.broadcast(fullEvent)
+    console.log('[Sync] Broadcast event:', fullEvent.type)
+  })
 }
 
 /**
@@ -161,8 +240,24 @@ export function registerSyncIPC(): void {
     await initializeSync()
 
     const familyStatus = familyManager!.getStatus()
-    const stats = swarmManager?.getStats()
 
+    // Get stats from whichever transport is active
+    if (wsTransport) {
+      const wsStats = wsTransport.getStats()
+      return {
+        isEnabled: familyStatus.isConfigured,
+        isConnected: wsTransport.isConnected(),
+        familyStatus,
+        connectedPeers: wsTransport.getConnectedPeers().map(p => ({
+          peerId: p.deviceId,
+          deviceName: p.deviceName,
+          isOnline: p.isOnline
+        })),
+        pendingEvents: 0
+      }
+    }
+
+    const stats = swarmManager?.getStats()
     return {
       isEnabled: familyStatus.isConfigured,
       isConnected: (stats?.connectedPeers || 0) > 0,
@@ -274,12 +369,21 @@ export function registerSyncIPC(): void {
   // Get connected peers
   ipcMain.handle('sync:get-peers', async (): Promise<PeerInfo[]> => {
     await initializeSync()
+
+    // Return peers from active transport
+    if (wsTransport) {
+      return wsTransport.getConnectedPeers().map(p => ({
+        peerId: p.deviceId,
+        deviceName: p.deviceName,
+        isOnline: p.isOnline
+      }))
+    }
     return swarmManager?.getConnectedPeers() || []
   })
 
   // Broadcast an event (called when data changes)
   ipcMain.handle('sync:broadcast-event', async (_, event: SyncEvent) => {
-    if (!swarmManager || !eventLog) {
+    if ((!swarmManager && !wsTransport) || !eventLog) {
       return { success: false, error: 'Sync not enabled' }
     }
 
@@ -291,8 +395,12 @@ export function registerSyncIPC(): void {
       const index = (await eventLog.length()) - 1
       await projector!.apply(fullEvent, index)
 
-      // Broadcast to peers
-      await swarmManager.broadcast(fullEvent)
+      // Broadcast to peers via active transport
+      if (wsTransport) {
+        await wsTransport.broadcast(fullEvent)
+      } else if (swarmManager) {
+        await swarmManager.broadcast(fullEvent)
+      }
 
       return { success: true, event: fullEvent }
     } catch (err) {
@@ -437,7 +545,7 @@ ${inviteCode}`,
 export async function createAndBroadcastEvent(
   eventData: Omit<SyncEvent, 'timestamp' | 'deviceId' | 'version'>
 ): Promise<SyncEvent | null> {
-  if (!eventLog || !swarmManager) {
+  if (!eventLog || (!swarmManager && !wsTransport)) {
     return null // Sync not enabled
   }
 
@@ -449,8 +557,12 @@ export async function createAndBroadcastEvent(
     const index = (await eventLog.length()) - 1
     await projector!.apply(fullEvent, index)
 
-    // Broadcast to peers
-    await swarmManager.broadcast(fullEvent)
+    // Broadcast to peers via active transport
+    if (wsTransport) {
+      await wsTransport.broadcast(fullEvent)
+    } else if (swarmManager) {
+      await swarmManager.broadcast(fullEvent)
+    }
 
     return fullEvent
   } catch (err) {
@@ -463,11 +575,18 @@ export async function createAndBroadcastEvent(
  * Shutdown sync infrastructure
  */
 export async function shutdownSync(): Promise<void> {
+  if (wsTransport) {
+    await wsTransport.stop()
+    wsTransport = null
+  }
+
   if (swarmManager) {
     await swarmManager.stop()
+    swarmManager = null
   }
 
   if (eventLog) {
     await eventLog.close()
+    eventLog = null
   }
 }
