@@ -40,6 +40,13 @@ export default function SyncScreen() {
   const loadData = useCallback(async () => {
     try {
       await syncManager.initialize()
+
+      // Auto-connect if sync is enabled
+      const currentStatus = syncManager.getStatus()
+      if (currentStatus.enabled && !currentStatus.connected) {
+        await syncManager.connect()
+      }
+
       setStatus(syncManager.getStatus())
       setPeers(syncManager.getPeers())
       setDeviceName(syncManager.getDeviceName() || '')
@@ -71,6 +78,7 @@ export default function SyncScreen() {
     setCreating(true)
     try {
       await syncManager.createFamily(deviceName.trim())
+      await syncManager.connect()
       await loadData()
       setViewMode('main')
       Alert.alert('Success', 'Family created! Share the invite code with family members.')
@@ -91,6 +99,7 @@ export default function SyncScreen() {
 
     try {
       await syncManager.joinFamily(code, deviceName.trim())
+      await syncManager.connect()
       await loadData()
       setViewMode('main')
       Alert.alert('Success', 'Joined family successfully!')
