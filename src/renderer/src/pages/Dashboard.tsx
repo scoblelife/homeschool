@@ -6,6 +6,7 @@ import QuickAdd from '../components/QuickAdd'
 import { VoiceInput } from '../features/voiceInput'
 import { RecurringActivities } from '../features/recurring'
 import { Timer } from '../features/timer'
+import { StreakDisplay, useStreakTracking } from '../features/streaks'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -28,6 +29,9 @@ export default function Dashboard(): JSX.Element {
   const [familyTotalStars, setFamilyTotalStars] = useState<number>(0)
   const [showCreateGoal, setShowCreateGoal] = useState(false)
   const [goalForm, setGoalForm] = useState({ title: '', starTarget: 100, rewardDescription: '' })
+
+  // Streak tracking
+  const { recordActivity } = useStreakTracking(students)
 
   const today = format(new Date(), 'yyyy-MM-dd')
 
@@ -71,6 +75,17 @@ export default function Dashboard(): JSX.Element {
         setStarTotals(null)
       }
   }, [selectedStudentId, today])
+
+  // Wrapper to handle activity creation + streak tracking
+  const handleActivityCreated = useCallback(async () => {
+    // First load fresh data
+    await loadDashboardData()
+    // Then update streaks for any today's activities
+    const todayActivities = await window.api.getActivities({ startDate: today, endDate: today })
+    todayActivities.forEach((activity) => {
+      recordActivity(activity.studentId, activity.dateCompleted)
+    })
+  }, [loadDashboardData, today, recordActivity])
 
   useEffect(() => {
     loadDashboardData()
@@ -144,11 +159,11 @@ export default function Dashboard(): JSX.Element {
       </div>
 
       {/* Recurring Activities - Today's Schedule */}
-      <RecurringActivities onActivityCreated={loadDashboardData} />
+      <RecurringActivities onActivityCreated={handleActivityCreated} />
 
       {/* Session Timer */}
       <div className="mb-6">
-        <Timer onSessionSaved={loadDashboardData} />
+        <Timer onSessionSaved={handleActivityCreated} />
       </div>
 
       {/* Milestone Progress (when student selected) */}
@@ -210,6 +225,17 @@ export default function Dashboard(): JSX.Element {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Streak Display (when student selected) */}
+      {selectedStudent && (
+        <div className="mb-6">
+          <StreakDisplay
+            studentId={selectedStudent.id}
+            studentName={selectedStudent.name}
+            studentColor={selectedStudent.color}
+          />
         </div>
       )}
 
@@ -547,10 +573,10 @@ export default function Dashboard(): JSX.Element {
       )}
 
       {/* Quick Add FAB */}
-      <QuickAdd onActivityCreated={loadDashboardData} />
+      <QuickAdd onActivityCreated={handleActivityCreated} />
 
       {/* Voice Input FAB */}
-      <VoiceInput onActivityCreated={loadDashboardData} />
+      <VoiceInput onActivityCreated={handleActivityCreated} />
     </div>
   )
 }
