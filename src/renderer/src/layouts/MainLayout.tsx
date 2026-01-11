@@ -13,6 +13,7 @@ const navItems = [
   { path: '/curriculum', label: 'Curriculum', icon: '📐' },
   { path: '/hour-tracking', label: 'Hour Tracking', icon: '⏱️' },
   { path: '/templates', label: 'Templates', icon: '🗃️' },
+  { path: '/recommendations', label: 'Curricula', icon: '📖' },
   { path: '/library', label: 'Library', icon: '📚' },
   { path: '/field-trips', label: 'Activities', icon: '🎪' },
   { path: '/calendar', label: 'Calendar', icon: '📅' },

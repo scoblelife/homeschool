@@ -214,7 +214,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - One-click to add template
   - Location: `src/renderer/src/features/templates/`
 
-- [ ] **5.2 Curriculum recommendations**
+- [x] **5.2 Curriculum recommendations**
   - Suggest curricula based on grade/subject
   - Link to popular homeschool curricula
   - User ratings and reviews (future)
