@@ -15,8 +15,8 @@
 
         # Worker configuration - use relative path from infra dir
         workerName = "homeschool-sync";
-        stagingUrl = "https://homeschool-sync-staging.scoblelife.workers.dev";
-        productionUrl = "https://homeschool-sync.scoblelife.workers.dev";
+        stagingUrl = "https://homeschool-sync-staging.scott4717.workers.dev";
+        productionUrl = "https://homeschool-sync.scott4717.workers.dev";
 
         # Common script preamble
         preamble = ''

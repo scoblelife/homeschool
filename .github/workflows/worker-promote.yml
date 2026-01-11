@@ -21,7 +21,7 @@ jobs:
 
       - name: Check staging health
         run: |
-          HEALTH_URL="https://homeschool-sync-staging.scoblelife.workers.dev/health"
+          HEALTH_URL="https://homeschool-sync-staging.scott4717.workers.dev/health"
           echo "Checking staging health at: $HEALTH_URL"
           RESPONSE=$(curl -s "$HEALTH_URL")
           STATUS=$(echo "$RESPONSE" | jq -r '.status // "unknown"')
@@ -39,7 +39,7 @@ jobs:
     needs: validate
     environment:
       name: worker-production
-      url: https://homeschool-sync.scoblelife.workers.dev
+      url: https://homeschool-sync.scott4717.workers.dev
     defaults:
       run:
         working-directory: worker
@@ -64,7 +64,7 @@ jobs:
       - name: Health Check Production
         run: |
           sleep 5
-          HEALTH_URL="https://homeschool-sync.scoblelife.workers.dev/health"
+          HEALTH_URL="https://homeschool-sync.scott4717.workers.dev/health"
           echo "Checking production health at: $HEALTH_URL"
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || echo "000")
           if [ "$STATUS" != "200" ]; then
@@ -79,4 +79,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Worker has been promoted from staging to production." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Production URL:** https://homeschool-sync.scoblelife.workers.dev" >> $GITHUB_STEP_SUMMARY
+          echo "**Production URL:** https://homeschool-sync.scott4717.workers.dev" >> $GITHUB_STEP_SUMMARY

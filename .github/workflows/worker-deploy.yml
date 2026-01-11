@@ -55,7 +55,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
     environment:
       name: worker-staging
-      url: https://homeschool-sync-staging.scoblelife.workers.dev
+      url: https://homeschool-sync-staging.scott4717.workers.dev
     defaults:
       run:
         working-directory: worker
@@ -80,7 +80,7 @@ jobs:
       - name: Health Check
         run: |
           sleep 5
-          HEALTH_URL="https://homeschool-sync-staging.scoblelife.workers.dev/health"
+          HEALTH_URL="https://homeschool-sync-staging.scott4717.workers.dev/health"
           echo "Checking health at: $HEALTH_URL"
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || echo "000")
           if [ "$STATUS" != "200" ]; then
@@ -97,7 +97,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production'
     environment:
       name: worker-production
-      url: https://homeschool-sync.scoblelife.workers.dev
+      url: https://homeschool-sync.scott4717.workers.dev
     defaults:
       run:
         working-directory: worker
@@ -122,7 +122,7 @@ jobs:
       - name: Health Check
         run: |
           sleep 5
-          HEALTH_URL="https://homeschool-sync.scoblelife.workers.dev/health"
+          HEALTH_URL="https://homeschool-sync.scott4717.workers.dev/health"
           echo "Checking health at: $HEALTH_URL"
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || echo "000")
           if [ "$STATUS" != "200" ]; then

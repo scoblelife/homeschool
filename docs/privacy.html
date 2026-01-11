@@ -156,6 +156,17 @@
         <li>We have no ability to see or access data transmitted through Family Sync</li>
       </ul>
 
+      <h3>Signaling Service (Cloudflare Worker)</h3>
+      <p>To establish peer-to-peer connections between devices, we operate a lightweight signaling service on Cloudflare Workers. This service stores only the following temporary data:</p>
+      <ul>
+        <li><strong>Join offers:</strong> Encrypted WebRTC connection offers when a new device joins your family. These are encrypted with your device's public key and automatically deleted after 48 hours or when retrieved.</li>
+        <li><strong>Connection answers:</strong> Encrypted WebRTC answers during connection handshakes. Automatically deleted after 5 minutes or when retrieved.</li>
+        <li><strong>Presence heartbeats:</strong> Device ID and public key to indicate which devices are online for reconnection. Automatically deleted after 60 seconds if not renewed.</li>
+        <li><strong>Signaling messages:</strong> Encrypted connection re-establishment messages. Automatically deleted after 5 minutes or when retrieved.</li>
+      </ul>
+      <p><strong>Important:</strong> The signaling service never sees your actual homeschool data. All sync data (activities, students, milestones, etc.) is transferred directly peer-to-peer after the initial connection is established. The signaling data is encrypted and we cannot read its contents.</p>
+      <p>The signaling service is hosted on Cloudflare's global network. Cloudflare's handling of data is governed by their <a href="https://www.cloudflare.com/privacypolicy/">Privacy Policy</a>.</p>
+
       <h2>Google Calendar Integration</h2>
       <p>If you choose to connect Google Calendar, the following describes how we handle your Google user data:</p>
 
@@ -218,6 +229,9 @@
         <li><strong>GitHub API:</strong> To check for application updates and download new versions</li>
         <li><strong>Google Calendar API:</strong> Only if you enable the Google Calendar integration</li>
         <li><strong>Open Library API:</strong> To look up book information when scanning ISBNs (no personal data is sent)</li>
+        <li><strong>Google Books API:</strong> Fallback for ISBN lookups when Open Library doesn't have the book (no personal data is sent)</li>
+        <li><strong>Cloudflare Workers:</strong> Signaling service for Family Sync peer-to-peer connections (see Family Sync section above)</li>
+        <li><strong>Google/Cloudflare STUN servers:</strong> Used for NAT traversal when establishing peer-to-peer connections (no personal data is sent, only network connectivity information)</li>
       </ul>
 
       <h2>Children's Privacy</h2>
@@ -234,7 +248,7 @@
       <h2>Changes to This Policy</h2>
       <p>If we make changes to this privacy policy, we will update the date below and include the changes in our release notes.</p>
 
-      <p class="updated">Last updated: January 6, 2026</p>
+      <p class="updated">Last updated: January 11, 2026</p>
     </div>
 
     <footer>
