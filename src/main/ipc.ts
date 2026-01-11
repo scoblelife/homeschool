@@ -19,7 +19,8 @@ import {
   familyGoalsRepo,
   recurringRepo,
   attachmentsRepo,
-  attendanceRepo
+  attendanceRepo,
+  curriculumRepo
 } from '../database'
 import * as googleAuth from './google-auth'
 import * as googleCalendar from './google-calendar'
@@ -63,7 +64,9 @@ import type {
   CreateRecurringActivity,
   UpdateRecurringActivity,
   CreateAttendanceRecord,
-  PortfolioConfig
+  PortfolioConfig,
+  CreateCustomStandard,
+  UpdateCustomStandard
 } from '../shared/types'
 
 // Simple iCal parser for extracting events
@@ -975,6 +978,52 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('portfolio:openFile', async (_, filePath: string) => {
     shell.openPath(filePath)
+  })
+
+  // =============== Curriculum Mapping ===============
+
+  ipcMain.handle('curriculum:getAllStandards', async (_, gradeLevel?: GradeLevel) => {
+    return curriculumRepo.getAllStandards(gradeLevel)
+  })
+
+  ipcMain.handle('curriculum:getStandard', async (_, id: string) => {
+    return curriculumRepo.getStandard(id)
+  })
+
+  ipcMain.handle('curriculum:createCustomStandard', async (_, data: CreateCustomStandard) => {
+    return curriculumRepo.createCustomStandard(data)
+  })
+
+  ipcMain.handle('curriculum:updateCustomStandard', async (_, id: string, data: UpdateCustomStandard) => {
+    return curriculumRepo.updateCustomStandard(id, data)
+  })
+
+  ipcMain.handle('curriculum:deleteCustomStandard', async (_, id: string) => {
+    return curriculumRepo.deleteCustomStandard(id)
+  })
+
+  ipcMain.handle('curriculum:getActivityStandards', async (_, activityId: string) => {
+    return curriculumRepo.getActivityStandards(activityId)
+  })
+
+  ipcMain.handle('curriculum:addActivityStandard', async (_, activityId: string, standardId: string) => {
+    return curriculumRepo.addActivityStandard(activityId, standardId)
+  })
+
+  ipcMain.handle('curriculum:removeActivityStandard', async (_, activityId: string, standardId: string) => {
+    return curriculumRepo.removeActivityStandard(activityId, standardId)
+  })
+
+  ipcMain.handle('curriculum:setActivityStandards', async (_, activityId: string, standardIds: string[]) => {
+    return curriculumRepo.setActivityStandards(activityId, standardIds)
+  })
+
+  ipcMain.handle('curriculum:getStandardCoverage', async (_, studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) => {
+    return curriculumRepo.getStandardCoverage(studentId, gradeLevel, startDate, endDate)
+  })
+
+  ipcMain.handle('curriculum:getCurriculumReport', async (_, studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) => {
+    return curriculumRepo.getCurriculumReport(studentId, gradeLevel, startDate, endDate)
   })
 }
 

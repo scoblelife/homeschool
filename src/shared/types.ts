@@ -427,6 +427,71 @@ export interface AttendanceRecord {
 export type CreateAttendanceRecord = Omit<AttendanceRecord, 'id' | 'createdAt'>
 export type UpdateAttendanceRecord = Partial<Omit<CreateAttendanceRecord, 'studentId' | 'date'>>
 
+// Curriculum Mapping Types
+export type StandardSet = 'common-core' | 'custom'
+
+export interface LearningStandard {
+  id: string
+  code: string
+  title: string
+  description: string
+  gradeLevel: GradeLevel
+  subjectId: string
+  domain: string
+  cluster?: string
+  standardSet: StandardSet
+}
+
+export interface ActivityStandardMapping {
+  id: string
+  activityId: string
+  standardId: string
+  createdAt: string
+}
+
+export interface CustomStandard {
+  id: string
+  code: string
+  title: string
+  description?: string
+  gradeLevel: GradeLevel
+  subjectId: string
+  domain: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateCustomStandard = Omit<CustomStandard, 'id' | 'createdAt' | 'updatedAt'>
+export type UpdateCustomStandard = Partial<Omit<CreateCustomStandard, 'gradeLevel' | 'subjectId'>>
+
+export interface StandardCoverage {
+  standard: LearningStandard
+  activityCount: number
+  totalMinutes: number
+  lastActivity?: string // date
+}
+
+export interface CurriculumReport {
+  gradeLevel: GradeLevel
+  totalStandards: number
+  coveredStandards: number
+  coveragePercent: number
+  bySubject: {
+    subjectId: string
+    subjectName: string
+    total: number
+    covered: number
+    coveragePercent: number
+  }[]
+  byDomain: {
+    domain: string
+    total: number
+    covered: number
+    coveragePercent: number
+  }[]
+  uncoveredStandards: LearningStandard[]
+}
+
 // Portfolio Types
 export interface PortfolioSection {
   id: string
@@ -685,6 +750,19 @@ export interface DatabaseAPI {
   getPortfolioDefaultConfig: (studentId: string, schoolYear: string) => Promise<PortfolioConfig>
   getCurrentSchoolYear: () => Promise<string>
   openPortfolioFile: (filePath: string) => Promise<void>
+
+  // Curriculum Mapping
+  getAllStandards: (gradeLevel?: GradeLevel) => Promise<LearningStandard[]>
+  getStandard: (id: string) => Promise<LearningStandard | null>
+  createCustomStandard: (data: CreateCustomStandard) => Promise<CustomStandard>
+  updateCustomStandard: (id: string, data: UpdateCustomStandard) => Promise<CustomStandard | null>
+  deleteCustomStandard: (id: string) => Promise<void>
+  getActivityStandards: (activityId: string) => Promise<LearningStandard[]>
+  addActivityStandard: (activityId: string, standardId: string) => Promise<ActivityStandardMapping>
+  removeActivityStandard: (activityId: string, standardId: string) => Promise<void>
+  setActivityStandards: (activityId: string, standardIds: string[]) => Promise<void>
+  getStandardCoverage: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) => Promise<StandardCoverage[]>
+  getCurriculumReport: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) => Promise<CurriculumReport>
 }
 
 // Google Calendar Types

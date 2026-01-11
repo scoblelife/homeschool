@@ -381,6 +381,54 @@ export interface AttendanceDeletedEvent extends BaseEvent {
   }
 }
 
+// ============ Curriculum Events ============
+
+export interface CustomStandardCreatedEvent extends BaseEvent {
+  type: 'customStandard.created'
+  data: {
+    id: string
+    code: string
+    title: string
+    description?: string
+    gradeLevel: string
+    subjectId: string
+    domain: string
+  }
+}
+
+export interface CustomStandardUpdatedEvent extends BaseEvent {
+  type: 'customStandard.updated'
+  data: {
+    id: string
+    code?: string
+    title?: string
+    description?: string
+    domain?: string
+  }
+}
+
+export interface CustomStandardDeletedEvent extends BaseEvent {
+  type: 'customStandard.deleted'
+  data: { id: string }
+}
+
+export interface ActivityStandardCreatedEvent extends BaseEvent {
+  type: 'activityStandard.created'
+  data: {
+    id: string
+    activityId: string
+    standardId: string
+  }
+}
+
+export interface ActivityStandardDeletedEvent extends BaseEvent {
+  type: 'activityStandard.deleted'
+  data: {
+    activityId: string
+    standardId: string
+  }
+}
+
 // ============ Settings Events ============
 
 export interface SettingChangedEvent extends BaseEvent {
@@ -474,6 +522,12 @@ export type SyncEvent =
   | AttendanceCreatedEvent
   | AttendanceUpdatedEvent
   | AttendanceDeletedEvent
+  // Curriculum
+  | CustomStandardCreatedEvent
+  | CustomStandardUpdatedEvent
+  | CustomStandardDeletedEvent
+  | ActivityStandardCreatedEvent
+  | ActivityStandardDeletedEvent
   // Settings
   | SettingChangedEvent
   // Member Management

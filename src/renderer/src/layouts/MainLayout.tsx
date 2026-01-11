@@ -10,6 +10,7 @@ const navItems = [
   { path: '/weekly-planner', label: 'Weekly Plan', icon: '📋' },
   { path: '/weekly-summary', label: 'Weekly Summary', icon: '📈' },
   { path: '/attendance', label: 'Attendance', icon: '✓' },
+  { path: '/curriculum', label: 'Curriculum', icon: '📐' },
   { path: '/library', label: 'Library', icon: '📚' },
   { path: '/field-trips', label: 'Activities', icon: '🎪' },
   { path: '/calendar', label: 'Calendar', icon: '📅' },
