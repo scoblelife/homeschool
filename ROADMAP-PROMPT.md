@@ -208,7 +208,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 
 **Goal:** Make the app a hub for homeschool resources.
 
-- [ ] **5.1 Activity templates library**
+- [x] **5.1 Activity templates library**
   - Pre-built activity templates
   - Organized by subject and grade
   - One-click to add template
