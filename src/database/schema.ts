@@ -65,6 +65,51 @@ async function runMigrations(): Promise<void> {
       UNIQUE(field_trip_id, activity_id)
     )
   `)
+
+  // Create coop_groups table if it doesn't exist
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS coop_groups (
+      id VARCHAR PRIMARY KEY,
+      name VARCHAR NOT NULL,
+      description VARCHAR,
+      invite_code VARCHAR NOT NULL UNIQUE,
+      created_by VARCHAR NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Create coop_members table if it doesn't exist
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS coop_members (
+      id VARCHAR PRIMARY KEY,
+      group_id VARCHAR NOT NULL,
+      family_name VARCHAR NOT NULL,
+      email VARCHAR,
+      phone VARCHAR,
+      role VARCHAR NOT NULL DEFAULT 'member',
+      joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Create coop_events table if it doesn't exist
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS coop_events (
+      id VARCHAR PRIMARY KEY,
+      group_id VARCHAR NOT NULL,
+      field_trip_id VARCHAR,
+      title VARCHAR NOT NULL,
+      description VARCHAR,
+      location VARCHAR NOT NULL,
+      date DATE NOT NULL,
+      start_time VARCHAR,
+      end_time VARCHAR,
+      organizer_id VARCHAR NOT NULL,
+      max_attendees INTEGER,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
 }
 
 export async function initializeSchema(): Promise<void> {

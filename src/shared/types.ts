@@ -333,6 +333,55 @@ export interface FieldTripActivity {
 
 export type CreateFieldTripActivity = Omit<FieldTripActivity, 'id' | 'createdAt'>
 
+// Co-op Groups
+export type CoopMemberRole = 'organizer' | 'member'
+
+export interface CoopGroup {
+  id: string
+  name: string
+  description?: string
+  inviteCode: string
+  createdBy: string // device ID that created the group
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateCoopGroup = Omit<CoopGroup, 'id' | 'inviteCode' | 'createdAt' | 'updatedAt'>
+export type UpdateCoopGroup = Partial<Omit<CreateCoopGroup, 'createdBy'>>
+
+export interface CoopMember {
+  id: string
+  groupId: string
+  familyName: string
+  email?: string
+  phone?: string
+  role: CoopMemberRole
+  joinedAt: string
+}
+
+export type CreateCoopMember = Omit<CoopMember, 'id' | 'joinedAt'>
+export type UpdateCoopMember = Partial<Omit<CreateCoopMember, 'groupId'>>
+
+// Co-op Events (shared field trips and events)
+export interface CoopEvent {
+  id: string
+  groupId: string
+  fieldTripId?: string // Optional link to a FieldTrip
+  title: string
+  description?: string
+  location: string
+  date: string
+  startTime?: string
+  endTime?: string
+  organizerId: string // CoopMember id
+  maxAttendees?: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateCoopEvent = Omit<CoopEvent, 'id' | 'createdAt' | 'updatedAt'>
+export type UpdateCoopEvent = Partial<Omit<CreateCoopEvent, 'groupId'>>
+
 // Activity Tasks (todos for field trips/activities)
 export type TaskPhase = 'pre' | 'day_of' | 'post'
 
@@ -779,6 +828,29 @@ export interface DatabaseAPI {
   setActivityStandards: (activityId: string, standardIds: string[]) => Promise<void>
   getStandardCoverage: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) => Promise<StandardCoverage[]>
   getCurriculumReport: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) => Promise<CurriculumReport>
+
+  // Co-op Groups
+  getCoopGroups: () => Promise<CoopGroup[]>
+  getCoopGroup: (id: string) => Promise<CoopGroup | null>
+  getCoopGroupByInviteCode: (inviteCode: string) => Promise<CoopGroup | null>
+  createCoopGroup: (data: CreateCoopGroup) => Promise<CoopGroup>
+  updateCoopGroup: (id: string, data: UpdateCoopGroup) => Promise<CoopGroup>
+  deleteCoopGroup: (id: string) => Promise<void>
+  regenerateCoopInviteCode: (groupId: string) => Promise<string>
+
+  // Co-op Members
+  getCoopMembers: (groupId: string) => Promise<CoopMember[]>
+  getCoopMember: (id: string) => Promise<CoopMember | null>
+  createCoopMember: (data: CreateCoopMember) => Promise<CoopMember>
+  updateCoopMember: (id: string, data: UpdateCoopMember) => Promise<CoopMember>
+  deleteCoopMember: (id: string) => Promise<void>
+
+  // Co-op Events
+  getCoopEvents: (groupId: string) => Promise<CoopEvent[]>
+  getCoopEvent: (id: string) => Promise<CoopEvent | null>
+  createCoopEvent: (data: CreateCoopEvent) => Promise<CoopEvent>
+  updateCoopEvent: (id: string, data: UpdateCoopEvent) => Promise<CoopEvent>
+  deleteCoopEvent: (id: string) => Promise<void>
 }
 
 // Google Calendar Types

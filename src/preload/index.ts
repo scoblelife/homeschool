@@ -52,7 +52,16 @@ import type {
   CustomStandard,
   ActivityStandardMapping,
   StandardCoverage,
-  CurriculumReport
+  CurriculumReport,
+  CoopGroup,
+  CreateCoopGroup,
+  UpdateCoopGroup,
+  CoopMember,
+  CreateCoopMember,
+  UpdateCoopMember,
+  CoopEvent,
+  CreateCoopEvent,
+  UpdateCoopEvent
 } from '../shared/types'
 
 const api: DatabaseAPI & SyncAPI = {
@@ -418,7 +427,47 @@ const api: DatabaseAPI & SyncAPI = {
   getStandardCoverage: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) =>
     ipcRenderer.invoke('curriculum:getStandardCoverage', studentId, gradeLevel, startDate, endDate) as Promise<StandardCoverage[]>,
   getCurriculumReport: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) =>
-    ipcRenderer.invoke('curriculum:getCurriculumReport', studentId, gradeLevel, startDate, endDate) as Promise<CurriculumReport>
+    ipcRenderer.invoke('curriculum:getCurriculumReport', studentId, gradeLevel, startDate, endDate) as Promise<CurriculumReport>,
+
+  // Co-op Groups
+  getCoopGroups: () =>
+    ipcRenderer.invoke('coop:getGroups') as Promise<CoopGroup[]>,
+  getCoopGroup: (id: string) =>
+    ipcRenderer.invoke('coop:getGroup', id) as Promise<CoopGroup | null>,
+  getCoopGroupByInviteCode: (inviteCode: string) =>
+    ipcRenderer.invoke('coop:getGroupByInviteCode', inviteCode) as Promise<CoopGroup | null>,
+  createCoopGroup: (data: CreateCoopGroup) =>
+    ipcRenderer.invoke('coop:createGroup', data) as Promise<CoopGroup>,
+  updateCoopGroup: (id: string, data: UpdateCoopGroup) =>
+    ipcRenderer.invoke('coop:updateGroup', id, data) as Promise<CoopGroup>,
+  deleteCoopGroup: (id: string) =>
+    ipcRenderer.invoke('coop:deleteGroup', id) as Promise<void>,
+  regenerateCoopInviteCode: (groupId: string) =>
+    ipcRenderer.invoke('coop:regenerateInviteCode', groupId) as Promise<string>,
+
+  // Co-op Members
+  getCoopMembers: (groupId: string) =>
+    ipcRenderer.invoke('coop:getMembers', groupId) as Promise<CoopMember[]>,
+  getCoopMember: (id: string) =>
+    ipcRenderer.invoke('coop:getMember', id) as Promise<CoopMember | null>,
+  createCoopMember: (data: CreateCoopMember) =>
+    ipcRenderer.invoke('coop:createMember', data) as Promise<CoopMember>,
+  updateCoopMember: (id: string, data: UpdateCoopMember) =>
+    ipcRenderer.invoke('coop:updateMember', id, data) as Promise<CoopMember>,
+  deleteCoopMember: (id: string) =>
+    ipcRenderer.invoke('coop:deleteMember', id) as Promise<void>,
+
+  // Co-op Events
+  getCoopEvents: (groupId: string) =>
+    ipcRenderer.invoke('coop:getEvents', groupId) as Promise<CoopEvent[]>,
+  getCoopEvent: (id: string) =>
+    ipcRenderer.invoke('coop:getEvent', id) as Promise<CoopEvent | null>,
+  createCoopEvent: (data: CreateCoopEvent) =>
+    ipcRenderer.invoke('coop:createEvent', data) as Promise<CoopEvent>,
+  updateCoopEvent: (id: string, data: UpdateCoopEvent) =>
+    ipcRenderer.invoke('coop:updateEvent', id, data) as Promise<CoopEvent>,
+  deleteCoopEvent: (id: string) =>
+    ipcRenderer.invoke('coop:deleteEvent', id) as Promise<void>
 }
 
 contextBridge.exposeInMainWorld('api', api)

@@ -17,6 +17,7 @@ import HourTracking from './pages/HourTracking'
 import Templates from './pages/Templates'
 import Recommendations from './pages/Recommendations'
 import Resources from './pages/Resources'
+import Coop from './pages/Coop'
 import { useInitializeData } from './hooks/useDatabase'
 
 export default function App(): JSX.Element {
@@ -41,6 +42,7 @@ export default function App(): JSX.Element {
         <Route path="resources" element={<Resources />} />
         <Route path="library" element={<Library />} />
         <Route path="field-trips" element={<FieldTrips />} />
+        <Route path="coop" element={<Coop />} />
         <Route path="settings" element={<Settings />} />
       </Route>
     </Routes>
