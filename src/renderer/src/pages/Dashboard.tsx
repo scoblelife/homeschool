@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { getStudentColor } from './Settings'
 import QuickAdd from '../components/QuickAdd'
 import { VoiceInput } from '../features/voiceInput'
+import { RecurringActivities } from '../features/recurring'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -140,6 +141,9 @@ export default function Dashboard(): JSX.Element {
           </Link>
         </div>
       </div>
+
+      {/* Recurring Activities - Today's Schedule */}
+      <RecurringActivities onActivityCreated={loadDashboardData} />
 
       {/* Milestone Progress (when student selected) */}
       {selectedStudent && milestones.length > 0 && (

@@ -15,7 +15,8 @@ import {
   calendarSyncRepo,
   choreMappingsRepo,
   rewardsRepo,
-  familyGoalsRepo
+  familyGoalsRepo,
+  recurringRepo
 } from '../database'
 import * as googleAuth from './google-auth'
 import * as googleCalendar from './google-calendar'
@@ -55,7 +56,9 @@ import type {
   CreateReward,
   CreateFamilyGoal,
   UpdateFamilyGoal,
-  ScannedBook
+  ScannedBook,
+  CreateRecurringActivity,
+  UpdateRecurringActivity
 } from '../shared/types'
 
 // Simple iCal parser for extracting events
@@ -729,6 +732,35 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('scanner:status', async () => {
     return bookScanner.getStatus()
+  })
+
+  // Recurring Activities
+  ipcMain.handle('recurring:getAll', async (_, studentId?: string) => {
+    return recurringRepo.getRecurringActivities(studentId)
+  })
+
+  ipcMain.handle('recurring:get', async (_, id: string) => {
+    return recurringRepo.getRecurringActivity(id)
+  })
+
+  ipcMain.handle('recurring:create', async (_, data: CreateRecurringActivity) => {
+    return recurringRepo.createRecurringActivity(data)
+  })
+
+  ipcMain.handle('recurring:update', async (_, id: string, data: UpdateRecurringActivity) => {
+    return recurringRepo.updateRecurringActivity(id, data)
+  })
+
+  ipcMain.handle('recurring:delete', async (_, id: string) => {
+    return recurringRepo.deleteRecurringActivity(id)
+  })
+
+  ipcMain.handle('recurring:getDue', async (_, studentId?: string, date?: string) => {
+    return recurringRepo.getDueRecurringActivities(studentId, date)
+  })
+
+  ipcMain.handle('recurring:markLogged', async (_, id: string, date: string) => {
+    return recurringRepo.markRecurringActivityLogged(id, date)
   })
 }
 

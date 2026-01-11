@@ -140,6 +140,28 @@ export interface FamilyGoal {
 export type CreateFamilyGoal = Omit<FamilyGoal, 'id' | 'createdAt' | 'achievedAt'>
 export type UpdateFamilyGoal = Partial<Omit<CreateFamilyGoal, never>>
 
+// Recurring Activities
+export type RecurrencePattern = 'daily' | 'weekdays' | 'weekly' | 'custom'
+
+export interface RecurringActivity {
+  id: string
+  studentId: string
+  subjectId: string
+  title: string
+  activityType: ActivityType
+  durationMinutes: number | null
+  recurrencePattern: RecurrencePattern
+  recurrenceDays: number[] | null  // 0=Sun, 1=Mon, ... 6=Sat for custom pattern
+  startTime: string | null  // HH:mm format
+  isActive: boolean
+  lastLoggedDate: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateRecurringActivity = Omit<RecurringActivity, 'id' | 'createdAt' | 'updatedAt' | 'lastLoggedDate'>
+export type UpdateRecurringActivity = Partial<Omit<CreateRecurringActivity, 'studentId'>>
+
 // Book Scanner Types (QR code phone scanning)
 export interface ScannedBook {
   isbn: string
@@ -536,6 +558,15 @@ export interface DatabaseAPI {
   stopScanner: () => Promise<void>
   getScannerStatus: () => Promise<{ isRunning: boolean; channelId: string | null }>
   onBookScanned: (callback: (book: Book) => void) => () => void
+
+  // Recurring Activities
+  getRecurringActivities: (studentId?: string) => Promise<RecurringActivity[]>
+  getRecurringActivity: (id: string) => Promise<RecurringActivity | null>
+  createRecurringActivity: (data: CreateRecurringActivity) => Promise<RecurringActivity>
+  updateRecurringActivity: (id: string, data: UpdateRecurringActivity) => Promise<RecurringActivity | null>
+  deleteRecurringActivity: (id: string) => Promise<boolean>
+  getDueRecurringActivities: (studentId?: string, date?: string) => Promise<RecurringActivity[]>
+  markRecurringActivityLogged: (id: string, date: string) => Promise<void>
 }
 
 // Google Calendar Types

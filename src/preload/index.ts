@@ -35,7 +35,10 @@ import type {
   CreateReward,
   CreateFamilyGoal,
   UpdateFamilyGoal,
-  Book
+  Book,
+  RecurringActivity,
+  CreateRecurringActivity,
+  UpdateRecurringActivity
 } from '../shared/types'
 
 const api: DatabaseAPI & SyncAPI = {
@@ -302,7 +305,23 @@ const api: DatabaseAPI & SyncAPI = {
   syncReset: () => ipcRenderer.invoke('sync:reset'),
   syncRecover: () => ipcRenderer.invoke('sync:recover'),
   syncListBackups: () => ipcRenderer.invoke('sync:list-backups'),
-  syncRestoreBackup: (backupName: string) => ipcRenderer.invoke('sync:restore-backup', backupName)
+  syncRestoreBackup: (backupName: string) => ipcRenderer.invoke('sync:restore-backup', backupName),
+
+  // Recurring Activities
+  getRecurringActivities: (studentId?: string) =>
+    ipcRenderer.invoke('recurring:getAll', studentId) as Promise<RecurringActivity[]>,
+  getRecurringActivity: (id: string) =>
+    ipcRenderer.invoke('recurring:get', id) as Promise<RecurringActivity | null>,
+  createRecurringActivity: (data: CreateRecurringActivity) =>
+    ipcRenderer.invoke('recurring:create', data) as Promise<RecurringActivity>,
+  updateRecurringActivity: (id: string, data: UpdateRecurringActivity) =>
+    ipcRenderer.invoke('recurring:update', id, data) as Promise<RecurringActivity | null>,
+  deleteRecurringActivity: (id: string) =>
+    ipcRenderer.invoke('recurring:delete', id) as Promise<boolean>,
+  getDueRecurringActivities: (studentId?: string, date?: string) =>
+    ipcRenderer.invoke('recurring:getDue', studentId, date) as Promise<RecurringActivity[]>,
+  markRecurringActivityLogged: (id: string, date: string) =>
+    ipcRenderer.invoke('recurring:markLogged', id, date) as Promise<void>
 }
 
 contextBridge.exposeInMainWorld('api', api)
