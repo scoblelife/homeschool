@@ -11,6 +11,7 @@ import FieldTrips from './pages/FieldTrips'
 import Settings from './pages/Settings'
 import WeeklySummary from './pages/WeeklySummary'
 import AnnualReport from './pages/AnnualReport'
+import Attendance from './pages/Attendance'
 import { useInitializeData } from './hooks/useDatabase'
 
 export default function App(): JSX.Element {
@@ -27,6 +28,7 @@ export default function App(): JSX.Element {
         <Route path="reports" element={<Reports />} />
         <Route path="weekly-summary" element={<WeeklySummary />} />
         <Route path="annual-report" element={<AnnualReport />} />
+        <Route path="attendance" element={<Attendance />} />
         <Route path="library" element={<Library />} />
         <Route path="field-trips" element={<FieldTrips />} />
         <Route path="settings" element={<Settings />} />

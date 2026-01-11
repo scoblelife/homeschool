@@ -407,6 +407,19 @@ export async function initializeSchema(): Promise<void> {
     )
   `)
 
+  // Create attendance table for tracking school days
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS attendance (
+      id VARCHAR PRIMARY KEY,
+      student_id VARCHAR NOT NULL REFERENCES students(id),
+      date DATE NOT NULL,
+      status VARCHAR NOT NULL DEFAULT 'school',
+      notes VARCHAR,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(student_id, date)
+    )
+  `)
+
   // Run migrations for existing databases
   await runMigrations()
 }

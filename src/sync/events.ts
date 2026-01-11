@@ -348,6 +348,39 @@ export interface SessionDeletedEvent extends BaseEvent {
   data: { id: string }
 }
 
+// ============ Attendance Events ============
+
+export interface AttendanceCreatedEvent extends BaseEvent {
+  type: 'attendance.created'
+  data: {
+    id: string
+    studentId: string
+    date: string
+    status: string
+    notes?: string
+  }
+}
+
+export interface AttendanceUpdatedEvent extends BaseEvent {
+  type: 'attendance.updated'
+  data: {
+    id: string
+    studentId: string
+    date: string
+    status: string
+    notes?: string
+  }
+}
+
+export interface AttendanceDeletedEvent extends BaseEvent {
+  type: 'attendance.deleted'
+  data: {
+    id: string
+    studentId: string
+    date: string
+  }
+}
+
 // ============ Settings Events ============
 
 export interface SettingChangedEvent extends BaseEvent {
@@ -437,6 +470,10 @@ export type SyncEvent =
   | SessionCreatedEvent
   | SessionUpdatedEvent
   | SessionDeletedEvent
+  // Attendance
+  | AttendanceCreatedEvent
+  | AttendanceUpdatedEvent
+  | AttendanceDeletedEvent
   // Settings
   | SettingChangedEvent
   // Member Management
