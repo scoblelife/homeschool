@@ -220,7 +220,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - User ratings and reviews (future)
   - Location: `src/renderer/src/features/recommendations/`
 
-- [ ] **5.3 Resource library integration**
+- [x] **5.3 Resource library integration**
   - Quick links to Khan Academy, etc.
   - Log activity when using linked resource
   - Track time spent on external resources

@@ -14,6 +14,7 @@ const navItems = [
   { path: '/hour-tracking', label: 'Hour Tracking', icon: '⏱️' },
   { path: '/templates', label: 'Templates', icon: '🗃️' },
   { path: '/recommendations', label: 'Curricula', icon: '📖' },
+  { path: '/resources', label: 'Resources', icon: '🔗' },
   { path: '/library', label: 'Library', icon: '📚' },
   { path: '/field-trips', label: 'Activities', icon: '🎪' },
   { path: '/calendar', label: 'Calendar', icon: '📅' },
