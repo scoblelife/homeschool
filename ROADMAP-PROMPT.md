@@ -38,7 +38,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Test data sync round-trip
   - Location: `src/sync/__tests__/integration.test.ts`
 
-- [ ] **1.2 Conflict resolution**
+- [x] **1.2 Conflict resolution**
   - Implement last-write-wins with vector clocks
   - Handle same record edited on two devices while offline
   - Add conflict detection logging
@@ -271,7 +271,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 **Last Updated:** 2026-01-11
 
 **Current Phase:** 1
-**Current Task:** 1.2
+**Current Task:** 1.3
 **Blockers:** None
 
 ---
