@@ -484,6 +484,120 @@ ${inviteCode}`,
       downloadUrl
     }
   })
+
+  // Check sync health
+  ipcMain.handle('sync:check-health', async () => {
+    const { checkEventLogHealth } = await import('../sync/recovery')
+
+    if (!eventLog) {
+      return {
+        isCorrupted: false,
+        eventLogLength: 0,
+        lastEventId: null,
+        canRecover: false
+      }
+    }
+
+    return await checkEventLogHealth(eventLog)
+  })
+
+  // Reset sync (full reset)
+  ipcMain.handle('sync:reset', async () => {
+    const { resetSync } = await import('../sync/recovery')
+
+    // Stop active transport first
+    if (webrtcTransport) {
+      await webrtcTransport.stop()
+      webrtcTransport = null
+    }
+
+    // Close event log
+    if (eventLog) {
+      await eventLog.close()
+      eventLog = null
+    }
+
+    // Clear projector
+    projector = null
+
+    // Reset family manager
+    if (familyManager) {
+      await familyManager.leaveFamily()
+    }
+
+    // Reset sync state
+    updateSyncState('offline')
+    syncErrorMessage = undefined
+
+    // Delete all sync data
+    const result = await resetSync()
+
+    // Reset init promise so next access reinitializes
+    initPromise = null
+
+    return result
+  })
+
+  // Recover corrupted event log
+  ipcMain.handle('sync:recover', async () => {
+    const { recoverEventLog } = await import('../sync/recovery')
+
+    if (!familyManager?.isConfigured()) {
+      return { success: false, message: 'No family configured' }
+    }
+
+    const deviceId = familyManager.getDeviceId()
+    if (!deviceId) {
+      return { success: false, message: 'No device ID' }
+    }
+
+    // Close existing event log
+    if (eventLog) {
+      await eventLog.close()
+      eventLog = null
+    }
+
+    // Attempt recovery
+    const result = await recoverEventLog(deviceId)
+
+    // Reinitialize if recovery succeeded
+    if (result.success) {
+      const { createEventLog } = await import('../sync/eventLog')
+      eventLog = await createEventLog(deviceId)
+    }
+
+    return result
+  })
+
+  // List available backups
+  ipcMain.handle('sync:list-backups', async () => {
+    const { listBackups } = await import('../sync/recovery')
+    return await listBackups()
+  })
+
+  // Restore from backup
+  ipcMain.handle('sync:restore-backup', async (_, backupName: string) => {
+    const { restoreFromBackup } = await import('../sync/recovery')
+
+    // Close existing event log
+    if (eventLog) {
+      await eventLog.close()
+      eventLog = null
+    }
+
+    const result = await restoreFromBackup(backupName)
+
+    // Reinitialize event log if restore succeeded
+    if (result.success && familyManager?.isConfigured()) {
+      const deviceId = familyManager.getDeviceId()
+      if (deviceId) {
+        const { createEventLog } = await import('../sync/eventLog')
+        eventLog = await createEventLog(deviceId)
+      }
+    }
+
+    return result
+  })
 }
 
 /**

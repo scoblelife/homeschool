@@ -295,7 +295,14 @@ const api: DatabaseAPI & SyncAPI = {
     const handler = (_event: Electron.IpcRendererEvent, data: { peerId: string; eventsReceived: number }) => callback(data)
     ipcRenderer.on('sync:completed', handler)
     return () => ipcRenderer.removeListener('sync:completed', handler)
-  }
+  },
+
+  // Sync Recovery
+  syncCheckHealth: () => ipcRenderer.invoke('sync:check-health'),
+  syncReset: () => ipcRenderer.invoke('sync:reset'),
+  syncRecover: () => ipcRenderer.invoke('sync:recover'),
+  syncListBackups: () => ipcRenderer.invoke('sync:list-backups'),
+  syncRestoreBackup: (backupName: string) => ipcRenderer.invoke('sync:restore-backup', backupName)
 }
 
 contextBridge.exposeInMainWorld('api', api)
