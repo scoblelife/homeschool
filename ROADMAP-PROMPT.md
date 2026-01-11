@@ -233,7 +233,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Share field trips with co-op
   - Location: `src/renderer/src/features/fieldTrips/`
 
-- [ ] **5.5 Co-op group features**
+- [x] **5.5 Co-op group features**
   - Create/join co-op groups
   - Shared calendar for group events
   - Group field trip coordination

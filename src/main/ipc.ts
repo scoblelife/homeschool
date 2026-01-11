@@ -20,7 +20,8 @@ import {
   recurringRepo,
   attachmentsRepo,
   attendanceRepo,
-  curriculumRepo
+  curriculumRepo,
+  coopRepo
 } from '../database'
 import * as googleAuth from './google-auth'
 import * as googleCalendar from './google-calendar'
@@ -66,7 +67,13 @@ import type {
   CreateAttendanceRecord,
   PortfolioConfig,
   CreateCustomStandard,
-  UpdateCustomStandard
+  UpdateCustomStandard,
+  CreateCoopGroup,
+  UpdateCoopGroup,
+  CreateCoopMember,
+  UpdateCoopMember,
+  CreateCoopEvent,
+  UpdateCoopEvent
 } from '../shared/types'
 
 // Simple iCal parser for extracting events
@@ -1041,6 +1048,77 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('curriculum:getCurriculumReport', async (_, studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) => {
     return curriculumRepo.getCurriculumReport(studentId, gradeLevel, startDate, endDate)
+  })
+
+  // Co-op Groups
+  ipcMain.handle('coop:getGroups', async () => {
+    return coopRepo.getCoopGroups()
+  })
+
+  ipcMain.handle('coop:getGroup', async (_, id: string) => {
+    return coopRepo.getCoopGroup(id)
+  })
+
+  ipcMain.handle('coop:getGroupByInviteCode', async (_, inviteCode: string) => {
+    return coopRepo.getCoopGroupByInviteCode(inviteCode)
+  })
+
+  ipcMain.handle('coop:createGroup', async (_, data: CreateCoopGroup) => {
+    return coopRepo.createCoopGroup(data)
+  })
+
+  ipcMain.handle('coop:updateGroup', async (_, id: string, data: UpdateCoopGroup) => {
+    return coopRepo.updateCoopGroup(id, data)
+  })
+
+  ipcMain.handle('coop:deleteGroup', async (_, id: string) => {
+    return coopRepo.deleteCoopGroup(id)
+  })
+
+  ipcMain.handle('coop:regenerateInviteCode', async (_, groupId: string) => {
+    return coopRepo.regenerateInviteCode(groupId)
+  })
+
+  // Co-op Members
+  ipcMain.handle('coop:getMembers', async (_, groupId: string) => {
+    return coopRepo.getCoopMembers(groupId)
+  })
+
+  ipcMain.handle('coop:getMember', async (_, id: string) => {
+    return coopRepo.getCoopMember(id)
+  })
+
+  ipcMain.handle('coop:createMember', async (_, data: CreateCoopMember) => {
+    return coopRepo.createCoopMember(data)
+  })
+
+  ipcMain.handle('coop:updateMember', async (_, id: string, data: UpdateCoopMember) => {
+    return coopRepo.updateCoopMember(id, data)
+  })
+
+  ipcMain.handle('coop:deleteMember', async (_, id: string) => {
+    return coopRepo.deleteCoopMember(id)
+  })
+
+  // Co-op Events
+  ipcMain.handle('coop:getEvents', async (_, groupId: string) => {
+    return coopRepo.getCoopEvents(groupId)
+  })
+
+  ipcMain.handle('coop:getEvent', async (_, id: string) => {
+    return coopRepo.getCoopEvent(id)
+  })
+
+  ipcMain.handle('coop:createEvent', async (_, data: CreateCoopEvent) => {
+    return coopRepo.createCoopEvent(data)
+  })
+
+  ipcMain.handle('coop:updateEvent', async (_, id: string, data: UpdateCoopEvent) => {
+    return coopRepo.updateCoopEvent(id, data)
+  })
+
+  ipcMain.handle('coop:deleteEvent', async (_, id: string) => {
+    return coopRepo.deleteCoopEvent(id)
   })
 }
 

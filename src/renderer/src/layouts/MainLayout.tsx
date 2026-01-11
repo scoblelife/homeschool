@@ -17,6 +17,7 @@ const navItems = [
   { path: '/resources', label: 'Resources', icon: '🔗' },
   { path: '/library', label: 'Library', icon: '📚' },
   { path: '/field-trips', label: 'Activities', icon: '🎪' },
+  { path: '/coop', label: 'Co-op Groups', icon: '👥' },
   { path: '/calendar', label: 'Calendar', icon: '📅' },
   { path: '/reports', label: 'Reports', icon: '📊' },
   { path: '/annual-report', label: 'Annual Report', icon: '📆' }
