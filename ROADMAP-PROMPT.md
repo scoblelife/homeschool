@@ -195,7 +195,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Standards coverage report
   - Location: `src/renderer/src/features/curriculum/`
 
-- [ ] **4.6 Official hour tracking**
+- [x] **4.6 Official hour tracking**
   - Track instructional hours precisely
   - Separate by subject as required
   - Generate official hour reports
