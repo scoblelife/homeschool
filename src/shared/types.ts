@@ -566,8 +566,9 @@ export interface CalendarSyncRecord {
 // Family Sync Types
 export interface SyncPeerInfo {
   peerId: string
+  deviceId: string
   deviceName?: string
-  lastSeen: number
+  lastSeen?: number
   isOnline: boolean
 }
 
@@ -579,12 +580,17 @@ export interface SyncFamilyStatus {
   deviceName: string | null
 }
 
+export type SyncState = 'synced' | 'syncing' | 'offline' | 'error'
+
 export interface SyncStatus {
   isEnabled: boolean
   isConnected: boolean
   familyStatus: SyncFamilyStatus
   connectedPeers: SyncPeerInfo[]
   pendingEvents: number
+  syncState: SyncState
+  lastSyncTime: string | null // ISO timestamp
+  errorMessage?: string
 }
 
 export interface SyncLogStats {
