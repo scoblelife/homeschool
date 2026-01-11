@@ -39,7 +39,10 @@ import type {
   SubjectUpdatedEvent,
   SubjectDeletedEvent,
   SettingChangedEvent,
-  MemberKickedEvent
+  MemberKickedEvent,
+  AttendanceCreatedEvent,
+  AttendanceUpdatedEvent,
+  AttendanceDeletedEvent
 } from './events'
 import { HLC } from './hlc'
 
@@ -316,6 +319,17 @@ export class EventProjector {
         break
       case 'session.deleted':
         await this.applySessionDeleted(event)
+        break
+
+      // Attendance events
+      case 'attendance.created':
+        await this.applyAttendanceCreated(event)
+        break
+      case 'attendance.updated':
+        await this.applyAttendanceUpdated(event)
+        break
+      case 'attendance.deleted':
+        await this.applyAttendanceDeleted(event)
         break
 
       // Settings events
@@ -821,6 +835,42 @@ export class EventProjector {
     await this.db!.run('DELETE FROM sessions WHERE id = ?', event.data.id)
   }
 
+  // ============ Attendance Event Handlers ============
+
+  private async applyAttendanceCreated(event: AttendanceCreatedEvent): Promise<void> {
+    const { id, studentId, date, status, notes } = event.data
+    await this.db!.run(
+      `INSERT OR REPLACE INTO attendance
+       (id, student_id, date, status, notes, created_at)
+       VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
+      id,
+      studentId,
+      date,
+      status,
+      notes || null
+    )
+  }
+
+  private async applyAttendanceUpdated(event: AttendanceUpdatedEvent): Promise<void> {
+    const { studentId, date, status, notes } = event.data
+    await this.db!.run(
+      `UPDATE attendance SET status = ?, notes = ? WHERE student_id = ? AND date = ?`,
+      status,
+      notes || null,
+      studentId,
+      date
+    )
+  }
+
+  private async applyAttendanceDeleted(event: AttendanceDeletedEvent): Promise<void> {
+    const { studentId, date } = event.data
+    await this.db!.run(
+      'DELETE FROM attendance WHERE student_id = ? AND date = ?',
+      studentId,
+      date
+    )
+  }
+
   // ============ Settings Event Handlers ============
 
   private async applySettingChanged(event: SettingChangedEvent): Promise<void> {
@@ -869,7 +919,8 @@ export class EventProjector {
       'field_trips',
       'weekly_plans',
       'sessions',
-      'subjects'
+      'subjects',
+      'attendance'
     ]
 
     for (const table of tablesToClear) {

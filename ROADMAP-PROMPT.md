@@ -117,40 +117,40 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 
 **Goal:** Transform logged data into actionable insights and motivation.
 
-- [ ] **3.1 Weekly summary view**
+- [x] **3.1 Weekly summary view**
   - Hours per subject breakdown
   - Activities completed count
   - Comparison to previous week
   - Per-child summary
   - Location: `src/renderer/src/pages/WeeklySummary.tsx`
 
-- [ ] **3.2 Email summaries**
+- [x] **3.2 Email summaries**
   - Weekly digest email option
   - Configure email in settings
   - Send via SendGrid/Resend (serverless function)
   - Location: `src/features/emailSummary/`
 
-- [ ] **3.3 Streaks and progress**
+- [x] **3.3 Streaks and progress**
   - Daily logging streak counter
   - Visual streak display (flame icon)
   - Milestone badges (7-day, 30-day, 100-day)
   - Per-child streak tracking
   - Location: `src/renderer/src/features/streaks/`
 
-- [ ] **3.4 Subject balance alerts**
+- [x] **3.4 Subject balance alerts**
   - Define target hours per subject
   - Alert when significantly under target
   - Weekly balance visualization
   - Recommendations to rebalance
   - Location: `src/renderer/src/features/balance/`
 
-- [ ] **3.5 Milestone celebrations**
+- [x] **3.5 Milestone celebrations**
   - Track cumulative achievements (books read, hours logged)
   - Confetti animation on milestones
   - Shareable achievement cards
-  - Location: `src/renderer/src/features/milestones/`
+  - Location: `src/renderer/src/features/celebrations/`
 
-- [ ] **3.6 Year-over-year comparison**
+- [x] **3.6 Year-over-year comparison**
   - Compare current year to previous
   - Progress charts over time
   - Export annual report
@@ -162,19 +162,19 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 
 **Goal:** Support homeschool requirements across different states.
 
-- [ ] **4.1 State requirements database**
+- [x] **4.1 State requirements database**
   - Create JSON database of state requirements
   - Include: required subjects, hours, reporting, assessment
   - Start with top 10 homeschool states
   - Location: `src/data/stateRequirements.json`
 
-- [ ] **4.2 State selector in settings**
+- [x] **4.2 State selector in settings**
   - Select state in onboarding/settings
   - Show summary of requirements
   - Validate activities against requirements
   - Location: `src/renderer/src/pages/Settings.tsx`
 
-- [ ] **4.3 Attendance tracking**
+- [x] **4.3 Attendance tracking**
   - Daily attendance log
   - Mark school days vs non-school days
   - Calculate attendance percentage
@@ -270,8 +270,8 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 
 **Last Updated:** 2026-01-11
 
-**Current Phase:** 3
-**Current Task:** 3.1
+**Current Phase:** 4
+**Current Task:** 4.4
 **Blockers:** None
 
 ---

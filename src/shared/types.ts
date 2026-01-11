@@ -412,6 +412,21 @@ export interface ActivityPayment {
 export type CreateActivityPayment = Omit<ActivityPayment, 'id' | 'createdAt' | 'updatedAt'>
 export type UpdateActivityPayment = Partial<Omit<CreateActivityPayment, 'activityId'>>
 
+// Attendance Types
+export type AttendanceStatus = 'school' | 'holiday' | 'sick' | 'vacation' | 'other'
+
+export interface AttendanceRecord {
+  id: string
+  studentId: string
+  date: string
+  status: AttendanceStatus
+  notes?: string
+  createdAt: string
+}
+
+export type CreateAttendanceRecord = Omit<AttendanceRecord, 'id' | 'createdAt'>
+export type UpdateAttendanceRecord = Partial<Omit<CreateAttendanceRecord, 'studentId' | 'date'>>
+
 // Form types for creating/updating entities
 export type CreateStudent = Omit<Student, 'id' | 'createdAt' | 'updatedAt'>
 export type UpdateStudent = Partial<CreateStudent>
@@ -624,6 +639,18 @@ export interface DatabaseAPI {
   // Email Summary
   sendWeeklySummaryEmail: (data: WeeklySummaryEmailData, config: EmailSummaryConfig) => Promise<{ success: boolean; error?: string }>
   generateEmailPreview: (data: WeeklySummaryEmailData) => Promise<string>
+
+  // Attendance
+  getAttendanceRecords: (studentId: string, startDate: string, endDate: string) => Promise<AttendanceRecord[]>
+  getAttendanceRecord: (studentId: string, date: string) => Promise<AttendanceRecord | null>
+  setAttendanceRecord: (data: CreateAttendanceRecord) => Promise<AttendanceRecord>
+  deleteAttendanceRecord: (studentId: string, date: string) => Promise<void>
+  getAttendanceStats: (studentId: string, startDate: string, endDate: string) => Promise<{
+    totalDays: number
+    schoolDays: number
+    absences: number
+    percentage: number
+  }>
 }
 
 // Google Calendar Types

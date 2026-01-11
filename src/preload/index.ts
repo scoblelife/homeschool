@@ -41,7 +41,9 @@ import type {
   UpdateRecurringActivity,
   ActivityAttachment,
   WeeklySummaryEmailData,
-  EmailSummaryConfig
+  EmailSummaryConfig,
+  CreateAttendanceRecord,
+  AttendanceRecord
 } from '../shared/types'
 
 const api: DatabaseAPI & SyncAPI = {
@@ -344,7 +346,24 @@ const api: DatabaseAPI & SyncAPI = {
   sendWeeklySummaryEmail: (data: WeeklySummaryEmailData, config: EmailSummaryConfig) =>
     ipcRenderer.invoke('email:sendWeeklySummary', data, config) as Promise<{ success: boolean; error?: string }>,
   generateEmailPreview: (data: WeeklySummaryEmailData) =>
-    ipcRenderer.invoke('email:generatePreview', data) as Promise<string>
+    ipcRenderer.invoke('email:generatePreview', data) as Promise<string>,
+
+  // Attendance
+  getAttendanceRecords: (studentId: string, startDate: string, endDate: string) =>
+    ipcRenderer.invoke('db:attendance:getRecords', studentId, startDate, endDate) as Promise<AttendanceRecord[]>,
+  getAttendanceRecord: (studentId: string, date: string) =>
+    ipcRenderer.invoke('db:attendance:getRecord', studentId, date) as Promise<AttendanceRecord | null>,
+  setAttendanceRecord: (data: CreateAttendanceRecord) =>
+    ipcRenderer.invoke('db:attendance:set', data) as Promise<AttendanceRecord>,
+  deleteAttendanceRecord: (studentId: string, date: string) =>
+    ipcRenderer.invoke('db:attendance:delete', studentId, date) as Promise<void>,
+  getAttendanceStats: (studentId: string, startDate: string, endDate: string) =>
+    ipcRenderer.invoke('db:attendance:getStats', studentId, startDate, endDate) as Promise<{
+      totalDays: number
+      schoolDays: number
+      absences: number
+      percentage: number
+    }>
 }
 
 contextBridge.exposeInMainWorld('api', api)

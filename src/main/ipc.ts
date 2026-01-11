@@ -18,7 +18,8 @@ import {
   rewardsRepo,
   familyGoalsRepo,
   recurringRepo,
-  attachmentsRepo
+  attachmentsRepo,
+  attendanceRepo
 } from '../database'
 import * as googleAuth from './google-auth'
 import * as googleCalendar from './google-calendar'
@@ -60,7 +61,8 @@ import type {
   UpdateFamilyGoal,
   ScannedBook,
   CreateRecurringActivity,
-  UpdateRecurringActivity
+  UpdateRecurringActivity,
+  CreateAttendanceRecord
 } from '../shared/types'
 
 // Simple iCal parser for extracting events
@@ -921,6 +923,33 @@ export function registerIpcHandlers(): void {
     }
     return generateEmailPreview(summaryData)
   })
+
+  // Attendance
+  ipcMain.handle(
+    'db:attendance:getRecords',
+    async (_, studentId: string, startDate: string, endDate: string) => {
+      return attendanceRepo.getAttendanceRecords(studentId, startDate, endDate)
+    }
+  )
+
+  ipcMain.handle('db:attendance:getRecord', async (_, studentId: string, date: string) => {
+    return attendanceRepo.getAttendanceRecord(studentId, date)
+  })
+
+  ipcMain.handle('db:attendance:set', async (_, data: CreateAttendanceRecord) => {
+    return attendanceRepo.setAttendanceRecord(data)
+  })
+
+  ipcMain.handle('db:attendance:delete', async (_, studentId: string, date: string) => {
+    return attendanceRepo.deleteAttendanceRecord(studentId, date)
+  })
+
+  ipcMain.handle(
+    'db:attendance:getStats',
+    async (_, studentId: string, startDate: string, endDate: string) => {
+      return attendanceRepo.getAttendanceStats(studentId, startDate, endDate)
+    }
+  )
 }
 
 // Helper to get MIME type from extension
