@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { format, parseISO, isFuture, isToday } from 'date-fns'
 import { Link } from 'react-router-dom'
 import { getStudentColor } from './Settings'
+import QuickAdd from '../components/QuickAdd'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -27,8 +28,7 @@ export default function Dashboard(): JSX.Element {
 
   const today = format(new Date(), 'yyyy-MM-dd')
 
-  useEffect(() => {
-    async function loadDashboardData(): Promise<void> {
+  const loadDashboardData = useCallback(async (): Promise<void> => {
       const [sessions, activities, fieldTrips] = await Promise.all([
         window.api.getSessions({
           studentId: selectedStudentId || undefined,
@@ -67,9 +67,11 @@ export default function Dashboard(): JSX.Element {
         setSuggestedMilestones([])
         setStarTotals(null)
       }
-    }
-    loadDashboardData()
   }, [selectedStudentId, today])
+
+  useEffect(() => {
+    loadDashboardData()
+  }, [loadDashboardData])
 
   // Load family goal data
   useEffect(() => {
@@ -532,6 +534,9 @@ export default function Dashboard(): JSX.Element {
           </div>
         </div>
       )}
+
+      {/* Quick Add FAB */}
+      <QuickAdd onActivityCreated={loadDashboardData} />
     </div>
   )
 }
