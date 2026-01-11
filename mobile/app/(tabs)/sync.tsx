@@ -64,6 +64,27 @@ export default function SyncScreen() {
     }, [loadData])
   )
 
+  // Subscribe to peer updates (for when device names are received)
+  useEffect(() => {
+    const unsubscribePeerConnected = syncManager.onPeerConnected(() => {
+      setPeers(syncManager.getPeers())
+    })
+
+    const unsubscribePeerDisconnected = syncManager.onPeerDisconnected(() => {
+      setPeers(syncManager.getPeers())
+    })
+
+    const unsubscribePeersUpdate = syncManager.onPeersUpdate((updatedPeers) => {
+      setPeers(updatedPeers)
+    })
+
+    return () => {
+      unsubscribePeerConnected()
+      unsubscribePeerDisconnected()
+      unsubscribePeersUpdate()
+    }
+  }, [syncManager])
+
   const handleRefresh = () => {
     setRefreshing(true)
     loadData()

@@ -360,12 +360,41 @@ export interface SettingChangedEvent extends BaseEvent {
 
 // ============ Member Management Events ============
 
+export interface MemberAddedEvent extends BaseEvent {
+  type: 'member.added'
+  data: {
+    deviceId: string
+    deviceName: string
+    pubKey: string
+    addedBy: string // deviceId of who added them
+    isManager: boolean
+  }
+}
+
 export interface MemberKickedEvent extends BaseEvent {
   type: 'member.kicked'
   data: {
     kickedDeviceId: string
+    kickedPubKey: string
     kickedDeviceName: string
+    kickedBy: string // deviceId of who kicked them
     reason?: string
+    selfDestruct?: boolean // Request that kicked device delete its data
+  }
+}
+
+export interface ManagerDesignatedEvent extends BaseEvent {
+  type: 'manager.designated'
+  data: {
+    successors: string[] // deviceIds in order of succession
+  }
+}
+
+export interface ManagerTransferredEvent extends BaseEvent {
+  type: 'manager.transferred'
+  data: {
+    newManagerId: string
+    previousManagerId: string
   }
 }
 
@@ -411,7 +440,10 @@ export type SyncEvent =
   // Settings
   | SettingChangedEvent
   // Member Management
+  | MemberAddedEvent
   | MemberKickedEvent
+  | ManagerDesignatedEvent
+  | ManagerTransferredEvent
 
 // ============ Event Creation Helpers ============
 

@@ -142,3 +142,112 @@ export async function deleteActivity(id: string): Promise<void> {
   const db = await getDatabase()
   await db.runAsync('DELETE FROM activities WHERE id = ?', id)
 }
+
+interface ActivitySummary {
+  subjectId: string
+  subjectName: string
+  totalActivities: number
+  totalMinutes: number
+  averageGrade: number | null
+  byType: Record<ActivityType, number>
+}
+
+interface DailySummary {
+  date: string
+  sessionsCount: number
+  activitiesCount: number
+  totalMinutes: number
+}
+
+export async function getActivitySummary(
+  studentId: string,
+  startDate: string,
+  endDate: string
+): Promise<ActivitySummary[]> {
+  const db = await getDatabase()
+
+  const rows = await db.getAllAsync(`
+    SELECT
+      a.subject_id,
+      s.name as subject_name,
+      COUNT(*) as total_activities,
+      COALESCE(SUM(a.duration_minutes), 0) as total_minutes,
+      AVG(CASE WHEN a.grade IS NOT NULL AND a.max_grade IS NOT NULL AND a.max_grade > 0
+               THEN (a.grade * 100.0 / a.max_grade) END) as average_grade,
+      a.activity_type
+    FROM activities a
+    JOIN subjects s ON a.subject_id = s.id
+    WHERE a.student_id = ?
+      AND a.date_completed >= ?
+      AND a.date_completed <= ?
+    GROUP BY a.subject_id, a.activity_type
+    ORDER BY s.name
+  `, studentId, startDate, endDate) as Record<string, unknown>[]
+
+  // Group by subject
+  const summaryMap = new Map<string, ActivitySummary>()
+
+  for (const row of rows) {
+    const subjectId = row.subject_id as string
+    const activityType = row.activity_type as ActivityType
+
+    if (!summaryMap.has(subjectId)) {
+      summaryMap.set(subjectId, {
+        subjectId,
+        subjectName: row.subject_name as string,
+        totalActivities: 0,
+        totalMinutes: 0,
+        averageGrade: null,
+        byType: {
+          worksheet: 0,
+          video: 0,
+          reading: 0,
+          writing_print: 0,
+          writing_cursive: 0,
+          hands_on: 0,
+          game: 0,
+          assessment: 0,
+          field_trip: 0,
+        },
+      })
+    }
+
+    const summary = summaryMap.get(subjectId)!
+    summary.totalActivities += row.total_activities as number
+    summary.totalMinutes += row.total_minutes as number
+    if (row.average_grade !== null) {
+      summary.averageGrade = row.average_grade as number
+    }
+    summary.byType[activityType] = row.total_activities as number
+  }
+
+  return Array.from(summaryMap.values())
+}
+
+export async function getDailySummaries(
+  studentId: string,
+  startDate: string,
+  endDate: string
+): Promise<DailySummary[]> {
+  const db = await getDatabase()
+
+  const rows = await db.getAllAsync(`
+    SELECT
+      date_completed as date,
+      COUNT(*) as activities_count,
+      COALESCE(SUM(duration_minutes), 0) as total_minutes
+    FROM activities
+    WHERE student_id = ?
+      AND date_completed >= ?
+      AND date_completed <= ?
+    GROUP BY date_completed
+    ORDER BY date_completed DESC
+  `, studentId, startDate, endDate) as Record<string, unknown>[]
+
+  return rows.map((row) => ({
+    date: row.date as string,
+    sessionsCount: 0,
+    activitiesCount: row.activities_count as number,
+    totalMinutes: row.total_minutes as number,
+  }))
+}

@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "scheme": "homeschool",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -41,7 +41,8 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-asset"
+      "expo-asset",
+      "./plugins/withWebRTC"
     ],
     "experiments": {
       "typedRoutes": true

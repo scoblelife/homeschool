@@ -9,6 +9,9 @@
       "git": {
         "pkg-path": "git"
       },
+      "jdk17": {
+        "pkg-path": "jdk17"
+      },
       "nodejs_22": {
         "pkg-path": "nodejs_22"
       },
@@ -20,10 +23,10 @@
       "ELECTRON_ENABLE_LOGGING": "1"
     },
     "hook": {
-      "on-activate": "  mkdir -p \"$FLOX_ENV_CACHE/npm\"\n  mkdir -p \"$FLOX_ENV_PROJECT/data\"\n\n  export npm_config_cache=\"$FLOX_ENV_CACHE/npm\"\n\n  if [ -f \"$FLOX_ENV_PROJECT/package.json\" ] && [ ! -d \"$FLOX_ENV_PROJECT/node_modules\" ]; then\n    echo \"Run 'npm install' to install dependencies\"\n  fi\n"
+      "on-activate": "  mkdir -p \"$FLOX_ENV_CACHE/npm\"\n  mkdir -p \"$HOME/.homeschool/parquet\"\n\n  export npm_config_cache=\"$FLOX_ENV_CACHE/npm\"\n\n  if [ -f \"$FLOX_ENV_PROJECT/package.json\" ] && [ ! -d \"$FLOX_ENV_PROJECT/node_modules\" ]; then\n    echo \"Run 'npm install' to install dependencies\"\n  fi\n"
     },
     "profile": {
-      "common": "  alias dev=\"npm run dev\"\n  alias build=\"npm run build\"\n  alias db=\"duckdb data/homeschool.db\"\n"
+      "common": "  alias dev=\"npm run dev\"\n  alias build=\"npm run build\"\n  alias db=\"duckdb ~/.homeschool/homeschool.db\"\n"
     },
     "options": {}
   },
@@ -277,6 +280,128 @@
         "debug": "/nix/store/q6m51s4q8kddlh9b9rb63v1yqvlv3xgp-git-2.52.0-debug",
         "doc": "/nix/store/n4zq81winwf8d5y2ra7fjznwl6cnhggz-git-2.52.0-doc",
         "out": "/nix/store/fryiyyhhilpqhx2wc4b6l5gnxc8w18rg-git-2.52.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jdk17",
+      "broken": false,
+      "derivation": "/nix/store/87rnl1qkmwrkkzmk0xhnzwak8h9mxdsr-zulu-ca-jdk-17.0.12.drv",
+      "description": "Certified builds of OpenJDK",
+      "install_id": "jdk17",
+      "license": "GPL-2.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "zulu-ca-jdk-17.0.12",
+      "pname": "jdk17",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:03:08.231283Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "17.0.12",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/s9nq23qm9animys49h7g7w660jz4ccwz-zulu-ca-jdk-17.0.12"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jdk17",
+      "broken": false,
+      "derivation": "/nix/store/x77zwwh63dnr6ncbrv7w04d75y4n9r8p-openjdk-17.0.17+10.drv",
+      "description": "Open-source Java Development Kit",
+      "install_id": "jdk17",
+      "license": "GPL-2.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "openjdk-17.0.17+10",
+      "pname": "jdk17",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:19:10.994170Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "17.0.17+10",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/x61h0zs6dawi6i6946c30p9qmn8r45q8-openjdk-17.0.17+10-debug",
+        "out": "/nix/store/qkzq9lxji4zs1dgdlxwwwknaggij5lag-openjdk-17.0.17+10"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jdk17",
+      "broken": false,
+      "derivation": "/nix/store/rq1jxlr68pjj9ws31zazwgam60s3smn0-zulu-ca-jdk-17.0.12.drv",
+      "description": "Certified builds of OpenJDK",
+      "install_id": "jdk17",
+      "license": "GPL-2.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "zulu-ca-jdk-17.0.12",
+      "pname": "jdk17",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:35:04.493578Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "17.0.12",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/n1rp0ay6dp66yvr2dzwn840hcnpk8010-zulu-ca-jdk-17.0.12"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "jdk17",
+      "broken": false,
+      "derivation": "/nix/store/w65fj818ha97ajd1yfrxambi4jl36zgp-openjdk-17.0.17+10.drv",
+      "description": "Open-source Java Development Kit",
+      "install_id": "jdk17",
+      "license": "GPL-2.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "openjdk-17.0.17+10",
+      "pname": "jdk17",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:51:06.652577Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "17.0.17+10",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "debug": "/nix/store/7hk6cjcmfgml2nq293g7cdsx8nrab3ir-openjdk-17.0.17+10-debug",
+        "out": "/nix/store/4xlra07s99b60kj0md6drgh0qmrkdpby-openjdk-17.0.17+10"
       },
       "system": "x86_64-linux",
       "group": "toplevel",
