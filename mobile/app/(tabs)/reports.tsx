@@ -189,7 +189,7 @@ export default function ReportsScreen() {
                             if (count === 0) return null
                             return (
                               <Badge key={type} variant="default">
-                                {type.replace('_', ' ')}: {count}
+                                {`${type.replace('_', ' ')}: ${count}`}
                               </Badge>
                             )
                           })}
