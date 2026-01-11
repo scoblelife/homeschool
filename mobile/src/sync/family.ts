@@ -92,6 +92,13 @@ export class FamilyManager {
   }
 
   /**
+   * Get public key for this family
+   */
+  getPubKey(): string | null {
+    return this.familyConfig?.publicKey || null
+  }
+
+  /**
    * Check if this device is the family manager
    */
   isManager(): boolean {

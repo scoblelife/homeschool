@@ -110,8 +110,8 @@ declare type RTCPeerConnectionState =
 
 import { EventEmitter } from 'events'
 import type { SyncEvent } from './events'
-import { HttpSignalingProvider } from './httpSignaling'
-import { SIGNALING_URL, ICE_SERVERS } from './config'
+import { SignalingClient, type SignalingMessage } from './signalingClient'
+import { WORKER_URL, ICE_SERVERS, PRESENCE_INTERVAL, SIGNAL_POLL_INTERVAL } from './config'
 
 export interface PeerInfo {
   peerId: string
@@ -124,18 +124,13 @@ export interface WebRTCTransportOptions {
   deviceId: string
   deviceName: string
   familyId: string
-  signalingUrl?: string
+  pubKey: string
+  workerUrl?: string
   onEvent?: (event: SyncEvent, fromPeer: string) => Promise<void>
   onPeerConnected?: (peerId: string, deviceName: string) => void
   onPeerDisconnected?: (peerId: string) => void
 }
 
-interface SignalingMessage {
-  type: 'offer' | 'answer' | 'ice-candidate'
-  from: string
-  to: string
-  payload: any
-}
 
 /**
  * Manages a single WebRTC peer connection
@@ -391,16 +386,18 @@ class PeerConnection {
 
 /**
  * WebRTC Transport
- * Manages P2P connections via WebRTC with HTTP signaling
+ * Manages P2P connections via WebRTC with Cloudflare Worker signaling
  */
 export class WebRTCTransport extends EventEmitter {
   private deviceId: string
   private deviceName: string
   private familyId: string
-  private signalingUrl: string
-  private signaling: HttpSignalingProvider | null = null
+  private pubKey: string
+  private workerUrl: string
+  private signaling: SignalingClient | null = null
   private peers: Map<string, PeerConnection> = new Map()
-  private unsubscribe: (() => void) | null = null
+  private pollInterval: ReturnType<typeof setInterval> | null = null
+  private heartbeatInterval: ReturnType<typeof setInterval> | null = null
   private started = false
   private onEvent?: (event: SyncEvent, fromPeer: string) => Promise<void>
   private onPeerConnected?: (peerId: string, deviceName: string) => void
@@ -411,7 +408,8 @@ export class WebRTCTransport extends EventEmitter {
     this.deviceId = options.deviceId
     this.deviceName = options.deviceName
     this.familyId = options.familyId
-    this.signalingUrl = options.signalingUrl || SIGNALING_URL
+    this.pubKey = options.pubKey
+    this.workerUrl = options.workerUrl || WORKER_URL
     this.onEvent = options.onEvent
     this.onPeerConnected = options.onPeerConnected
     this.onPeerDisconnected = options.onPeerDisconnected
@@ -423,32 +421,65 @@ export class WebRTCTransport extends EventEmitter {
   async start(): Promise<void> {
     if (this.started) return
 
-    console.log('[WebRTCTransport] Starting with signaling server:', this.signalingUrl)
+    console.log('[WebRTCTransport] Starting with Cloudflare Worker:', this.workerUrl)
 
-    // Create signaling provider
-    this.signaling = new HttpSignalingProvider({
-      serverUrl: this.signalingUrl,
-      pollIntervalMs: 1000,
-    })
+    // Create signaling client
+    this.signaling = new SignalingClient(this.workerUrl)
 
-    // Subscribe to signaling messages
-    this.unsubscribe = this.signaling.subscribe(this.deviceId, (message) => {
-      this.handleSignalingMessage(message)
-    })
-
-    // Join the family room
-    const existingPeers = await this.signaling.joinRoom(this.familyId, this.deviceId)
-    console.log('[WebRTCTransport] Joined room, existing peers:', existingPeers)
-
-    // Connect to each existing peer
-    for (const peerId of existingPeers) {
-      if (peerId !== this.deviceId) {
-        await this.connectToPeer(peerId)
-      }
+    // Send initial presence heartbeat
+    try {
+      await this.signaling.heartbeat(this.familyId, this.deviceId, this.pubKey)
+      console.log('[WebRTCTransport] Sent initial heartbeat')
+    } catch (err) {
+      console.error('[WebRTCTransport] Failed to send initial heartbeat:', err)
     }
+
+    // Get online peers and connect to them
+    try {
+      const onlinePeers = await this.signaling.getOnlinePeers(this.familyId)
+      console.log('[WebRTCTransport] Online peers:', onlinePeers.length)
+
+      for (const peer of onlinePeers) {
+        if (peer.deviceId !== this.deviceId) {
+          await this.connectToPeer(peer.deviceId)
+        }
+      }
+    } catch (err) {
+      console.error('[WebRTCTransport] Failed to get online peers:', err)
+    }
+
+    // Start polling for incoming signals
+    this.pollInterval = setInterval(async () => {
+      await this.pollForSignals()
+    }, SIGNAL_POLL_INTERVAL)
+
+    // Start presence heartbeat
+    this.heartbeatInterval = setInterval(async () => {
+      try {
+        await this.signaling?.heartbeat(this.familyId, this.deviceId, this.pubKey)
+      } catch (err) {
+        console.error('[WebRTCTransport] Heartbeat failed:', err)
+      }
+    }, PRESENCE_INTERVAL)
 
     this.started = true
     this.emit('started')
+  }
+
+  /**
+   * Poll for incoming signaling messages
+   */
+  private async pollForSignals(): Promise<void> {
+    if (!this.signaling) return
+
+    try {
+      const messages = await this.signaling.pollSignals(this.familyId, this.deviceId)
+      for (const message of messages) {
+        await this.handleSignalingMessage(message)
+      }
+    } catch (err) {
+      // Ignore poll errors silently to avoid spam
+    }
   }
 
   /**
@@ -459,14 +490,24 @@ export class WebRTCTransport extends EventEmitter {
 
     console.log('[WebRTCTransport] Stopping')
 
-    // Leave the room
-    if (this.signaling) {
-      await this.signaling.leaveRoom(this.familyId)
+    // Clear polling and heartbeat intervals
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval)
+      this.pollInterval = null
+    }
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval)
+      this.heartbeatInterval = null
     }
 
-    // Unsubscribe from signaling
-    this.unsubscribe?.()
-    this.unsubscribe = null
+    // Remove presence from worker
+    if (this.signaling) {
+      try {
+        await this.signaling.removePresence(this.familyId, this.deviceId)
+      } catch (err) {
+        console.error('[WebRTCTransport] Failed to remove presence:', err)
+      }
+    }
 
     // Close all peer connections
     for (const [, peer] of Array.from(this.peers.entries())) {
@@ -495,7 +536,7 @@ export class WebRTCTransport extends EventEmitter {
     // Create and send offer
     const { offer, iceCandidates } = await peer.createOffer(this.deviceName)
 
-    await this.signaling?.send({
+    await this.signaling?.sendSignal(this.familyId, peerId, {
       type: 'offer',
       from: this.deviceId,
       to: peerId,
@@ -555,6 +596,13 @@ export class WebRTCTransport extends EventEmitter {
   private async handleSignalingMessage(message: SignalingMessage): Promise<void> {
     console.log('[WebRTCTransport] Received signaling:', message.type, 'from:', message.from)
 
+    const payload = message.payload as {
+      offer?: RTCSessionDescriptionInit
+      answer?: RTCSessionDescriptionInit
+      iceCandidates?: RTCIceCandidateInit[]
+      deviceName?: string
+    }
+
     if (message.type === 'offer') {
       // Received an offer, create answer
       let peer = this.peers.get(message.from)
@@ -564,16 +612,16 @@ export class WebRTCTransport extends EventEmitter {
       }
 
       // Set peer device name from offer
-      if (message.payload.deviceName) {
-        peer.setDeviceName(message.payload.deviceName)
+      if (payload.deviceName) {
+        peer.setDeviceName(payload.deviceName)
       }
 
       const { answer, iceCandidates } = await peer.handleOffer(
-        message.payload.offer,
-        message.payload.iceCandidates
+        payload.offer!,
+        payload.iceCandidates || []
       )
 
-      await this.signaling?.send({
+      await this.signaling?.sendSignal(this.familyId, message.from, {
         type: 'answer',
         from: this.deviceId,
         to: message.from,
@@ -584,11 +632,11 @@ export class WebRTCTransport extends EventEmitter {
       const peer = this.peers.get(message.from)
       if (peer) {
         // Set peer device name from answer
-        if (message.payload.deviceName) {
-          peer.setDeviceName(message.payload.deviceName)
+        if (payload.deviceName) {
+          peer.setDeviceName(payload.deviceName)
         }
 
-        await peer.handleAnswer(message.payload.answer, message.payload.iceCandidates)
+        await peer.handleAnswer(payload.answer!, payload.iceCandidates || [])
       }
     }
   }
