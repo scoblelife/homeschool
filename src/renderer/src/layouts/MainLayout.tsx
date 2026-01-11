@@ -12,7 +12,8 @@ const navItems = [
   { path: '/library', label: 'Library', icon: '📚' },
   { path: '/field-trips', label: 'Activities', icon: '🎪' },
   { path: '/calendar', label: 'Calendar', icon: '📅' },
-  { path: '/reports', label: 'Reports', icon: '📊' }
+  { path: '/reports', label: 'Reports', icon: '📊' },
+  { path: '/annual-report', label: 'Annual Report', icon: '📆' }
 ]
 
 export default function MainLayout(): JSX.Element {
