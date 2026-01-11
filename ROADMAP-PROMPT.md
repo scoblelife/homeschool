@@ -90,7 +90,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - One-tap to confirm/skip
   - Location: `src/renderer/src/features/recurring/`
 
-- [ ] **2.4 Photo attachments**
+- [x] **2.4 Photo attachments**
   - Add photo to any activity
   - Store in `~/.homeschool/attachments/`
   - Thumbnail preview in activity list
@@ -271,7 +271,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 **Last Updated:** 2026-01-11
 
 **Current Phase:** 2
-**Current Task:** 2.4
+**Current Task:** 2.5
 **Blockers:** None
 
 ---

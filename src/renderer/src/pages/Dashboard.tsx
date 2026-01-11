@@ -5,6 +5,7 @@ import { getStudentColor } from './Settings'
 import QuickAdd from '../components/QuickAdd'
 import { VoiceInput } from '../features/voiceInput'
 import { RecurringActivities } from '../features/recurring'
+import { Timer } from '../features/timer'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -144,6 +145,11 @@ export default function Dashboard(): JSX.Element {
 
       {/* Recurring Activities - Today's Schedule */}
       <RecurringActivities onActivityCreated={loadDashboardData} />
+
+      {/* Session Timer */}
+      <div className="mb-6">
+        <Timer onSessionSaved={loadDashboardData} />
+      </div>
 
       {/* Milestone Progress (when student selected) */}
       {selectedStudent && milestones.length > 0 && (

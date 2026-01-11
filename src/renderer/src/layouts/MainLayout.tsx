@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useStore } from '../stores/useStore'
 import { SyncStatusIndicator } from '../components/sync'
+import { TimerIndicator } from '../features/timer'
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: '🏠' },
@@ -33,7 +34,10 @@ export default function MainLayout(): JSX.Element {
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-gray-900">Homeschool</h1>
-            <SyncStatusIndicator onClick={() => navigate('/settings')} />
+            <div className="flex items-center gap-2">
+              <TimerIndicator onClick={() => navigate('/')} />
+              <SyncStatusIndicator onClick={() => navigate('/settings')} />
+            </div>
           </div>
         </div>
 
