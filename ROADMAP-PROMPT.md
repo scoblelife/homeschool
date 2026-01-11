@@ -105,7 +105,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Persist timer state across app restart
   - Location: `src/renderer/src/features/timer/`
 
-- [ ] **2.6 Mobile quick-add**
+- [x] **2.6 Mobile quick-add**
   - Port QuickAdd to mobile
   - iOS widget for home screen
   - Android widget for home screen
@@ -270,8 +270,8 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 
 **Last Updated:** 2026-01-11
 
-**Current Phase:** 2
-**Current Task:** 2.6
+**Current Phase:** 3
+**Current Task:** 3.1
 **Blockers:** None
 
 ---
