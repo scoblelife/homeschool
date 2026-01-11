@@ -3,6 +3,7 @@ import { format, parseISO, isFuture, isToday } from 'date-fns'
 import { Link } from 'react-router-dom'
 import { getStudentColor } from './Settings'
 import QuickAdd from '../components/QuickAdd'
+import { VoiceInput } from '../features/voiceInput'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -537,6 +538,9 @@ export default function Dashboard(): JSX.Element {
 
       {/* Quick Add FAB */}
       <QuickAdd onActivityCreated={loadDashboardData} />
+
+      {/* Voice Input FAB */}
+      <VoiceInput onActivityCreated={loadDashboardData} />
     </div>
   )
 }

@@ -78,7 +78,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Complete logging in <10 seconds
   - Location: `src/renderer/src/components/QuickAdd.tsx`
 
-- [ ] **2.2 Voice logging (desktop)**
+- [x] **2.2 Voice logging (desktop)**
   - "Add activity" voice command
   - Parse natural language: "30 minutes of reading for Emma"
   - Confirm before saving
@@ -271,7 +271,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 **Last Updated:** 2026-01-11
 
 **Current Phase:** 2
-**Current Task:** 2.2
+**Current Task:** 2.3
 **Blockers:** None
 
 ---
