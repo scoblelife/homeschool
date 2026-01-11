@@ -5,7 +5,9 @@
  * peer-to-peer communication and OAuth-style device joining.
  */
 
-import sodium from 'sodium-universal'
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const sodium: any = require('sodium-universal')
 
 export interface KeyPair {
   publicKey: string // base64

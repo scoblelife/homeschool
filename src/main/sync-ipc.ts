@@ -332,13 +332,23 @@ export function registerSyncIPC(): void {
     }
 
     try {
+      // Get the kicked member's public key from the family members
+      const members = familyManager?.getMembers() || []
+      const kickedMember = members.find((m: { deviceId: string }) => m.deviceId === deviceId)
+      const kickedPubKey = kickedMember?.pubKey || ''
+
+      // Get our device ID (the one doing the kicking)
+      const ourDeviceId = familyManager?.getDeviceId() || ''
+
       // Create and append the kick event
       const kickEvent = await eventLog.append({
         id: createEventId(),
         type: 'member.kicked',
         data: {
           kickedDeviceId: deviceId,
+          kickedPubKey,
           kickedDeviceName: deviceName,
+          kickedBy: ourDeviceId,
           reason
         }
       })

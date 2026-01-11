@@ -4,8 +4,9 @@
  * Enables families to sync their homeschool database across devices
  * without a central server using:
  * - Event Sourcing: All changes are immutable events
- * - Mesh Protocol: Store-and-forward over WAN (Meshtastic-inspired)
- * - P2P Networking: Hyperswarm for NAT traversal
+ * - WebRTC: Direct peer-to-peer connections
+ * - Cloudflare Worker: Lightweight signaling service
+ * - mDNS: Local network discovery
  * - QR Code Pairing: Easy device linking
  */
 
@@ -18,8 +19,11 @@ export * from './projector'
 // Family management
 export * from './family'
 
-// P2P networking
-export * from './swarm'
+// Crypto
+export * from './crypto'
 
-// Mesh protocol
-export * from './mesh'
+// Signaling
+export * from './signalingClient'
+
+// Configuration
+export * from './config'
