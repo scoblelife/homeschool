@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { format, parseISO } from 'date-fns'
+import { format, parseISO, startOfWeek, endOfWeek } from 'date-fns'
 import { Dialog } from '@headlessui/react'
 import { useStudents } from '../hooks/useDatabase'
 import { SyncSettings } from '../components/sync'
-import type { CreateStudent, GradeLevel, GoogleCalendarInfo, Subject, SubjectChoreMapping } from '../../../shared/types'
+import type { CreateStudent, GradeLevel, GoogleCalendarInfo, Subject, SubjectChoreMapping, EmailSummaryConfig, WeeklySummaryEmailData } from '../../../shared/types'
 
 // Student color palette
 const STUDENT_COLORS = [
@@ -51,6 +51,16 @@ export default function Settings(): JSX.Element {
   const [choreMappings, setChoreMappings] = useState<SubjectChoreMapping[]>([])
   const [mappingForm, setMappingForm] = useState<Record<string, { choreName: string; defaultStars: number }>>({})
 
+  // Email Summary state
+  const [emailConfig, setEmailConfig] = useState<EmailSummaryConfig>({
+    enabled: false,
+    recipientEmail: '',
+    method: 'mailto',
+  })
+  const [emailPreviewHtml, setEmailPreviewHtml] = useState<string | null>(null)
+  const [isSendingEmail, setIsSendingEmail] = useState(false)
+  const [emailStatus, setEmailStatus] = useState<{ success?: boolean; message?: string } | null>(null)
+
   // Load Google auth status on mount
   useEffect(() => {
     loadGoogleAuthStatus()
@@ -60,6 +70,118 @@ export default function Settings(): JSX.Element {
   useEffect(() => {
     loadSubjectsAndMappings()
   }, [])
+
+  // Load email config on mount
+  useEffect(() => {
+    loadEmailConfig()
+  }, [])
+
+  const loadEmailConfig = async (): Promise<void> => {
+    const [enabled, recipientEmail, method, resendApiKey] = await Promise.all([
+      window.api.getSetting('email_summary_enabled'),
+      window.api.getSetting('email_summary_recipient'),
+      window.api.getSetting('email_summary_method'),
+      window.api.getSetting('email_summary_resend_api_key'),
+    ])
+    setEmailConfig({
+      enabled: enabled === 'true',
+      recipientEmail: recipientEmail || '',
+      method: (method as 'mailto' | 'resend') || 'mailto',
+      resendApiKey: resendApiKey || undefined,
+    })
+  }
+
+  const saveEmailConfig = async (config: EmailSummaryConfig): Promise<void> => {
+    await Promise.all([
+      window.api.setSetting('email_summary_enabled', config.enabled.toString()),
+      window.api.setSetting('email_summary_recipient', config.recipientEmail),
+      window.api.setSetting('email_summary_method', config.method),
+      config.resendApiKey
+        ? window.api.setSetting('email_summary_resend_api_key', config.resendApiKey)
+        : window.api.deleteSetting('email_summary_resend_api_key'),
+    ])
+    setEmailConfig(config)
+  }
+
+  const generateWeeklySummaryData = async (): Promise<WeeklySummaryEmailData> => {
+    const now = new Date()
+    const weekStart = startOfWeek(now, { weekStartsOn: 0 }) // Sunday
+    const weekEnd = endOfWeek(now, { weekStartsOn: 0 })
+
+    const studentSummaries = await Promise.all(
+      students.map(async (student) => {
+        const activitySummary = await window.api.getActivitySummary(
+          student.id,
+          format(weekStart, 'yyyy-MM-dd'),
+          format(weekEnd, 'yyyy-MM-dd')
+        )
+        const dailySummaries = await window.api.getDailySummaries(
+          student.id,
+          format(weekStart, 'yyyy-MM-dd'),
+          format(weekEnd, 'yyyy-MM-dd')
+        )
+
+        const totalActivities = activitySummary.reduce((sum, s) => sum + s.totalActivities, 0)
+        const totalMinutes = activitySummary.reduce((sum, s) => sum + s.totalMinutes, 0)
+        const activeDays = dailySummaries.filter(d => d.activitiesCount > 0).length
+
+        return {
+          name: student.name,
+          gradeLevel: student.gradeLevel,
+          totalActivities,
+          totalMinutes,
+          activeDays,
+          subjects: activitySummary.map(s => ({
+            name: s.subjectName,
+            activities: s.totalActivities,
+            minutes: s.totalMinutes,
+          })),
+        }
+      })
+    )
+
+    const familyTotalActivities = studentSummaries.reduce((sum, s) => sum + s.totalActivities, 0)
+    const familyTotalMinutes = studentSummaries.reduce((sum, s) => sum + s.totalMinutes, 0)
+
+    return {
+      weekStart: format(weekStart, 'yyyy-MM-dd'),
+      weekEnd: format(weekEnd, 'yyyy-MM-dd'),
+      students: studentSummaries,
+      familyTotalActivities,
+      familyTotalMinutes,
+    }
+  }
+
+  const handlePreviewEmail = async (): Promise<void> => {
+    const data = await generateWeeklySummaryData()
+    const html = await window.api.generateEmailPreview(data)
+    setEmailPreviewHtml(html)
+  }
+
+  const handleSendTestEmail = async (): Promise<void> => {
+    if (!emailConfig.recipientEmail) {
+      setEmailStatus({ success: false, message: 'Please enter a recipient email address' })
+      return
+    }
+
+    setIsSendingEmail(true)
+    setEmailStatus(null)
+
+    try {
+      const data = await generateWeeklySummaryData()
+      const result = await window.api.sendWeeklySummaryEmail(data, { ...emailConfig, enabled: true })
+
+      if (result.success) {
+        setEmailStatus({ success: true, message: 'Email sent successfully!' })
+      } else {
+        setEmailStatus({ success: false, message: result.error || 'Failed to send email' })
+      }
+    } catch (error) {
+      setEmailStatus({ success: false, message: error instanceof Error ? error.message : 'Failed to send email' })
+    } finally {
+      setIsSendingEmail(false)
+    }
+  }
 
   const loadSubjectsAndMappings = async (): Promise<void> => {
     const [subjectList, mappingList] = await Promise.all([
@@ -312,6 +434,139 @@ export default function Settings(): JSX.Element {
           </div>
         )}
       </div>
+
+      {/* Email Summary Section */}
+      <div className="card mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">Weekly Email Summary</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          Receive a weekly email summarizing your students' homeschool activities.
+        </p>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="email-enabled"
+              checked={emailConfig.enabled}
+              onChange={(e) => saveEmailConfig({ ...emailConfig, enabled: e.target.checked })}
+              className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+            />
+            <label htmlFor="email-enabled" className="text-sm font-medium text-gray-700">
+              Enable weekly email summaries
+            </label>
+          </div>
+
+          <div>
+            <label className="label">Recipient Email</label>
+            <input
+              type="email"
+              value={emailConfig.recipientEmail}
+              onChange={(e) => setEmailConfig({ ...emailConfig, recipientEmail: e.target.value })}
+              onBlur={() => saveEmailConfig(emailConfig)}
+              className="input"
+              placeholder="your@email.com"
+            />
+          </div>
+
+          <div>
+            <label className="label">Send Method</label>
+            <select
+              value={emailConfig.method}
+              onChange={(e) => saveEmailConfig({ ...emailConfig, method: e.target.value as 'mailto' | 'resend' })}
+              className="input"
+            >
+              <option value="mailto">Open in Email Client (mailto)</option>
+              <option value="resend">Send via Resend API</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              {emailConfig.method === 'mailto'
+                ? 'Opens your default email client with a pre-filled email.'
+                : 'Sends the email directly using the Resend API.'}
+            </p>
+          </div>
+
+          {emailConfig.method === 'resend' && (
+            <div>
+              <label className="label">Resend API Key</label>
+              <input
+                type="password"
+                value={emailConfig.resendApiKey || ''}
+                onChange={(e) => setEmailConfig({ ...emailConfig, resendApiKey: e.target.value })}
+                onBlur={() => saveEmailConfig(emailConfig)}
+                className="input"
+                placeholder="re_xxxxxxxxxxxx"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Get your API key from{' '}
+                <a
+                  href="https://resend.com/api-keys"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:text-indigo-800"
+                >
+                  resend.com/api-keys
+                </a>
+              </p>
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <button onClick={handlePreviewEmail} className="btn btn-secondary">
+              Preview Email
+            </button>
+            <button
+              onClick={handleSendTestEmail}
+              disabled={isSendingEmail || !emailConfig.recipientEmail}
+              className="btn btn-primary"
+            >
+              {isSendingEmail ? 'Sending...' : 'Send Test Email'}
+            </button>
+          </div>
+
+          {emailStatus && (
+            <div
+              className={`p-3 rounded-lg text-sm ${
+                emailStatus.success
+                  ? 'bg-green-50 text-green-800 border border-green-200'
+                  : 'bg-red-50 text-red-800 border border-red-200'
+              }`}
+            >
+              {emailStatus.message}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Email Preview Modal */}
+      <Dialog open={emailPreviewHtml !== null} onClose={() => setEmailPreviewHtml(null)} className="relative z-50">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b">
+              <Dialog.Title className="text-lg font-semibold text-gray-900">
+                Email Preview
+              </Dialog.Title>
+              <button
+                onClick={() => setEmailPreviewHtml(null)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto p-4">
+              {emailPreviewHtml && (
+                <iframe
+                  srcDoc={emailPreviewHtml}
+                  className="w-full h-[500px] border rounded"
+                  title="Email Preview"
+                />
+              )}
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
 
       {/* Skylight Chore Mapping Section */}
       <div className="card mb-8">

@@ -865,6 +865,62 @@ export function registerIpcHandlers(): void {
     })
     return result
   })
+
+  // Email Summary
+  ipcMain.handle('email:sendWeeklySummary', async (_, data: {
+    weekStart: string
+    weekEnd: string
+    students: Array<{
+      name: string
+      gradeLevel: string
+      totalActivities: number
+      totalMinutes: number
+      activeDays: number
+      subjects: Array<{ name: string; activities: number; minutes: number }>
+    }>
+    familyTotalActivities: number
+    familyTotalMinutes: number
+  }, config: {
+    enabled: boolean
+    recipientEmail: string
+    method: 'mailto' | 'resend'
+    resendApiKey?: string
+  }) => {
+    const { sendWeeklySummary } = await import('../features/emailSummary')
+    const summaryData = {
+      weekStart: new Date(data.weekStart),
+      weekEnd: new Date(data.weekEnd),
+      students: data.students,
+      familyTotalActivities: data.familyTotalActivities,
+      familyTotalMinutes: data.familyTotalMinutes,
+    }
+    return sendWeeklySummary(summaryData, config)
+  })
+
+  ipcMain.handle('email:generatePreview', async (_, data: {
+    weekStart: string
+    weekEnd: string
+    students: Array<{
+      name: string
+      gradeLevel: string
+      totalActivities: number
+      totalMinutes: number
+      activeDays: number
+      subjects: Array<{ name: string; activities: number; minutes: number }>
+    }>
+    familyTotalActivities: number
+    familyTotalMinutes: number
+  }) => {
+    const { generateEmailPreview } = await import('../features/emailSummary')
+    const summaryData = {
+      weekStart: new Date(data.weekStart),
+      weekEnd: new Date(data.weekEnd),
+      students: data.students,
+      familyTotalActivities: data.familyTotalActivities,
+      familyTotalMinutes: data.familyTotalMinutes,
+    }
+    return generateEmailPreview(summaryData)
+  })
 }
 
 // Helper to get MIME type from extension

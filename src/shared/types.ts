@@ -178,6 +178,35 @@ export interface ActivityAttachment {
 
 export type CreateAttachment = Omit<ActivityAttachment, 'id' | 'createdAt' | 'thumbnailPath'>
 
+// Email Summary Types
+export interface EmailStudentSummary {
+  name: string
+  gradeLevel: string
+  totalActivities: number
+  totalMinutes: number
+  activeDays: number
+  subjects: Array<{
+    name: string
+    activities: number
+    minutes: number
+  }>
+}
+
+export interface WeeklySummaryEmailData {
+  weekStart: string
+  weekEnd: string
+  students: EmailStudentSummary[]
+  familyTotalActivities: number
+  familyTotalMinutes: number
+}
+
+export interface EmailSummaryConfig {
+  enabled: boolean
+  recipientEmail: string
+  method: 'mailto' | 'resend'
+  resendApiKey?: string
+}
+
 // Book Scanner Types (QR code phone scanning)
 export interface ScannedBook {
   isbn: string
@@ -591,6 +620,10 @@ export interface DatabaseAPI {
   deleteAttachment: (id: string) => Promise<boolean>
   openAttachmentFile: (filePath: string) => Promise<void>
   getAttachmentsForActivities: (activityIds: string[]) => Promise<Record<string, ActivityAttachment[]>>
+
+  // Email Summary
+  sendWeeklySummaryEmail: (data: WeeklySummaryEmailData, config: EmailSummaryConfig) => Promise<{ success: boolean; error?: string }>
+  generateEmailPreview: (data: WeeklySummaryEmailData) => Promise<string>
 }
 
 // Google Calendar Types

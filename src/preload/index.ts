@@ -39,7 +39,9 @@ import type {
   RecurringActivity,
   CreateRecurringActivity,
   UpdateRecurringActivity,
-  ActivityAttachment
+  ActivityAttachment,
+  WeeklySummaryEmailData,
+  EmailSummaryConfig
 } from '../shared/types'
 
 const api: DatabaseAPI & SyncAPI = {
@@ -336,7 +338,13 @@ const api: DatabaseAPI & SyncAPI = {
   openAttachmentFile: (filePath: string) =>
     ipcRenderer.invoke('attachments:openFile', filePath) as Promise<void>,
   getAttachmentsForActivities: (activityIds: string[]) =>
-    ipcRenderer.invoke('attachments:getForActivities', activityIds) as Promise<Record<string, ActivityAttachment[]>>
+    ipcRenderer.invoke('attachments:getForActivities', activityIds) as Promise<Record<string, ActivityAttachment[]>>,
+
+  // Email Summary
+  sendWeeklySummaryEmail: (data: WeeklySummaryEmailData, config: EmailSummaryConfig) =>
+    ipcRenderer.invoke('email:sendWeeklySummary', data, config) as Promise<{ success: boolean; error?: string }>,
+  generateEmailPreview: (data: WeeklySummaryEmailData) =>
+    ipcRenderer.invoke('email:generatePreview', data) as Promise<string>
 }
 
 contextBridge.exposeInMainWorld('api', api)
