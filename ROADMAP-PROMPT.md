@@ -84,7 +84,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Confirm before saving
   - Location: `src/renderer/src/features/voiceInput/`
 
-- [ ] **2.3 Recurring activities**
+- [x] **2.3 Recurring activities**
   - Define recurring activity templates
   - Auto-suggest at scheduled times
   - One-tap to confirm/skip
@@ -271,7 +271,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 **Last Updated:** 2026-01-11
 
 **Current Phase:** 2
-**Current Task:** 2.3
+**Current Task:** 2.4
 **Blockers:** None
 
 ---

@@ -372,6 +372,25 @@ export async function initializeSchema(): Promise<void> {
     )
   `)
 
+  // Create recurring_activities table for scheduled activity templates
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS recurring_activities (
+      id VARCHAR PRIMARY KEY,
+      student_id VARCHAR NOT NULL REFERENCES students(id),
+      subject_id VARCHAR NOT NULL REFERENCES subjects(id),
+      title VARCHAR NOT NULL,
+      activity_type VARCHAR NOT NULL,
+      duration_minutes INTEGER,
+      recurrence_pattern VARCHAR NOT NULL,
+      recurrence_days VARCHAR,
+      start_time VARCHAR,
+      is_active BOOLEAN DEFAULT TRUE,
+      last_logged_date DATE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
   // Run migrations for existing databases
   await runMigrations()
 }
