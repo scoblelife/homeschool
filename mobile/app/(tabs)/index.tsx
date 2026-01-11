@@ -16,6 +16,7 @@ import { ActivityCard } from '../../src/components/ActivityCard'
 import { MilestoneCard } from '../../src/components/MilestoneCard'
 import { FieldTripCard } from '../../src/components/FieldTripCard'
 import { StarDisplay } from '../../src/components/StarDisplay'
+import { QuickAdd } from '../../src/components/QuickAdd'
 
 export default function Dashboard() {
   const { selectedStudentId, getSelectedStudent, getSubjectById, students } = useStore()
@@ -78,8 +79,9 @@ export default function Dashboard() {
   const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
 
   return (
+    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
     <ScrollView
-      style={{ flex: 1, backgroundColor: '#f9fafb' }}
+      style={{ flex: 1 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
     >
       <View style={{ padding: 16 }}>
@@ -167,5 +169,9 @@ export default function Dashboard() {
         </View>
       </View>
     </ScrollView>
+
+    {/* Quick Add FAB */}
+    <QuickAdd onActivityCreated={loadData} />
+    </View>
   )
 }
