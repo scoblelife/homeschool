@@ -372,6 +372,22 @@ export async function initializeSchema(): Promise<void> {
     )
   `)
 
+  // Create activity_attachments table for photos and files
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS activity_attachments (
+      id VARCHAR PRIMARY KEY,
+      activity_id VARCHAR NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+      file_path VARCHAR NOT NULL,
+      thumbnail_path VARCHAR,
+      file_name VARCHAR NOT NULL,
+      file_type VARCHAR NOT NULL,
+      file_size INTEGER,
+      width INTEGER,
+      height INTEGER,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
   // Create recurring_activities table for scheduled activity templates
   await db.run(`
     CREATE TABLE IF NOT EXISTS recurring_activities (

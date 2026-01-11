@@ -38,7 +38,8 @@ import type {
   Book,
   RecurringActivity,
   CreateRecurringActivity,
-  UpdateRecurringActivity
+  UpdateRecurringActivity,
+  ActivityAttachment
 } from '../shared/types'
 
 const api: DatabaseAPI & SyncAPI = {
@@ -321,7 +322,21 @@ const api: DatabaseAPI & SyncAPI = {
   getDueRecurringActivities: (studentId?: string, date?: string) =>
     ipcRenderer.invoke('recurring:getDue', studentId, date) as Promise<RecurringActivity[]>,
   markRecurringActivityLogged: (id: string, date: string) =>
-    ipcRenderer.invoke('recurring:markLogged', id, date) as Promise<void>
+    ipcRenderer.invoke('recurring:markLogged', id, date) as Promise<void>,
+
+  // Activity Attachments
+  getAttachmentsForActivity: (activityId: string) =>
+    ipcRenderer.invoke('attachments:getForActivity', activityId) as Promise<ActivityAttachment[]>,
+  getAttachment: (id: string) =>
+    ipcRenderer.invoke('attachments:get', id) as Promise<ActivityAttachment | null>,
+  addAttachment: (activityId: string) =>
+    ipcRenderer.invoke('attachments:add', activityId) as Promise<ActivityAttachment | null>,
+  deleteAttachment: (id: string) =>
+    ipcRenderer.invoke('attachments:delete', id) as Promise<boolean>,
+  openAttachmentFile: (filePath: string) =>
+    ipcRenderer.invoke('attachments:openFile', filePath) as Promise<void>,
+  getAttachmentsForActivities: (activityIds: string[]) =>
+    ipcRenderer.invoke('attachments:getForActivities', activityIds) as Promise<Record<string, ActivityAttachment[]>>
 }
 
 contextBridge.exposeInMainWorld('api', api)

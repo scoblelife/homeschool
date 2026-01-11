@@ -162,6 +162,22 @@ export interface RecurringActivity {
 export type CreateRecurringActivity = Omit<RecurringActivity, 'id' | 'createdAt' | 'updatedAt' | 'lastLoggedDate'>
 export type UpdateRecurringActivity = Partial<Omit<CreateRecurringActivity, 'studentId'>>
 
+// Activity Attachments
+export interface ActivityAttachment {
+  id: string
+  activityId: string
+  filePath: string
+  thumbnailPath: string | null
+  fileName: string
+  fileType: string
+  fileSize: number | null
+  width: number | null
+  height: number | null
+  createdAt: string
+}
+
+export type CreateAttachment = Omit<ActivityAttachment, 'id' | 'createdAt' | 'thumbnailPath'>
+
 // Book Scanner Types (QR code phone scanning)
 export interface ScannedBook {
   isbn: string
@@ -567,6 +583,14 @@ export interface DatabaseAPI {
   deleteRecurringActivity: (id: string) => Promise<boolean>
   getDueRecurringActivities: (studentId?: string, date?: string) => Promise<RecurringActivity[]>
   markRecurringActivityLogged: (id: string, date: string) => Promise<void>
+
+  // Activity Attachments
+  getAttachmentsForActivity: (activityId: string) => Promise<ActivityAttachment[]>
+  getAttachment: (id: string) => Promise<ActivityAttachment | null>
+  addAttachment: (activityId: string) => Promise<ActivityAttachment | null>
+  deleteAttachment: (id: string) => Promise<boolean>
+  openAttachmentFile: (filePath: string) => Promise<void>
+  getAttachmentsForActivities: (activityIds: string[]) => Promise<Record<string, ActivityAttachment[]>>
 }
 
 // Google Calendar Types
