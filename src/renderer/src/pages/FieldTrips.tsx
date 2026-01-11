@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Dialog } from '@headlessui/react'
 import { format, parseISO, isPast, isFuture, isToday, addDays } from 'date-fns'
 
@@ -8,6 +8,7 @@ const toDate = (date: string | Date): Date => {
   return parseISO(date)
 }
 import { useStore } from '../stores/useStore'
+import { MapLink, MapButton, ShareButton, LinkedActivities, LinkedCountBadge } from '../features/fieldTrips'
 import type {
   FieldTrip,
   CreateFieldTrip,
@@ -104,7 +105,9 @@ function FieldTripCard({
   expenses,
   onAddExpense,
   onUpdateExpense,
-  onDeleteExpense
+  onDeleteExpense,
+  onLinkActivity,
+  onUnlinkActivity
 }: {
   trip: FieldTrip
   students: { id: string; name: string }[]
@@ -135,6 +138,8 @@ function FieldTripCard({
   onAddExpense: (expense: Omit<CreateActivityExpense, 'activityId'>) => void
   onUpdateExpense: (id: string, data: Partial<Omit<CreateActivityExpense, 'activityId'>>) => void
   onDeleteExpense: (id: string) => void
+  onLinkActivity: (activityId: string) => Promise<void>
+  onUnlinkActivity: (activityId: string) => Promise<void>
 }) {
   const statusInfo = statusLabels[trip.status]
   const activityConfig = activityTypeConfig[trip.activityType] || activityTypeConfig.field_trip
@@ -242,7 +247,7 @@ function FieldTripCard({
           </div>
 
           <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 flex-wrap">
-            <span>📍 {trip.location}</span>
+            <MapLink location={trip.location} />
             <span>•</span>
             <span>📅 {format(tripDate, 'EEEE, MMMM d, yyyy')}</span>
             {(trip.startTime || trip.endTime) && (
@@ -358,6 +363,7 @@ function FieldTripCard({
           <button onClick={onDuplicate} className="text-gray-600 hover:text-gray-800 text-sm">
             Duplicate
           </button>
+          <ShareButton trip={trip} students={students} subjects={subjects} />
           <button onClick={onDelete} className="text-red-500 hover:text-red-700 text-sm">
             Delete
           </button>
@@ -788,6 +794,13 @@ function FieldTripCard({
               )
             )}
           </div>
+
+          {/* Linked Activities Section */}
+          <LinkedActivities
+            fieldTrip={trip}
+            onLink={onLinkActivity}
+            onUnlink={onUnlinkActivity}
+          />
         </div>
       )}
     </div>
@@ -1104,6 +1117,15 @@ export default function FieldTrips(): JSX.Element {
     await loadExpenses(activityId)
   }
 
+  // Activity linking handlers
+  const handleLinkActivity = async (fieldTripId: string, activityId: string) => {
+    await window.api.linkActivityToFieldTrip({ fieldTripId, activityId })
+  }
+
+  const handleUnlinkActivity = async (fieldTripId: string, activityId: string) => {
+    await window.api.unlinkActivityFromFieldTrip(fieldTripId, activityId)
+  }
+
   const toggleStudentSelection = (studentId: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -1218,6 +1240,8 @@ export default function FieldTrips(): JSX.Element {
               onAddExpense={(data) => handleAddExpense(trip.id, data)}
               onUpdateExpense={(expenseId, data) => handleUpdateExpense(expenseId, data, trip.id)}
               onDeleteExpense={(expenseId) => handleDeleteExpense(expenseId, trip.id)}
+              onLinkActivity={(activityId) => handleLinkActivity(trip.id, activityId)}
+              onUnlinkActivity={(activityId) => handleUnlinkActivity(trip.id, activityId)}
             />
           ))}
         </div>

@@ -54,6 +54,17 @@ async function runMigrations(): Promise<void> {
   } catch {
     // Table doesn't exist yet
   }
+
+  // Create field_trip_activities linking table if it doesn't exist
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS field_trip_activities (
+      id VARCHAR PRIMARY KEY,
+      field_trip_id VARCHAR NOT NULL,
+      activity_id VARCHAR NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(field_trip_id, activity_id)
+    )
+  `)
 }
 
 export async function initializeSchema(): Promise<void> {
