@@ -62,7 +62,8 @@ import type {
   ScannedBook,
   CreateRecurringActivity,
   UpdateRecurringActivity,
-  CreateAttendanceRecord
+  CreateAttendanceRecord,
+  PortfolioConfig
 } from '../shared/types'
 
 // Simple iCal parser for extracting events
@@ -950,6 +951,31 @@ export function registerIpcHandlers(): void {
       return attendanceRepo.getAttendanceStats(studentId, startDate, endDate)
     }
   )
+
+  // Portfolio
+  ipcMain.handle('portfolio:generate', async (_, config: PortfolioConfig) => {
+    const { generatePortfolioPDF } = await import('../features/portfolio')
+    return generatePortfolioPDF(config)
+  })
+
+  ipcMain.handle('portfolio:preview', async (_, config: PortfolioConfig) => {
+    const { previewPortfolioHTML } = await import('../features/portfolio')
+    return previewPortfolioHTML(config)
+  })
+
+  ipcMain.handle('portfolio:defaultConfig', async (_, studentId: string, schoolYear: string) => {
+    const { getDefaultConfig } = await import('../features/portfolio')
+    return getDefaultConfig(studentId, schoolYear)
+  })
+
+  ipcMain.handle('portfolio:currentSchoolYear', async () => {
+    const { getCurrentSchoolYear } = await import('../features/portfolio')
+    return getCurrentSchoolYear()
+  })
+
+  ipcMain.handle('portfolio:openFile', async (_, filePath: string) => {
+    shell.openPath(filePath)
+  })
 }
 
 // Helper to get MIME type from extension
