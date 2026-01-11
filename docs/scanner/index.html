@@ -402,62 +402,88 @@
       bookPreview.classList.add('active');
       scannerCard.classList.add('hidden');
 
+      let bookFound = false;
+
+      // Try Open Library first
       try {
-        // Try Open Library first
         const response = await fetch(`https://openlibrary.org/isbn/${isbn}.json`);
 
-        if (!response.ok) {
-          throw new Error('Book not found');
-        }
+        if (response.ok) {
+          const data = await response.json();
 
-        const data = await response.json();
-
-        // Get author info
-        let authorName = '';
-        if (data.authors && data.authors.length > 0) {
-          const authorKey = data.authors[0].key;
-          try {
-            const authorRes = await fetch(`https://openlibrary.org${authorKey}.json`);
-            const authorData = await authorRes.json();
-            authorName = authorData.name || '';
-          } catch (e) {
-            console.warn('Could not fetch author:', e);
+          // Get author info
+          let authorName = '';
+          if (data.authors && data.authors.length > 0) {
+            const authorKey = data.authors[0].key;
+            try {
+              const authorRes = await fetch(`https://openlibrary.org${authorKey}.json`);
+              const authorData = await authorRes.json();
+              authorName = authorData.name || '';
+            } catch (e) {
+              console.warn('Could not fetch author:', e);
+            }
           }
+
+          // Build cover URL
+          let coverUrl = '';
+          if (data.covers && data.covers.length > 0) {
+            coverUrl = `https://covers.openlibrary.org/b/id/${data.covers[0]}-M.jpg`;
+          }
+
+          currentBook = {
+            isbn: isbn,
+            title: data.title || 'Unknown Title',
+            author: authorName,
+            totalPages: data.number_of_pages || null,
+            coverUrl: coverUrl,
+            coverPhoto: null
+          };
+          bookFound = true;
         }
+      } catch (err) {
+        console.warn('Open Library lookup failed:', err);
+      }
 
-        // Build cover URL
-        let coverUrl = '';
-        if (data.covers && data.covers.length > 0) {
-          coverUrl = `https://covers.openlibrary.org/b/id/${data.covers[0]}-M.jpg`;
+      // Fallback to Google Books API
+      if (!bookFound) {
+        try {
+          const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
+          const data = await response.json();
+
+          if (data.totalItems > 0 && data.items && data.items[0]) {
+            const book = data.items[0].volumeInfo;
+
+            currentBook = {
+              isbn: isbn,
+              title: book.title || 'Unknown Title',
+              author: book.authors ? book.authors.join(', ') : '',
+              totalPages: book.pageCount || null,
+              coverUrl: book.imageLinks?.thumbnail?.replace('http:', 'https:') || '',
+              coverPhoto: null
+            };
+            bookFound = true;
+          }
+        } catch (err) {
+          console.warn('Google Books lookup failed:', err);
         }
+      }
 
-        currentBook = {
-          isbn: isbn,
-          title: data.title || 'Unknown Title',
-          author: authorName,
-          totalPages: data.number_of_pages || null,
-          coverUrl: coverUrl,
-          coverPhoto: null
-        };
-
-        // Update UI
+      // Update UI based on result
+      if (bookFound && currentBook) {
         bookTitle.textContent = currentBook.title;
         bookAuthor.textContent = currentBook.author || 'Unknown Author';
         bookPages.textContent = currentBook.totalPages ? `${currentBook.totalPages} pages` : '? pages';
         bookIsbn.textContent = `ISBN: ${isbn}`;
 
-        if (coverUrl) {
-          bookCover.innerHTML = `<img src="${coverUrl}" alt="Cover">`;
+        if (currentBook.coverUrl) {
+          bookCover.innerHTML = `<img src="${currentBook.coverUrl}" alt="Cover">`;
         } else {
           bookCover.innerHTML = '&#128218;';
         }
 
         coverPhotoData = null;
-
-      } catch (err) {
-        console.error('Lookup error:', err);
-
-        // Create book with just ISBN
+      } else {
+        // No book found in any database - still allow adding with just ISBN
         currentBook = {
           isbn: isbn,
           title: 'Unknown Book',
@@ -467,7 +493,7 @@
           coverPhoto: null
         };
 
-        bookTitle.textContent = 'Book not found in database';
+        bookTitle.textContent = 'Book not found - enter details manually';
         bookAuthor.textContent = `ISBN: ${isbn}`;
         bookPages.textContent = '';
         bookIsbn.textContent = '';
