@@ -1,6 +1,7 @@
 import { ipcMain, dialog, shell, app, net, BrowserWindow } from 'electron'
-import { copyFile, mkdir, writeFile } from 'fs/promises'
-import { join, basename } from 'path'
+import { copyFile, mkdir, writeFile, unlink, stat } from 'fs/promises'
+import { join, basename, extname } from 'path'
+import { nativeImage } from 'electron'
 import { v4 as uuidv4 } from 'uuid'
 import {
   studentsRepo,
@@ -16,7 +17,8 @@ import {
   choreMappingsRepo,
   rewardsRepo,
   familyGoalsRepo,
-  recurringRepo
+  recurringRepo,
+  attachmentsRepo
 } from '../database'
 import * as googleAuth from './google-auth'
 import * as googleCalendar from './google-calendar'
@@ -762,6 +764,159 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('recurring:markLogged', async (_, id: string, date: string) => {
     return recurringRepo.markRecurringActivityLogged(id, date)
   })
+
+  // Activity Attachments
+  ipcMain.handle('attachments:getForActivity', async (_, activityId: string) => {
+    return attachmentsRepo.getAttachments(activityId)
+  })
+
+  ipcMain.handle('attachments:get', async (_, id: string) => {
+    return attachmentsRepo.getAttachment(id)
+  })
+
+  ipcMain.handle('attachments:add', async (_, activityId: string) => {
+    // Open file dialog to select image
+    const result = await dialog.showOpenDialog({
+      properties: ['openFile'],
+      filters: [
+        { name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'] }
+      ]
+    })
+
+    if (result.canceled || result.filePaths.length === 0) {
+      return null
+    }
+
+    const sourcePath = result.filePaths[0]
+    const fileName = basename(sourcePath)
+    const fileExt = extname(fileName).toLowerCase()
+    const fileType = getImageMimeType(fileExt)
+
+    // Create attachments directory
+    const attachmentsDir = join(app.getPath('userData'), 'attachments')
+    await mkdir(attachmentsDir, { recursive: true })
+
+    // Generate unique filename
+    const uniqueFileName = `${uuidv4()}${fileExt}`
+    const destPath = join(attachmentsDir, uniqueFileName)
+
+    // Copy file to attachments directory
+    await copyFile(sourcePath, destPath)
+
+    // Get file info
+    const fileStats = await stat(destPath)
+    let width: number | null = null
+    let height: number | null = null
+
+    // Try to get image dimensions
+    try {
+      const image = nativeImage.createFromPath(destPath)
+      const size = image.getSize()
+      width = size.width
+      height = size.height
+    } catch {
+      // Ignore dimension errors
+    }
+
+    // Create attachment record
+    const attachment = await attachmentsRepo.createAttachment({
+      activityId,
+      filePath: destPath,
+      fileName,
+      fileType,
+      fileSize: fileStats.size,
+      width,
+      height
+    })
+
+    // Generate thumbnail asynchronously
+    generateThumbnail(attachment.id, destPath).catch(console.error)
+
+    return attachment
+  })
+
+  ipcMain.handle('attachments:delete', async (_, id: string) => {
+    const attachment = await attachmentsRepo.getAttachment(id)
+    if (!attachment) return false
+
+    // Delete files
+    try {
+      await unlink(attachment.filePath)
+      if (attachment.thumbnailPath) {
+        await unlink(attachment.thumbnailPath)
+      }
+    } catch {
+      // Ignore file deletion errors
+    }
+
+    return attachmentsRepo.deleteAttachment(id)
+  })
+
+  ipcMain.handle('attachments:openFile', async (_, filePath: string) => {
+    shell.openPath(filePath)
+  })
+
+  ipcMain.handle('attachments:getForActivities', async (_, activityIds: string[]) => {
+    const map = await attachmentsRepo.getAttachmentsForActivities(activityIds)
+    // Convert Map to object for IPC serialization
+    const result: Record<string, unknown[]> = {}
+    map.forEach((value, key) => {
+      result[key] = value
+    })
+    return result
+  })
+}
+
+// Helper to get MIME type from extension
+function getImageMimeType(ext: string): string {
+  const types: Record<string, string> = {
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.gif': 'image/gif',
+    '.webp': 'image/webp',
+    '.heic': 'image/heic'
+  }
+  return types[ext] || 'image/jpeg'
+}
+
+// Generate thumbnail for an attachment
+async function generateThumbnail(attachmentId: string, sourcePath: string): Promise<void> {
+  try {
+    const image = nativeImage.createFromPath(sourcePath)
+    if (image.isEmpty()) return
+
+    // Resize to 200px max dimension
+    const size = image.getSize()
+    const maxDim = 200
+    let newWidth = size.width
+    let newHeight = size.height
+
+    if (size.width > maxDim || size.height > maxDim) {
+      if (size.width > size.height) {
+        newWidth = maxDim
+        newHeight = Math.round((size.height / size.width) * maxDim)
+      } else {
+        newHeight = maxDim
+        newWidth = Math.round((size.width / size.height) * maxDim)
+      }
+    }
+
+    const resized = image.resize({ width: newWidth, height: newHeight })
+    const thumbnailBuffer = resized.toJPEG(80)
+
+    // Save thumbnail
+    const attachmentsDir = join(app.getPath('userData'), 'attachments', 'thumbnails')
+    await mkdir(attachmentsDir, { recursive: true })
+
+    const thumbnailPath = join(attachmentsDir, `${attachmentId}.jpg`)
+    await writeFile(thumbnailPath, thumbnailBuffer)
+
+    // Update attachment record
+    await attachmentsRepo.updateThumbnailPath(attachmentId, thumbnailPath)
+  } catch (err) {
+    console.error('Failed to generate thumbnail:', err)
+  }
 }
 
 // Helper to fetch image as buffer
