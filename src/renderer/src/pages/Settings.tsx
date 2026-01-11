@@ -3,6 +3,12 @@ import { format, parseISO, startOfWeek, endOfWeek } from 'date-fns'
 import { Dialog } from '@headlessui/react'
 import { useStudents } from '../hooks/useDatabase'
 import { SyncSettings } from '../components/sync'
+import {
+  getAllStates,
+  getStateRequirements,
+  formatRequirements,
+  type StateRequirements,
+} from '../../../data/stateRequirementsTypes'
 import type { CreateStudent, GradeLevel, GoogleCalendarInfo, Subject, SubjectChoreMapping, EmailSummaryConfig, WeeklySummaryEmailData } from '../../../shared/types'
 
 // Student color palette
@@ -61,6 +67,11 @@ export default function Settings(): JSX.Element {
   const [isSendingEmail, setIsSendingEmail] = useState(false)
   const [emailStatus, setEmailStatus] = useState<{ success?: boolean; message?: string } | null>(null)
 
+  // State Requirements state
+  const [selectedStateCode, setSelectedStateCode] = useState<string | null>(null)
+  const [stateInfo, setStateInfo] = useState<StateRequirements | null>(null)
+  const availableStates = getAllStates()
+
   // Load Google auth status on mount
   useEffect(() => {
     loadGoogleAuthStatus()
@@ -75,6 +86,31 @@ export default function Settings(): JSX.Element {
   useEffect(() => {
     loadEmailConfig()
   }, [])
+
+  // Load state requirements on mount
+  useEffect(() => {
+    loadStateSelection()
+  }, [])
+
+  const loadStateSelection = async (): Promise<void> => {
+    const savedState = await window.api.getSetting('homeschool_state')
+    if (savedState) {
+      setSelectedStateCode(savedState)
+      setStateInfo(getStateRequirements(savedState))
+    }
+  }
+
+  const handleStateChange = async (stateCode: string): Promise<void> => {
+    if (stateCode) {
+      await window.api.setSetting('homeschool_state', stateCode)
+      setSelectedStateCode(stateCode)
+      setStateInfo(getStateRequirements(stateCode))
+    } else {
+      await window.api.deleteSetting('homeschool_state')
+      setSelectedStateCode(null)
+      setStateInfo(null)
+    }
+  }
 
   const loadEmailConfig = async (): Promise<void> => {
     const [enabled, recipientEmail, method, resendApiKey] = await Promise.all([
@@ -364,6 +400,87 @@ export default function Settings(): JSX.Element {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* State Requirements Section */}
+      <div className="card mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">State Requirements</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          Select your state to see homeschool requirements and ensure compliance.
+        </p>
+
+        <div className="mb-4">
+          <label className="label">Your State</label>
+          <select
+            value={selectedStateCode || ''}
+            onChange={(e) => handleStateChange(e.target.value)}
+            className="input"
+          >
+            <option value="">Select your state...</option>
+            {availableStates.map((state) => (
+              <option key={state.code} value={state.code}>
+                {state.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {stateInfo && (
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-gray-900">{stateInfo.name} Requirements</h3>
+              <span
+                className={`text-xs px-2 py-1 rounded-full ${
+                  stateInfo.regulationLevel === 'minimal'
+                    ? 'bg-green-100 text-green-800'
+                    : stateInfo.regulationLevel === 'low'
+                    ? 'bg-blue-100 text-blue-800'
+                    : stateInfo.regulationLevel === 'moderate'
+                    ? 'bg-amber-100 text-amber-800'
+                    : 'bg-red-100 text-red-800'
+                }`}
+              >
+                {stateInfo.regulationLevel.charAt(0).toUpperCase() + stateInfo.regulationLevel.slice(1)} Regulation
+              </span>
+            </div>
+
+            <ul className="space-y-2 text-sm text-gray-600 mb-4">
+              {formatRequirements(stateInfo).map((req, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="text-indigo-500 mt-0.5">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                  {req}
+                </li>
+              ))}
+            </ul>
+
+            {stateInfo.notes && (
+              <div className="text-sm text-gray-600 bg-white rounded p-3 border border-gray-200">
+                <strong>Notes:</strong> {stateInfo.notes}
+              </div>
+            )}
+
+            {stateInfo.resources.length > 0 && (
+              <div className="mt-3">
+                <div className="text-xs text-gray-500 mb-1">Official Resources:</div>
+                {stateInfo.resources.map((url, i) => (
+                  <a
+                    key={i}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-indigo-600 hover:text-indigo-800 block truncate"
+                  >
+                    {url}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
