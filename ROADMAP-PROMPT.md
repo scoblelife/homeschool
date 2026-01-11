@@ -51,12 +51,12 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Handle app wake from sleep
   - Location: `src/sync/connectionManager.ts`
 
-- [ ] **1.4 Sync status UI**
+- [x] **1.4 Sync status UI**
   - Add sync indicator to header (synced/syncing/offline/error)
   - Show last sync timestamp
   - Show connected peer count
   - Click to see detailed sync status modal
-  - Location: `src/renderer/src/components/SyncStatus.tsx`
+  - Location: `src/renderer/src/components/sync/SyncStatusIndicator.tsx`
 
 - [ ] **1.5 Error recovery**
   - Detect corrupted event log
@@ -271,7 +271,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 **Last Updated:** 2026-01-11
 
 **Current Phase:** 1
-**Current Task:** 1.4
+**Current Task:** 1.5
 **Blockers:** None
 
 ---

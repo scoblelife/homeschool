@@ -638,7 +638,7 @@ function PeerList({
 /**
  * Format last seen timestamp
  */
-function formatLastSeen(timestamp: number): string {
+function formatLastSeen(timestamp: number | undefined): string {
   if (!timestamp) return 'Never'
 
   const now = Date.now()

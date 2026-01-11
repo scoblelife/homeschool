@@ -17,6 +17,18 @@ import { createEventId, type SyncEvent } from '../sync/events'
 import { setSyncEmitter } from '../database/syncEmitter'
 import { needsMigration, migrateExistingData } from '../sync/migration'
 
+import type { SyncStatus, SyncState, SyncPeerInfo } from '../shared/types'
+
+// Helper to convert PeerInfo to SyncPeerInfo
+function toSyncPeerInfo(peers: PeerInfo[]): SyncPeerInfo[] {
+  return peers.map(p => ({
+    peerId: p.peerId,
+    deviceId: p.deviceId,
+    deviceName: p.deviceName,
+    isOnline: p.isOnline
+  }))
+}
+
 // Singleton instances
 let familyManager: FamilyManager | null = null
 let eventLog: EventLog | null = null
@@ -24,12 +36,18 @@ let projector: EventProjector | null = null
 let webrtcTransport: WebRTCTransport | null = null
 let initPromise: Promise<void> | null = null
 
-export interface SyncStatus {
-  isEnabled: boolean
-  isConnected: boolean
-  familyStatus: FamilyStatus
-  connectedPeers: PeerInfo[]
-  pendingEvents: number
+// Sync state tracking
+let currentSyncState: SyncState = 'offline'
+let lastSyncTime: string | null = null
+let syncErrorMessage: string | undefined = undefined
+
+// Helper to update sync state
+function updateSyncState(state: SyncState, error?: string): void {
+  currentSyncState = state
+  syncErrorMessage = error
+  if (state === 'synced') {
+    lastSyncTime = new Date().toISOString()
+  }
 }
 
 /**
@@ -110,10 +128,16 @@ async function initializeWebRTC(config: { deviceId: string; deviceName: string; 
     },
     onPeerConnected: (peerId, deviceName) => {
       console.log('[Sync] Peer connected via WebRTC:', deviceName, peerId.slice(0, 8))
+      updateSyncState('syncing') // Starting sync with new peer
       broadcastToWindows('sync:peer-connected', peerId)
     },
     onPeerDisconnected: (peerId) => {
       console.log('[Sync] Peer disconnected:', peerId.slice(0, 8))
+      // If no more peers connected, mark as offline
+      const remainingPeers = webrtcTransport?.getConnectedPeers() || []
+      if (remainingPeers.length === 0) {
+        updateSyncState('offline')
+      }
       broadcastToWindows('sync:peer-disconnected', peerId)
     }
   })
@@ -121,6 +145,8 @@ async function initializeWebRTC(config: { deviceId: string; deviceName: string; 
   // Handle sync requests
   webrtcTransport.on('sync:request', async (fromPeer: string, afterTimestamp: string | null) => {
     if (!eventLog) return
+
+    updateSyncState('syncing')
 
     // Get events after the timestamp and send back
     const events = afterTimestamp
@@ -132,6 +158,7 @@ async function initializeWebRTC(config: { deviceId: string; deviceName: string; 
 
   webrtcTransport.on('sync:completed', (peerId: string, eventsReceived: number) => {
     console.log('[Sync] Sync completed with', peerId.slice(0, 8), '-', eventsReceived, 'events')
+    updateSyncState('synced') // Mark as synced after completion
     broadcastToWindows('sync:completed', { peerId, eventsReceived })
   })
 
@@ -177,14 +204,30 @@ export function registerSyncIPC(): void {
     await initializeSync()
 
     const familyStatus = familyManager!.getStatus()
+    const isConnected = webrtcTransport?.isConnected() || false
 
-    const stats = webrtcTransport?.getStats()
+    // Determine sync state based on connection status
+    let state: SyncState = currentSyncState
+    if (!familyStatus.isConfigured) {
+      state = 'offline'
+    } else if (syncErrorMessage) {
+      state = 'error'
+    } else if (!isConnected) {
+      state = 'offline'
+    } else {
+      // Connected - check if we have pending events or just synced
+      state = currentSyncState === 'syncing' ? 'syncing' : 'synced'
+    }
+
     return {
       isEnabled: familyStatus.isConfigured,
-      isConnected: webrtcTransport?.isConnected() || false,
+      isConnected,
       familyStatus,
-      connectedPeers: webrtcTransport?.getConnectedPeers() || [],
-      pendingEvents: 0
+      connectedPeers: toSyncPeerInfo(webrtcTransport?.getConnectedPeers() || []),
+      pendingEvents: 0,
+      syncState: state,
+      lastSyncTime,
+      errorMessage: syncErrorMessage
     }
   })
 
