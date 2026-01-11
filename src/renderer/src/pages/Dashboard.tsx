@@ -7,6 +7,7 @@ import { VoiceInput } from '../features/voiceInput'
 import { RecurringActivities } from '../features/recurring'
 import { Timer } from '../features/timer'
 import { StreakDisplay, useStreakTracking } from '../features/streaks'
+import { SubjectBalance } from '../features/balance'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -235,6 +236,17 @@ export default function Dashboard(): JSX.Element {
             studentId={selectedStudent.id}
             studentName={selectedStudent.name}
             studentColor={selectedStudent.color}
+          />
+        </div>
+      )}
+
+      {/* Subject Balance (when student selected) */}
+      {selectedStudent && (
+        <div className="mb-6">
+          <SubjectBalance
+            studentId={selectedStudent.id}
+            studentName={selectedStudent.name}
+            subjects={subjects}
           />
         </div>
       )}
