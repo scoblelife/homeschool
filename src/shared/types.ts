@@ -323,6 +323,16 @@ export interface FieldTrip {
 export type CreateFieldTrip = Omit<FieldTrip, 'id' | 'createdAt' | 'updatedAt'>
 export type UpdateFieldTrip = Partial<CreateFieldTrip>
 
+// Field Trip to Activity linking
+export interface FieldTripActivity {
+  id: string
+  fieldTripId: string
+  activityId: string
+  createdAt: string
+}
+
+export type CreateFieldTripActivity = Omit<FieldTripActivity, 'id' | 'createdAt'>
+
 // Activity Tasks (todos for field trips/activities)
 export type TaskPhase = 'pre' | 'day_of' | 'post'
 
@@ -627,6 +637,12 @@ export interface DatabaseAPI {
   updateFieldTrip: (id: string, data: UpdateFieldTrip) => Promise<FieldTrip>
   deleteFieldTrip: (id: string) => Promise<void>
   duplicateActivity: (id: string, options: { newDate: string; copyTasks?: boolean; copyContacts?: boolean }) => Promise<FieldTrip>
+
+  // Field Trip Activity Linking
+  linkActivityToFieldTrip: (data: { fieldTripId: string; activityId: string }) => Promise<FieldTripActivity>
+  unlinkActivityFromFieldTrip: (fieldTripId: string, activityId: string) => Promise<void>
+  getLinkedActivities: (fieldTripId: string) => Promise<FieldTripActivity[]>
+  getFieldTripsForActivity: (activityId: string) => Promise<FieldTripActivity[]>
 
   // Activity Tasks
   getActivityTasks: (activityId: string) => Promise<ActivityTask[]>

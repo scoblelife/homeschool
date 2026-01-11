@@ -226,7 +226,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Track time spent on external resources
   - Location: `src/renderer/src/features/resources/`
 
-- [ ] **5.4 Field trip planner**
+- [x] **5.4 Field trip planner**
   - Plan field trips with details
   - Map integration for locations
   - Link activities to field trips

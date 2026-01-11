@@ -25,7 +25,9 @@ import type {
   ActivityPayment,
   CreateActivityPayment,
   UpdateActivityPayment,
-  PaymentStatus
+  PaymentStatus,
+  FieldTripActivity,
+  CreateFieldTripActivity
 } from '../../shared/types'
 
 function rowToFieldTrip(row: Record<string, unknown>): FieldTrip {
@@ -664,4 +666,72 @@ export async function duplicateActivity(
   // Don't copy RSVPs, expenses, or payments (date-specific)
 
   return newActivity
+}
+
+// ============================================================================
+// Field Trip Activity Linking
+// ============================================================================
+
+function rowToFieldTripActivity(row: Record<string, unknown>): FieldTripActivity {
+  return {
+    id: row.id as string,
+    fieldTripId: row.field_trip_id as string,
+    activityId: row.activity_id as string,
+    createdAt: row.created_at as string
+  }
+}
+
+export async function linkActivityToFieldTrip(
+  data: CreateFieldTripActivity
+): Promise<FieldTripActivity> {
+  const db = await getDatabase()
+  const id = uuidv4()
+
+  await db.run(
+    `INSERT INTO field_trip_activities (id, field_trip_id, activity_id)
+     VALUES (?, ?, ?)`,
+    id,
+    data.fieldTripId,
+    data.activityId
+  )
+
+  const rows = await db.all<Record<string, unknown>>(
+    'SELECT * FROM field_trip_activities WHERE id = ?',
+    id
+  )
+  return rowToFieldTripActivity(rows[0])
+}
+
+export async function unlinkActivityFromFieldTrip(
+  fieldTripId: string,
+  activityId: string
+): Promise<void> {
+  const db = await getDatabase()
+  await db.run(
+    'DELETE FROM field_trip_activities WHERE field_trip_id = ? AND activity_id = ?',
+    fieldTripId,
+    activityId
+  )
+}
+
+export async function getLinkedActivities(
+  fieldTripId: string
+): Promise<FieldTripActivity[]> {
+  const db = await getDatabase()
+  const rows = await db.all<Record<string, unknown>>(
+    'SELECT * FROM field_trip_activities WHERE field_trip_id = ? ORDER BY created_at DESC',
+    fieldTripId
+  )
+  return rows.map(rowToFieldTripActivity)
+}
+
+export async function getFieldTripsForActivity(
+  activityId: string
+): Promise<FieldTripActivity[]> {
+  const db = await getDatabase()
+  const rows = await db.all<Record<string, unknown>>(
+    'SELECT * FROM field_trip_activities WHERE activity_id = ? ORDER BY created_at DESC',
+    activityId
+  )
+  return rows.map(rowToFieldTripActivity)
 }

@@ -528,6 +528,23 @@ export function registerIpcHandlers(): void {
     return fieldTripsRepo.duplicateActivity(id, options)
   })
 
+  // Field Trip Activity Linking
+  ipcMain.handle('db:fieldTrips:linkActivity', async (_, data: { fieldTripId: string; activityId: string }) => {
+    return fieldTripsRepo.linkActivityToFieldTrip(data)
+  })
+
+  ipcMain.handle('db:fieldTrips:unlinkActivity', async (_, fieldTripId: string, activityId: string) => {
+    return fieldTripsRepo.unlinkActivityFromFieldTrip(fieldTripId, activityId)
+  })
+
+  ipcMain.handle('db:fieldTrips:getLinkedActivities', async (_, fieldTripId: string) => {
+    return fieldTripsRepo.getLinkedActivities(fieldTripId)
+  })
+
+  ipcMain.handle('db:fieldTrips:getFieldTripsForActivity', async (_, activityId: string) => {
+    return fieldTripsRepo.getFieldTripsForActivity(activityId)
+  })
+
   // Google Calendar Auth
   ipcMain.handle('google:auth:status', async () => {
     return googleAuth.getAuthStatus()

@@ -194,6 +194,16 @@ const api: DatabaseAPI & SyncAPI = {
   duplicateActivity: (id: string, options: { newDate: string; copyTasks?: boolean; copyContacts?: boolean }) =>
     ipcRenderer.invoke('db:fieldTrips:duplicate', id, options),
 
+  // Field Trip Activity Linking
+  linkActivityToFieldTrip: (data: { fieldTripId: string; activityId: string }) =>
+    ipcRenderer.invoke('db:fieldTrips:linkActivity', data),
+  unlinkActivityFromFieldTrip: (fieldTripId: string, activityId: string) =>
+    ipcRenderer.invoke('db:fieldTrips:unlinkActivity', fieldTripId, activityId),
+  getLinkedActivities: (fieldTripId: string) =>
+    ipcRenderer.invoke('db:fieldTrips:getLinkedActivities', fieldTripId),
+  getFieldTripsForActivity: (activityId: string) =>
+    ipcRenderer.invoke('db:fieldTrips:getFieldTripsForActivity', activityId),
+
   // Google Calendar Auth
   getGoogleAuthStatus: () => ipcRenderer.invoke('google:auth:status') as Promise<{ hasCredentials: boolean; isAuthenticated: boolean }>,
   hasGoogleCredentials: () => ipcRenderer.invoke('google:auth:hasCredentials') as Promise<boolean>,
