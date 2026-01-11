@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { format, parseISO, subDays, startOfMonth } from 'date-fns'
 import { useStore } from '../stores/useStore'
+import { PortfolioExport } from '../features/portfolio'
 import type { ActivitySummary, DailySummary } from '../../../shared/types'
 
 export default function Reports(): JSX.Element {
@@ -199,6 +200,11 @@ export default function Reports(): JSX.Element {
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* Portfolio Export */}
+              <div className="mt-8">
+                <PortfolioExport students={students} />
               </div>
             </>
           )}

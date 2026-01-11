@@ -427,6 +427,33 @@ export interface AttendanceRecord {
 export type CreateAttendanceRecord = Omit<AttendanceRecord, 'id' | 'createdAt'>
 export type UpdateAttendanceRecord = Partial<Omit<CreateAttendanceRecord, 'studentId' | 'date'>>
 
+// Portfolio Types
+export interface PortfolioSection {
+  id: string
+  name: string
+  enabled: boolean
+}
+
+export interface PortfolioConfig {
+  title: string
+  subtitle?: string
+  schoolYear: string
+  studentId: string
+  dateRange: {
+    startDate: string
+    endDate: string
+  }
+  sections: PortfolioSection[]
+  includePhotos: boolean
+  includeSummaryStats: boolean
+}
+
+export interface GeneratePDFResult {
+  success: boolean
+  filePath?: string
+  error?: string
+}
+
 // Form types for creating/updating entities
 export type CreateStudent = Omit<Student, 'id' | 'createdAt' | 'updatedAt'>
 export type UpdateStudent = Partial<CreateStudent>
@@ -651,6 +678,13 @@ export interface DatabaseAPI {
     absences: number
     percentage: number
   }>
+
+  // Portfolio
+  generatePortfolioPDF: (config: PortfolioConfig) => Promise<GeneratePDFResult>
+  previewPortfolioHTML: (config: PortfolioConfig) => Promise<string>
+  getPortfolioDefaultConfig: (studentId: string, schoolYear: string) => Promise<PortfolioConfig>
+  getCurrentSchoolYear: () => Promise<string>
+  openPortfolioFile: (filePath: string) => Promise<void>
 }
 
 // Google Calendar Types

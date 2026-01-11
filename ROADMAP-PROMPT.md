@@ -181,7 +181,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Required by many states
   - Location: `src/renderer/src/features/attendance/`
 
-- [ ] **4.4 Portfolio PDF export**
+- [x] **4.4 Portfolio PDF export**
   - Generate printable portfolio
   - Include: attendance, activities, photos, summaries
   - Customizable sections

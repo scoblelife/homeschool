@@ -43,7 +43,9 @@ import type {
   WeeklySummaryEmailData,
   EmailSummaryConfig,
   CreateAttendanceRecord,
-  AttendanceRecord
+  AttendanceRecord,
+  PortfolioConfig,
+  GeneratePDFResult
 } from '../shared/types'
 
 const api: DatabaseAPI & SyncAPI = {
@@ -363,7 +365,19 @@ const api: DatabaseAPI & SyncAPI = {
       schoolDays: number
       absences: number
       percentage: number
-    }>
+    }>,
+
+  // Portfolio
+  generatePortfolioPDF: (config: PortfolioConfig) =>
+    ipcRenderer.invoke('portfolio:generate', config) as Promise<GeneratePDFResult>,
+  previewPortfolioHTML: (config: PortfolioConfig) =>
+    ipcRenderer.invoke('portfolio:preview', config) as Promise<string>,
+  getPortfolioDefaultConfig: (studentId: string, schoolYear: string) =>
+    ipcRenderer.invoke('portfolio:defaultConfig', studentId, schoolYear) as Promise<PortfolioConfig>,
+  getCurrentSchoolYear: () =>
+    ipcRenderer.invoke('portfolio:currentSchoolYear') as Promise<string>,
+  openPortfolioFile: (filePath: string) =>
+    ipcRenderer.invoke('portfolio:openFile', filePath) as Promise<void>
 }
 
 contextBridge.exposeInMainWorld('api', api)
