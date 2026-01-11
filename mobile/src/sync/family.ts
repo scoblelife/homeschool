@@ -27,6 +27,7 @@ export interface FamilyInvite {
   familyId: string
   publicKey: string
   secretKey: string
+  version?: number  // Desktop includes version: 1
 }
 
 export class FamilyManager {
@@ -176,6 +177,7 @@ export class FamilyManager {
       familyId: this.familyConfig.familyId,
       publicKey: this.familyConfig.publicKey,
       secretKey: this.familyConfig.secretKey,
+      version: 1,  // Match desktop format
     }
 
     return this.encodeInvite(invite)

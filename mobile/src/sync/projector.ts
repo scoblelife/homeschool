@@ -203,10 +203,11 @@ export class EventProjector {
   private async applyActivityLogged(event: SyncEvent): Promise<void> {
     const db = await getDatabase()
     const data = event.data
+    const now = new Date().toISOString()
 
     await db.runAsync(
       `INSERT OR REPLACE INTO activities
-       (id, student_id, subject_id, activity_type, title, description, duration, completed_at, stars_earned, created_at)
+       (id, student_id, subject_id, activity_type, title, description, date_completed, duration_minutes, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       toBindValue(data.id),
       toBindValue(data.studentId),
@@ -214,10 +215,10 @@ export class EventProjector {
       toBindValue(data.activityType),
       toBindValue(data.title),
       toBindValue(data.description),
-      toBindValue(data.duration),
-      toBindValue(data.completedAt),
-      toBindValue(data.starsEarned) || 0,
-      new Date().toISOString()
+      toBindValue(data.completedAt) || toBindValue(data.dateCompleted),
+      toBindValue(data.duration) || toBindValue(data.durationMinutes),
+      now,
+      now
     )
   }
 
@@ -236,14 +237,13 @@ export class EventProjector {
       updates.push('description = ?')
       params.push(toBindValue(data.description))
     }
-    if (data.duration !== undefined) {
-      updates.push('duration = ?')
-      params.push(toBindValue(data.duration))
+    if (data.duration !== undefined || data.durationMinutes !== undefined) {
+      updates.push('duration_minutes = ?')
+      params.push(toBindValue(data.duration) || toBindValue(data.durationMinutes))
     }
-    if (data.starsEarned !== undefined) {
-      updates.push('stars_earned = ?')
-      params.push(toBindValue(data.starsEarned))
-    }
+    // Update timestamp
+    updates.push('updated_at = ?')
+    params.push(new Date().toISOString())
 
     if (updates.length > 0) {
       params.push(toBindValue(data.id))
@@ -263,10 +263,11 @@ export class EventProjector {
   private async applyMilestoneCreated(event: SyncEvent): Promise<void> {
     const db = await getDatabase()
     const data = event.data
+    const now = new Date().toISOString()
 
     await db.runAsync(
       `INSERT OR REPLACE INTO milestones
-       (id, student_id, subject_id, title, description, target_date, status, stars_reward, created_at, updated_at)
+       (id, student_id, subject_id, title, description, target_date, status, star_value, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       toBindValue(data.id),
       toBindValue(data.studentId),
@@ -274,10 +275,10 @@ export class EventProjector {
       toBindValue(data.title),
       toBindValue(data.description),
       toBindValue(data.targetDate),
-      toBindValue(data.status),
-      toBindValue(data.starsReward) || 0,
-      new Date().toISOString(),
-      new Date().toISOString()
+      toBindValue(data.status) || 'not_started',
+      toBindValue(data.starsReward) || toBindValue(data.starValue) || 1,
+      now,
+      now
     )
   }
 
@@ -304,9 +305,9 @@ export class EventProjector {
       updates.push('status = ?')
       params.push(toBindValue(data.status))
     }
-    if (data.starsReward !== undefined) {
-      updates.push('stars_reward = ?')
-      params.push(toBindValue(data.starsReward))
+    if (data.starsReward !== undefined || data.starValue !== undefined) {
+      updates.push('star_value = ?')
+      params.push(toBindValue(data.starsReward) || toBindValue(data.starValue))
     }
 
     if (updates.length > 0) {

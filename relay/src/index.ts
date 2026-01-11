@@ -1,303 +1,244 @@
 /**
- * Homeschool Sync Relay Server
+ * Homeschool Sync Signaling Server
  *
- * A simple WebSocket relay that forwards messages between family members.
- * Devices connect with their familyId and deviceId, and all messages
- * are forwarded to other devices in the same family.
+ * HTTP-based signaling server for WebRTC peer discovery and
+ * offer/answer/ICE candidate exchange. The actual data transfer
+ * happens peer-to-peer through WebRTC data channels.
  */
 
-import { WebSocketServer, WebSocket } from 'ws'
-import { createServer } from 'http'
+import { createServer, IncomingMessage as HttpIncomingMessage, ServerResponse } from 'http'
 
 const PORT = parseInt(process.env.PORT || '8080', 10)
 
-interface Client {
-  ws: WebSocket
-  familyId: string
-  deviceId: string
-  deviceName: string
-  connectedAt: Date
-  lastSeen: Date
+// ============= Types =============
+
+interface SignalingMessage {
+  id: number
+  type: 'offer' | 'answer' | 'ice-candidate'
+  from: string
+  to: string
+  payload: unknown
+  room: string
+  timestamp: number
 }
 
-interface JoinMessage {
-  type: 'join'
-  familyId: string
-  deviceId: string
-  deviceName: string
+interface Room {
+  peers: Set<string>
+  messages: SignalingMessage[]
+  lastActivity: number
 }
 
-interface LeaveMessage {
-  type: 'leave'
+// ============= State =============
+
+// Signaling rooms: roomId -> Room
+const rooms = new Map<string, Room>()
+let messageIdCounter = 0
+
+// ============= Helpers =============
+
+function parseBody(req: HttpIncomingMessage): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let body = ''
+    req.on('data', chunk => body += chunk)
+    req.on('end', () => {
+      try {
+        resolve(body ? JSON.parse(body) : {})
+      } catch (e) {
+        reject(e)
+      }
+    })
+    req.on('error', reject)
+  })
 }
 
-interface EventMessage {
-  type: 'event'
-  event: unknown
+function sendJson(res: ServerResponse, data: object, status = 200) {
+  res.writeHead(status, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  })
+  res.end(JSON.stringify(data))
 }
 
-interface SyncRequestMessage {
-  type: 'sync_request'
-  afterTimestamp?: string
+function getRoom(roomId: string): Room {
+  let room = rooms.get(roomId)
+  if (!room) {
+    room = { peers: new Set(), messages: [], lastActivity: Date.now() }
+    rooms.set(roomId, room)
+  }
+  room.lastActivity = Date.now()
+  return room
 }
 
-interface SyncResponseMessage {
-  type: 'sync_response'
-  events: unknown[]
-  hasMore: boolean
-}
-
-interface PingMessage {
-  type: 'ping'
-}
-
-interface PongMessage {
-  type: 'pong'
-}
-
-type IncomingMessage = JoinMessage | LeaveMessage | EventMessage | SyncRequestMessage | SyncResponseMessage | PingMessage
-
-// Map of familyId -> Map of deviceId -> Client
-const families = new Map<string, Map<string, Client>>()
-
-// Get all clients in a family except the sender
-function getFamilyPeers(familyId: string, excludeDeviceId: string): Client[] {
-  const family = families.get(familyId)
-  if (!family) return []
-
-  return Array.from(family.values()).filter(c => c.deviceId !== excludeDeviceId)
-}
-
-// Broadcast a message to all family members except sender
-function broadcastToFamily(familyId: string, senderDeviceId: string, message: object) {
-  const peers = getFamilyPeers(familyId, senderDeviceId)
-  const payload = JSON.stringify(message)
-
-  for (const peer of peers) {
-    if (peer.ws.readyState === WebSocket.OPEN) {
-      peer.ws.send(payload)
+// Clean up old rooms (older than 1 hour)
+function cleanupRooms() {
+  const now = Date.now()
+  const maxAge = 60 * 60 * 1000 // 1 hour
+  for (const [roomId, room] of rooms) {
+    if (now - room.lastActivity > maxAge) {
+      rooms.delete(roomId)
+      console.log(`Cleaned up room: ${roomId.substring(0, 8)}...`)
     }
   }
 }
+setInterval(cleanupRooms, 5 * 60 * 1000) // Every 5 minutes
 
-// Send a message to a specific client
-function sendTo(client: Client, message: object) {
-  if (client.ws.readyState === WebSocket.OPEN) {
-    client.ws.send(JSON.stringify(message))
-  }
-}
+// ============= HTTP Routes =============
 
-// Notify all family members about peer list change
-function notifyPeerListChange(familyId: string) {
-  const family = families.get(familyId)
-  if (!family) return
+async function handleHttpRequest(req: HttpIncomingMessage, res: ServerResponse) {
+  const url = new URL(req.url || '/', `http://localhost:${PORT}`)
+  const path = url.pathname
+  const method = req.method || 'GET'
 
-  const peerList = Array.from(family.values()).map(c => ({
-    deviceId: c.deviceId,
-    deviceName: c.deviceName,
-    isOnline: c.ws.readyState === WebSocket.OPEN
-  }))
-
-  const message = {
-    type: 'peers',
-    peers: peerList
+  // CORS preflight
+  if (method === 'OPTIONS') {
+    res.writeHead(204, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    })
+    res.end()
+    return
   }
 
-  for (const client of family.values()) {
-    sendTo(client, message)
-  }
-}
+  try {
+    // Health check
+    if (path === '/health' && method === 'GET') {
+      sendJson(res, {
+        status: 'ok',
+        rooms: rooms.size,
+        totalPeers: Array.from(rooms.values()).reduce((sum, r) => sum + r.peers.size, 0),
+      })
+      return
+    }
 
-// Handle client connection
-function handleConnection(ws: WebSocket) {
-  let client: Client | null = null
+    // Join a room
+    const joinMatch = path.match(/^\/room\/([^/]+)\/join$/)
+    if (joinMatch && method === 'POST') {
+      const roomId = decodeURIComponent(joinMatch[1])
+      const body = await parseBody(req)
+      const peerId = body.peerId
 
-  console.log('New connection')
+      if (!peerId) {
+        sendJson(res, { error: 'peerId required' }, 400)
+        return
+      }
 
-  ws.on('message', (data) => {
-    try {
-      const message = JSON.parse(data.toString()) as IncomingMessage
+      const room = getRoom(roomId)
+      const existingPeers = Array.from(room.peers).filter(p => p !== peerId)
+      room.peers.add(peerId)
 
-      switch (message.type) {
-        case 'join': {
-          // Register client in their family
-          const { familyId, deviceId, deviceName } = message
+      console.log(`[Signaling] Peer ${peerId.substring(0, 8)}... joined room ${roomId.substring(0, 8)}... (${room.peers.size} peers)`)
 
-          // Create family map if needed
-          if (!families.has(familyId)) {
-            families.set(familyId, new Map())
-          }
+      sendJson(res, { peers: existingPeers })
+      return
+    }
 
-          const family = families.get(familyId)!
+    // Leave a room
+    const leaveMatch = path.match(/^\/room\/([^/]+)\/leave$/)
+    if (leaveMatch && method === 'POST') {
+      const roomId = decodeURIComponent(leaveMatch[1])
+      const body = await parseBody(req)
+      const peerId = body.peerId
 
-          // Check if device is reconnecting
-          const existing = family.get(deviceId)
-          if (existing && existing.ws !== ws) {
-            // Close old connection
-            existing.ws.close()
-          }
+      const room = rooms.get(roomId)
+      if (room) {
+        room.peers.delete(peerId)
+        console.log(`[Signaling] Peer ${peerId?.substring(0, 8)}... left room ${roomId.substring(0, 8)}... (${room.peers.size} peers)`)
 
-          // Register new client
-          client = {
-            ws,
-            familyId,
-            deviceId,
-            deviceName,
-            connectedAt: new Date(),
-            lastSeen: new Date()
-          }
-          family.set(deviceId, client)
-
-          console.log(`Device ${deviceName} (${deviceId}) joined family ${familyId.substring(0, 8)}...`)
-
-          // Send welcome message with peer list
-          const peers = getFamilyPeers(familyId, deviceId)
-          sendTo(client, {
-            type: 'welcome',
-            peers: peers.map(p => ({
-              deviceId: p.deviceId,
-              deviceName: p.deviceName,
-              isOnline: true
-            }))
-          })
-
-          // Notify others about new peer
-          broadcastToFamily(familyId, deviceId, {
-            type: 'peer_joined',
-            deviceId,
-            deviceName
-          })
-
-          break
-        }
-
-        case 'leave': {
-          if (client) {
-            handleDisconnect(client)
-            client = null
-          }
-          break
-        }
-
-        case 'event': {
-          // Forward sync event to all family members
-          if (client) {
-            client.lastSeen = new Date()
-            broadcastToFamily(client.familyId, client.deviceId, {
-              type: 'event',
-              from: client.deviceId,
-              event: message.event
-            })
-          }
-          break
-        }
-
-        case 'sync_request': {
-          // Forward sync request to all peers (they'll respond with events)
-          if (client) {
-            client.lastSeen = new Date()
-            broadcastToFamily(client.familyId, client.deviceId, {
-              type: 'sync_request',
-              from: client.deviceId,
-              afterTimestamp: message.afterTimestamp
-            })
-          }
-          break
-        }
-
-        case 'sync_response': {
-          // This would be forwarded to a specific peer, but for simplicity
-          // we broadcast and let clients filter
-          if (client) {
-            client.lastSeen = new Date()
-            broadcastToFamily(client.familyId, client.deviceId, {
-              type: 'sync_response',
-              from: client.deviceId,
-              events: message.events,
-              hasMore: message.hasMore
-            })
-          }
-          break
-        }
-
-        case 'ping': {
-          if (client) {
-            client.lastSeen = new Date()
-            sendTo(client, { type: 'pong' })
-          } else {
-            ws.send(JSON.stringify({ type: 'pong' }))
-          }
-          break
+        // Clean up empty rooms
+        if (room.peers.size === 0) {
+          rooms.delete(roomId)
         }
       }
-    } catch (error) {
-      console.error('Error processing message:', error)
+
+      sendJson(res, { success: true })
+      return
     }
-  })
 
-  ws.on('close', () => {
-    if (client) {
-      handleDisconnect(client)
+    // Get messages for a room (for a specific peer)
+    const messagesMatch = path.match(/^\/room\/([^/]+)\/messages$/)
+    if (messagesMatch && method === 'GET') {
+      const roomId = decodeURIComponent(messagesMatch[1])
+      const peerId = url.searchParams.get('peerId')
+      const afterId = parseInt(url.searchParams.get('after') || '0', 10)
+
+      const room = rooms.get(roomId)
+      if (!room) {
+        sendJson(res, { messages: [] })
+        return
+      }
+
+      // Get messages addressed to this peer, after the given ID
+      const messages = room.messages.filter(m =>
+        m.to === peerId && m.id > afterId
+      )
+
+      sendJson(res, { messages })
+      return
     }
-    console.log('Connection closed')
-  })
 
-  ws.on('error', (error) => {
-    console.error('WebSocket error:', error)
-  })
-}
+    // Send a signaling message
+    if (path === '/signal' && method === 'POST') {
+      const body = await parseBody(req)
+      const { room: roomId, type, from, to, payload } = body
 
-function handleDisconnect(client: Client) {
-  const family = families.get(client.familyId)
-  if (family) {
-    family.delete(client.deviceId)
+      if (!roomId || !type || !from || !to) {
+        sendJson(res, { error: 'room, type, from, to required' }, 400)
+        return
+      }
 
-    console.log(`Device ${client.deviceName} (${client.deviceId}) left family ${client.familyId.substring(0, 8)}...`)
+      const room = getRoom(roomId)
+      const message: SignalingMessage = {
+        id: ++messageIdCounter,
+        type,
+        from,
+        to,
+        payload,
+        room: roomId,
+        timestamp: Date.now(),
+      }
+      room.messages.push(message)
 
-    // Notify remaining family members
-    broadcastToFamily(client.familyId, client.deviceId, {
-      type: 'peer_left',
-      deviceId: client.deviceId,
-      deviceName: client.deviceName
-    })
+      // Keep only last 100 messages per room
+      if (room.messages.length > 100) {
+        room.messages = room.messages.slice(-100)
+      }
 
-    // Clean up empty families
-    if (family.size === 0) {
-      families.delete(client.familyId)
+      console.log(`[Signaling] ${type} from ${from.substring(0, 8)}... to ${to.substring(0, 8)}...`)
+
+      sendJson(res, { success: true, messageId: message.id })
+      return
     }
+
+    // 404 for unknown routes
+    sendJson(res, { error: 'Not found' }, 404)
+  } catch (error) {
+    console.error('HTTP error:', error)
+    sendJson(res, { error: 'Internal server error' }, 500)
   }
 }
 
-// Create HTTP server for health checks
-const server = createServer((req, res) => {
-  if (req.url === '/health') {
-    res.writeHead(200, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify({
-      status: 'ok',
-      families: families.size,
-      clients: Array.from(families.values()).reduce((sum, f) => sum + f.size, 0)
-    }))
-  } else {
-    res.writeHead(404)
-    res.end()
-  }
-})
+// ============= Server Setup =============
 
-// Create WebSocket server
-const wss = new WebSocketServer({ server })
+const server = createServer(handleHttpRequest)
 
-wss.on('connection', handleConnection)
-
-// Start server
 server.listen(PORT, () => {
-  console.log(`Homeschool Sync Relay Server running on port ${PORT}`)
-  console.log(`Health check: http://localhost:${PORT}/health`)
+  console.log(`Homeschool Sync Signaling Server running on port ${PORT}`)
+  console.log(``)
+  console.log(`Endpoints:`)
+  console.log(`  GET  /health                    - Health check`)
+  console.log(`  POST /room/{roomId}/join        - Join a room (body: { peerId })`)
+  console.log(`  POST /room/{roomId}/leave       - Leave a room (body: { peerId })`)
+  console.log(`  GET  /room/{roomId}/messages    - Poll for messages (?peerId=...&after=...)`)
+  console.log(`  POST /signal                    - Send signaling message`)
+  console.log(``)
+  console.log(`WebRTC data flows peer-to-peer after connection is established.`)
 })
 
-// Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('Shutting down...')
-  wss.close()
   server.close()
   process.exit(0)
 })
