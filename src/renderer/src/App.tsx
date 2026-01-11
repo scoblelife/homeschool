@@ -16,6 +16,7 @@ import Curriculum from './pages/Curriculum'
 import HourTracking from './pages/HourTracking'
 import Templates from './pages/Templates'
 import Recommendations from './pages/Recommendations'
+import Resources from './pages/Resources'
 import { useInitializeData } from './hooks/useDatabase'
 
 export default function App(): JSX.Element {
@@ -37,6 +38,7 @@ export default function App(): JSX.Element {
         <Route path="hour-tracking" element={<HourTracking />} />
         <Route path="templates" element={<Templates />} />
         <Route path="recommendations" element={<Recommendations />} />
+        <Route path="resources" element={<Resources />} />
         <Route path="library" element={<Library />} />
         <Route path="field-trips" element={<FieldTrips />} />
         <Route path="settings" element={<Settings />} />
