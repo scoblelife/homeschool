@@ -71,7 +71,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 
 **Goal:** Make daily activity logging fast and frictionless.
 
-- [ ] **2.1 Quick-add component**
+- [x] **2.1 Quick-add component**
   - Floating action button on dashboard
   - Single-tap to log common activities
   - Recent activities as quick buttons
@@ -271,7 +271,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 **Last Updated:** 2026-01-11
 
 **Current Phase:** 2
-**Current Task:** 2.1
+**Current Task:** 2.2
 **Blockers:** None
 
 ---
