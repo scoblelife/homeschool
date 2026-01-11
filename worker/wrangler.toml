@@ -1,0 +1,21 @@
+name = "homeschool-sync"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# ============= Production Environment =============
+# Default environment - deployed to homeschool-sync.workers.dev
+[[kv_namespaces]]
+binding = "KV"
+id = "${CLOUDFLARE_KV_PRODUCTION_ID}"
+
+# ============= Staging Environment =============
+[env.staging]
+name = "homeschool-sync-staging"
+
+[[env.staging.kv_namespaces]]
+binding = "KV"
+id = "${CLOUDFLARE_KV_STAGING_ID}"
+
+# ============= Local Development =============
+# For local dev, wrangler will create a local KV store automatically
+# Run: npx wrangler dev

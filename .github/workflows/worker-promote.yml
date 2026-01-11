@@ -1,0 +1,83 @@
+name: Worker Promote to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "promote" to confirm promotion to production'
+        required: true
+        type: string
+
+jobs:
+  validate:
+    name: Validate Staging
+    runs-on: depot-ubuntu-24.04
+    steps:
+      - name: Confirm promotion
+        if: github.event.inputs.confirm != 'promote'
+        run: |
+          echo "::error::You must type 'promote' to confirm. Got: '${{ github.event.inputs.confirm }}'"
+          exit 1
+
+      - name: Check staging health
+        run: |
+          HEALTH_URL="https://homeschool-sync-staging.${{ secrets.CLOUDFLARE_ACCOUNT_SUBDOMAIN }}.workers.dev/health"
+          echo "Checking staging health at: $HEALTH_URL"
+          RESPONSE=$(curl -s "$HEALTH_URL")
+          STATUS=$(echo "$RESPONSE" | jq -r '.status // "unknown"')
+          if [ "$STATUS" != "ok" ]; then
+            echo "::error::Staging health check failed. Status: $STATUS"
+            echo "Response: $RESPONSE"
+            exit 1
+          fi
+          echo "Staging health check passed!"
+          echo "Response: $RESPONSE"
+
+  promote:
+    name: Promote to Production
+    runs-on: depot-ubuntu-24.04
+    needs: validate
+    environment:
+      name: worker-production
+      url: https://homeschool-sync.${{ secrets.CLOUDFLARE_ACCOUNT_SUBDOMAIN }}.workers.dev
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: worker/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy to Production
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_KV_PRODUCTION_ID: ${{ secrets.CLOUDFLARE_KV_PRODUCTION_ID }}
+
+      - name: Health Check Production
+        run: |
+          sleep 5
+          HEALTH_URL="https://homeschool-sync.${{ secrets.CLOUDFLARE_ACCOUNT_SUBDOMAIN }}.workers.dev/health"
+          echo "Checking production health at: $HEALTH_URL"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_URL" || echo "000")
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Production health check failed with status: $STATUS"
+            exit 1
+          fi
+          echo "Production health check passed!"
+
+      - name: Summary
+        run: |
+          echo "## Promotion Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Worker has been promoted from staging to production." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Production URL:** https://homeschool-sync.${{ secrets.CLOUDFLARE_ACCOUNT_SUBDOMAIN }}.workers.dev" >> $GITHUB_STEP_SUMMARY
