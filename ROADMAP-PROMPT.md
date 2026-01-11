@@ -98,7 +98,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Sync photos between devices (compress first)
   - Location: `src/renderer/src/features/attachments/`
 
-- [ ] **2.5 Timer mode**
+- [x] **2.5 Timer mode**
   - Start/stop timer for sessions
   - Running timer visible in header
   - Auto-save when stopped
@@ -271,7 +271,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 **Last Updated:** 2026-01-11
 
 **Current Phase:** 2
-**Current Task:** 2.5
+**Current Task:** 2.6
 **Blockers:** None
 
 ---
