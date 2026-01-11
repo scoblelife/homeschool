@@ -626,6 +626,34 @@ export interface SyncAPI {
   onSyncPeerDisconnected: (callback: (peerId: string) => void) => () => void
   onSyncEventReceived: (callback: (data: { event: unknown; fromPeer: string }) => void) => () => void
   onSyncCompleted: (callback: (data: { peerId: string; eventsReceived: number }) => void) => () => void
+
+  // Recovery
+  syncCheckHealth: () => Promise<SyncRecoveryStatus>
+  syncReset: () => Promise<SyncRecoveryResult>
+  syncRecover: () => Promise<SyncRecoveryResult>
+  syncListBackups: () => Promise<SyncBackup[]>
+  syncRestoreBackup: (backupName: string) => Promise<SyncRecoveryResult>
+}
+
+export interface SyncRecoveryStatus {
+  isCorrupted: boolean
+  corruptionDetails?: string
+  eventLogLength: number
+  lastEventId: string | null
+  canRecover: boolean
+}
+
+export interface SyncRecoveryResult {
+  success: boolean
+  message: string
+  eventsRecovered?: number
+  backupPath?: string
+}
+
+export interface SyncBackup {
+  name: string
+  timestamp: number
+  path: string
 }
 
 declare global {

@@ -58,7 +58,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Click to see detailed sync status modal
   - Location: `src/renderer/src/components/sync/SyncStatusIndicator.tsx`
 
-- [ ] **1.5 Error recovery**
+- [x] **1.5 Error recovery**
   - Detect corrupted event log
   - Implement event log repair/rebuild
   - Add "Reset Sync" option in settings
@@ -270,8 +270,8 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 
 **Last Updated:** 2026-01-11
 
-**Current Phase:** 1
-**Current Task:** 1.5
+**Current Phase:** 2
+**Current Task:** 2.1
 **Blockers:** None
 
 ---

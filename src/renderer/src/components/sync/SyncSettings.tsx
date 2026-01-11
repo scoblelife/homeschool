@@ -12,7 +12,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Dialog } from '@headlessui/react'
 import { QRCodeSVG } from 'qrcode.react'
-import type { SyncStatus, SyncPeerInfo } from '../../../../shared/types'
+import type { SyncStatus, SyncPeerInfo, SyncRecoveryStatus, SyncRecoveryResult } from '../../../../shared/types'
 
 export default function SyncSettings(): JSX.Element {
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null)
@@ -24,12 +24,20 @@ export default function SyncSettings(): JSX.Element {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showJoinModal, setShowJoinModal] = useState(false)
   const [showQRModal, setShowQRModal] = useState(false)
+  const [showTroubleshootModal, setShowTroubleshootModal] = useState(false)
+  const [showResetConfirmModal, setShowResetConfirmModal] = useState(false)
 
   // Form state
   const [deviceName, setDeviceName] = useState('')
   const [joinCode, setJoinCode] = useState('')
   const [qrData, setQrData] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
+
+  // Recovery state
+  const [healthStatus, setHealthStatus] = useState<SyncRecoveryStatus | null>(null)
+  const [backups, setBackups] = useState<Array<{ name: string; timestamp: number; path: string }>>([])
+  const [recoveryResult, setRecoveryResult] = useState<SyncRecoveryResult | null>(null)
+  const [isCheckingHealth, setIsCheckingHealth] = useState(false)
 
   // Load sync status
   const loadStatus = useCallback(async () => {
@@ -172,6 +180,104 @@ export default function SyncSettings(): JSX.Element {
       }
     } catch (err) {
       setError('Failed to kick member')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  // Open troubleshoot modal and load health data
+  const handleOpenTroubleshoot = async (): Promise<void> => {
+    setShowTroubleshootModal(true)
+    setIsCheckingHealth(true)
+    setRecoveryResult(null)
+
+    try {
+      const [health, backupList] = await Promise.all([
+        window.api.syncCheckHealth(),
+        window.api.syncListBackups()
+      ])
+      setHealthStatus(health)
+      setBackups(backupList)
+    } catch (err) {
+      console.error('Failed to check sync health:', err)
+    } finally {
+      setIsCheckingHealth(false)
+    }
+  }
+
+  // Reset sync (full reset)
+  const handleResetSync = async (): Promise<void> => {
+    setIsProcessing(true)
+    setRecoveryResult(null)
+
+    try {
+      const result = await window.api.syncReset()
+      setRecoveryResult(result)
+      if (result.success) {
+        setShowResetConfirmModal(false)
+        // Reload after a short delay
+        setTimeout(() => {
+          loadStatus()
+          setShowTroubleshootModal(false)
+        }, 1500)
+      }
+    } catch (err) {
+      setRecoveryResult({
+        success: false,
+        message: `Reset failed: ${(err as Error).message}`
+      })
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  // Attempt recovery
+  const handleRecoverSync = async (): Promise<void> => {
+    setIsProcessing(true)
+    setRecoveryResult(null)
+
+    try {
+      const result = await window.api.syncRecover()
+      setRecoveryResult(result)
+      if (result.success) {
+        // Refresh health status
+        const health = await window.api.syncCheckHealth()
+        setHealthStatus(health)
+        const backupList = await window.api.syncListBackups()
+        setBackups(backupList)
+      }
+    } catch (err) {
+      setRecoveryResult({
+        success: false,
+        message: `Recovery failed: ${(err as Error).message}`
+      })
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  // Restore from backup
+  const handleRestoreBackup = async (backupName: string): Promise<void> => {
+    if (!confirm(`Restore from backup "${backupName}"? This will replace your current sync data.`)) {
+      return
+    }
+
+    setIsProcessing(true)
+    setRecoveryResult(null)
+
+    try {
+      const result = await window.api.syncRestoreBackup(backupName)
+      setRecoveryResult(result)
+      if (result.success) {
+        // Refresh health status
+        const health = await window.api.syncCheckHealth()
+        setHealthStatus(health)
+      }
+    } catch (err) {
+      setRecoveryResult({
+        success: false,
+        message: `Restore failed: ${(err as Error).message}`
+      })
     } finally {
       setIsProcessing(false)
     }
@@ -334,13 +440,20 @@ export default function SyncSettings(): JSX.Element {
           </div>
 
           {/* Actions */}
-          <div className="pt-4 border-t border-gray-200">
+          <div className="pt-4 border-t border-gray-200 flex items-center justify-between">
             <button
               onClick={handleLeaveFamily}
               disabled={isProcessing}
               className="text-sm text-red-600 hover:text-red-700"
             >
               Leave Family Sync
+            </button>
+            <button
+              onClick={handleOpenTroubleshoot}
+              className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+            >
+              <span>🔧</span>
+              Troubleshoot
             </button>
           </div>
         </div>
@@ -550,6 +663,208 @@ export default function SyncSettings(): JSX.Element {
                   className="btn btn-secondary"
                 >
                   Done
+                </button>
+              </div>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+
+      {/* Troubleshoot Modal */}
+      <Dialog open={showTroubleshootModal} onClose={() => setShowTroubleshootModal(false)} className="relative z-50">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+              Sync Troubleshooting
+            </Dialog.Title>
+
+            <div className="space-y-6">
+              {/* Health Status */}
+              <div>
+                <h3 className="font-medium text-gray-900 mb-2">Sync Health</h3>
+                {isCheckingHealth ? (
+                  <div className="text-gray-500">Checking...</div>
+                ) : healthStatus ? (
+                  <div className={`p-3 rounded-lg ${
+                    healthStatus.isCorrupted
+                      ? 'bg-red-50 border border-red-200'
+                      : 'bg-green-50 border border-green-200'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">
+                        {healthStatus.isCorrupted ? '⚠️' : '✅'}
+                      </span>
+                      <div>
+                        <div className={`font-medium ${
+                          healthStatus.isCorrupted ? 'text-red-900' : 'text-green-900'
+                        }`}>
+                          {healthStatus.isCorrupted ? 'Issues Detected' : 'Healthy'}
+                        </div>
+                        {healthStatus.isCorrupted && healthStatus.corruptionDetails && (
+                          <div className="text-sm text-red-700 mt-1">
+                            {healthStatus.corruptionDetails}
+                          </div>
+                        )}
+                        <div className="text-sm text-gray-600 mt-1">
+                          {healthStatus.eventLogLength} events in sync log
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-500">Unable to check health</div>
+                )}
+              </div>
+
+              {/* Recovery Result */}
+              {recoveryResult && (
+                <div className={`p-3 rounded-lg ${
+                  recoveryResult.success
+                    ? 'bg-green-50 border border-green-200'
+                    : 'bg-red-50 border border-red-200'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">
+                      {recoveryResult.success ? '✅' : '❌'}
+                    </span>
+                    <div className={recoveryResult.success ? 'text-green-900' : 'text-red-900'}>
+                      {recoveryResult.message}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Recovery Actions */}
+              {healthStatus?.isCorrupted && healthStatus.canRecover && (
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-2">Recovery Options</h3>
+                  <button
+                    onClick={handleRecoverSync}
+                    disabled={isProcessing}
+                    className="w-full p-3 text-left border rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">🔄</span>
+                      <div>
+                        <div className="font-medium text-gray-900">Attempt Recovery</div>
+                        <div className="text-sm text-gray-500">
+                          Try to repair the sync log by salvaging valid events
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              )}
+
+              {/* Backups */}
+              {backups.length > 0 && (
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-2">Available Backups</h3>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {backups.map((backup) => (
+                      <div
+                        key={backup.name}
+                        className="flex items-center justify-between p-2 border rounded-lg"
+                      >
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {new Date(backup.timestamp).toLocaleString()}
+                          </div>
+                          <div className="text-xs text-gray-500 font-mono">
+                            {backup.name}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleRestoreBackup(backup.name)}
+                          disabled={isProcessing}
+                          className="text-xs px-2 py-1 text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50"
+                        >
+                          Restore
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reset Option */}
+              <div className="pt-4 border-t border-gray-200">
+                <h3 className="font-medium text-gray-900 mb-2">Reset Sync</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  If sync continues to have issues, you can reset all sync data.
+                  This will delete your sync history but preserve your local data.
+                  You'll need to rejoin the family.
+                </p>
+                <button
+                  onClick={() => setShowResetConfirmModal(true)}
+                  disabled={isProcessing}
+                  className="px-4 py-2 text-sm text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                >
+                  Reset Sync Data
+                </button>
+              </div>
+
+              <div className="flex justify-end pt-4">
+                <button
+                  onClick={() => setShowTroubleshootModal(false)}
+                  className="btn btn-secondary"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
+
+      {/* Reset Confirmation Modal */}
+      <Dialog open={showResetConfirmModal} onClose={() => setShowResetConfirmModal(false)} className="relative z-50">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+              Confirm Reset
+            </Dialog.Title>
+
+            <div className="space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <p className="text-sm text-amber-800 flex items-start gap-2">
+                  <span className="text-lg">⚠️</span>
+                  <span>
+                    This will delete all sync data including your event history.
+                    Your local data (activities, students, etc.) will be preserved.
+                    You will need to rejoin the family using a new invite.
+                  </span>
+                </p>
+              </div>
+
+              {recoveryResult && !recoveryResult.success && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-sm text-red-700">{recoveryResult.message}</p>
+                </div>
+              )}
+
+              {recoveryResult && recoveryResult.success && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-sm text-green-700">{recoveryResult.message}</p>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-4">
+                <button
+                  onClick={() => setShowResetConfirmModal(false)}
+                  className="btn btn-secondary"
+                  disabled={isProcessing}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleResetSync}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? 'Resetting...' : 'Yes, Reset Sync'}
                 </button>
               </div>
             </div>
