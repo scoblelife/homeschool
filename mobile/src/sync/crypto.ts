@@ -5,8 +5,12 @@
  * and OAuth-style device joining using tweetnacl.
  */
 
-import nacl from 'tweetnacl'
-import { encodeBase64, decodeBase64 } from 'tweetnacl-util'
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const nacl: any = require('tweetnacl')
+const tweetnaclUtil: any = require('tweetnacl-util')
+const encodeBase64: (data: Uint8Array) => string = tweetnaclUtil.encodeBase64
+const decodeBase64: (data: string) => Uint8Array = tweetnaclUtil.decodeBase64
 import * as Crypto from 'expo-crypto'
 
 export interface KeyPair {

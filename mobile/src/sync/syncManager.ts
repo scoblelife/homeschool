@@ -2,7 +2,7 @@
  * Sync Manager - orchestrates sync operations and manages connections
  */
 
-import { SyncEvent, createSyncEvent, EventType, generateUUID } from './events'
+import { SyncEvent, createSyncEvent, EventType, generateUUID, HLCTimestamp } from './events'
 import { HybridLogicalClock } from './hlc'
 import { EventLog } from './eventLog'
 import { FamilyManager } from './family'
@@ -479,7 +479,7 @@ export class SyncManager {
   /**
    * Handle sync request from a peer
    */
-  private async handleSyncRequest(peerId: string, afterTimestamp: string | null): Promise<void> {
+  private async handleSyncRequest(peerId: string, afterTimestamp: HLCTimestamp | null): Promise<void> {
     if (!this.swarm) return
 
     // Get events after the requested timestamp

@@ -73,7 +73,6 @@ function BookCard({
               <Badge
                 variant="default"
                 style={{ backgroundColor: statusInfo.bgColor }}
-                textStyle={{ color: statusInfo.color }}
               >
                 {statusInfo.label}
               </Badge>
@@ -524,7 +523,6 @@ export default function LibraryScreen() {
                   variant="secondary"
                   onPress={() => handleDeleteBook(selectedBook)}
                   style={{ flex: 1, backgroundColor: '#fef2f2' }}
-                  textStyle={{ color: '#dc2626' }}
                 >
                   Delete
                 </Button>
@@ -544,7 +542,7 @@ export default function LibraryScreen() {
               {selectedBook.genre && <Badge variant="secondary">{selectedBook.genre}</Badge>}
               {selectedBook.readingLevel && <Badge variant="primary">{selectedBook.readingLevel}</Badge>}
               {selectedBook.totalPages && (
-                <Badge variant="default">{selectedBook.totalPages} pages</Badge>
+                <Badge variant="default">{`${selectedBook.totalPages} pages`}</Badge>
               )}
             </View>
 
