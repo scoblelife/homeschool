@@ -103,7 +103,7 @@ export class HttpSignalingProvider {
         throw new Error(`Join room failed: ${response.status}`)
       }
 
-      const data = await response.json()
+      const data = (await response.json()) as { peers?: string[] }
       console.log('[HttpSignaling] Joined room:', roomId, 'peers:', data.peers)
 
       // Start polling for messages
@@ -184,8 +184,8 @@ export class HttpSignalingProvider {
         return
       }
 
-      const data = await response.json()
-      const messages: (SignalingMessage & { id: number })[] = data.messages || []
+      const data = (await response.json()) as { messages?: (SignalingMessage & { id: number })[] }
+      const messages = data.messages || []
 
       for (const message of messages) {
         // Only process messages addressed to us

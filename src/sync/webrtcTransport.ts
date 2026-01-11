@@ -4,7 +4,109 @@
  * Provides peer-to-peer connectivity using WebRTC data channels.
  * Uses public STUN servers for NAT traversal and HTTP signaling for
  * the initial connection handshake.
+ *
+ * NOTE: This module runs in the Electron renderer process where
+ * browser WebRTC APIs are available natively.
  */
+
+// WebRTC type declarations for Electron renderer context
+// These are available in the browser/renderer but not in Node.js type context
+declare const RTCPeerConnection: {
+  new (config?: RTCConfiguration): RTCPeerConnection
+  prototype: RTCPeerConnection
+}
+
+declare interface RTCPeerConnection {
+  createOffer(): Promise<RTCSessionDescriptionInit>
+  createAnswer(): Promise<RTCSessionDescriptionInit>
+  setLocalDescription(desc: RTCSessionDescriptionInit): Promise<void>
+  setRemoteDescription(desc: RTCSessionDescriptionInit): Promise<void>
+  addIceCandidate(candidate: RTCIceCandidateInit): Promise<void>
+  createDataChannel(label: string, options?: RTCDataChannelInit): RTCDataChannel
+  close(): void
+  connectionState: RTCPeerConnectionState
+  iceConnectionState: string
+  iceGatheringState: 'new' | 'gathering' | 'complete'
+  localDescription: RTCSessionDescription | null
+  onicecandidate: ((event: RTCPeerConnectionIceEvent) => void) | null
+  ondatachannel: ((event: RTCDataChannelEvent) => void) | null
+  onconnectionstatechange: (() => void) | null
+}
+
+declare interface RTCConfiguration {
+  iceServers?: RTCIceServer[]
+}
+
+declare interface RTCIceServer {
+  urls: string | string[]
+  username?: string
+  credential?: string
+}
+
+declare interface RTCSessionDescriptionInit {
+  type: 'offer' | 'answer' | 'pranswer' | 'rollback'
+  sdp?: string
+}
+
+declare const RTCSessionDescription: {
+  new (init: RTCSessionDescriptionInit): RTCSessionDescription
+  prototype: RTCSessionDescription
+}
+
+declare interface RTCSessionDescription {
+  type: 'offer' | 'answer' | 'pranswer' | 'rollback'
+  sdp: string
+}
+
+declare interface RTCIceCandidateInit {
+  candidate?: string
+  sdpMLineIndex?: number | null
+  sdpMid?: string | null
+}
+
+declare const RTCIceCandidate: {
+  new (init: RTCIceCandidateInit): RTCIceCandidate
+  prototype: RTCIceCandidate
+}
+
+declare interface RTCIceCandidate {
+  candidate: string
+  sdpMLineIndex: number | null
+  sdpMid: string | null
+  toJSON(): RTCIceCandidateInit
+}
+
+declare interface RTCPeerConnectionIceEvent {
+  candidate: RTCIceCandidate | null
+}
+
+declare interface RTCDataChannelEvent {
+  channel: RTCDataChannel
+}
+
+declare interface RTCDataChannelInit {
+  ordered?: boolean
+  maxRetransmits?: number
+}
+
+declare interface RTCDataChannel {
+  label: string
+  readyState: 'connecting' | 'open' | 'closing' | 'closed'
+  send(data: string | ArrayBuffer): void
+  close(): void
+  onopen: (() => void) | null
+  onclose: (() => void) | null
+  onmessage: ((event: MessageEvent) => void) | null
+  onerror: ((error: Event) => void) | null
+}
+
+declare type RTCPeerConnectionState =
+  | 'new'
+  | 'connecting'
+  | 'connected'
+  | 'disconnected'
+  | 'failed'
+  | 'closed'
 
 import { EventEmitter } from 'events'
 import type { SyncEvent } from './events'
@@ -367,7 +469,7 @@ export class WebRTCTransport extends EventEmitter {
     this.unsubscribe = null
 
     // Close all peer connections
-    for (const [, peer] of this.peers) {
+    for (const [, peer] of Array.from(this.peers.entries())) {
       peer.close()
     }
     this.peers.clear()
@@ -497,7 +599,7 @@ export class WebRTCTransport extends EventEmitter {
   async broadcast(event: SyncEvent): Promise<void> {
     const message = JSON.stringify({ type: 'event', event })
 
-    for (const [peerId, peer] of this.peers) {
+    for (const [peerId, peer] of Array.from(this.peers.entries())) {
       if (peer.getState() === 'connected') {
         peer.send(message)
       }
@@ -513,7 +615,7 @@ export class WebRTCTransport extends EventEmitter {
       afterTimestamp: afterTimestamp || null,
     })
 
-    for (const [, peer] of this.peers) {
+    for (const [, peer] of Array.from(this.peers.entries())) {
       if (peer.getState() === 'connected') {
         peer.send(message)
         break // Only request from first connected peer
@@ -532,7 +634,7 @@ export class WebRTCTransport extends EventEmitter {
     })
 
     // Send to all connected peers (the one that requested will receive it)
-    for (const [, peer] of this.peers) {
+    for (const [, peer] of Array.from(this.peers.entries())) {
       if (peer.getState() === 'connected') {
         peer.send(message)
       }
@@ -543,7 +645,7 @@ export class WebRTCTransport extends EventEmitter {
    * Check if connected to any peer
    */
   isConnected(): boolean {
-    for (const [, peer] of this.peers) {
+    for (const [, peer] of Array.from(this.peers.entries())) {
       if (peer.getState() === 'connected') {
         return true
       }
@@ -556,7 +658,7 @@ export class WebRTCTransport extends EventEmitter {
    */
   getConnectedPeers(): PeerInfo[] {
     const result: PeerInfo[] = []
-    for (const [peerId, peer] of this.peers) {
+    for (const [peerId, peer] of Array.from(this.peers.entries())) {
       result.push({
         peerId,
         deviceId: peerId,
@@ -572,7 +674,7 @@ export class WebRTCTransport extends EventEmitter {
    */
   getStats(): { connectedPeers: number; totalPeers: number } {
     let connectedCount = 0
-    for (const [, peer] of this.peers) {
+    for (const [, peer] of Array.from(this.peers.entries())) {
       if (peer.getState() === 'connected') {
         connectedCount++
       }

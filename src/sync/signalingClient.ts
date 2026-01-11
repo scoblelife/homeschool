@@ -70,7 +70,7 @@ export class SignalingClient {
     if (!res.ok) {
       throw new Error(`Failed to get offer: ${res.status}`)
     }
-    const data = await res.json()
+    const data = (await res.json()) as { offer?: JoinOffer }
     return data.offer || null
   }
 
@@ -98,7 +98,7 @@ export class SignalingClient {
     if (!res.ok) {
       throw new Error(`Failed to get answer: ${res.status}`)
     }
-    const data = await res.json()
+    const data = (await res.json()) as { answer?: JoinAnswer }
     return data.answer || null
   }
 
@@ -144,7 +144,7 @@ export class SignalingClient {
     if (!res.ok) {
       throw new Error(`Failed to get online peers: ${res.status}`)
     }
-    const data = await res.json()
+    const data = (await res.json()) as { peers?: OnlinePeer[] }
     return data.peers || []
   }
 
@@ -178,7 +178,7 @@ export class SignalingClient {
     if (!res.ok) {
       throw new Error(`Failed to poll signals: ${res.status}`)
     }
-    const data = await res.json()
+    const data = (await res.json()) as { messages?: SignalingMessage[] }
     return data.messages || []
   }
 

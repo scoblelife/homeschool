@@ -4,6 +4,13 @@
  * WebRTC transport settings for P2P sync
  */
 
+// RTCIceServer type for Node.js context
+export interface RTCIceServer {
+  urls: string | string[]
+  username?: string
+  credential?: string
+}
+
 // Cloudflare Worker URL for signaling
 // Deploy your own or use the default (when deployed)
 export const WORKER_URL =

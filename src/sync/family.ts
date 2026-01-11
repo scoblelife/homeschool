@@ -376,7 +376,7 @@ export class FamilyManager {
    */
   private cleanupPendingInvites(): void {
     const now = Date.now()
-    for (const [topic, pending] of this.pendingInvites) {
+    for (const [topic, pending] of Array.from(this.pendingInvites.entries())) {
       if (pending.invite.expiresAt < now) {
         this.pendingInvites.delete(topic)
       }
