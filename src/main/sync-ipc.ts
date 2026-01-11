@@ -87,11 +87,12 @@ async function doInitializeSync(): Promise<void> {
 /**
  * Initialize WebRTC transport
  */
-async function initializeWebRTC(config: { deviceId: string; deviceName: string; familyId: string }): Promise<void> {
+async function initializeWebRTC(config: { deviceId: string; deviceName: string; familyId: string; keyPair: { publicKey: string } }): Promise<void> {
   webrtcTransport = createWebRTCTransport({
     deviceId: config.deviceId,
     deviceName: config.deviceName,
     familyId: config.familyId,
+    pubKey: config.keyPair.publicKey,
     onEvent: async (event, fromPeer) => {
       if (!eventLog || !projector) return
 

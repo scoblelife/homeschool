@@ -8,8 +8,8 @@ import { EventLog } from './eventLog'
 import { FamilyManager } from './family'
 import { EventProjector } from './projector'
 import { Hyperswarm, createTopic, EventType as SwarmEventType } from './hyperswarm'
-import { HttpSignalingProvider } from './httpSignaling'
-import { SIGNALING_URL } from './config'
+import { WorkerSignalingProvider } from './workerSignaling'
+import { WORKER_URL } from './config'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const HLC_STATE_KEY = '@homeschool/hlc_state'
@@ -265,21 +265,29 @@ export class SyncManager {
   }
 
   /**
-   * Connect via P2P network (WebRTC with HTTP signaling)
+   * Connect via P2P network (WebRTC with Cloudflare Worker signaling)
    */
   private async connectWebRTC(deviceId: string, familyId: string): Promise<void> {
     console.log('[SyncManager] connectWebRTC called')
     console.log('[SyncManager] deviceId:', deviceId)
     console.log('[SyncManager] familyId:', familyId)
-    console.log('[SyncManager] SIGNALING_URL:', SIGNALING_URL)
+    console.log('[SyncManager] WORKER_URL:', WORKER_URL)
+
+    // Get the public key for presence
+    const pubKey = this.familyManager.getPubKey()
+    if (!pubKey) {
+      console.error('[SyncManager] No public key available')
+      return
+    }
+
     try {
       console.log('[SyncManager] Creating Hyperswarm instance')
       this.swarm = new Hyperswarm()
 
-      // Create HTTP signaling provider for WebRTC
-      const signaling = new HttpSignalingProvider({
-        serverUrl: SIGNALING_URL,
-        pollIntervalMs: 1000,
+      // Create Worker signaling provider for WebRTC
+      const signaling = new WorkerSignalingProvider({
+        pubKey,
+        workerUrl: WORKER_URL,
       })
 
       console.log('[SyncManager] Calling swarm.create()')
