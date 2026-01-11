@@ -420,6 +420,32 @@ export async function initializeSchema(): Promise<void> {
     )
   `)
 
+  // Create activity_standards junction table for curriculum mapping
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS activity_standards (
+      id VARCHAR PRIMARY KEY,
+      activity_id VARCHAR NOT NULL REFERENCES activities(id) ON DELETE CASCADE,
+      standard_id VARCHAR NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(activity_id, standard_id)
+    )
+  `)
+
+  // Create custom_standards table for user-defined curriculum standards
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS custom_standards (
+      id VARCHAR PRIMARY KEY,
+      code VARCHAR NOT NULL,
+      title VARCHAR NOT NULL,
+      description VARCHAR,
+      grade_level VARCHAR NOT NULL,
+      subject_id VARCHAR NOT NULL,
+      domain VARCHAR NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
   // Run migrations for existing databases
   await runMigrations()
 }

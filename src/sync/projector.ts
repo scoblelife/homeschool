@@ -42,7 +42,12 @@ import type {
   MemberKickedEvent,
   AttendanceCreatedEvent,
   AttendanceUpdatedEvent,
-  AttendanceDeletedEvent
+  AttendanceDeletedEvent,
+  CustomStandardCreatedEvent,
+  CustomStandardUpdatedEvent,
+  CustomStandardDeletedEvent,
+  ActivityStandardCreatedEvent,
+  ActivityStandardDeletedEvent
 } from './events'
 import { HLC } from './hlc'
 
@@ -340,6 +345,23 @@ export class EventProjector {
       // Member management events
       case 'member.kicked':
         await this.applyMemberKicked(event)
+        break
+
+      // Curriculum events
+      case 'customStandard.created':
+        await this.applyCustomStandardCreated(event)
+        break
+      case 'customStandard.updated':
+        await this.applyCustomStandardUpdated(event)
+        break
+      case 'customStandard.deleted':
+        await this.applyCustomStandardDeleted(event)
+        break
+      case 'activityStandard.created':
+        await this.applyActivityStandardCreated(event)
+        break
+      case 'activityStandard.deleted':
+        await this.applyActivityStandardDeleted(event)
         break
 
       default:
@@ -903,6 +925,81 @@ export class EventProjector {
     console.log('[Projector] Member kicked:', kickedDeviceName, '(' + kickedDeviceId.slice(0, 8) + '...)')
   }
 
+  // ============ Curriculum Event Handlers ============
+
+  private async applyCustomStandardCreated(event: CustomStandardCreatedEvent): Promise<void> {
+    const { id, code, title, description, gradeLevel, subjectId, domain } = event.data
+    await this.db!.run(
+      `INSERT OR REPLACE INTO custom_standards
+       (id, code, title, description, grade_level, subject_id, domain, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+      id,
+      code,
+      title,
+      description || null,
+      gradeLevel,
+      subjectId,
+      domain
+    )
+  }
+
+  private async applyCustomStandardUpdated(event: CustomStandardUpdatedEvent): Promise<void> {
+    const { id, code, title, description, domain } = event.data
+    const updates: string[] = []
+    const values: unknown[] = []
+
+    if (code !== undefined) {
+      updates.push('code = ?')
+      values.push(code)
+    }
+    if (title !== undefined) {
+      updates.push('title = ?')
+      values.push(title)
+    }
+    if (description !== undefined) {
+      updates.push('description = ?')
+      values.push(description)
+    }
+    if (domain !== undefined) {
+      updates.push('domain = ?')
+      values.push(domain)
+    }
+
+    if (updates.length > 0) {
+      updates.push('updated_at = CURRENT_TIMESTAMP')
+      values.push(id)
+      await this.db!.run(
+        `UPDATE custom_standards SET ${updates.join(', ')} WHERE id = ?`,
+        ...values
+      )
+    }
+  }
+
+  private async applyCustomStandardDeleted(event: CustomStandardDeletedEvent): Promise<void> {
+    await this.db!.run('DELETE FROM custom_standards WHERE id = ?', event.data.id)
+    await this.db!.run('DELETE FROM activity_standards WHERE standard_id = ?', event.data.id)
+  }
+
+  private async applyActivityStandardCreated(event: ActivityStandardCreatedEvent): Promise<void> {
+    const { id, activityId, standardId } = event.data
+    await this.db!.run(
+      `INSERT OR IGNORE INTO activity_standards (id, activity_id, standard_id, created_at)
+       VALUES (?, ?, ?, CURRENT_TIMESTAMP)`,
+      id,
+      activityId,
+      standardId
+    )
+  }
+
+  private async applyActivityStandardDeleted(event: ActivityStandardDeletedEvent): Promise<void> {
+    const { activityId, standardId } = event.data
+    await this.db!.run(
+      'DELETE FROM activity_standards WHERE activity_id = ? AND standard_id = ?',
+      activityId,
+      standardId
+    )
+  }
+
   // ============ Rebuild Support ============
 
   /**
@@ -920,7 +1017,9 @@ export class EventProjector {
       'weekly_plans',
       'sessions',
       'subjects',
-      'attendance'
+      'attendance',
+      'custom_standards',
+      'activity_standards'
     ]
 
     for (const table of tablesToClear) {

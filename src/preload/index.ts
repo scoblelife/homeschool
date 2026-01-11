@@ -45,7 +45,14 @@ import type {
   CreateAttendanceRecord,
   AttendanceRecord,
   PortfolioConfig,
-  GeneratePDFResult
+  GeneratePDFResult,
+  CreateCustomStandard,
+  UpdateCustomStandard,
+  LearningStandard,
+  CustomStandard,
+  ActivityStandardMapping,
+  StandardCoverage,
+  CurriculumReport
 } from '../shared/types'
 
 const api: DatabaseAPI & SyncAPI = {
@@ -377,7 +384,31 @@ const api: DatabaseAPI & SyncAPI = {
   getCurrentSchoolYear: () =>
     ipcRenderer.invoke('portfolio:currentSchoolYear') as Promise<string>,
   openPortfolioFile: (filePath: string) =>
-    ipcRenderer.invoke('portfolio:openFile', filePath) as Promise<void>
+    ipcRenderer.invoke('portfolio:openFile', filePath) as Promise<void>,
+
+  // Curriculum Mapping
+  getAllStandards: (gradeLevel?: GradeLevel) =>
+    ipcRenderer.invoke('curriculum:getAllStandards', gradeLevel) as Promise<LearningStandard[]>,
+  getStandard: (id: string) =>
+    ipcRenderer.invoke('curriculum:getStandard', id) as Promise<LearningStandard | null>,
+  createCustomStandard: (data: CreateCustomStandard) =>
+    ipcRenderer.invoke('curriculum:createCustomStandard', data) as Promise<CustomStandard>,
+  updateCustomStandard: (id: string, data: UpdateCustomStandard) =>
+    ipcRenderer.invoke('curriculum:updateCustomStandard', id, data) as Promise<CustomStandard | null>,
+  deleteCustomStandard: (id: string) =>
+    ipcRenderer.invoke('curriculum:deleteCustomStandard', id) as Promise<void>,
+  getActivityStandards: (activityId: string) =>
+    ipcRenderer.invoke('curriculum:getActivityStandards', activityId) as Promise<LearningStandard[]>,
+  addActivityStandard: (activityId: string, standardId: string) =>
+    ipcRenderer.invoke('curriculum:addActivityStandard', activityId, standardId) as Promise<ActivityStandardMapping>,
+  removeActivityStandard: (activityId: string, standardId: string) =>
+    ipcRenderer.invoke('curriculum:removeActivityStandard', activityId, standardId) as Promise<void>,
+  setActivityStandards: (activityId: string, standardIds: string[]) =>
+    ipcRenderer.invoke('curriculum:setActivityStandards', activityId, standardIds) as Promise<void>,
+  getStandardCoverage: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) =>
+    ipcRenderer.invoke('curriculum:getStandardCoverage', studentId, gradeLevel, startDate, endDate) as Promise<StandardCoverage[]>,
+  getCurriculumReport: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) =>
+    ipcRenderer.invoke('curriculum:getCurriculumReport', studentId, gradeLevel, startDate, endDate) as Promise<CurriculumReport>
 }
 
 contextBridge.exposeInMainWorld('api', api)

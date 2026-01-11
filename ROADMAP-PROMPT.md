@@ -188,7 +188,7 @@ When ALL tasks across ALL phases are marked `[x]`, output:
   - Professional formatting
   - Location: `src/features/portfolio/`
 
-- [ ] **4.5 Curriculum mapping**
+- [x] **4.5 Curriculum mapping**
   - Map activities to learning standards
   - Common Core alignment option
   - Custom curriculum support
