@@ -6,4 +6,5 @@
 
 export { AIWeeklySummary } from './AIWeeklySummary'
 export { ActivitySuggestions } from './ActivitySuggestions'
+export { PortfolioNarrative } from './PortfolioNarrative'
 export { useAIInsightsStore } from './aiInsightsStore'
