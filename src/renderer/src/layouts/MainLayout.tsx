@@ -87,8 +87,21 @@ export default function MainLayout(): JSX.Element {
           ))}
         </nav>
 
-        {/* Settings Link */}
-        <div className="p-4 border-t border-gray-200">
+        {/* Settings Links */}
+        <div className="p-4 border-t border-gray-200 space-y-1">
+          <NavLink
+            to="/api-services"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-fuchsia-50 text-fuchsia-700'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`
+            }
+          >
+            <span>🔌</span>
+            API Services
+          </NavLink>
           <NavLink
             to="/settings"
             className={({ isActive }) =>
