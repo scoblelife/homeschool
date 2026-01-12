@@ -20,7 +20,7 @@ const toDate = (date: string | Date): Date => {
 }
 import { useStore } from '../stores/useStore'
 import { useMilestones } from '../hooks/useDatabase'
-import type { Activity, Session, Milestone, FieldTrip, FamilyGoal } from '../../../shared/types'
+import type { Activity, Session, Milestone, FieldTrip } from '../../../shared/types'
 
 export default function Dashboard(): JSX.Element {
   const { students, subjects, selectedStudentId, getStudentById, getSubjectById } = useStore()
@@ -29,11 +29,6 @@ export default function Dashboard(): JSX.Element {
   const [recentActivities, setRecentActivities] = useState<Activity[]>([])
   const [suggestedMilestones, setSuggestedMilestones] = useState<Milestone[]>([])
   const [upcomingFieldTrips, setUpcomingFieldTrips] = useState<FieldTrip[]>([])
-  const [starTotals, setStarTotals] = useState<{ weeklyTotal: number; allTimeTotal: number } | null>(null)
-  const [familyGoal, setFamilyGoal] = useState<FamilyGoal | null>(null)
-  const [familyTotalStars, setFamilyTotalStars] = useState<number>(0)
-  const [showCreateGoal, setShowCreateGoal] = useState(false)
-  const [goalForm, setGoalForm] = useState({ title: '', starTarget: 100, rewardDescription: '' })
 
   // Streak tracking
   const { recordActivity } = useStreakTracking(students)
@@ -67,17 +62,12 @@ export default function Dashboard(): JSX.Element {
         .slice(0, 3)
       setUpcomingFieldTrips(upcoming)
 
-      // Load suggested milestones and star totals if student selected
+      // Load suggested milestones if student selected
       if (selectedStudentId) {
-        const [suggested, totals] = await Promise.all([
-          window.api.getSuggestedMilestones(selectedStudentId, 5),
-          window.api.getStudentStarTotals(selectedStudentId)
-        ])
+        const suggested = await window.api.getSuggestedMilestones(selectedStudentId, 5)
         setSuggestedMilestones(suggested)
-        setStarTotals(totals)
       } else {
         setSuggestedMilestones([])
-        setStarTotals(null)
       }
   }, [selectedStudentId, today])
 
@@ -95,40 +85,6 @@ export default function Dashboard(): JSX.Element {
   useEffect(() => {
     loadDashboardData()
   }, [loadDashboardData])
-
-  // Load family goal data
-  useEffect(() => {
-    loadFamilyGoalData()
-  }, [])
-
-  const loadFamilyGoalData = async () => {
-    const [goal, totalStars] = await Promise.all([
-      window.api.getActiveFamilyGoal(),
-      window.api.getFamilyTotalStars()
-    ])
-    setFamilyGoal(goal)
-    setFamilyTotalStars(totalStars)
-  }
-
-  const handleCreateGoal = async () => {
-    if (!goalForm.title || goalForm.starTarget <= 0) return
-    await window.api.createFamilyGoal({
-      title: goalForm.title,
-      starTarget: goalForm.starTarget,
-      rewardDescription: goalForm.rewardDescription || null,
-      startDate: new Date().toISOString().split('T')[0],
-      endDate: null
-    })
-    setShowCreateGoal(false)
-    setGoalForm({ title: '', starTarget: 100, rewardDescription: '' })
-    loadFamilyGoalData()
-  }
-
-  const handleAchieveGoal = async () => {
-    if (!familyGoal) return
-    await window.api.achieveFamilyGoal(familyGoal.id)
-    loadFamilyGoalData()
-  }
 
   const selectedStudent = selectedStudentId ? getStudentById(selectedStudentId) : null
 
@@ -201,33 +157,6 @@ export default function Dashboard(): JSX.Element {
             <div className="bg-white/60 rounded-lg p-2">
               <div className="text-xl font-bold text-gray-400">{milestoneStats.total - milestoneStats.completed - milestoneStats.inProgress}</div>
               <div className="text-gray-500 text-xs">Not Started</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Star Rewards (when student selected) */}
-      {selectedStudent && starTotals && (
-        <div className="card mb-6 bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-full bg-yellow-100 flex items-center justify-center text-3xl">
-                ⭐
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">Skylight Stars</h2>
-                <p className="text-sm text-gray-500">Track your reward progress</p>
-              </div>
-            </div>
-            <div className="flex gap-8 text-center">
-              <div>
-                <div className="text-3xl font-bold text-yellow-600">{starTotals.weeklyTotal}</div>
-                <div className="text-sm text-gray-500">This Week</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-amber-600">{starTotals.allTimeTotal}</div>
-                <div className="text-sm text-gray-500">All Time</div>
-              </div>
             </div>
           </div>
         </div>
@@ -315,103 +244,6 @@ export default function Dashboard(): JSX.Element {
         <ErrorBoundary fallback={<WidgetErrorFallback />}>
           <ComplianceDeadlines compact />
         </ErrorBoundary>
-      </div>
-
-      {/* Family Goal */}
-      <div className="card mb-6 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">🎯</span>
-            <h2 className="text-lg font-semibold text-gray-900">Family Goal</h2>
-          </div>
-          {!familyGoal && !showCreateGoal && (
-            <button onClick={() => setShowCreateGoal(true)} className="btn btn-secondary text-sm">
-              + Set Goal
-            </button>
-          )}
-        </div>
-
-        {showCreateGoal && (
-          <div className="bg-white rounded-lg p-4 border border-purple-200 mb-4">
-            <div className="space-y-3">
-              <div>
-                <label className="label">Goal Title</label>
-                <input
-                  type="text"
-                  value={goalForm.title}
-                  onChange={(e) => setGoalForm({ ...goalForm, title: e.target.value })}
-                  className="input"
-                  placeholder="e.g., Pizza Night!"
-                />
-              </div>
-              <div>
-                <label className="label">Star Target</label>
-                <input
-                  type="number"
-                  value={goalForm.starTarget}
-                  onChange={(e) => setGoalForm({ ...goalForm, starTarget: parseInt(e.target.value) || 0 })}
-                  className="input"
-                  placeholder="100"
-                />
-              </div>
-              <div>
-                <label className="label">Reward Description (optional)</label>
-                <input
-                  type="text"
-                  value={goalForm.rewardDescription}
-                  onChange={(e) => setGoalForm({ ...goalForm, rewardDescription: e.target.value })}
-                  className="input"
-                  placeholder="e.g., Order pizza from our favorite place!"
-                />
-              </div>
-              <div className="flex gap-2 justify-end">
-                <button onClick={() => setShowCreateGoal(false)} className="btn btn-secondary text-sm">
-                  Cancel
-                </button>
-                <button onClick={handleCreateGoal} className="btn btn-primary text-sm">
-                  Create Goal
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {familyGoal ? (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="font-medium text-purple-800">{familyGoal.title}</div>
-              <div className="text-sm text-purple-600">
-                {familyTotalStars} / {familyGoal.starTarget} ⭐
-              </div>
-            </div>
-            {familyGoal.rewardDescription && (
-              <p className="text-sm text-gray-600 mb-3">{familyGoal.rewardDescription}</p>
-            )}
-            <div className="relative h-6 bg-white/50 rounded-full overflow-hidden">
-              <div
-                className="absolute h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 rounded-full"
-                style={{ width: `${Math.min(100, (familyTotalStars / familyGoal.starTarget) * 100)}%` }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center text-sm font-medium">
-                {Math.round((familyTotalStars / familyGoal.starTarget) * 100)}%
-              </div>
-            </div>
-            <div className="flex items-center justify-between mt-3">
-              <span className="text-sm text-purple-600">
-                {Math.max(0, familyGoal.starTarget - familyTotalStars)} more stars to go!
-              </span>
-              {familyTotalStars >= familyGoal.starTarget && (
-                <button onClick={handleAchieveGoal} className="btn btn-primary text-sm bg-purple-600 hover:bg-purple-700">
-                  🎉 Claim Reward!
-                </button>
-              )}
-            </div>
-          </div>
-        ) : !showCreateGoal && (
-          <p className="text-gray-500 text-sm">
-            Set a family goal to work together towards a shared reward!
-          </p>
-        )}
       </div>
 
       {/* Quick Stats */}

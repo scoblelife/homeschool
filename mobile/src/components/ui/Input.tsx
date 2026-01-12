@@ -8,9 +8,12 @@ interface InputProps extends Omit<TextInputProps, 'style'> {
 
 export function Input({ label, error, containerStyle, ...props }: InputProps) {
   return (
-    <View style={{ marginBottom: 16, ...containerStyle }}>
+    <View style={{ marginBottom: 16, ...containerStyle }} accessible={false}>
       {label && (
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>
+        <Text
+          style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}
+          accessibilityRole="text"
+        >
           {label}
         </Text>
       )}
@@ -25,10 +28,19 @@ export function Input({ label, error, containerStyle, ...props }: InputProps) {
           borderWidth: error ? 1 : 0,
           borderColor: error ? '#ef4444' : 'transparent',
         }}
+        accessibilityLabel={label}
+        accessibilityHint={error ? `Error: ${error}` : undefined}
+        accessibilityState={{ disabled: props.editable === false }}
         {...props}
       />
       {error && (
-        <Text style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}>{error}</Text>
+        <Text
+          style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
+        >
+          {error}
+        </Text>
       )}
     </View>
   )
@@ -43,9 +55,12 @@ interface TextAreaProps extends Omit<TextInputProps, 'style'> {
 
 export function TextArea({ label, error, rows = 3, containerStyle, ...props }: TextAreaProps) {
   return (
-    <View style={{ marginBottom: 16, ...containerStyle }}>
+    <View style={{ marginBottom: 16, ...containerStyle }} accessible={false}>
       {label && (
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>
+        <Text
+          style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}
+          accessibilityRole="text"
+        >
           {label}
         </Text>
       )}
@@ -64,10 +79,19 @@ export function TextArea({ label, error, rows = 3, containerStyle, ...props }: T
           borderWidth: error ? 1 : 0,
           borderColor: error ? '#ef4444' : 'transparent',
         }}
+        accessibilityLabel={label}
+        accessibilityHint={error ? `Error: ${error}` : undefined}
+        accessibilityState={{ disabled: props.editable === false }}
         {...props}
       />
       {error && (
-        <Text style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}>{error}</Text>
+        <Text
+          style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
+        >
+          {error}
+        </Text>
       )}
     </View>
   )

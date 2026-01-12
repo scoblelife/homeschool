@@ -13,6 +13,8 @@ interface ButtonProps {
   fullWidth?: boolean
   color?: string
   style?: ViewStyle
+  accessibilityLabel?: string
+  accessibilityHint?: string
 }
 
 const variantStyles: Record<ButtonVariant, { container: ViewStyle; text: TextStyle }> = {
@@ -63,6 +65,8 @@ export function Button({
   fullWidth = false,
   color,
   style,
+  accessibilityLabel,
+  accessibilityHint,
 }: ButtonProps) {
   const variantStyle = variantStyles[variant]
   const sizeStyle = sizeStyles[size]
@@ -94,6 +98,13 @@ export function Button({
       disabled={disabled || loading}
       activeOpacity={0.7}
       style={containerStyle}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel || children}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{
+        disabled: disabled || loading,
+        busy: loading,
+      }}
     >
       {loading ? (
         <ActivityIndicator size="small" color={textStyle.color as string} style={{ marginRight: 8 }} />

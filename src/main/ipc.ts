@@ -21,7 +21,9 @@ import {
   attachmentsRepo,
   attendanceRepo,
   curriculumRepo,
-  coopRepo
+  coopRepo,
+  packagesRepo,
+  assessmentsRepo
 } from '../database'
 import * as googleAuth from './google-auth'
 import * as googleCalendar from './google-calendar'
@@ -73,7 +75,12 @@ import type {
   CreateCoopMember,
   UpdateCoopMember,
   CreateCoopEvent,
-  UpdateCoopEvent
+  UpdateCoopEvent,
+  UpdateCoopSharingPreferences,
+  CreateCurriculumPackage,
+  UpdateCurriculumPackage,
+  CreateAssessment,
+  UpdateAssessment
 } from '../shared/types'
 
 // Simple iCal parser for extracting events
@@ -1050,6 +1057,27 @@ export function registerIpcHandlers(): void {
     return curriculumRepo.getCurriculumReport(studentId, gradeLevel, startDate, endDate)
   })
 
+  // Curriculum Packages
+  ipcMain.handle('packages:getAll', async () => {
+    return packagesRepo.getCurriculumPackages()
+  })
+
+  ipcMain.handle('packages:get', async (_, id: string) => {
+    return packagesRepo.getCurriculumPackage(id)
+  })
+
+  ipcMain.handle('packages:create', async (_, data: CreateCurriculumPackage) => {
+    return packagesRepo.createCurriculumPackage(data)
+  })
+
+  ipcMain.handle('packages:update', async (_, id: string, data: UpdateCurriculumPackage) => {
+    return packagesRepo.updateCurriculumPackage(id, data)
+  })
+
+  ipcMain.handle('packages:delete', async (_, id: string) => {
+    return packagesRepo.deleteCurriculumPackage(id)
+  })
+
   // Co-op Groups
   ipcMain.handle('coop:getGroups', async () => {
     return coopRepo.getCoopGroups()
@@ -1119,6 +1147,48 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('coop:deleteEvent', async (_, id: string) => {
     return coopRepo.deleteCoopEvent(id)
+  })
+
+  // Co-op Sharing Preferences
+  ipcMain.handle('coop:getSharingPreferences', async (_, groupId: string) => {
+    return coopRepo.getOrCreateCoopSharingPreferences(groupId)
+  })
+
+  ipcMain.handle('coop:updateSharingPreferences', async (_, groupId: string, data: UpdateCoopSharingPreferences) => {
+    return coopRepo.updateCoopSharingPreferences(groupId, data)
+  })
+
+  // Assessments
+  ipcMain.handle('assessments:getAll', async (_, studentId?: string) => {
+    return assessmentsRepo.getAssessments(studentId)
+  })
+
+  ipcMain.handle('assessments:get', async (_, id: string) => {
+    return assessmentsRepo.getAssessmentById(id)
+  })
+
+  ipcMain.handle('assessments:getUpcoming', async (_, studentId?: string) => {
+    return assessmentsRepo.getUpcomingAssessments(studentId)
+  })
+
+  ipcMain.handle('assessments:getByDateRange', async (_, startDate: string, endDate: string, studentId?: string) => {
+    return assessmentsRepo.getAssessmentsByDateRange(startDate, endDate, studentId)
+  })
+
+  ipcMain.handle('assessments:create', async (_, data: CreateAssessment) => {
+    return assessmentsRepo.createAssessment(data)
+  })
+
+  ipcMain.handle('assessments:update', async (_, id: string, data: UpdateAssessment) => {
+    return assessmentsRepo.updateAssessment(id, data)
+  })
+
+  ipcMain.handle('assessments:delete', async (_, id: string) => {
+    return assessmentsRepo.deleteAssessment(id)
+  })
+
+  ipcMain.handle('assessments:getStats', async (_, studentId: string, startDate?: string, endDate?: string) => {
+    return assessmentsRepo.getAssessmentStats(studentId, startDate, endDate)
   })
 }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Dialog } from '@headlessui/react'
 import { format, parseISO, isFuture, isPast, isToday } from 'date-fns'
-import type { CoopGroup, CoopMember, CoopEvent, CreateCoopEvent } from '../../../../shared/types'
+import type { CoopGroup, CoopMember, CoopEvent, CreateCoopEvent, CoopSharingPreferences, UpdateCoopSharingPreferences } from '../../../../shared/types'
 
 interface CoopGroupDetailProps {
   group: CoopGroup
@@ -12,7 +12,8 @@ interface CoopGroupDetailProps {
 export function CoopGroupDetail({ group, onBack, onGroupDeleted }: CoopGroupDetailProps) {
   const [members, setMembers] = useState<CoopMember[]>([])
   const [events, setEvents] = useState<CoopEvent[]>([])
-  const [activeTab, setActiveTab] = useState<'events' | 'members'>('events')
+  const [sharingPrefs, setSharingPrefs] = useState<CoopSharingPreferences | null>(null)
+  const [activeTab, setActiveTab] = useState<'events' | 'members' | 'sharing'>('events')
   const [showEventModal, setShowEventModal] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [copiedCode, setCopiedCode] = useState(false)
@@ -28,12 +29,14 @@ export function CoopGroupDetail({ group, onBack, onGroupDeleted }: CoopGroupDeta
 
   const loadData = useCallback(async () => {
     try {
-      const [membersData, eventsData] = await Promise.all([
+      const [membersData, eventsData, sharingData] = await Promise.all([
         window.api.getCoopMembers(group.id),
-        window.api.getCoopEvents(group.id)
+        window.api.getCoopEvents(group.id),
+        window.api.getCoopSharingPreferences(group.id)
       ])
       setMembers(membersData)
       setEvents(eventsData)
+      setSharingPrefs(sharingData)
     } catch (error) {
       console.error('Failed to load group data:', error)
     }
@@ -117,6 +120,15 @@ export function CoopGroupDetail({ group, onBack, onGroupDeleted }: CoopGroupDeta
     }
   }
 
+  const handleUpdateSharing = async (updates: UpdateCoopSharingPreferences) => {
+    try {
+      const updated = await window.api.updateCoopSharingPreferences(group.id, updates)
+      setSharingPrefs(updated)
+    } catch (error) {
+      console.error('Failed to update sharing preferences:', error)
+    }
+  }
+
   const upcomingEvents = events.filter(e => isFuture(parseISO(e.date)) || isToday(parseISO(e.date)))
   const pastEvents = events.filter(e => isPast(parseISO(e.date)) && !isToday(parseISO(e.date)))
 
@@ -178,6 +190,16 @@ export function CoopGroupDetail({ group, onBack, onGroupDeleted }: CoopGroupDeta
           }`}
         >
           Members ({members.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('sharing')}
+          className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'sharing'
+              ? 'border-fuchsia-500 text-fuchsia-600'
+              : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+          }`}
+        >
+          Sharing
         </button>
       </div>
 
@@ -269,6 +291,65 @@ export function CoopGroupDetail({ group, onBack, onGroupDeleted }: CoopGroupDeta
             >
               Delete Group
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Sharing Tab */}
+      {activeTab === 'sharing' && (
+        <div>
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <ShieldIcon className="w-5 h-5 text-blue-500 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-blue-900 dark:text-blue-100">Privacy-First Sharing</h4>
+                <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                  Choose what to share with your co-op group. All data is shared via encrypted peer-to-peer connections - it never touches our servers.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <SharingToggle
+              label="Events & Field Trips"
+              description="Share co-op events and field trip plans with group members"
+              enabled={sharingPrefs?.shareEvents ?? true}
+              onChange={(enabled) => handleUpdateSharing({ shareEvents: enabled })}
+            />
+            <SharingToggle
+              label="Resources"
+              description="Share educational resources and links you've collected"
+              enabled={sharingPrefs?.shareResources ?? false}
+              onChange={(enabled) => handleUpdateSharing({ shareResources: enabled })}
+            />
+            <SharingToggle
+              label="Reading Lists"
+              description="Share book recommendations and reading lists"
+              enabled={sharingPrefs?.shareReadingLists ?? false}
+              onChange={(enabled) => handleUpdateSharing({ shareReadingLists: enabled })}
+            />
+            <SharingToggle
+              label="Curriculum Packages"
+              description="Share which curriculum packages your family uses"
+              enabled={sharingPrefs?.sharePackages ?? false}
+              onChange={(enabled) => handleUpdateSharing({ sharePackages: enabled })}
+            />
+          </div>
+
+          <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <h4 className="font-medium text-gray-900 dark:text-white mb-2">What's shared vs. what's private</h4>
+            <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <li className="flex items-center gap-2">
+                <span className="text-green-500">✓</span> Shared: Selected data types above
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-red-500">✗</span> Never shared: Student grades, activity logs, personal notes
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="text-red-500">✗</span> Never shared: Hours tracking, compliance records
+              </li>
+            </ul>
           </div>
         </div>
       )}
@@ -515,5 +596,47 @@ function TrashIcon({ className }: { className?: string }) {
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
     </svg>
+  )
+}
+
+function ShieldIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+    </svg>
+  )
+}
+
+// Sharing Toggle Component
+function SharingToggle({
+  label,
+  description,
+  enabled,
+  onChange
+}: {
+  label: string
+  description: string
+  enabled: boolean
+  onChange: (enabled: boolean) => void
+}) {
+  return (
+    <div className="flex items-center justify-between bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+      <div className="flex-1 mr-4">
+        <h4 className="font-medium text-gray-900 dark:text-white">{label}</h4>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+      </div>
+      <button
+        onClick={() => onChange(!enabled)}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+          enabled ? 'bg-fuchsia-500' : 'bg-gray-300 dark:bg-gray-600'
+        }`}
+      >
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+            enabled ? 'translate-x-6' : 'translate-x-1'
+          }`}
+        />
+      </button>
+    </div>
   )
 }

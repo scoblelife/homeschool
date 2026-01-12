@@ -6,6 +6,7 @@ import { useStore } from '../../src/stores/useStore'
 import { getStudents, createStudent, updateStudent, deleteStudent } from '../../src/database'
 import type { Student, CreateStudent, GradeLevel } from '../../src/types'
 import { Card, Button, Modal, Input, EmptyState, Badge } from '../../src/components/ui'
+import { FeedbackModal, FeedbackButton } from '../../src/components/Feedback'
 
 const gradeLevels: { value: GradeLevel; label: string }[] = [
   { value: 'pre-k', label: 'Pre-K' },
@@ -37,6 +38,7 @@ export default function SettingsScreen() {
   const { students, setStudents, selectedStudentId, setSelectedStudentId } = useStore()
   const [refreshing, setRefreshing] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
+  const [feedbackVisible, setFeedbackVisible] = useState(false)
   const [editingStudent, setEditingStudent] = useState<Student | null>(null)
   const [newStudent, setNewStudent] = useState<Partial<CreateStudent>>({
     gradeLevel: 'k',
@@ -231,6 +233,12 @@ export default function SettingsScreen() {
             )}
           </View>
 
+          {/* Feedback Section */}
+          <View style={{ marginBottom: 24 }}>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>Support</Text>
+            <FeedbackButton onPress={() => setFeedbackVisible(true)} />
+          </View>
+
           {/* App Info */}
           <Card>
             <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937', marginBottom: 8 }}>About</Text>
@@ -338,6 +346,9 @@ export default function SettingsScreen() {
           autoCapitalize="none"
         />
       </Modal>
+
+      {/* Feedback Modal */}
+      <FeedbackModal visible={feedbackVisible} onClose={() => setFeedbackVisible(false)} />
     </View>
   )
 }

@@ -101,6 +101,32 @@ export interface Milestone {
 export type CreateMilestone = Omit<Milestone, 'id' | 'createdAt' | 'updatedAt'>
 export type UpdateMilestone = Partial<Omit<CreateMilestone, 'studentId' | 'templateId'>>
 
+// Assessments (standardized tests, evaluations)
+export type AssessmentType = 'standardized_test' | 'evaluation' | 'portfolio_review' | 'progress_assessment' | 'other'
+export type AssessmentStatus = 'scheduled' | 'completed' | 'cancelled' | 'in_progress'
+
+export interface Assessment {
+  id: string
+  studentId: string
+  type: AssessmentType
+  name: string
+  provider: string | null
+  date: string
+  scheduledTime: string | null
+  location: string | null
+  status: AssessmentStatus
+  score: string | null
+  percentile: number | null
+  gradeEquivalent: string | null
+  resultsUrl: string | null
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateAssessment = Omit<Assessment, 'id' | 'createdAt' | 'updatedAt'>
+export type UpdateAssessment = Partial<Omit<CreateAssessment, 'studentId'>>
+
 // Skylight Integration
 export interface SubjectChoreMapping {
   id: string
@@ -382,6 +408,19 @@ export interface CoopEvent {
 export type CreateCoopEvent = Omit<CoopEvent, 'id' | 'createdAt' | 'updatedAt'>
 export type UpdateCoopEvent = Partial<Omit<CreateCoopEvent, 'groupId'>>
 
+// Co-op Sharing Preferences
+export interface CoopSharingPreferences {
+  id: string
+  groupId: string
+  shareEvents: boolean
+  shareResources: boolean
+  shareReadingLists: boolean
+  sharePackages: boolean
+  updatedAt: string
+}
+
+export type UpdateCoopSharingPreferences = Partial<Omit<CoopSharingPreferences, 'id' | 'groupId' | 'updatedAt'>>
+
 // Activity Tasks (todos for field trips/activities)
 export type TaskPhase = 'pre' | 'day_of' | 'post'
 
@@ -550,6 +589,23 @@ export interface CurriculumReport {
   }[]
   uncoveredStandards: LearningStandard[]
 }
+
+// Curriculum Packages (Commercial Curriculum Products)
+export interface CurriculumPackage {
+  id: string
+  name: string
+  publisher?: string
+  subjectIds: string[]  // JSON array stored as string in DB
+  gradeLevels: GradeLevel[]  // JSON array stored as string in DB
+  websiteUrl?: string
+  notes?: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateCurriculumPackage = Omit<CurriculumPackage, 'id' | 'createdAt' | 'updatedAt'>
+export type UpdateCurriculumPackage = Partial<Omit<CreateCurriculumPackage, 'id'>>
 
 // Portfolio Types
 export interface PortfolioSection {
@@ -829,6 +885,13 @@ export interface DatabaseAPI {
   getStandardCoverage: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) => Promise<StandardCoverage[]>
   getCurriculumReport: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) => Promise<CurriculumReport>
 
+  // Curriculum Packages
+  getCurriculumPackages: () => Promise<CurriculumPackage[]>
+  getCurriculumPackage: (id: string) => Promise<CurriculumPackage | null>
+  createCurriculumPackage: (data: CreateCurriculumPackage) => Promise<CurriculumPackage>
+  updateCurriculumPackage: (id: string, data: UpdateCurriculumPackage) => Promise<CurriculumPackage>
+  deleteCurriculumPackage: (id: string) => Promise<void>
+
   // Co-op Groups
   getCoopGroups: () => Promise<CoopGroup[]>
   getCoopGroup: (id: string) => Promise<CoopGroup | null>
@@ -851,6 +914,10 @@ export interface DatabaseAPI {
   createCoopEvent: (data: CreateCoopEvent) => Promise<CoopEvent>
   updateCoopEvent: (id: string, data: UpdateCoopEvent) => Promise<CoopEvent>
   deleteCoopEvent: (id: string) => Promise<void>
+
+  // Co-op Sharing Preferences
+  getCoopSharingPreferences: (groupId: string) => Promise<CoopSharingPreferences>
+  updateCoopSharingPreferences: (groupId: string, data: UpdateCoopSharingPreferences) => Promise<CoopSharingPreferences>
 }
 
 // Google Calendar Types

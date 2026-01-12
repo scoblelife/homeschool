@@ -53,7 +53,10 @@ interface CardTitleProps {
 
 export function CardTitle({ children }: CardTitleProps) {
   return (
-    <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>
+    <Text
+      style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}
+      accessibilityRole="header"
+    >
       {children}
     </Text>
   )

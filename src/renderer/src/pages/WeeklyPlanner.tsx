@@ -3,7 +3,7 @@ import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, parseISO, eachDayOf
 import { Dialog, Tab } from '@headlessui/react'
 import { useStore } from '../stores/useStore'
 import { useMilestones } from '../hooks/useDatabase'
-import type { Milestone, MilestoneResource, CreateResource, CalendarSyncRecord, SubjectChoreMapping, StudentReward } from '../../../shared/types'
+import type { Milestone, MilestoneResource, CreateResource, CalendarSyncRecord } from '../../../shared/types'
 
 // Map student colors to Google Calendar color IDs
 // See: https://developers.google.com/calendar/api/v3/reference/colors
@@ -25,7 +25,7 @@ function getCurrentWeekStart(): Date {
 
 export default function WeeklyPlanner(): JSX.Element {
   const { selectedStudentId, getSelectedStudent, getSubjectById } = useStore()
-  const { milestones } = useMilestones(selectedStudentId ?? undefined)
+  const { milestones, isLoading: milestonesLoading } = useMilestones(selectedStudentId ?? undefined)
   const selectedStudent = getSelectedStudent()
 
   const [currentWeekStart, setCurrentWeekStart] = useState(() =>
@@ -49,10 +49,6 @@ export default function WeeklyPlanner(): JSX.Element {
   const [syncRecords, setSyncRecords] = useState<CalendarSyncRecord[]>([])
   const [showSyncOptions, setShowSyncOptions] = useState(false)
   const [syncAllDay, setSyncAllDay] = useState(true)
-
-  // Skylight chore mapping state
-  const [choreMappings, setChoreMappings] = useState<SubjectChoreMapping[]>([])
-  const [weeklyRewards, setWeeklyRewards] = useState<StudentReward[]>([])
 
   // Parse the stored date string properly using parseISO
   const weekStartDate = parseISO(currentWeekStart)
@@ -98,26 +94,7 @@ export default function WeeklyPlanner(): JSX.Element {
   // Load calendar settings and sync records
   useEffect(() => {
     loadCalendarSettings()
-    loadChoreMappings()
   }, [])
-
-  // Load weekly rewards when student or week changes
-  useEffect(() => {
-    if (selectedStudentId) {
-      loadWeeklyRewards()
-    }
-  }, [selectedStudentId, currentWeekStart])
-
-  const loadChoreMappings = async () => {
-    const mappings = await window.api.getChoreMappings()
-    setChoreMappings(mappings)
-  }
-
-  const loadWeeklyRewards = async () => {
-    if (!selectedStudentId) return
-    const rewards = await window.api.getStudentRewards(selectedStudentId, currentWeekStart)
-    setWeeklyRewards(rewards)
-  }
 
   useEffect(() => {
     if (calendarId) {
@@ -284,42 +261,6 @@ export default function WeeklyPlanner(): JSX.Element {
   const handleToggleComplete = async (milestone: Milestone) => {
     const newStatus = milestone.status === 'completed' ? 'in_progress' : 'completed'
     await window.api.updateMilestone(milestone.id, { status: newStatus })
-
-    // Create reward entry when completing a milestone
-    if (newStatus === 'completed' && selectedStudentId) {
-      await window.api.createReward({
-        studentId: selectedStudentId,
-        milestoneId: milestone.id,
-        starsAwarded: milestone.starValue,
-        awardedDate: new Date().toISOString().split('T')[0],
-        weekStart: currentWeekStart,
-        syncedToSkylight: false
-      })
-      await loadWeeklyRewards()
-    }
-    // Note: We don't delete rewards when uncompleting to preserve history
-  }
-
-  // Helper to get chore name for a subject
-  const getChoreName = (subjectId: string): string | null => {
-    const mapping = choreMappings.find(m => m.subjectId === subjectId)
-    return mapping?.choreName || null
-  }
-
-  // Mark all rewards as synced to Skylight
-  const handleMarkAllSynced = async () => {
-    const unsyncedRewardIds = weeklyRewards
-      .filter(r => !r.syncedToSkylight)
-      .map(r => r.id)
-    if (unsyncedRewardIds.length > 0) {
-      await window.api.markRewardsSynced(unsyncedRewardIds)
-      await loadWeeklyRewards()
-    }
-  }
-
-  const handleStarValueChange = async (milestoneId: string, newValue: number) => {
-    const value = Math.max(1, Math.min(10, newValue)) // Clamp between 1-10
-    await window.api.updateMilestone(milestoneId, { starValue: value })
   }
 
   const handleOpenResource = async (resource: MilestoneResource) => {
@@ -558,7 +499,7 @@ export default function WeeklyPlanner(): JSX.Element {
 
       {/* Stats */}
       <div className="card mb-6">
-        <div className="grid grid-cols-4 gap-4 text-center text-sm">
+        <div className="grid grid-cols-3 gap-4 text-center text-sm">
           <div>
             <div className="text-2xl font-bold text-fuchsia-600">{selectedMilestones.length}</div>
             <div className="text-gray-500">Milestones This Week</div>
@@ -570,98 +511,30 @@ export default function WeeklyPlanner(): JSX.Element {
             <div className="text-gray-500">Completed</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-yellow-500">
-              {selectedMilestones.reduce((sum, m) => sum + m.starValue, 0)}⭐
-            </div>
-            <div className="text-gray-500">Total Stars</div>
-          </div>
-          <div>
             <div className="text-2xl font-bold text-blue-600">{totalResources}</div>
             <div className="text-gray-500">Resources</div>
           </div>
         </div>
       </div>
 
-      {/* Daily Skylight Checklist */}
-      {selectedMilestones.filter((m) => m.status === 'completed').length > 0 && (
-        <div className="no-print card mb-6 bg-green-50 border-green-200">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-green-800 flex items-center gap-2">
-              <span>📋</span>
-              Skylight Checklist ({selectedMilestones.filter(m => m.status === 'completed').reduce((sum, m) => sum + m.starValue, 0)}⭐ earned)
-            </h3>
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  const completedList = selectedMilestones
-                    .filter((m) => m.status === 'completed')
-                    .map((m) => {
-                      const choreName = getChoreName(m.subjectId)
-                      const displayName = choreName || getSubjectById(m.subjectId)?.name || 'Unknown'
-                      return `☐ ${displayName} (${m.starValue}⭐) - ${m.title}`
-                    })
-                    .join('\n')
-                  navigator.clipboard.writeText(completedList)
-                  alert('Copied to clipboard!')
-                }}
-                className="text-sm text-green-700 hover:text-green-800 underline"
-              >
-                Copy to Clipboard
-              </button>
-              {weeklyRewards.some(r => !r.syncedToSkylight) && (
-                <button
-                  onClick={handleMarkAllSynced}
-                  className="text-sm px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-                >
-                  Mark All Synced
-                </button>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg p-4 border border-green-200">
-            <p className="text-xs text-gray-500 mb-3">Mark these done in Skylight:</p>
-            <div className="space-y-2">
-              {selectedMilestones
-                .filter((m) => m.status === 'completed')
-                .map((m) => {
-                  const choreName = getChoreName(m.subjectId)
-                  const displayName = choreName || getSubjectById(m.subjectId)?.name || 'Unknown'
-                  const reward = weeklyRewards.find(r => r.milestoneId === m.id)
-                  const isSynced = reward?.syncedToSkylight
-
-                  return (
-                    <div key={m.id} className={`flex items-center gap-3 p-2 rounded ${isSynced ? 'bg-gray-100 text-gray-400' : 'bg-green-50'}`}>
-                      <span className="text-lg">{isSynced ? '✅' : '☐'}</span>
-                      <span className={`flex-1 ${isSynced ? 'line-through' : 'text-gray-900'}`}>
-                        <span className="font-medium">{displayName}</span>
-                        <span className="text-gray-500 text-sm ml-2">({m.starValue}⭐)</span>
-                        <span className="text-gray-400 text-sm ml-2">- {m.title}</span>
-                      </span>
-                      {isSynced && (
-                        <span className="text-xs text-gray-400">Synced</span>
-                      )}
-                    </div>
-                  )
-                })}
-            </div>
-          </div>
-
-          <p className="text-xs text-green-600 mt-3">
-            {weeklyRewards.filter(r => r.syncedToSkylight).length} of {weeklyRewards.length} marked as synced to Skylight
-          </p>
-        </div>
-      )}
-
       {/* Milestones List */}
-      {selectedMilestones.length === 0 ? (
+      {milestonesLoading ? (
         <div className="card text-center py-12">
-          <p className="text-gray-500 mb-4">No milestones planned for this week.</p>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-fuchsia-600 mb-4"></div>
+          <p className="text-gray-500">Loading milestones...</p>
+        </div>
+      ) : selectedMilestones.length === 0 ? (
+        <div className="card text-center py-12">
+          <p className="text-gray-500 mb-4">
+            {milestones.length === 0
+              ? 'No milestones yet. Add some in the Milestones page first, or auto-suggest based on grade level.'
+              : 'No milestones planned for this week.'}
+          </p>
           <div className="flex justify-center gap-3">
-            <button onClick={handleAutoSuggest} className="btn btn-primary">
+            <button onClick={handleAutoSuggest} className="btn btn-primary" disabled={milestones.length === 0}>
               Auto-Suggest Milestones
             </button>
-            <button onClick={() => setShowAddMilestone(true)} className="btn btn-secondary">
+            <button onClick={() => setShowAddMilestone(true)} className="btn btn-secondary" disabled={milestones.length === 0}>
               Add Manually
             </button>
           </div>
@@ -703,22 +576,6 @@ export default function WeeklyPlanner(): JSX.Element {
                               {milestone.title}
                             </h3>
                             <p className="text-sm text-gray-500">{milestone.description}</p>
-
-                            {/* Star Value */}
-                            <div className="no-print flex items-center gap-2 mt-2">
-                              <span className="text-yellow-500 text-lg">⭐</span>
-                              <input
-                                type="number"
-                                min={1}
-                                max={10}
-                                value={milestone.starValue}
-                                onChange={(e) =>
-                                  handleStarValueChange(milestone.id, parseInt(e.target.value) || 1)
-                                }
-                                className="w-14 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-fuchsia-500 focus:border-fuchsia-500"
-                              />
-                              <span className="text-xs text-gray-400">stars</span>
-                            </div>
 
                             {/* Resources */}
                             <div className="mt-3 space-y-1">
