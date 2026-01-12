@@ -918,6 +918,14 @@ export interface DatabaseAPI {
   // Co-op Sharing Preferences
   getCoopSharingPreferences: (groupId: string) => Promise<CoopSharingPreferences>
   updateCoopSharingPreferences: (groupId: string, data: UpdateCoopSharingPreferences) => Promise<CoopSharingPreferences>
+
+  // Assessments
+  getAssessments: (studentId?: string) => Promise<Assessment[]>
+  getAssessment: (id: string) => Promise<Assessment | null>
+  getUpcomingAssessments: (studentId?: string) => Promise<Assessment[]>
+  createAssessment: (data: CreateAssessment) => Promise<Assessment>
+  updateAssessment: (id: string, data: UpdateAssessment) => Promise<Assessment | null>
+  deleteAssessment: (id: string) => Promise<void>
 }
 
 // Google Calendar Types

@@ -67,6 +67,9 @@ import type {
   UpdateCoopEvent,
   CoopSharingPreferences,
   UpdateCoopSharingPreferences,
+  Assessment,
+  CreateAssessment,
+  UpdateAssessment,
   AIAPI,
   AuthAPI,
   ComplianceAPI,
@@ -513,6 +516,20 @@ const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI & UmbrellaSch
     ipcRenderer.invoke('coop:getSharingPreferences', groupId) as Promise<CoopSharingPreferences>,
   updateCoopSharingPreferences: (groupId: string, data: UpdateCoopSharingPreferences) =>
     ipcRenderer.invoke('coop:updateSharingPreferences', groupId, data) as Promise<CoopSharingPreferences>,
+
+  // Assessments
+  getAssessments: (studentId?: string) =>
+    ipcRenderer.invoke('assessments:getAll', studentId) as Promise<Assessment[]>,
+  getAssessment: (id: string) =>
+    ipcRenderer.invoke('assessments:get', id) as Promise<Assessment | null>,
+  getUpcomingAssessments: (studentId?: string) =>
+    ipcRenderer.invoke('assessments:getUpcoming', studentId) as Promise<Assessment[]>,
+  createAssessment: (data: CreateAssessment) =>
+    ipcRenderer.invoke('assessments:create', data) as Promise<Assessment>,
+  updateAssessment: (id: string, data: UpdateAssessment) =>
+    ipcRenderer.invoke('assessments:update', id, data) as Promise<Assessment | null>,
+  deleteAssessment: (id: string) =>
+    ipcRenderer.invoke('assessments:delete', id) as Promise<void>,
 
   // AI Insights
   aiInitialize: () =>

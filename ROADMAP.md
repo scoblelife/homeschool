@@ -285,8 +285,8 @@ The core features are complete. Now focus on shipping to users, polishing the mo
   - ✅ Repository with CRUD operations
   - ✅ IPC handlers for desktop app
   - ✅ Assessment statistics for portfolio
-  - ⏳ UI components (future iteration)
-  - Location: `src/database/repositories/assessments.ts`
+  - ✅ UI component for managing assessments (AssessmentList.tsx)
+  - Location: `src/database/repositories/assessments.ts`, `src/renderer/src/features/assessments/`
 
 - [x] **10.5 Umbrella school integration**
   - ✅ Database schema for umbrella schools, enrollments, and reports
