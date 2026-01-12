@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { format, startOfWeek, endOfWeek, subWeeks, parseISO, addDays } from 'date-fns'
 import { useStore } from '../stores/useStore'
 import { getStudentColor } from './Settings'
+import { AIWeeklySummary } from '../features/aiInsights'
 import type { ActivitySummary, DailySummary, Student } from '../../../shared/types'
 
 interface WeekData {
@@ -314,6 +315,26 @@ export default function WeeklySummary(): JSX.Element {
                   {current.totalActivities === 0 && (
                     <p className="text-center text-gray-400 text-sm py-4">No activities this week</p>
                   )}
+
+                  {/* AI Weekly Summary */}
+                  <AIWeeklySummary
+                    studentId={student.id}
+                    studentName={student.name}
+                    gradeLevel={student.gradeLevel}
+                    weekStart={format(currentWeekStart, 'yyyy-MM-dd')}
+                    weekData={{
+                      totalActivities: current.totalActivities,
+                      totalMinutes: current.totalMinutes,
+                      activeDays: current.activeDays,
+                      subjectBreakdown: current.activities.map((a) => ({
+                        name: a.subjectName,
+                        activities: a.totalActivities,
+                        minutes: a.totalMinutes,
+                      })),
+                      previousWeekActivities: previous.totalActivities,
+                      previousWeekMinutes: previous.totalMinutes,
+                    }}
+                  />
                 </div>
               )
             })}
