@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Stack } from 'expo-router'
+import { Stack, useRouter, useSegments, Href } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { View, Text, ActivityIndicator, NativeModules } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { initializeSchema, getStudents, getSubjects } from '../src/database'
 import { useStore } from '../src/stores/useStore'
 import { SyncManager } from '../src/sync'
 import { FamilyManager } from '../src/sync/family'
+
+const ONBOARDING_COMPLETE_KEY = '@homeschool/onboarding_complete'
 
 console.log('[App] RootLayout module loaded')
 console.log('[App] HyperswarmModule available:', !!NativeModules.HyperswarmModule)
@@ -73,8 +76,11 @@ setTimeout(autoConnectSync, 3000)
 
 export default function RootLayout() {
   console.log('[App] RootLayout rendering')
+  const router = useRouter()
+  const segments = useSegments()
   const [isInitializing, setIsInitializing] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null)
   const { setStudents, setSubjects, setIsInitialized, setSelectedStudentId, students } = useStore()
 
   useEffect(() => {
@@ -85,6 +91,12 @@ export default function RootLayout() {
         // Initialize database schema
         await initializeSchema()
         console.log('[App] Schema initialized successfully')
+
+        // Check onboarding status
+        const onboardingStatus = await AsyncStorage.getItem(ONBOARDING_COMPLETE_KEY)
+        const isComplete = onboardingStatus === 'true'
+        setOnboardingComplete(isComplete)
+        console.log('[App] Onboarding complete:', isComplete)
 
         // Load initial data
         const [studentsData, subjectsData] = await Promise.all([
@@ -111,6 +123,21 @@ export default function RootLayout() {
 
     initialize()
   }, [])
+
+  // Handle navigation based on onboarding status
+  useEffect(() => {
+    if (isInitializing || onboardingComplete === null) return
+
+    const inOnboarding = (segments[0] as string) === 'onboarding'
+
+    if (!onboardingComplete && !inOnboarding) {
+      // Need to complete onboarding
+      router.replace('/onboarding' as Href)
+    } else if (onboardingComplete && inOnboarding) {
+      // Already completed, go to main app
+      router.replace('/(tabs)' as Href)
+    }
+  }, [isInitializing, onboardingComplete, segments])
 
   if (isInitializing) {
     return (
@@ -140,6 +167,7 @@ export default function RootLayout() {
           headerTitleStyle: { fontWeight: '600' },
         }}
       >
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </>
