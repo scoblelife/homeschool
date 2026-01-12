@@ -7,6 +7,7 @@ import { initializeSchema, getStudents, getSubjects } from '../src/database'
 import { useStore } from '../src/stores/useStore'
 import { SyncManager } from '../src/sync'
 import { FamilyManager } from '../src/sync/family'
+import { analytics } from '../src/analytics'
 
 const ONBOARDING_COMPLETE_KEY = '@homeschool/onboarding_complete'
 
@@ -91,6 +92,10 @@ export default function RootLayout() {
         // Initialize database schema
         await initializeSchema()
         console.log('[App] Schema initialized successfully')
+
+        // Initialize analytics
+        await analytics.initialize()
+        analytics.trackAppOpen()
 
         // Check onboarding status
         const onboardingStatus = await AsyncStorage.getItem(ONBOARDING_COMPLETE_KEY)

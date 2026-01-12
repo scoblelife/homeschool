@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { createStudent } from '../../src/database'
 import { useStore } from '../../src/stores/useStore'
 import type { GradeLevel } from '../../src/types'
+import { analytics } from '../../src/analytics'
 
 const COLORS = [
   { name: 'Fuchsia', value: '#d946ef' },
@@ -102,6 +103,12 @@ export default function OnboardingStudents() {
       if (createdStudents.length > 0) {
         setSelectedStudentId(createdStudents[0].id)
       }
+
+      // Track students added during onboarding
+      analytics.track('student_added', {
+        count: createdStudents.length,
+        source: 'onboarding',
+      })
 
       router.push('/onboarding/state' as Href)
     } catch (err) {
