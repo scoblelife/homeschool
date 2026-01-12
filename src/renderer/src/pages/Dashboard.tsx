@@ -11,6 +11,7 @@ import { SubjectBalance } from '../features/balance'
 import { AchievementCard } from '../features/celebrations'
 import { ActivitySuggestions, LearningPatterns, CompliancePrediction, ChatLogger } from '../features/aiInsights'
 import { ErrorBoundary, WidgetErrorFallback } from '../components/ErrorBoundary'
+import { ComplianceDeadlines } from '../components/ComplianceDeadlines'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -308,6 +309,13 @@ export default function Dashboard(): JSX.Element {
           </ErrorBoundary>
         </div>
       )}
+
+      {/* Compliance Deadlines */}
+      <div className="mb-6">
+        <ErrorBoundary fallback={<WidgetErrorFallback />}>
+          <ComplianceDeadlines compact />
+        </ErrorBoundary>
+      </div>
 
       {/* Family Goal */}
       <div className="card mb-6 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
