@@ -156,8 +156,8 @@
         <li>We have no ability to see or access data transmitted through Family Sync</li>
       </ul>
 
-      <h3>Signaling Service (Cloudflare Worker)</h3>
-      <p>To establish peer-to-peer connections between devices, we operate a lightweight signaling service on Cloudflare Workers. This service stores only the following temporary data:</p>
+      <h3>Signaling Service (Fly.io)</h3>
+      <p>To establish peer-to-peer connections between devices, we operate a lightweight signaling service on Fly.io. This service stores only the following temporary data in memory:</p>
       <ul>
         <li><strong>Join offers:</strong> Encrypted WebRTC connection offers when a new device joins your family. These are encrypted with your device's public key and automatically deleted after 48 hours or when retrieved.</li>
         <li><strong>Connection answers:</strong> Encrypted WebRTC answers during connection handshakes. Automatically deleted after 5 minutes or when retrieved.</li>
@@ -165,7 +165,7 @@
         <li><strong>Signaling messages:</strong> Encrypted connection re-establishment messages. Automatically deleted after 5 minutes or when retrieved.</li>
       </ul>
       <p><strong>Important:</strong> The signaling service never sees your actual homeschool data. All sync data (activities, students, milestones, etc.) is transferred directly peer-to-peer after the initial connection is established. The signaling data is encrypted and we cannot read its contents.</p>
-      <p>The signaling service is hosted on Cloudflare's global network. Cloudflare's handling of data is governed by their <a href="https://www.cloudflare.com/privacypolicy/">Privacy Policy</a>.</p>
+      <p>The signaling service is hosted on Fly.io's infrastructure. Fly.io's handling of data is governed by their <a href="https://fly.io/legal/privacy-policy/">Privacy Policy</a>.</p>
 
       <h2>Google Calendar Integration</h2>
       <p>If you choose to connect Google Calendar, the following describes how we handle your Google user data:</p>
@@ -230,7 +230,7 @@
         <li><strong>Google Calendar API:</strong> Only if you enable the Google Calendar integration</li>
         <li><strong>Open Library API:</strong> To look up book information when scanning ISBNs (no personal data is sent)</li>
         <li><strong>Google Books API:</strong> Fallback for ISBN lookups when Open Library doesn't have the book (no personal data is sent)</li>
-        <li><strong>Cloudflare Workers:</strong> Signaling service for Family Sync peer-to-peer connections (see Family Sync section above)</li>
+        <li><strong>Fly.io:</strong> Signaling service for Family Sync peer-to-peer connections (see Family Sync section above)</li>
         <li><strong>Google/Cloudflare STUN servers:</strong> Used for NAT traversal when establishing peer-to-peer connections (no personal data is sent, only network connectivity information)</li>
       </ul>
 

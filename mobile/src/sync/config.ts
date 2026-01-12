@@ -22,10 +22,14 @@ const getDefaultServerUrl = (): string => {
 const SERVER_HOST = process.env.EXPO_PUBLIC_SERVER_HOST || getDefaultServerUrl()
 const SERVER_PORT = process.env.EXPO_PUBLIC_SERVER_PORT || '8080'
 
-// Cloudflare Worker URL for signaling
-// Deploy your own or use the default (when deployed)
-export const WORKER_URL =
-  process.env.EXPO_PUBLIC_WORKER_URL || 'https://homeschool-sync.scott4717.workers.dev'
+// Fly.io signaling server URL
+// This handles only device discovery and WebRTC connection setup
+// All actual sync data flows P2P via WebRTC
+export const SIGNALING_SERVER_URL =
+  process.env.EXPO_PUBLIC_SIGNALING_URL || 'https://homeschool-signaling.fly.dev'
+
+// Legacy alias (will be removed)
+export const WORKER_URL = SIGNALING_SERVER_URL
 
 // Legacy signaling server (will be removed)
 export const SIGNALING_URL = `http://${SERVER_HOST}:${SERVER_PORT}`
@@ -57,7 +61,7 @@ try {
 export const USE_WEBRTC = true
 export const WEBRTC_AVAILABLE = isWebRTCAvailable
 
-console.log(`[Sync Config] Worker URL: ${WORKER_URL}`)
+console.log(`[Sync Config] Signaling Server: ${SIGNALING_SERVER_URL}`)
 console.log(`[Sync Config] Legacy Server: ${SERVER_HOST}:${SERVER_PORT}`)
 console.log(`[Sync Config] WebRTC available: ${isWebRTCAvailable}`)
 console.log(`[Sync Config] Using: WebRTC P2P`)

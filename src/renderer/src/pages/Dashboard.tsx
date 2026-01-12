@@ -9,6 +9,7 @@ import { Timer } from '../features/timer'
 import { StreakDisplay, useStreakTracking } from '../features/streaks'
 import { SubjectBalance } from '../features/balance'
 import { AchievementCard } from '../features/celebrations'
+import { ErrorBoundary, WidgetErrorFallback } from '../components/ErrorBoundary'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -233,32 +234,38 @@ export default function Dashboard(): JSX.Element {
       {/* Streak Display (when student selected) */}
       {selectedStudent && (
         <div className="mb-6">
-          <StreakDisplay
-            studentId={selectedStudent.id}
-            studentName={selectedStudent.name}
-            studentColor={selectedStudent.color}
-          />
+          <ErrorBoundary fallback={<WidgetErrorFallback />}>
+            <StreakDisplay
+              studentId={selectedStudent.id}
+              studentName={selectedStudent.name}
+              studentColor={selectedStudent.color}
+            />
+          </ErrorBoundary>
         </div>
       )}
 
       {/* Subject Balance (when student selected) */}
       {selectedStudent && (
         <div className="mb-6">
-          <SubjectBalance
-            studentId={selectedStudent.id}
-            studentName={selectedStudent.name}
-            subjects={subjects}
-          />
+          <ErrorBoundary fallback={<WidgetErrorFallback />}>
+            <SubjectBalance
+              studentId={selectedStudent.id}
+              studentName={selectedStudent.name}
+              subjects={subjects}
+            />
+          </ErrorBoundary>
         </div>
       )}
 
       {/* Achievements (when student selected) */}
       {selectedStudent && (
         <div className="mb-6">
-          <AchievementCard
-            studentId={selectedStudent.id}
-            studentName={selectedStudent.name}
-          />
+          <ErrorBoundary fallback={<WidgetErrorFallback />}>
+            <AchievementCard
+              studentId={selectedStudent.id}
+              studentName={selectedStudent.name}
+            />
+          </ErrorBoundary>
         </div>
       )}
 

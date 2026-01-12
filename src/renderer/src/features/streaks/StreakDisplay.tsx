@@ -4,10 +4,19 @@
  * Shows the current streak with a flame icon and badge display.
  */
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Dialog } from '@headlessui/react'
 import { format, parseISO } from 'date-fns'
 import { useStreakStore, isStreakAtRisk, isStreakActive, type StreakData, type Badge } from './streakStore'
+
+// Default streak data for students without any streak history
+const DEFAULT_STREAK: StreakData = {
+  currentStreak: 0,
+  longestStreak: 0,
+  lastLoggedDate: null,
+  streakStartDate: null,
+  badges: [],
+}
 
 interface StreakDisplayProps {
   studentId: string
@@ -23,7 +32,8 @@ export function StreakDisplay({
   compact = false,
 }: StreakDisplayProps): JSX.Element {
   const [showBadgesModal, setShowBadgesModal] = useState(false)
-  const streakData = useStreakStore((state) => state.getStreak(studentId))
+  // Use a selector that returns a stable reference from the store
+  const streakData = useStreakStore((state) => state.streaks[studentId] ?? DEFAULT_STREAK)
   const active = isStreakActive(streakData)
   const atRisk = isStreakAtRisk(streakData)
 

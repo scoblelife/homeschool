@@ -46,12 +46,14 @@ interface StreakState {
   resetStreak: (studentId: string) => void
 }
 
+// Immutable default - never modified, safe to return as reference
+const EMPTY_BADGES: Badge[] = []
 const DEFAULT_STREAK_DATA: StreakData = {
   currentStreak: 0,
   longestStreak: 0,
   lastLoggedDate: null,
   streakStartDate: null,
-  badges: [],
+  badges: EMPTY_BADGES,
 }
 
 export const useStreakStore = create<StreakState>()(
@@ -126,7 +128,8 @@ export const useStreakStore = create<StreakState>()(
 
       getStreak: (studentId: string): StreakData => {
         const streaks = get().streaks
-        return streaks[studentId] || { ...DEFAULT_STREAK_DATA }
+        // Return the frozen default to avoid creating new objects (prevents infinite loops)
+        return streaks[studentId] || DEFAULT_STREAK_DATA
       },
 
       checkAndUpdateStreak: (studentId: string): void => {

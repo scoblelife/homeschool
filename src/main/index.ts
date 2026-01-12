@@ -43,15 +43,31 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // Initialize database
-  await initializeSchema()
-  await seedDefaultSubjects()
-  await seedMilestoneTemplates()
+  // Initialize database (required for app to function)
+  try {
+    await initializeSchema()
+    await seedDefaultSubjects()
+    await seedMilestoneTemplates()
+  } catch (err) {
+    console.error('[Main] Database initialization failed:', err)
+    // Still try to create window - user can see error in UI
+  }
 
-  // Register IPC handlers
-  registerIpcHandlers()
-  registerSyncIPC()
+  // Register IPC handlers (required for UI to work)
+  try {
+    registerIpcHandlers()
+  } catch (err) {
+    console.error('[Main] Failed to register IPC handlers:', err)
+  }
 
+  // Register sync handlers (optional - sync can fail gracefully)
+  try {
+    registerSyncIPC()
+  } catch (err) {
+    console.error('[Main] Failed to register sync IPC:', err)
+  }
+
+  // Always create window, even if initialization partially failed
   createWindow()
 
   app.on('activate', function () {
