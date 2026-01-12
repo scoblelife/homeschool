@@ -8,12 +8,6 @@ interface AIConfig {
   cacheEnabled: boolean
 }
 
-interface AuthState {
-  isConfigured: boolean
-  isAuthenticated: boolean
-  user: { id: string; email?: string } | null
-}
-
 interface ServiceStatus {
   name: string
   status: 'connected' | 'disconnected' | 'error' | 'loading'
@@ -28,13 +22,6 @@ export default function ApiServices(): JSX.Element {
   const [apiKeyInput, setApiKeyInput] = useState('')
   const [aiTestResult, setAITestResult] = useState<{ success: boolean; message: string } | null>(null)
   const [isTesting, setIsTesting] = useState(false)
-
-  // Auth/Cloud service state
-  const [authState, setAuthState] = useState<AuthState | null>(null)
-  const [authStatus, setAuthStatus] = useState<ServiceStatus>({ name: 'Cloud', status: 'loading' })
-  const [showSupabaseModal, setShowSupabaseModal] = useState(false)
-  const [supabaseUrl, setSupabaseUrl] = useState('')
-  const [supabaseKey, setSupabaseKey] = useState('')
 
   // Google Calendar state
   const [googleStatus, setGoogleStatus] = useState<ServiceStatus>({ name: 'Google Calendar', status: 'loading' })
@@ -62,31 +49,6 @@ export default function ApiServices(): JSX.Element {
       })
     } catch (err) {
       setAIStatus({ name: 'AI', status: 'error', message: 'Failed to load AI service' })
-    }
-
-    // Load Auth/Cloud status
-    try {
-      const isConfigured = await window.api.authIsConfigured()
-      if (isConfigured) {
-        const state = await window.api.authGetState()
-        setAuthState(state)
-        setAuthStatus({
-          name: 'Cloud',
-          status: state.isAuthenticated ? 'connected' : 'disconnected',
-          message: state.isAuthenticated
-            ? `Signed in as ${state.user?.email || 'user'}`
-            : 'Supabase configured but not signed in'
-        })
-      } else {
-        setAuthState({ isConfigured: false, isAuthenticated: false, user: null })
-        setAuthStatus({
-          name: 'Cloud',
-          status: 'disconnected',
-          message: 'Supabase not configured'
-        })
-      }
-    } catch (err) {
-      setAuthStatus({ name: 'Cloud', status: 'error', message: 'Failed to load auth service' })
     }
 
     // Load Google Calendar status
@@ -181,29 +143,6 @@ export default function ApiServices(): JSX.Element {
     }
   }
 
-  // Supabase handlers
-  const handleSaveSupabase = async () => {
-    if (!supabaseUrl || !supabaseKey) return
-    try {
-      await window.api.authConfigure({ supabaseUrl, supabaseAnonKey: supabaseKey })
-      setShowSupabaseModal(false)
-      setSupabaseUrl('')
-      setSupabaseKey('')
-      await loadServiceStatuses()
-    } catch (err) {
-      console.error('Failed to save Supabase config:', err)
-    }
-  }
-
-  const handleSignOut = async () => {
-    try {
-      await window.api.authSignOut()
-      await loadServiceStatuses()
-    } catch (err) {
-      console.error('Failed to sign out:', err)
-    }
-  }
-
   // Google Calendar handlers
   const handleSaveGoogle = async () => {
     if (!googleClientId || !googleClientSecret) return
@@ -270,13 +209,13 @@ export default function ApiServices(): JSX.Element {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">API Services</h1>
         <p className="text-gray-500 mt-1">
-          Manage integrations with AI, cloud backup, and calendar services
+          Manage integrations with AI and calendar services
         </p>
       </div>
 
       {/* Service Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        {[aiStatus, authStatus, googleStatus].map((service) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {[aiStatus, googleStatus].map((service) => (
           <div
             key={service.name}
             className={`rounded-lg border p-4 ${getStatusColor(service.status)}`}
@@ -396,98 +335,6 @@ export default function ApiServices(): JSX.Element {
         </div>
       </div>
 
-      {/* Cloud Service Section */}
-      <div className="card mb-6">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <span className="text-xl">☁️</span> Cloud Service (Supabase)
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              Enables cloud backup, cross-device sync, and co-op networking
-            </p>
-          </div>
-          {authState?.isConfigured && (
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              authState.isAuthenticated ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
-            }`}>
-              {authState.isAuthenticated ? 'Signed In' : 'Not Signed In'}
-            </span>
-          )}
-        </div>
-
-        <div className="space-y-4">
-          {!authState?.isConfigured ? (
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-sm text-amber-800 mb-3">
-                Supabase is not configured. You'll need a Supabase project to enable cloud features.
-              </p>
-              <button
-                onClick={() => setShowSupabaseModal(true)}
-                className="btn btn-primary text-sm"
-              >
-                Configure Supabase
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div>
-                <span className="font-medium text-gray-900">Account</span>
-                <p className="text-sm text-gray-500">
-                  {authState.isAuthenticated
-                    ? authState.user?.email || 'Signed in'
-                    : 'Not signed in'}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                {authState.isAuthenticated ? (
-                  <button onClick={handleSignOut} className="btn btn-secondary text-sm">
-                    Sign Out
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setShowSupabaseModal(true)}
-                    className="btn btn-secondary text-sm"
-                  >
-                    Update Config
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Cloud features list */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className={`p-3 rounded-lg border ${
-              authState?.isAuthenticated ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'
-            }`}>
-              <div className="flex items-center gap-2">
-                <span className={authState?.isAuthenticated ? 'text-green-600' : 'text-gray-400'}>
-                  {authState?.isAuthenticated ? '✓' : '○'}
-                </span>
-                <span className="font-medium text-gray-900">Cloud Backup</span>
-              </div>
-              <p className="text-xs text-gray-500 mt-1 ml-5">
-                Encrypted backup of your data
-              </p>
-            </div>
-            <div className={`p-3 rounded-lg border ${
-              authState?.isAuthenticated ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'
-            }`}>
-              <div className="flex items-center gap-2">
-                <span className={authState?.isAuthenticated ? 'text-green-600' : 'text-gray-400'}>
-                  {authState?.isAuthenticated ? '✓' : '○'}
-                </span>
-                <span className="font-medium text-gray-900">Co-op Cloud Sync</span>
-              </div>
-              <p className="text-xs text-gray-500 mt-1 ml-5">
-                Sync co-op events via cloud
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Google Calendar Section */}
       <div className="card mb-6">
         <div className="flex items-start justify-between mb-4">
@@ -570,10 +417,6 @@ export default function ApiServices(): JSX.Element {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-500">2.</span>
-            <span><strong>Cloud Service:</strong> Create a free project at <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">supabase.com</a></span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="text-blue-500">3.</span>
             <span><strong>Google Calendar:</strong> Set up OAuth credentials in <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Cloud Console</a></span>
           </li>
         </ul>
@@ -611,59 +454,6 @@ export default function ApiServices(): JSX.Element {
                 Cancel
               </button>
               <button onClick={handleSaveApiKey} className="btn btn-primary">
-                Save
-              </button>
-            </div>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
-
-      {/* Supabase Modal */}
-      <Dialog
-        open={showSupabaseModal}
-        onClose={() => setShowSupabaseModal(false)}
-        className="relative z-50"
-      >
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
-              Configure Supabase
-            </Dialog.Title>
-            <div className="space-y-4">
-              <div>
-                <label className="label">Project URL</label>
-                <input
-                  type="text"
-                  value={supabaseUrl}
-                  onChange={(e) => setSupabaseUrl(e.target.value)}
-                  className="input"
-                  placeholder="https://xxxx.supabase.co"
-                />
-              </div>
-              <div>
-                <label className="label">Anon Key</label>
-                <input
-                  type="password"
-                  value={supabaseKey}
-                  onChange={(e) => setSupabaseKey(e.target.value)}
-                  className="input"
-                  placeholder="eyJ..."
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Find these in your Supabase project settings under API.
-                </p>
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setShowSupabaseModal(false)} className="btn btn-secondary">
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveSupabase}
-                disabled={!supabaseUrl || !supabaseKey}
-                className="btn btn-primary"
-              >
                 Save
               </button>
             </div>

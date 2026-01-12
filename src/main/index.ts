@@ -6,7 +6,6 @@ import { registerIpcHandlers } from './ipc'
 import { registerSyncIPC, shutdownSync } from './sync-ipc'
 import { errorReporting } from '../errorReporting'
 import { registerAIHandlers } from '../ai'
-import { registerAuthIpcHandlers } from './auth-ipc'
 import { registerComplianceIpcHandlers } from './compliance-ipc'
 
 function createWindow(): void {
@@ -79,13 +78,6 @@ app.whenReady().then(async () => {
     registerAIHandlers()
   } catch (err) {
     console.error('[Main] Failed to register AI IPC:', err)
-  }
-
-  // Register auth handlers (optional - cloud features can fail gracefully)
-  try {
-    registerAuthIpcHandlers()
-  } catch (err) {
-    console.error('[Main] Failed to register auth IPC:', err)
   }
 
   // Register compliance handlers (optional - compliance features can fail gracefully)

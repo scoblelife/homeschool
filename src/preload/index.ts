@@ -71,12 +71,8 @@ import type {
   CreateAssessment,
   UpdateAssessment,
   AIAPI,
-  AuthAPI,
   ComplianceAPI,
   UmbrellaSchoolAPI,
-  AuthState,
-  AuthUser,
-  BackupMetadata,
   StateRequirement,
   ComplianceDeadline,
   ComplianceDocumentData,
@@ -92,7 +88,7 @@ import type {
   UpdateUmbrellaSchoolReport
 } from '../shared/types'
 
-const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI & UmbrellaSchoolAPI = {
+const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
   // Students
   getStudents: () => ipcRenderer.invoke('db:students:getAll'),
   getStudent: (id: string) => ipcRenderer.invoke('db:students:get', id),
@@ -551,44 +547,6 @@ const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI & UmbrellaSch
     ipcRenderer.invoke('ai:complete', prompt, options) as Promise<{ success: boolean; response?: string; error?: string }>,
   aiClearCache: () =>
     ipcRenderer.invoke('ai:clearCache') as Promise<{ success: boolean }>,
-
-  // ============ Auth API ============
-
-  // Configuration
-  authConfigure: (config: { supabaseUrl: string; supabaseAnonKey: string }) =>
-    ipcRenderer.invoke('auth:configure', config) as Promise<{ success: boolean }>,
-  authIsConfigured: () =>
-    ipcRenderer.invoke('auth:isConfigured') as Promise<boolean>,
-
-  // Auth State
-  authGetState: () =>
-    ipcRenderer.invoke('auth:getState') as Promise<AuthState>,
-
-  // Sign Up/In/Out
-  authSignUp: (email: string, password: string) =>
-    ipcRenderer.invoke('auth:signUp', email, password) as Promise<{ user: AuthUser | null; error: string | null }>,
-  authSignIn: (email: string, password: string) =>
-    ipcRenderer.invoke('auth:signIn', email, password) as Promise<{ user: AuthUser | null; error: string | null }>,
-  authSignInWithOAuth: (provider: 'google' | 'github' | 'apple') =>
-    ipcRenderer.invoke('auth:signInWithOAuth', provider) as Promise<{ error: string | null }>,
-  authSignOut: () =>
-    ipcRenderer.invoke('auth:signOut') as Promise<{ error: string | null }>,
-  authResetPassword: (email: string) =>
-    ipcRenderer.invoke('auth:resetPassword', email) as Promise<{ error: string | null }>,
-
-  // Cloud Backup
-  backupSetKey: (password: string, salt?: number[]) =>
-    ipcRenderer.invoke('backup:setKey', password, salt ? new Uint8Array(salt) : undefined) as Promise<{ success: boolean; salt: number[] }>,
-  backupHasKey: () =>
-    ipcRenderer.invoke('backup:hasKey') as Promise<boolean>,
-  backupCreate: (eventLog: string) =>
-    ipcRenderer.invoke('backup:create', eventLog) as Promise<{ success: boolean; error?: string; metadata?: BackupMetadata }>,
-  backupList: () =>
-    ipcRenderer.invoke('backup:list') as Promise<{ backups: BackupMetadata[]; error?: string }>,
-  backupRestore: (backupId: string) =>
-    ipcRenderer.invoke('backup:restore', backupId) as Promise<{ success: boolean; data?: string; error?: string }>,
-  backupDelete: (backupId: string) =>
-    ipcRenderer.invoke('backup:delete', backupId) as Promise<{ success: boolean; error?: string }>,
 
   // ============ Compliance API ============
 

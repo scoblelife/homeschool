@@ -1070,53 +1070,6 @@ export interface AIAPI {
   aiClearCache: () => Promise<{ success: boolean }>
 }
 
-// ============ Auth Types ============
-
-export interface AuthUser {
-  id: string
-  email?: string
-  createdAt?: string
-}
-
-export interface AuthState {
-  isConfigured: boolean
-  isAuthenticated: boolean
-  user: AuthUser | null
-}
-
-export interface BackupMetadata {
-  id: string
-  userId: string
-  createdAt: string
-  size: number
-  checksum: string
-  version: number
-}
-
-export interface AuthAPI {
-  // Configuration
-  authConfigure: (config: { supabaseUrl: string; supabaseAnonKey: string }) => Promise<{ success: boolean }>
-  authIsConfigured: () => Promise<boolean>
-
-  // Auth State
-  authGetState: () => Promise<AuthState>
-
-  // Sign Up/In/Out
-  authSignUp: (email: string, password: string) => Promise<{ user: AuthUser | null; error: string | null }>
-  authSignIn: (email: string, password: string) => Promise<{ user: AuthUser | null; error: string | null }>
-  authSignInWithOAuth: (provider: 'google' | 'github' | 'apple') => Promise<{ error: string | null }>
-  authSignOut: () => Promise<{ error: string | null }>
-  authResetPassword: (email: string) => Promise<{ error: string | null }>
-
-  // Cloud Backup
-  backupSetKey: (password: string, salt?: number[]) => Promise<{ success: boolean; salt: number[] }>
-  backupHasKey: () => Promise<boolean>
-  backupCreate: (eventLog: string) => Promise<{ success: boolean; error?: string; metadata?: BackupMetadata }>
-  backupList: () => Promise<{ backups: BackupMetadata[]; error?: string }>
-  backupRestore: (backupId: string) => Promise<{ success: boolean; data?: string; error?: string }>
-  backupDelete: (backupId: string) => Promise<{ success: boolean; error?: string }>
-}
-
 // ============ Compliance Types ============
 
 export interface StateRequirement {
@@ -1296,6 +1249,6 @@ export interface UmbrellaSchoolAPI {
 
 declare global {
   interface Window {
-    api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI & UmbrellaSchoolAPI
+    api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI
   }
 }
