@@ -9,6 +9,7 @@ import { SyncManager } from '../src/sync'
 import { FamilyManager } from '../src/sync/family'
 import { analytics } from '../src/analytics'
 import { errorReporting } from '../src/errorReporting'
+import { notifications } from '../src/notifications'
 
 const ONBOARDING_COMPLETE_KEY = '@homeschool/onboarding_complete'
 
@@ -94,11 +95,15 @@ export default function RootLayout() {
         await initializeSchema()
         console.log('[App] Schema initialized successfully')
 
-        // Initialize error reporting and analytics
+        // Initialize error reporting, analytics, and notifications
         await errorReporting.initialize()
         await analytics.initialize()
+        await notifications.initialize()
         analytics.trackAppOpen()
         errorReporting.addBreadcrumb('app', 'App initialization complete')
+
+        // Schedule notifications (requests permission on first launch)
+        notifications.scheduleDailyReminder()
 
         // Check onboarding status
         const onboardingStatus = await AsyncStorage.getItem(ONBOARDING_COMPLETE_KEY)
