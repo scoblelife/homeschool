@@ -6,7 +6,9 @@
  */
 
 import { useState, useEffect } from 'react'
-import { format, differenceInDays, addYears } from 'date-fns'
+import { format } from 'date-fns'
+import { Card, CardHeader, CardTitle, CardDescription } from './ui/Card'
+import { Badge } from './ui/Badge'
 
 interface Deadline {
   name: string
@@ -107,6 +109,12 @@ export function ComplianceDeadlines({ className = '', compact = false }: Complia
     return 'text-gray-600 bg-gray-50 border-gray-200'
   }
 
+  const getUrgencyVariant = (daysUntil: number): 'danger' | 'warning' | 'default' => {
+    if (daysUntil <= 7) return 'danger'
+    if (daysUntil <= 30) return 'warning'
+    return 'default'
+  }
+
   const getUrgencyLabel = (daysUntil: number): string => {
     if (daysUntil < 0) return `${Math.abs(daysUntil)} days overdue`
     if (daysUntil === 0) return 'Due today'
@@ -135,24 +143,24 @@ export function ComplianceDeadlines({ className = '', compact = false }: Complia
 
   if (!stateCode) {
     return (
-      <div className={`${className} p-4 border border-gray-200 rounded-lg bg-gray-50`}>
+      <Card className={className} padding="sm">
         <p className="text-sm text-gray-600">
           Set your state in Settings to see compliance deadlines.
         </p>
-      </div>
+      </Card>
     )
   }
 
   if (deadlines.length === 0) {
     return (
-      <div className={`${className} p-4 border border-green-200 rounded-lg bg-green-50`}>
+      <Card className={`${className} bg-green-50 border-green-200`} padding="sm">
         <div className="flex items-center gap-2">
-          <span className="text-green-600">✓</span>
+          <Badge variant="success" dot>All Clear</Badge>
           <p className="text-sm text-green-700">
             {stateName} has no specific filing deadlines. You're all set!
           </p>
         </div>
-      </div>
+      </Card>
     )
   }
 
@@ -162,12 +170,12 @@ export function ComplianceDeadlines({ className = '', compact = false }: Complia
 
     if (urgentDeadlines.length === 0 && pendingDeadlines.length === 0) {
       return (
-        <div className={`${className} p-3 border border-green-200 rounded-lg bg-green-50`}>
+        <Card className={`${className} bg-green-50 border-green-200`} padding="sm">
           <div className="flex items-center gap-2">
-            <span className="text-green-600">✓</span>
+            <Badge variant="success" dot>Complete</Badge>
             <p className="text-sm text-green-700">All deadlines met!</p>
           </div>
-        </div>
+        </Card>
       )
     }
 
@@ -175,7 +183,7 @@ export function ComplianceDeadlines({ className = '', compact = false }: Complia
       <div className={`${className}`}>
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-sm font-medium text-gray-700">Compliance Deadlines</h3>
-          <span className="text-xs text-gray-500">{stateName}</span>
+          <Badge variant="default" size="sm">{stateName}</Badge>
         </div>
         <div className="space-y-2">
           {urgentDeadlines.slice(0, 3).map((deadline, idx) => (
@@ -258,17 +266,9 @@ export function ComplianceDeadlines({ className = '', compact = false }: Complia
                       {deadline.name}
                     </h3>
                     {!isCompleted && (
-                      <span
-                        className={`text-sm font-semibold px-2 py-0.5 rounded ${
-                          deadline.daysUntil <= 7
-                            ? 'bg-red-100 text-red-700'
-                            : deadline.daysUntil <= 30
-                            ? 'bg-amber-100 text-amber-700'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}
-                      >
+                      <Badge variant={getUrgencyVariant(deadline.daysUntil)}>
                         {getUrgencyLabel(deadline.daysUntil)}
-                      </span>
+                      </Badge>
                     )}
                   </div>
 

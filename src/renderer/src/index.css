@@ -9,24 +9,44 @@
 }
 
 @layer components {
+  /**
+   * Design System Classes
+   *
+   * Primary color: fuchsia-500 (#d946ef) - matching mobile app
+   * These legacy classes are kept for backwards compatibility.
+   * New components should use the UI component library.
+   */
+
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
 
   .btn-primary {
-    @apply bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md focus:ring-indigo-500 active:scale-[0.98];
+    @apply bg-fuchsia-500 text-white hover:bg-fuchsia-600 hover:shadow-md focus:ring-fuchsia-500 active:scale-[0.98];
   }
 
   .btn-secondary {
-    @apply bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-indigo-500 active:scale-[0.98];
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-fuchsia-500 active:scale-[0.98];
+  }
+
+  .btn-outline {
+    @apply bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-fuchsia-500 active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-fuchsia-500 active:scale-[0.98];
   }
 
   .btn-danger {
-    @apply bg-red-600 text-white hover:bg-red-700 hover:shadow-md focus:ring-red-500 active:scale-[0.98];
+    @apply bg-red-500 text-white hover:bg-red-600 hover:shadow-md focus:ring-red-500 active:scale-[0.98];
   }
 
   .input {
-    @apply block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm hover:border-gray-400;
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 text-sm hover:border-gray-400;
+  }
+
+  .input-error {
+    @apply border-red-300 focus:ring-red-500 focus:border-red-500;
   }
 
   .label {
@@ -37,13 +57,50 @@
     @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-shadow duration-200;
   }
 
-  /* Badge styles */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  .card-hover {
+    @apply hover:shadow-md;
   }
 
+  .card-interactive {
+    @apply cursor-pointer hover:border-gray-300 active:scale-[0.99];
+  }
+
+  /* Badge styles - aligned with design system */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  }
+
+  .badge-default {
+    @apply bg-gray-100 text-gray-600;
+  }
+
+  .badge-primary {
+    @apply bg-fuchsia-100 text-fuchsia-700;
+  }
+
+  .badge-secondary {
+    @apply bg-sky-100 text-sky-700;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-700;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .badge-danger {
+    @apply bg-red-100 text-red-700;
+  }
+
+  .badge-info {
+    @apply bg-blue-100 text-blue-700;
+  }
+
+  /* Legacy badge aliases for backwards compatibility */
   .badge-indigo {
-    @apply bg-indigo-100 text-indigo-700;
+    @apply bg-fuchsia-100 text-fuchsia-700;
   }
 
   .badge-green {
@@ -56,6 +113,31 @@
 
   .badge-gray {
     @apply bg-gray-100 text-gray-600;
+  }
+
+  /* Student color badges */
+  .badge-student-fuchsia {
+    @apply bg-fuchsia-100 text-fuchsia-700;
+  }
+
+  .badge-student-teal {
+    @apply bg-teal-100 text-teal-700;
+  }
+
+  .badge-student-blue {
+    @apply bg-blue-100 text-blue-700;
+  }
+
+  .badge-student-orange {
+    @apply bg-orange-100 text-orange-700;
+  }
+
+  .badge-student-purple {
+    @apply bg-purple-100 text-purple-700;
+  }
+
+  .badge-student-green {
+    @apply bg-green-100 text-green-700;
   }
 }
 

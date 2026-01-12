@@ -29,3 +29,6 @@ npm-debug.log*
 .env.local
 .env.*.local
 native/hyperswarm-mobile/target/
+
+*storybook.log
+storybook-static
