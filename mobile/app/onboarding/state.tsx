@@ -10,6 +10,7 @@ import {
 import { useRouter, Href } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { analytics } from '../../src/analytics'
 
 const US_STATES = [
   { code: 'AL', name: 'Alabama' },
@@ -88,6 +89,11 @@ export default function OnboardingState() {
         await AsyncStorage.setItem(USER_STATE_KEY, selectedState)
       }
       await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, 'true')
+
+      // Track onboarding completion
+      analytics.track('onboarding_completed', {
+        state: selectedState || 'skipped',
+      })
 
       // Navigate to main app
       router.replace('/(tabs)' as Href)
