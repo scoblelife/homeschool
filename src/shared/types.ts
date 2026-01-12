@@ -971,8 +971,32 @@ export interface SyncBackup {
   path: string
 }
 
+// AI Insights API
+export interface AIConfig {
+  apiKey: string | null
+  enabled: boolean
+  cacheEnabled: boolean
+}
+
+export interface AICompleteOptions {
+  maxTokens?: number
+  temperature?: number
+  systemPrompt?: string
+  useCache?: boolean
+}
+
+export interface AIAPI {
+  aiInitialize: () => Promise<{ success: boolean }>
+  aiIsAvailable: () => Promise<boolean>
+  aiGetConfig: () => Promise<AIConfig>
+  aiSetApiKey: (apiKey: string | null) => Promise<{ success: boolean }>
+  aiSetEnabled: (enabled: boolean) => Promise<{ success: boolean }>
+  aiComplete: (prompt: string, options?: AICompleteOptions) => Promise<{ success: boolean; response?: string; error?: string }>
+  aiClearCache: () => Promise<{ success: boolean }>
+}
+
 declare global {
   interface Window {
-    api: DatabaseAPI & SyncAPI
+    api: DatabaseAPI & SyncAPI & AIAPI
   }
 }
