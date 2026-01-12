@@ -5,4 +5,5 @@
  */
 
 export { AIWeeklySummary } from './AIWeeklySummary'
+export { ActivitySuggestions } from './ActivitySuggestions'
 export { useAIInsightsStore } from './aiInsightsStore'
