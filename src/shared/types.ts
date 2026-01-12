@@ -1181,8 +1181,113 @@ export interface ComplianceAPI {
   ) => Promise<GeneratedDocument>
 }
 
+// Umbrella School Types (Cover Schools)
+export type UmbrellaReportFrequency = 'weekly' | 'monthly' | 'quarterly' | 'semester' | 'annual'
+export type UmbrellaEnrollmentStatus = 'active' | 'withdrawn' | 'pending'
+export type UmbrellaReportStatus = 'pending' | 'submitted' | 'approved' | 'rejected'
+export type UmbrellaReportType = 'attendance' | 'progress' | 'grades' | 'annual_summary' | 'custom'
+
+export interface UmbrellaSchoolRequirement {
+  name: string
+  description: string
+  frequency: UmbrellaReportFrequency
+  required: boolean
+}
+
+export interface UmbrellaSchool {
+  id: string
+  name: string
+  state: string
+  contactName?: string
+  contactEmail?: string
+  contactPhone?: string
+  websiteUrl?: string
+  address?: string
+  enrollmentFee?: number
+  annualFee?: number
+  enrollmentStartDate?: string
+  enrollmentEndDate?: string
+  reportFrequency?: UmbrellaReportFrequency
+  reportDueDay?: number // Day of month/quarter when reports are due
+  requirements: UmbrellaSchoolRequirement[]
+  notes?: string
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateUmbrellaSchool = Omit<UmbrellaSchool, 'id' | 'createdAt' | 'updatedAt'>
+export type UpdateUmbrellaSchool = Partial<Omit<CreateUmbrellaSchool, 'state'>>
+
+export interface UmbrellaSchoolEnrollment {
+  id: string
+  umbrellaSchoolId: string
+  studentId: string
+  studentIdAtSchool?: string // ID assigned by the umbrella school
+  gradeLevel?: string
+  enrolledDate: string
+  withdrawnDate?: string
+  status: UmbrellaEnrollmentStatus
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateUmbrellaSchoolEnrollment = Omit<UmbrellaSchoolEnrollment, 'id' | 'createdAt' | 'updatedAt'>
+export type UpdateUmbrellaSchoolEnrollment = Partial<Omit<CreateUmbrellaSchoolEnrollment, 'umbrellaSchoolId' | 'studentId'>>
+
+export interface UmbrellaSchoolReport {
+  id: string
+  umbrellaSchoolId: string
+  studentId: string
+  reportType: UmbrellaReportType
+  periodStart: string
+  periodEnd: string
+  dueDate?: string
+  submittedDate?: string
+  status: UmbrellaReportStatus
+  content?: Record<string, unknown> // Flexible content based on report type
+  filePath?: string
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateUmbrellaSchoolReport = Omit<UmbrellaSchoolReport, 'id' | 'createdAt' | 'updatedAt'>
+export type UpdateUmbrellaSchoolReport = Partial<Omit<CreateUmbrellaSchoolReport, 'umbrellaSchoolId' | 'studentId'>>
+
+export interface UmbrellaSchoolAPI {
+  // Umbrella Schools
+  umbrellaGetSchools: () => Promise<UmbrellaSchool[]>
+  umbrellaGetSchool: (id: string) => Promise<UmbrellaSchool | null>
+  umbrellaCreateSchool: (data: CreateUmbrellaSchool) => Promise<UmbrellaSchool>
+  umbrellaUpdateSchool: (id: string, data: UpdateUmbrellaSchool) => Promise<UmbrellaSchool | null>
+  umbrellaDeleteSchool: (id: string) => Promise<void>
+
+  // Enrollments
+  umbrellaGetEnrollments: (schoolId?: string, studentId?: string) => Promise<UmbrellaSchoolEnrollment[]>
+  umbrellaGetEnrollment: (id: string) => Promise<UmbrellaSchoolEnrollment | null>
+  umbrellaCreateEnrollment: (data: CreateUmbrellaSchoolEnrollment) => Promise<UmbrellaSchoolEnrollment>
+  umbrellaUpdateEnrollment: (id: string, data: UpdateUmbrellaSchoolEnrollment) => Promise<UmbrellaSchoolEnrollment | null>
+  umbrellaDeleteEnrollment: (id: string) => Promise<void>
+
+  // Reports
+  umbrellaGetReports: (schoolId?: string, studentId?: string) => Promise<UmbrellaSchoolReport[]>
+  umbrellaGetReport: (id: string) => Promise<UmbrellaSchoolReport | null>
+  umbrellaCreateReport: (data: CreateUmbrellaSchoolReport) => Promise<UmbrellaSchoolReport>
+  umbrellaUpdateReport: (id: string, data: UpdateUmbrellaSchoolReport) => Promise<UmbrellaSchoolReport | null>
+  umbrellaDeleteReport: (id: string) => Promise<void>
+  umbrellaGetPendingReports: (schoolId?: string) => Promise<UmbrellaSchoolReport[]>
+
+  // Report Generation
+  umbrellaGenerateReport: (
+    reportId: string,
+    format: 'html' | 'pdf'
+  ) => Promise<{ success: boolean; content?: string; filePath?: string; error?: string }>
+}
+
 declare global {
   interface Window {
-    api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI
+    api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI & UmbrellaSchoolAPI
   }
 }

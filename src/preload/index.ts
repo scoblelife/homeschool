@@ -70,16 +70,26 @@ import type {
   AIAPI,
   AuthAPI,
   ComplianceAPI,
+  UmbrellaSchoolAPI,
   AuthState,
   AuthUser,
   BackupMetadata,
   StateRequirement,
   ComplianceDeadline,
   ComplianceDocumentData,
-  GeneratedDocument
+  GeneratedDocument,
+  UmbrellaSchool,
+  CreateUmbrellaSchool,
+  UpdateUmbrellaSchool,
+  UmbrellaSchoolEnrollment,
+  CreateUmbrellaSchoolEnrollment,
+  UpdateUmbrellaSchoolEnrollment,
+  UmbrellaSchoolReport,
+  CreateUmbrellaSchoolReport,
+  UpdateUmbrellaSchoolReport
 } from '../shared/types'
 
-const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI = {
+const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI & UmbrellaSchoolAPI = {
   // Students
   getStudents: () => ipcRenderer.invoke('db:students:getAll'),
   getStudent: (id: string) => ipcRenderer.invoke('db:students:get', id),
@@ -591,7 +601,56 @@ const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI = {
     quarter: 1 | 2 | 3 | 4,
     activities: Array<{ subject: string; description: string; hours: number }>
   ) =>
-    ipcRenderer.invoke('compliance:generateQuarterlyReport', data, quarter, activities) as Promise<GeneratedDocument>
+    ipcRenderer.invoke('compliance:generateQuarterlyReport', data, quarter, activities) as Promise<GeneratedDocument>,
+
+  // ============ Umbrella School API ============
+
+  // Umbrella Schools
+  umbrellaGetSchools: () =>
+    ipcRenderer.invoke('umbrella:getSchools') as Promise<UmbrellaSchool[]>,
+  umbrellaGetSchool: (id: string) =>
+    ipcRenderer.invoke('umbrella:getSchool', id) as Promise<UmbrellaSchool | null>,
+  umbrellaCreateSchool: (data: CreateUmbrellaSchool) =>
+    ipcRenderer.invoke('umbrella:createSchool', data) as Promise<UmbrellaSchool>,
+  umbrellaUpdateSchool: (id: string, data: UpdateUmbrellaSchool) =>
+    ipcRenderer.invoke('umbrella:updateSchool', id, data) as Promise<UmbrellaSchool | null>,
+  umbrellaDeleteSchool: (id: string) =>
+    ipcRenderer.invoke('umbrella:deleteSchool', id) as Promise<void>,
+
+  // Enrollments
+  umbrellaGetEnrollments: (schoolId?: string, studentId?: string) =>
+    ipcRenderer.invoke('umbrella:getEnrollments', schoolId, studentId) as Promise<UmbrellaSchoolEnrollment[]>,
+  umbrellaGetEnrollment: (id: string) =>
+    ipcRenderer.invoke('umbrella:getEnrollment', id) as Promise<UmbrellaSchoolEnrollment | null>,
+  umbrellaCreateEnrollment: (data: CreateUmbrellaSchoolEnrollment) =>
+    ipcRenderer.invoke('umbrella:createEnrollment', data) as Promise<UmbrellaSchoolEnrollment>,
+  umbrellaUpdateEnrollment: (id: string, data: UpdateUmbrellaSchoolEnrollment) =>
+    ipcRenderer.invoke('umbrella:updateEnrollment', id, data) as Promise<UmbrellaSchoolEnrollment | null>,
+  umbrellaDeleteEnrollment: (id: string) =>
+    ipcRenderer.invoke('umbrella:deleteEnrollment', id) as Promise<void>,
+
+  // Reports
+  umbrellaGetReports: (schoolId?: string, studentId?: string) =>
+    ipcRenderer.invoke('umbrella:getReports', schoolId, studentId) as Promise<UmbrellaSchoolReport[]>,
+  umbrellaGetReport: (id: string) =>
+    ipcRenderer.invoke('umbrella:getReport', id) as Promise<UmbrellaSchoolReport | null>,
+  umbrellaCreateReport: (data: CreateUmbrellaSchoolReport) =>
+    ipcRenderer.invoke('umbrella:createReport', data) as Promise<UmbrellaSchoolReport>,
+  umbrellaUpdateReport: (id: string, data: UpdateUmbrellaSchoolReport) =>
+    ipcRenderer.invoke('umbrella:updateReport', id, data) as Promise<UmbrellaSchoolReport | null>,
+  umbrellaDeleteReport: (id: string) =>
+    ipcRenderer.invoke('umbrella:deleteReport', id) as Promise<void>,
+  umbrellaGetPendingReports: (schoolId?: string) =>
+    ipcRenderer.invoke('umbrella:getPendingReports', schoolId) as Promise<UmbrellaSchoolReport[]>,
+
+  // Report Generation (placeholder - actual generation happens server-side)
+  umbrellaGenerateReport: (reportId: string, format: 'html' | 'pdf') =>
+    ipcRenderer.invoke('umbrella:generateReport', reportId, format) as Promise<{
+      success: boolean
+      content?: string
+      filePath?: string
+      error?: string
+    }>
 }
 
 contextBridge.exposeInMainWorld('api', api)
