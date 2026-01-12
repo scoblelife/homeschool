@@ -1,6 +1,6 @@
-# Homeschool App Roadmap Implementation
+# Homeschool App Roadmap v2: Ship, Polish, Delight
 
-You are implementing a comprehensive roadmap for a homeschool management app. Work through each phase systematically, completing all tasks before moving to the next phase.
+You are implementing the next evolution of a homeschool management app. The core features are complete. Now focus on shipping to users, polishing the mobile experience, and adding AI-powered insights.
 
 ## How to Work
 
@@ -13,7 +13,7 @@ You are implementing a comprehensive roadmap for a homeschool management app. Wo
 
 When ALL tasks across ALL phases are marked `[x]`, output:
 ```
-<promise>ROADMAP COMPLETE</promise>
+<promise>ROADMAP V2 COMPLETE</promise>
 ```
 
 ## Technical Context
@@ -23,221 +23,305 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 - **Sync**: WebRTC P2P with Cloudflare Worker signaling
 - **State**: Zustand
 - **Styling**: Tailwind CSS (desktop), custom components (mobile)
+- **CI/CD**: GitHub Actions, EAS Build
+- **Infrastructure**: Cloudflare Workers (signaling), Cloudflare Pages (docs)
 
 ## Progress Tracker
 
 ---
 
-### Phase 1: Stabilize Sync
+### Phase 6: Ship & Learn
 
-**Goal:** Ensure P2P sync works reliably across real-world conditions.
+**Goal:** Get the app into real users' hands and establish feedback loops.
 
-- [x] **1.1 Multi-device testing harness**
-  - Create automated test that simulates 2+ devices
-  - Test offer/answer exchange via Worker
-  - Test data sync round-trip
-  - Location: `src/sync/__tests__/integration.test.ts`
+- [ ] **6.1 App Store metadata**
+  - Write compelling App Store description (iOS)
+  - Write Google Play Store description
+  - Create app screenshots (phone + tablet sizes)
+  - Design app icon variants (all required sizes)
+  - Prepare privacy policy URL (already at /privacy)
+  - Prepare support URL
+  - Location: `mobile/assets/store/`, update `app.json`
 
-- [x] **1.2 Conflict resolution**
-  - Implement last-write-wins with vector clocks
-  - Handle same record edited on two devices while offline
-  - Add conflict detection logging
-  - Location: `src/sync/conflictResolver.ts`
+- [ ] **6.2 Onboarding flow**
+  - First-launch welcome screens (3-4 slides)
+  - Explain core value prop: "Log learning in seconds"
+  - Quick student setup wizard
+  - State selection for compliance
+  - Optional: import from other apps
+  - Location: `mobile/app/onboarding/`
 
-- [x] **1.3 Reconnection handling**
-  - Detect network state changes
-  - Auto-reconnect with exponential backoff
-  - Resume sync from last known state
-  - Handle app wake from sleep
-  - Location: `src/sync/connectionManager.ts`
+- [ ] **6.3 Analytics instrumentation**
+  - Add privacy-respecting analytics (Plausible or self-hosted)
+  - Track key events: app_open, activity_logged, report_generated
+  - Track feature usage without PII
+  - User can opt-out in settings
+  - Location: `mobile/src/analytics/`, `src/renderer/src/analytics/`
 
-- [x] **1.4 Sync status UI**
-  - Add sync indicator to header (synced/syncing/offline/error)
-  - Show last sync timestamp
-  - Show connected peer count
-  - Click to see detailed sync status modal
-  - Location: `src/renderer/src/components/sync/SyncStatusIndicator.tsx`
+- [ ] **6.4 Crash reporting**
+  - Integrate Sentry or Bugsnag (mobile + desktop)
+  - Capture JS errors with stack traces
+  - Capture native crashes
+  - Breadcrumb trail for debugging
+  - User can opt-out in settings
+  - Location: `mobile/src/errorReporting/`, `src/errorReporting/`
 
-- [x] **1.5 Error recovery**
-  - Detect corrupted event log
-  - Implement event log repair/rebuild
-  - Add "Reset Sync" option in settings
-  - Graceful degradation when sync fails
-  - Location: `src/sync/recovery.ts`
+- [ ] **6.5 In-app feedback**
+  - "Send Feedback" button in settings
+  - Simple form: category (bug/feature/other) + description
+  - Optional screenshot attachment
+  - Send via email or GitHub issue API
+  - Location: `mobile/src/components/Feedback.tsx`, `src/renderer/src/components/Feedback.tsx`
 
----
+- [ ] **6.6 Performance profiling**
+  - Measure app launch time (target: <2s cold start)
+  - Measure time to interactive on each screen
+  - Profile database queries (identify slow ones)
+  - Monitor memory usage during sync
+  - Add performance marks to key operations
+  - Location: `mobile/src/performance/`, `src/performance/`
 
-### Phase 2: Complete the Core Loop
+- [ ] **6.7 Accessibility audit**
+  - Add accessibility labels to all interactive elements
+  - Test with VoiceOver (iOS) and TalkBack (Android)
+  - Ensure Dynamic Type support (iOS)
+  - Ensure font scaling (Android)
+  - Color contrast check (WCAG AA minimum)
+  - Keyboard navigation (desktop)
+  - Location: Update components throughout
 
-**Goal:** Make daily activity logging fast and frictionless.
+- [ ] **6.8 TestFlight submission**
+  - Configure EAS Submit for iOS
+  - Set up App Store Connect app record
+  - Submit first TestFlight build
+  - Document beta tester onboarding process
+  - Location: `mobile/eas.json`, docs
 
-- [x] **2.1 Quick-add component**
-  - Floating action button on dashboard
-  - Single-tap to log common activities
-  - Recent activities as quick buttons
-  - Complete logging in <10 seconds
-  - Location: `src/renderer/src/components/QuickAdd.tsx`
-
-- [x] **2.2 Voice logging (desktop)**
-  - "Add activity" voice command
-  - Parse natural language: "30 minutes of reading for Emma"
-  - Confirm before saving
-  - Location: `src/renderer/src/features/voiceInput/`
-
-- [x] **2.3 Recurring activities**
-  - Define recurring activity templates
-  - Auto-suggest at scheduled times
-  - One-tap to confirm/skip
-  - Location: `src/renderer/src/features/recurring/`
-
-- [x] **2.4 Photo attachments**
-  - Add photo to any activity
-  - Store in `~/.homeschool/attachments/`
-  - Thumbnail preview in activity list
-  - Full-size view on click
-  - Sync photos between devices (compress first)
-  - Location: `src/renderer/src/features/attachments/`
-
-- [x] **2.5 Timer mode**
-  - Start/stop timer for sessions
-  - Running timer visible in header
-  - Auto-save when stopped
-  - Persist timer state across app restart
-  - Location: `src/renderer/src/features/timer/`
-
-- [x] **2.6 Mobile quick-add**
-  - Port QuickAdd to mobile
-  - iOS widget for home screen
-  - Android widget for home screen
-  - Location: `mobile/src/components/QuickAdd.tsx`
+- [ ] **6.9 Play Store internal testing**
+  - Configure EAS Submit for Android
+  - Set up Google Play Console app record
+  - Submit to internal testing track
+  - Document beta tester onboarding process
+  - Location: `mobile/eas.json`, docs
 
 ---
 
-### Phase 3: Insights & Motivation
+### Phase 7: Mobile-First Polish
 
-**Goal:** Transform logged data into actionable insights and motivation.
+**Goal:** Make mobile the best way to log daily activities.
 
-- [x] **3.1 Weekly summary view**
-  - Hours per subject breakdown
-  - Activities completed count
-  - Comparison to previous week
-  - Per-child summary
-  - Location: `src/renderer/src/pages/WeeklySummary.tsx`
+- [ ] **7.1 Push notifications**
+  - Set up Expo Notifications
+  - Daily reminder: "Don't forget to log today's activities"
+  - Streak warning: "Log today to keep your 7-day streak!"
+  - Configurable notification time in settings
+  - Respect Do Not Disturb / Focus modes
+  - Location: `mobile/src/notifications/`
 
-- [x] **3.2 Email summaries**
-  - Weekly digest email option
-  - Configure email in settings
-  - Send via SendGrid/Resend (serverless function)
-  - Location: `src/features/emailSummary/`
+- [ ] **7.2 iOS widgets**
+  - Today widget: show activities logged today + streak
+  - Timer widget: quick start/stop current timer
+  - Quick-add widget: tap to open quick-add modal
+  - Use expo-apple-targets or react-native-widget-extension
+  - Location: `mobile/ios/widgets/`, `mobile/src/widgets/`
 
-- [x] **3.3 Streaks and progress**
-  - Daily logging streak counter
-  - Visual streak display (flame icon)
-  - Milestone badges (7-day, 30-day, 100-day)
-  - Per-child streak tracking
-  - Location: `src/renderer/src/features/streaks/`
+- [ ] **7.3 Android widgets**
+  - Today widget: activities logged + streak count
+  - Timer widget: start/stop timer
+  - Quick-add widget: open quick-add
+  - Use react-native-android-widget
+  - Location: `mobile/android/app/src/main/java/.../widgets/`
 
-- [x] **3.4 Subject balance alerts**
-  - Define target hours per subject
-  - Alert when significantly under target
-  - Weekly balance visualization
-  - Recommendations to rebalance
-  - Location: `src/renderer/src/features/balance/`
+- [ ] **7.4 Share sheet integration**
+  - iOS Share Extension: share photo → create activity
+  - Android Share target: receive images/text
+  - Pre-fill activity with shared content
+  - Location: `mobile/ios/ShareExtension/`, `mobile/android/.../ShareActivity.java`
 
-- [x] **3.5 Milestone celebrations**
-  - Track cumulative achievements (books read, hours logged)
-  - Confetti animation on milestones
-  - Shareable achievement cards
-  - Location: `src/renderer/src/features/celebrations/`
+- [ ] **7.5 Voice shortcuts**
+  - Siri Shortcuts: "Log reading for Emma"
+  - Google Assistant routines: "Log activity"
+  - Expose key actions as shortcut intents
+  - Location: `mobile/src/shortcuts/`, native config
 
-- [x] **3.6 Year-over-year comparison**
-  - Compare current year to previous
-  - Progress charts over time
-  - Export annual report
-  - Location: `src/renderer/src/pages/AnnualReport.tsx`
+- [ ] **7.6 Offline resilience**
+  - Queue all writes when offline
+  - Show clear offline indicator
+  - Sync automatically when connection restored
+  - Handle conflict resolution gracefully
+  - Never lose user data
+  - Location: `mobile/src/sync/offlineQueue.ts`
 
----
+- [ ] **7.7 Quick actions (3D Touch / long press)**
+  - App icon quick actions: "Log Activity", "Start Timer", "View Today"
+  - Implement for both iOS and Android
+  - Location: `mobile/app.json` (expo-quick-actions)
 
-### Phase 4: Compliance & Reporting
+- [ ] **7.8 Haptic feedback**
+  - Add haptics on activity logged (success)
+  - Haptics on timer start/stop
+  - Haptics on streak milestone
+  - Subtle, not annoying
+  - Location: Throughout mobile components
 
-**Goal:** Support homeschool requirements across different states.
+- [ ] **7.9 Dark mode**
+  - Respect system dark mode preference
+  - Manual toggle in settings
+  - Ensure all screens look good in dark mode
+  - Test contrast ratios
+  - Location: `mobile/src/theme/`, update all components
 
-- [x] **4.1 State requirements database**
-  - Create JSON database of state requirements
-  - Include: required subjects, hours, reporting, assessment
-  - Start with top 10 homeschool states
-  - Location: `src/data/stateRequirements.json`
-
-- [x] **4.2 State selector in settings**
-  - Select state in onboarding/settings
-  - Show summary of requirements
-  - Validate activities against requirements
-  - Location: `src/renderer/src/pages/Settings.tsx`
-
-- [x] **4.3 Attendance tracking**
-  - Daily attendance log
-  - Mark school days vs non-school days
-  - Calculate attendance percentage
-  - Required by many states
-  - Location: `src/renderer/src/features/attendance/`
-
-- [x] **4.4 Portfolio PDF export**
-  - Generate printable portfolio
-  - Include: attendance, activities, photos, summaries
-  - Customizable sections
-  - Professional formatting
-  - Location: `src/features/portfolio/`
-
-- [x] **4.5 Curriculum mapping**
-  - Map activities to learning standards
-  - Common Core alignment option
-  - Custom curriculum support
-  - Standards coverage report
-  - Location: `src/renderer/src/features/curriculum/`
-
-- [x] **4.6 Official hour tracking**
-  - Track instructional hours precisely
-  - Separate by subject as required
-  - Generate official hour reports
-  - Alert when approaching minimums
-  - Location: `src/renderer/src/features/hourTracking/`
+- [ ] **7.10 Tablet optimization**
+  - iPad split-view support
+  - Android tablet layouts
+  - Master-detail navigation on larger screens
+  - Optimize for landscape orientation
+  - Location: `mobile/src/layouts/`
 
 ---
 
-### Phase 5: Community & Content
+### Phase 8: AI-Powered Insights
 
-**Goal:** Make the app a hub for homeschool resources.
+**Goal:** Transform logged data into actionable guidance.
 
-- [x] **5.1 Activity templates library**
-  - Pre-built activity templates
-  - Organized by subject and grade
-  - One-click to add template
-  - Location: `src/renderer/src/features/templates/`
+- [ ] **8.1 AI infrastructure**
+  - Add Claude API integration (or OpenAI fallback)
+  - Create serverless function for AI calls (Cloudflare Worker)
+  - Handle API keys securely (user provides own or use app key)
+  - Rate limiting and cost management
+  - Location: `worker/src/ai.ts`, `src/ai/`
 
-- [x] **5.2 Curriculum recommendations**
-  - Suggest curricula based on grade/subject
-  - Link to popular homeschool curricula
-  - User ratings and reviews (future)
-  - Location: `src/renderer/src/features/recommendations/`
+- [ ] **8.2 Weekly AI summary**
+  - Analyze week's activities per child
+  - Generate 2-3 paragraph narrative summary
+  - Highlight: achievements, patterns, suggestions
+  - Tone: encouraging, specific, actionable
+  - Display in Weekly Summary page
+  - Location: `src/renderer/src/features/aiInsights/WeeklySummary.tsx`
 
-- [x] **5.3 Resource library integration**
-  - Quick links to Khan Academy, etc.
-  - Log activity when using linked resource
-  - Track time spent on external resources
-  - Location: `src/renderer/src/features/resources/`
+- [ ] **8.3 Activity suggestions**
+  - Analyze recent activity history
+  - Suggest activities for underrepresented subjects
+  - "You haven't done science in 2 weeks. Try: [specific ideas]"
+  - Show on dashboard
+  - Location: `src/renderer/src/features/aiInsights/Suggestions.tsx`
 
-- [x] **5.4 Field trip planner**
-  - Plan field trips with details
-  - Map integration for locations
-  - Link activities to field trips
-  - Share field trips with co-op
-  - Location: `src/renderer/src/features/fieldTrips/`
+- [ ] **8.4 Portfolio narrative generation**
+  - Select date range and child
+  - Generate prose summary suitable for evaluators
+  - Include: subjects covered, projects completed, growth areas
+  - Export as section in portfolio PDF
+  - Location: `src/features/portfolio/narrativeGenerator.ts`
 
-- [x] **5.5 Co-op group features**
-  - Create/join co-op groups
-  - Shared calendar for group events
-  - Group field trip coordination
-  - Location: `src/renderer/src/features/coop/`
+- [ ] **8.5 Learning pattern detection**
+  - Analyze time-of-day effectiveness
+  - Detect subject affinities and challenges
+  - Identify optimal session lengths per child
+  - "Emma focuses best in morning sessions (avg 45 min)"
+  - Location: `src/renderer/src/features/aiInsights/Patterns.tsx`
+
+- [ ] **8.6 Predictive compliance tracking**
+  - Based on current pace, predict year-end hours
+  - Warn if falling behind requirements
+  - "At current pace, you'll have 850/1000 required hours by June"
+  - Suggest adjustments
+  - Location: `src/renderer/src/features/aiInsights/Predictions.tsx`
+
+- [ ] **8.7 Smart activity categorization**
+  - AI auto-suggests subject based on activity description
+  - Learn from user corrections
+  - "Building Legos" → suggests "Math" (spatial reasoning)
+  - Location: `src/renderer/src/features/aiInsights/Categorization.tsx`
+
+- [ ] **8.8 Conversational logging**
+  - Chat interface for logging: "We did math worksheets and read for an hour"
+  - AI parses into structured activities
+  - User confirms before saving
+  - Location: `src/renderer/src/features/aiInsights/ChatLogger.tsx`
+
+---
+
+### Phase 9: Community Network
+
+**Goal:** Connect homeschool families beyond a single device.
+
+- [ ] **9.1 Cloud account system**
+  - Optional cloud account (email + password or OAuth)
+  - Local-first remains default (works without account)
+  - Account enables: cloud backup, cross-family sharing
+  - Use Cloudflare D1 or Supabase for backend
+  - Location: `src/auth/`, `worker/src/auth.ts`
+
+- [ ] **9.2 Cloud backup**
+  - Encrypted backup of CRDT event log to cloud
+  - Automatic daily backup (if opted in)
+  - Manual backup/restore option
+  - End-to-end encrypted (user holds key)
+  - Location: `src/sync/cloudBackup.ts`
+
+- [ ] **9.3 Co-op networking**
+  - Co-op groups sync via cloud (not just local P2P)
+  - Invite members via link or email
+  - Shared calendar visible to all members
+  - Group announcements
+  - Location: `src/renderer/src/features/coop/CloudSync.tsx`
+
+- [ ] **9.4 Field trip discovery**
+  - Browse public field trips from other families
+  - Filter by location, date, age group
+  - Request to join a field trip
+  - Location: `src/renderer/src/features/fieldTrips/Discovery.tsx`
+
+- [ ] **9.5 Resource sharing**
+  - Share activity templates publicly
+  - Rate and review shared templates
+  - Curriculum reviews from community
+  - Location: `src/renderer/src/features/community/`
+
+- [ ] **9.6 Mentor matching**
+  - Experienced homeschoolers opt-in as mentors
+  - New families can request mentorship
+  - In-app messaging (or external contact)
+  - Location: `src/renderer/src/features/mentorship/`
+
+---
+
+### Phase 10: Compliance Automation
+
+**Goal:** Make state reporting effortless.
+
+- [ ] **10.1 Document template engine**
+  - Create fillable PDF templates for common forms
+  - Notice of Intent templates (per state)
+  - Annual assessment forms
+  - Auto-fill from app data
+  - Location: `src/features/compliance/templates/`
+
+- [ ] **10.2 State-specific form generation**
+  - Generate state-required forms automatically
+  - Support top 10 homeschool states first
+  - Include: CA, TX, FL, NY, PA, NC, OH, GA, VA, MI
+  - Location: `src/features/compliance/stateforms/`
+
+- [ ] **10.3 Filing deadline reminders**
+  - Know filing deadlines per state
+  - Push notification 30 days before deadline
+  - Email reminder option
+  - Calendar integration
+  - Location: `src/features/compliance/deadlines.ts`
+
+- [ ] **10.4 Assessment tracking**
+  - Track required assessments (standardized tests, evaluations)
+  - Schedule assessment appointments
+  - Store assessment results
+  - Include in portfolio/reports
+  - Location: `src/renderer/src/features/assessments/`
+
+- [ ] **10.5 Umbrella school integration**
+  - Support reporting to umbrella schools / cover schools
+  - Generate reports in their required format
+  - Track umbrella school requirements
+  - Location: `src/features/compliance/umbrella/`
 
 ---
 
@@ -252,17 +336,29 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 ### Commits
 - One commit per task completion
 - Format: "Phase X.Y: Brief description"
-- Example: "Phase 1.2: Add conflict resolution with vector clocks"
+- Example: "Phase 6.2: Add onboarding flow with welcome screens"
 
 ### Testing
 - Run `npm run typecheck` before committing
 - Run `npm test` if tests exist
-- Manual test on desktop before marking complete
+- Manual test on desktop and mobile before marking complete
 
 ### Mobile Parity
-- For UI features, consider mobile implementation
-- Note mobile-specific tasks in Phase 2.6 and elsewhere
-- Mobile can lag desktop but should eventually match
+- All user-facing features should work on mobile
+- Mobile-specific features (widgets, notifications) are marked
+- Desktop-specific features are OK if they don't make sense on mobile
+
+### AI Features
+- AI features should gracefully degrade without API key
+- Show clear loading states during AI processing
+- Cache AI responses to reduce API calls
+- Allow users to provide their own API key
+
+### Privacy First
+- All analytics must be opt-in or privacy-respecting
+- No PII in analytics or crash reports
+- Cloud features are optional, local-first is default
+- End-to-end encryption for any cloud-stored data
 
 ---
 
@@ -270,13 +366,13 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 
 **Last Updated:** 2026-01-11
 
-**Current Phase:** 4
-**Current Task:** 4.4
+**Current Phase:** 6
+**Current Task:** 6.1
 **Blockers:** None
 
 ---
 
 When every task above shows `[x]`, output:
 ```
-<promise>ROADMAP COMPLETE</promise>
+<promise>ROADMAP V2 COMPLETE</promise>
 ```
