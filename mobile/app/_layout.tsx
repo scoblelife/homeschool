@@ -10,6 +10,7 @@ import { FamilyManager } from '../src/sync/family'
 import { analytics } from '../src/analytics'
 import { errorReporting } from '../src/errorReporting'
 import { notifications } from '../src/notifications'
+import { ThemeProvider, useTheme } from '../src/theme'
 
 const ONBOARDING_COMPLETE_KEY = '@homeschool/onboarding_complete'
 
@@ -171,13 +172,24 @@ export default function RootLayout() {
   }
 
   return (
+    <ThemeProvider>
+      <ThemedLayout />
+    </ThemeProvider>
+  )
+}
+
+function ThemedLayout() {
+  const { colors, isDark } = useTheme()
+
+  return (
     <>
-      <StatusBar style="auto" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: '#fff' },
-          headerTintColor: '#1f2937',
+          headerStyle: { backgroundColor: colors.background },
+          headerTintColor: colors.text,
           headerTitleStyle: { fontWeight: '600' },
+          contentStyle: { backgroundColor: colors.background },
         }}
       >
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
