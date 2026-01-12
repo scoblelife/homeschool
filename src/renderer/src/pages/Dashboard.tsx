@@ -9,7 +9,7 @@ import { Timer } from '../features/timer'
 import { StreakDisplay, useStreakTracking } from '../features/streaks'
 import { SubjectBalance } from '../features/balance'
 import { AchievementCard } from '../features/celebrations'
-import { ActivitySuggestions, LearningPatterns, CompliancePrediction } from '../features/aiInsights'
+import { ActivitySuggestions, LearningPatterns, CompliancePrediction, ChatLogger } from '../features/aiInsights'
 import { ErrorBoundary, WidgetErrorFallback } from '../components/ErrorBoundary'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
@@ -647,6 +647,13 @@ export default function Dashboard(): JSX.Element {
 
       {/* Voice Input FAB */}
       <VoiceInput onActivityCreated={handleActivityCreated} />
+
+      {/* Chat Logger FAB */}
+      <ChatLogger
+        students={students}
+        subjects={subjects}
+        onActivitiesCreated={handleActivityCreated}
+      />
     </div>
   )
 }
