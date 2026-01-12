@@ -50,7 +50,32 @@
       "expo-sqlite",
       "expo-asset",
       "./plugins/withWebRTC",
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-quick-actions",
+        {
+          "iosActions": [
+            {
+              "id": "log_activity",
+              "title": "Log Activity",
+              "icon": "compose",
+              "params": { "action": "log" }
+            },
+            {
+              "id": "start_timer",
+              "title": "Start Timer",
+              "icon": "time",
+              "params": { "action": "timer" }
+            },
+            {
+              "id": "view_today",
+              "title": "View Today",
+              "icon": "task",
+              "params": { "action": "today" }
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
