@@ -1,0 +1,32 @@
+# Fly.io configuration for Homeschool Signaling Server
+# See https://fly.io/docs/reference/configuration/
+
+app = "homeschool-signaling"
+primary_region = "sjc"  # San Jose, CA - close to West Coast users
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  RUST_LOG = "homeschool_signaling=info,tower_http=info"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  path = "/health"
+  timeout = "5s"
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
