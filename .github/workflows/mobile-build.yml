@@ -5,12 +5,10 @@ on:
     branches: [main]
     paths:
       - 'mobile/**'
-      - 'native/**'
   pull_request:
     branches: [main]
     paths:
       - 'mobile/**'
-      - 'native/**'
   workflow_dispatch:
     inputs:
       platform:
@@ -38,14 +36,7 @@ on:
         type: boolean
 
 jobs:
-  # Build native libraries first if native code changed
-  native-libs:
-    uses: ./.github/workflows/native-build.yml
-    secrets: inherit
-
   build:
-    needs: [native-libs]
-    if: always() && !failure() && !cancelled()
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -92,8 +83,7 @@ jobs:
 
   # Automatic preview builds on main branch pushes
   preview-build:
-    needs: [native-libs]
-    if: always() && !failure() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     defaults:
       run:
