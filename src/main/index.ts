@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initializeSchema, seedDefaultSubjects, seedMilestoneTemplates, closeDatabase } from '../database'
 import { registerIpcHandlers } from './ipc'
 import { registerSyncIPC, shutdownSync } from './sync-ipc'
+import { errorReporting } from '../errorReporting'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -37,6 +38,9 @@ function createWindow(): void {
 }
 
 app.whenReady().then(async () => {
+  // Initialize error reporting first
+  errorReporting.initialize()
+
   electronApp.setAppUserModelId('com.homeschool')
 
   app.on('browser-window-created', (_, window) => {
