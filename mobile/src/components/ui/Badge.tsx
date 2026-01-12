@@ -12,12 +12,12 @@ interface BadgeProps {
 
 const variantStyles: Record<BadgeVariant, { bg: string; text: string }> = {
   default: { bg: '#f3f4f6', text: '#6b7280' },
-  primary: { bg: '#f3e8ff', text: '#9333ea' },
+  primary: { bg: '#fdf4ff', text: '#d946ef' },
   secondary: { bg: '#e0f2fe', text: '#0284c7' },
-  success: { bg: '#d1fae5', text: '#059669' },
-  warning: { bg: '#fef3c7', text: '#d97706' },
-  danger: { bg: '#fee2e2', text: '#dc2626' },
-  info: { bg: '#dbeafe', text: '#2563eb' },
+  success: { bg: '#dcfce7', text: '#22c55e' },
+  warning: { bg: '#fef3c7', text: '#f59e0b' },
+  danger: { bg: '#fee2e2', text: '#ef4444' },
+  info: { bg: '#dbeafe', text: '#3b82f6' },
 }
 
 const sizeStyles: Record<BadgeSize, { paddingH: number; paddingV: number; fontSize: number }> = {

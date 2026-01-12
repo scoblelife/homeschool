@@ -82,7 +82,7 @@ export function SubjectBalance({
           <h3 className="font-semibold text-gray-900">Weekly Subject Balance</h3>
           <button
             onClick={() => setShowSettings(true)}
-            className="text-sm text-indigo-600 hover:text-indigo-800"
+            className="text-sm text-fuchsia-600 hover:text-fuchsia-800"
           >
             {hasTargets ? 'Edit Targets' : 'Set Targets'}
           </button>

@@ -112,7 +112,7 @@ export function ActivityStandardsModal({ activity, student, isOpen, onClose }: P
               className={`px-4 py-2 rounded-lg font-medium text-white transition-colors ${
                 !isDirty || isSaving
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-700'
+                  : 'bg-fuchsia-500 hover:bg-fuchsia-600'
               }`}
             >
               {isSaving ? 'Saving...' : 'Save'}

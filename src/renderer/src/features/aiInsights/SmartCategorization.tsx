@@ -245,8 +245,8 @@ export function SubjectSuggestions({
                 onClick={() => onSelect(suggestion.subjectId)}
                 className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
                   selectedSubjectId === suggestion.subjectId
-                    ? 'bg-indigo-100 border-indigo-300 text-indigo-700'
-                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-indigo-50 hover:border-indigo-200'
+                    ? 'bg-fuchsia-100 border-fuchsia-300 text-fuchsia-700'
+                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-fuchsia-50 hover:border-fuchsia-200'
                 }`}
                 title={suggestion.reason}
               >

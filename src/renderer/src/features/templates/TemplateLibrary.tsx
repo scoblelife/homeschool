@@ -129,8 +129,8 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
           {selectedTags.map(tag => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 dark:bg-indigo-900
-                text-indigo-700 dark:text-indigo-300 rounded-full text-sm cursor-pointer"
+              className="inline-flex items-center gap-1 px-2 py-1 bg-fuchsia-100 dark:bg-fuchsia-900
+                text-fuchsia-700 dark:text-fuchsia-300 rounded-full text-sm cursor-pointer"
               onClick={() => toggleTag(tag)}
             >
               {tag}
@@ -324,7 +324,7 @@ function TemplateCard({
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={onSelect}
-            className="flex-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700
+            className="flex-1 px-3 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600
               text-sm font-medium flex items-center justify-center gap-2"
           >
             <PlusIcon className="w-4 h-4" />

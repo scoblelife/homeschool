@@ -96,7 +96,7 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
           <h3 className="font-semibold text-gray-900">Achievements</h3>
           <button
             onClick={() => setShowModal(true)}
-            className="text-sm text-indigo-600 hover:text-indigo-800"
+            className="text-sm text-fuchsia-600 hover:text-fuchsia-800"
           >
             View All ({unlocked.length}/{ACHIEVEMENT_DEFINITIONS.length})
           </button>
@@ -234,7 +234,7 @@ function AchievementModal({
                               <div className="mt-1">
                                 <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                                   <div
-                                    className="h-full bg-indigo-400 rounded-full transition-all"
+                                    className="h-full bg-fuchsia-400 rounded-full transition-all"
                                     style={{ width: `${progress}%` }}
                                   />
                                 </div>

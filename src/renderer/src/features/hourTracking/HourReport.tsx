@@ -75,7 +75,7 @@ export function HourReport({ studentId }: Props) {
       if (percent >= 50) return 'bg-yellow-500'
       return 'bg-red-500'
     }
-    return 'bg-indigo-500'
+    return 'bg-fuchsia-500'
   }
 
   const getProgressTextColor = (percent: number) => {
@@ -261,7 +261,7 @@ export function HourReport({ studentId }: Props) {
                   </div>
                   <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div
-                      className="h-2 rounded-full bg-indigo-500 transition-all"
+                      className="h-2 rounded-full bg-fuchsia-500 transition-all"
                       style={{ width: `${Math.min(100, (subject.actualMinutes / summary.totalMinutes) * 100)}%` }}
                     />
                   </div>

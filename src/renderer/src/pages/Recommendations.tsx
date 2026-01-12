@@ -12,7 +12,7 @@ export default function Recommendations() {
         <p className="text-gray-600 dark:text-gray-400 mt-1">
           Discover popular homeschool curricula organized by subject, grade level, teaching style, and price.
           {savedRecommendations.length > 0 && (
-            <span className="ml-2 text-indigo-600 dark:text-indigo-400">
+            <span className="ml-2 text-fuchsia-600 dark:text-fuchsia-400">
               {savedRecommendations.length} saved
             </span>
           )}

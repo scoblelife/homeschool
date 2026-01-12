@@ -213,7 +213,7 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
     ? getStudentById(selectedStudentId)?.color === 'child2'
       ? '#14b8a6'
       : '#d946ef'
-    : '#6366f1'
+    : '#d946ef'
 
   return (
     <>
@@ -392,17 +392,17 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
                         flexDirection: 'row',
                         alignItems: 'center',
                         padding: 12,
-                        backgroundColor: '#eef2ff',
+                        backgroundColor: '#fdf4ff',
                         borderRadius: 12,
                         marginBottom: 16,
                       }}
                     >
                       <Text style={{ fontSize: 28, marginRight: 12 }}>{getTypeInfo(selectedType)?.icon}</Text>
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 15, fontWeight: '600', color: '#4338ca' }}>
+                        <Text style={{ fontSize: 15, fontWeight: '600', color: '#d946ef' }}>
                           {getTypeInfo(selectedType)?.label}
                         </Text>
-                        <Text style={{ fontSize: 12, color: '#6366f1' }}>Tap to change</Text>
+                        <Text style={{ fontSize: 12, color: '#d946ef' }}>Tap to change</Text>
                       </View>
                     </TouchableOpacity>
 
@@ -425,16 +425,16 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
                               paddingHorizontal: 14,
                               paddingVertical: 8,
                               borderRadius: 20,
-                              backgroundColor: selectedStudentIds.includes(student.id) ? '#e0e7ff' : '#f3f4f6',
+                              backgroundColor: selectedStudentIds.includes(student.id) ? '#fce7f3' : '#f3f4f6',
                               borderWidth: selectedStudentIds.includes(student.id) ? 2 : 0,
-                              borderColor: '#6366f1',
+                              borderColor: '#d946ef',
                             }}
                           >
                             <Text
                               style={{
                                 fontSize: 14,
                                 fontWeight: '500',
-                                color: selectedStudentIds.includes(student.id) ? '#4338ca' : '#6b7280',
+                                color: selectedStudentIds.includes(student.id) ? '#d946ef' : '#6b7280',
                               }}
                             >
                               {student.name}
@@ -457,16 +457,16 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
                               paddingHorizontal: 14,
                               paddingVertical: 8,
                               borderRadius: 20,
-                              backgroundColor: selectedSubjectId === subject.id ? '#e0e7ff' : '#f3f4f6',
+                              backgroundColor: selectedSubjectId === subject.id ? '#fce7f3' : '#f3f4f6',
                               borderWidth: selectedSubjectId === subject.id ? 2 : 0,
-                              borderColor: '#6366f1',
+                              borderColor: '#d946ef',
                             }}
                           >
                             <Text
                               style={{
                                 fontSize: 14,
                                 fontWeight: '500',
-                                color: selectedSubjectId === subject.id ? '#4338ca' : '#6b7280',
+                                color: selectedSubjectId === subject.id ? '#d946ef' : '#6b7280',
                               }}
                             >
                               {subject.name}
@@ -514,16 +514,16 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
                               paddingHorizontal: 14,
                               paddingVertical: 8,
                               borderRadius: 20,
-                              backgroundColor: duration === mins ? '#e0e7ff' : '#f3f4f6',
+                              backgroundColor: duration === mins ? '#fce7f3' : '#f3f4f6',
                               borderWidth: duration === mins ? 2 : 0,
-                              borderColor: '#6366f1',
+                              borderColor: '#d946ef',
                             }}
                           >
                             <Text
                               style={{
                                 fontSize: 14,
                                 fontWeight: '500',
-                                color: duration === mins ? '#4338ca' : '#6b7280',
+                                color: duration === mins ? '#d946ef' : '#6b7280',
                               }}
                             >
                               {mins} min

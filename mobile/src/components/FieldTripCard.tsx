@@ -57,13 +57,13 @@ export function FieldTripCard({ fieldTrip, onPress }: FieldTripCardProps) {
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: '#f3e8ff',
+            backgroundColor: '#fdf4ff',
             justifyContent: 'center',
             alignItems: 'center',
             marginRight: 12,
           }}
         >
-          <Ionicons name={icon} size={20} color="#9333ea" />
+          <Ionicons name={icon} size={20} color="#d946ef" />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 15, fontWeight: '600', color: '#1f2937' }}>{fieldTrip.title}</Text>
@@ -83,8 +83,8 @@ export function FieldTripCard({ fieldTrip, onPress }: FieldTripCardProps) {
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
         <View style={{ flexDirection: 'row', gap: 8 }}>
-          <View style={{ backgroundColor: '#f3e8ff', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
-            <Text style={{ fontSize: 12, color: '#9333ea' }}>{activityTypeLabels[fieldTrip.activityType]}</Text>
+          <View style={{ backgroundColor: '#fdf4ff', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
+            <Text style={{ fontSize: 12, color: '#d946ef' }}>{activityTypeLabels[fieldTrip.activityType]}</Text>
           </View>
           <View style={{ backgroundColor: statusStyle.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
             <Text style={{ fontSize: 12, color: statusStyle.text, textTransform: 'capitalize' }}>{fieldTrip.status}</Text>

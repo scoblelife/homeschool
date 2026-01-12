@@ -200,7 +200,7 @@ export default function RecurringActivities({ onActivityCreated }: RecurringActi
 
   if (dueActivities.length === 0 && allRecurring.length === 0) {
     return (
-      <div className="card mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-100">
+      <div className="card mb-6 bg-gradient-to-r from-blue-50 to-fuchsia-50 border-blue-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="text-2xl">📅</span>

@@ -66,7 +66,7 @@ export function PrintableHourReport({ studentId, schoolYear, selectedState }: Pr
       <div className="mb-4 print:hidden">
         <button
           onClick={handlePrint}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+          className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 flex items-center gap-2"
         >
           <PrintIcon />
           Print Report
@@ -140,15 +140,15 @@ export function PrintableHourReport({ studentId, schoolYear, selectedState }: Pr
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Instructional Summary</h2>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-3xl font-bold text-indigo-600">{totalHours}</p>
+              <p className="text-3xl font-bold text-fuchsia-600">{totalHours}</p>
               <p className="text-sm text-gray-600">Total Hours</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-3xl font-bold text-indigo-600">{totalActivities}</p>
+              <p className="text-3xl font-bold text-fuchsia-600">{totalActivities}</p>
               <p className="text-sm text-gray-600">Total Activities</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <p className="text-3xl font-bold text-indigo-600">{activitySummary.length}</p>
+              <p className="text-3xl font-bold text-fuchsia-600">{activitySummary.length}</p>
               <p className="text-sm text-gray-600">Subjects</p>
             </div>
           </div>

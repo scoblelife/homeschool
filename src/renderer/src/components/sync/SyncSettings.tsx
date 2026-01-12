@@ -330,12 +330,12 @@ export default function SyncSettings(): JSX.Element {
       {!syncStatus?.isEnabled ? (
         // Not in a family yet
         <div className="space-y-4">
-          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+          <div className="bg-fuchsia-50 border border-fuchsia-200 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <div className="text-2xl">🔐</div>
               <div>
-                <p className="font-medium text-indigo-900">Private P2P Sync</p>
-                <p className="text-sm text-indigo-700 mt-1">
+                <p className="font-medium text-fuchsia-900">Private P2P Sync</p>
+                <p className="text-sm text-fuchsia-700 mt-1">
                   Your data syncs directly between family devices using encrypted peer-to-peer connections.
                   No servers, no cloud storage - your data stays yours.
                 </p>
@@ -346,7 +346,7 @@ export default function SyncSettings(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => setShowCreateModal(true)}
-              className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left"
+              className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-fuchsia-500 hover:bg-fuchsia-50 transition-colors text-left"
             >
               <div className="text-2xl mb-2">✨</div>
               <div className="font-medium text-gray-900">Create Family</div>
@@ -357,7 +357,7 @@ export default function SyncSettings(): JSX.Element {
 
             <button
               onClick={() => setShowJoinModal(true)}
-              className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left"
+              className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-fuchsia-500 hover:bg-fuchsia-50 transition-colors text-left"
             >
               <div className="text-2xl mb-2">🔗</div>
               <div className="font-medium text-gray-900">Join Family</div>
@@ -377,7 +377,7 @@ export default function SyncSettings(): JSX.Element {
                 <div className="flex items-center gap-2">
                   <div className="text-sm text-gray-500">This Device</div>
                   {isManager && (
-                    <span className="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded-full">
+                    <span className="px-2 py-0.5 text-xs font-medium bg-fuchsia-100 text-fuchsia-700 rounded-full">
                       Manager
                     </span>
                   )}
@@ -648,7 +648,7 @@ export default function SyncSettings(): JSX.Element {
                             setTimeout(() => { btn.textContent = originalText }, 1500)
                           }
                         }}
-                        className="absolute top-2 right-2 px-2 py-1 text-xs bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition-colors"
+                        className="absolute top-2 right-2 px-2 py-1 text-xs bg-fuchsia-100 text-fuchsia-700 rounded hover:bg-fuchsia-200 transition-colors"
                       >
                         Copy All
                       </button>

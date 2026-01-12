@@ -285,7 +285,7 @@ function FieldTripCard({
             {tripSubjects.map((subject) => (
               <span
                 key={subject.id}
-                className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700"
+                className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-700"
               >
                 {subject.name}
               </span>
@@ -357,7 +357,7 @@ function FieldTripCard({
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
-          <button onClick={onEdit} className="text-indigo-600 hover:text-indigo-800 text-sm">
+          <button onClick={onEdit} className="text-fuchsia-600 hover:text-fuchsia-700 text-sm">
             Edit
           </button>
           <button onClick={onDuplicate} className="text-gray-600 hover:text-gray-800 text-sm">
@@ -399,7 +399,7 @@ function FieldTripCard({
             <button
               onClick={onAddTask}
               disabled={!newTaskTitle.trim()}
-              className="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+              className="btn btn-primary text-sm py-1.5 disabled:opacity-50"
             >
               Add
             </button>
@@ -458,7 +458,7 @@ function FieldTripCard({
               <div className="text-sm font-medium text-gray-700">📞 Contacts</div>
               <button
                 onClick={() => setShowContactForm(!showContactForm)}
-                className="text-xs text-indigo-600 hover:text-indigo-800"
+                className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
               >
                 {showContactForm ? 'Cancel' : '+ Add'}
               </button>
@@ -512,7 +512,7 @@ function FieldTripCard({
                 <button
                   onClick={handleAddContact}
                   disabled={!newContactName.trim()}
-                  className="w-full py-1.5 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 disabled:opacity-50"
+                  className="btn btn-primary w-full text-sm py-1.5 disabled:opacity-50"
                 >
                   Add Contact
                 </button>
@@ -550,15 +550,15 @@ function FieldTripCard({
                     </div>
                     <div className="text-xs text-gray-500 mt-1 space-y-0.5">
                       {contact.phone && (
-                        <div>📞 <a href={`tel:${contact.phone}`} className="hover:text-indigo-600">{contact.phone}</a></div>
+                        <div>📞 <a href={`tel:${contact.phone}`} className="hover:text-fuchsia-600">{contact.phone}</a></div>
                       )}
                       {contact.email && (
-                        <div>✉️ <a href={`mailto:${contact.email}`} className="hover:text-indigo-600">{contact.email}</a></div>
+                        <div>✉️ <a href={`mailto:${contact.email}`} className="hover:text-fuchsia-600">{contact.email}</a></div>
                       )}
                       {contact.notes && (
                         <div>
                           {contact.notes.startsWith('http') ? (
-                            <>🔗 <a href={contact.notes} target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600">{contact.notes}</a></>
+                            <>🔗 <a href={contact.notes} target="_blank" rel="noopener noreferrer" className="hover:text-fuchsia-600">{contact.notes}</a></>
                           ) : (
                             <>📝 {contact.notes}</>
                           )}
@@ -591,7 +591,7 @@ function FieldTripCard({
                 </div>
                 <button
                   onClick={() => setShowRSVPForm(!showRSVPForm)}
-                  className="text-xs text-indigo-600 hover:text-indigo-800"
+                  className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
                 >
                   {showRSVPForm ? 'Cancel' : '+ Add'}
                 </button>
@@ -619,7 +619,7 @@ function FieldTripCard({
                   <button
                     onClick={handleAddRSVP}
                     disabled={!newRSVPName.trim()}
-                    className="w-full py-1.5 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 disabled:opacity-50"
+                    className="btn btn-primary w-full text-sm py-1.5 disabled:opacity-50"
                   >
                     Add RSVP
                   </button>
@@ -693,7 +693,7 @@ function FieldTripCard({
               </div>
               <button
                 onClick={() => setShowExpenseForm(!showExpenseForm)}
-                className="text-xs text-indigo-600 hover:text-indigo-800"
+                className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
               >
                 {showExpenseForm ? 'Cancel' : '+ Add'}
               </button>
@@ -735,7 +735,7 @@ function FieldTripCard({
                 <button
                   onClick={handleAddExpense}
                   disabled={!newExpenseDesc.trim() || !newExpenseAmount}
-                  className="w-full py-1.5 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 disabled:opacity-50"
+                  className="btn btn-primary w-full text-sm py-1.5 disabled:opacity-50"
                 >
                   Add Expense
                 </button>
@@ -1188,7 +1188,7 @@ export default function FieldTrips(): JSX.Element {
             onClick={() => setFilterStatus(status)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filterStatus === status
-                ? 'bg-indigo-100 text-indigo-700'
+                ? 'bg-fuchsia-100 text-fuchsia-700'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -1394,7 +1394,7 @@ export default function FieldTrips(): JSX.Element {
                       onClick={() => toggleSubjectSelection(subject.id)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                         formData.subjectIds.includes(subject.id)
-                          ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-500'
+                          ? 'bg-fuchsia-100 text-fuchsia-700 ring-2 ring-fuchsia-500'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >

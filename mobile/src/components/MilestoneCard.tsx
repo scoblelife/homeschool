@@ -43,8 +43,8 @@ export function MilestoneCard({ milestone, subject, onPress }: MilestoneCardProp
           <Text style={{ fontSize: 15, fontWeight: '600', color: '#1f2937' }}>{milestone.title}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, flexWrap: 'wrap', gap: 8 }}>
             {subject && (
-              <View style={{ backgroundColor: '#f3e8ff', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
-                <Text style={{ fontSize: 12, color: '#9333ea' }}>{subject.name}</Text>
+              <View style={{ backgroundColor: '#fdf4ff', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
+                <Text style={{ fontSize: 12, color: '#d946ef' }}>{subject.name}</Text>
               </View>
             )}
             {milestone.category && (

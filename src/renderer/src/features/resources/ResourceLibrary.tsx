@@ -142,7 +142,7 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
             type="checkbox"
             checked={freeOnly}
             onChange={(e) => setFreeOnly(e.target.checked)}
-            className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+            className="w-4 h-4 text-fuchsia-600 border-gray-300 rounded focus:ring-fuchsia-500"
           />
           Free only
         </label>
@@ -332,7 +332,7 @@ function ResourceCard({
       <div className="flex items-center gap-2">
         <button
           onClick={onOpen}
-          className="flex-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700
+          className="flex-1 px-3 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600
             text-sm font-medium flex items-center justify-center gap-2"
         >
           <ExternalLinkIcon className="w-4 h-4" />
@@ -428,7 +428,7 @@ function LogActivityModal({ resource, students, onClose, onSubmit }: LogActivity
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600"
             >
               Log Activity
             </button>

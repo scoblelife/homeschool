@@ -76,7 +76,7 @@ export default function MainLayout(): JSX.Element {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-fuchsia-50 text-fuchsia-700'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`
               }
@@ -94,7 +94,7 @@ export default function MainLayout(): JSX.Element {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 isActive
-                  ? 'bg-indigo-50 text-indigo-700'
+                  ? 'bg-fuchsia-50 text-fuchsia-700'
                   : 'text-gray-700 hover:bg-gray-100'
               }`
             }

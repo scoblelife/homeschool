@@ -213,8 +213,8 @@ export function PortfolioExport({ students }: Props) {
                   type="checkbox"
                   checked={section.enabled}
                   onChange={() => handleSectionToggle(section.id)}
-                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded
-                    focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
+                  className="w-4 h-4 text-fuchsia-600 border-gray-300 rounded
+                    focus:ring-fuchsia-500 dark:border-gray-600 dark:bg-gray-700"
                 />
                 <span className="text-sm text-gray-700 dark:text-gray-300">
                   {section.name}
@@ -226,7 +226,7 @@ export function PortfolioExport({ students }: Props) {
 
         {/* AI Narrative Generator - show when narrative section is enabled */}
         {sections.find(s => s.id === 'narrative')?.enabled && selectedStudent && schoolYear && (
-          <div className="border border-indigo-200 rounded-lg p-4 bg-indigo-50/50">
+          <div className="border border-fuchsia-200 rounded-lg p-4 bg-fuchsia-50/50">
             <PortfolioNarrative
               studentId={selectedStudent.id}
               studentName={selectedStudent.name}
@@ -270,7 +270,7 @@ export function PortfolioExport({ students }: Props) {
           className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-colors ${
             isGenerating || !selectedStudentId || !schoolYear
               ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-indigo-600 hover:bg-indigo-700'
+              : 'bg-fuchsia-500 hover:bg-fuchsia-600'
           }`}
         >
           {isGenerating ? (

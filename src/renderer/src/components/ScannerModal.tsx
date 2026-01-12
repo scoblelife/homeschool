@@ -71,7 +71,7 @@ export default function ScannerModal({ isOpen, onClose, onBookAdded }: ScannerMo
 
           {isLoading && (
             <div className="flex flex-col items-center py-8">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mb-4" />
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-fuchsia-500 mb-4" />
               <p className="text-gray-500">Starting scanner...</p>
             </div>
           )}
@@ -108,9 +108,9 @@ export default function ScannerModal({ isOpen, onClose, onBookAdded }: ScannerMo
               </div>
 
               {/* Instructions */}
-              <div className="bg-indigo-50 rounded-lg p-4 mb-4">
-                <h4 className="font-medium text-indigo-900 text-sm mb-2">How it works:</h4>
-                <ol className="text-sm text-indigo-700 space-y-1 list-decimal list-inside">
+              <div className="bg-fuchsia-50 rounded-lg p-4 mb-4">
+                <h4 className="font-medium text-fuchsia-900 text-sm mb-2">How it works:</h4>
+                <ol className="text-sm text-fuchsia-700 space-y-1 list-decimal list-inside">
                   <li>Scan the QR code with your phone</li>
                   <li>Point your phone at book barcodes</li>
                   <li>Books appear here automatically!</li>

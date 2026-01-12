@@ -163,7 +163,7 @@ export function CoopGroupDetail({ group, onBack, onGroupDeleted }: CoopGroupDeta
           onClick={() => setActiveTab('events')}
           className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
             activeTab === 'events'
-              ? 'border-indigo-600 text-indigo-600'
+              ? 'border-fuchsia-500 text-fuchsia-600'
               : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
           }`}
         >
@@ -173,7 +173,7 @@ export function CoopGroupDetail({ group, onBack, onGroupDeleted }: CoopGroupDeta
           onClick={() => setActiveTab('members')}
           className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
             activeTab === 'members'
-              ? 'border-indigo-600 text-indigo-600'
+              ? 'border-fuchsia-500 text-fuchsia-600'
               : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
           }`}
         >
@@ -188,7 +188,7 @@ export function CoopGroupDetail({ group, onBack, onGroupDeleted }: CoopGroupDeta
             <h3 className="font-medium text-gray-900 dark:text-white">Upcoming Events</h3>
             <button
               onClick={() => setShowEventModal(true)}
-              className="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="px-3 py-1.5 text-sm bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 transition-colors"
             >
               Add Event
             </button>
@@ -371,7 +371,7 @@ export function CoopGroupDetail({ group, onBack, onGroupDeleted }: CoopGroupDeta
               <button
                 onClick={handleCreateEvent}
                 disabled={!eventTitle.trim() || !eventLocation.trim() || !eventDate}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Create Event
               </button>

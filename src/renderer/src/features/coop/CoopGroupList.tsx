@@ -124,7 +124,7 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className="px-4 py-2 text-sm bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 transition-colors"
           >
             Create Group
           </button>
@@ -146,11 +146,11 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
             <button
               key={group.id}
               onClick={() => onSelectGroup(group)}
-              className="text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-indigo-500 hover:shadow-md transition-all"
+              className="text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-fuchsia-500 hover:shadow-md transition-all"
             >
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-                  <GroupIcon className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-fuchsia-100 dark:bg-fuchsia-900/30 rounded-lg">
+                  <GroupIcon className="w-6 h-6 text-fuchsia-600 dark:text-fuchsia-400" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-gray-900 dark:text-white truncate">{group.name}</h3>
@@ -225,7 +225,7 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
               <button
                 onClick={handleCreateGroup}
                 disabled={!newGroupName.trim() || !familyName.trim()}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Create Group
               </button>
@@ -285,7 +285,7 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
               <button
                 onClick={handleJoinGroup}
                 disabled={joinCode.length !== 6 || !familyName.trim()}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Join Group
               </button>

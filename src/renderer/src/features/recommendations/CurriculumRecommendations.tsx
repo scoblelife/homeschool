@@ -212,7 +212,7 @@ function RecommendationCard({
   }
 
   const categoryColors: Record<CurriculumRecommendation['category'], string> = {
-    complete: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
+    complete: 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-300',
     subject: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300',
     supplement: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
   }
@@ -342,7 +342,7 @@ function RecommendationCard({
             href={recommendation.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700
+            className="flex-1 px-3 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600
               text-sm font-medium flex items-center justify-center gap-2"
           >
             <ExternalLinkIcon className="w-4 h-4" />

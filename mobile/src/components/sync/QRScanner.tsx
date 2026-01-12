@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     minHeight: 100,
   },
   button: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#d946ef',
     padding: 16,
     borderRadius: 8,
     marginHorizontal: 20,
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   manualButtonText: {
-    color: '#7c3aed',
+    color: '#d946ef',
     fontSize: 14,
     textAlign: 'center',
   },
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     bottom: 100,
     left: 20,
     right: 20,
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#d946ef',
     padding: 16,
     borderRadius: 8,
   },

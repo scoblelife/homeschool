@@ -146,7 +146,7 @@ export default function Reports(): JSX.Element {
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
-                              className="bg-indigo-600 h-2 rounded-full transition-all"
+                              className="bg-fuchsia-500 h-2 rounded-full transition-all"
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
@@ -193,7 +193,7 @@ export default function Reports(): JSX.Element {
                         </div>
                         <div className="flex gap-1">
                           {Array.from({ length: Math.min(day.activitiesCount, 10) }).map((_, i) => (
-                            <div key={i} className="w-2 h-2 rounded-full bg-indigo-500" />
+                            <div key={i} className="w-2 h-2 rounded-full bg-fuchsia-500" />
                           ))}
                         </div>
                       </div>

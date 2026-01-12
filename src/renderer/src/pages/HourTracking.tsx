@@ -52,7 +52,7 @@ export default function HourTracking() {
           <div className="mb-4 print:hidden">
             <button
               onClick={() => setShowPrintable(false)}
-              className="text-indigo-600 hover:text-indigo-700 flex items-center gap-2"
+              className="text-fuchsia-600 hover:text-fuchsia-700 flex items-center gap-2"
             >
               <BackIcon />
               Back to Hour Tracking
@@ -166,8 +166,7 @@ function GenerateReportForm({ students, onGenerate }: GenerateReportFormProps) {
 
       <button
         type="submit"
-        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700
-          flex items-center gap-2"
+        className="btn btn-primary flex items-center gap-2"
       >
         <DocumentIcon />
         Generate Official Report
