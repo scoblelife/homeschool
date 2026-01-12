@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { PortfolioNarrative } from '../aiInsights'
 import type { PortfolioConfig, PortfolioSection, Student } from '../../../../shared/types'
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 const DEFAULT_SECTIONS: PortfolioSection[] = [
   { id: 'cover', name: 'Cover Page', enabled: true },
   { id: 'student-info', name: 'Student Information', enabled: true },
+  { id: 'narrative', name: 'AI Narrative Summary', enabled: false },
   { id: 'attendance', name: 'Attendance Record', enabled: true },
   { id: 'activities', name: 'Learning Activities', enabled: true },
   { id: 'subjects', name: 'Subject Summaries', enabled: true },
@@ -26,6 +28,7 @@ export function PortfolioExport({ students }: Props) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successPath, setSuccessPath] = useState<string | null>(null)
+  const [aiNarrative, setAiNarrative] = useState<string | null>(null)
 
   // Load current school year on mount
   useEffect(() => {
@@ -220,6 +223,20 @@ export function PortfolioExport({ students }: Props) {
             ))}
           </div>
         </div>
+
+        {/* AI Narrative Generator - show when narrative section is enabled */}
+        {sections.find(s => s.id === 'narrative')?.enabled && selectedStudent && schoolYear && (
+          <div className="border border-indigo-200 rounded-lg p-4 bg-indigo-50/50">
+            <PortfolioNarrative
+              studentId={selectedStudent.id}
+              studentName={selectedStudent.name}
+              gradeLevel={selectedStudent.gradeLevel}
+              schoolYear={schoolYear}
+              dateRange={getDateRange()}
+              onNarrativeGenerated={setAiNarrative}
+            />
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (
