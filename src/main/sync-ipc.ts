@@ -66,12 +66,18 @@ async function doInitializeSync(): Promise<void> {
   console.log('[Sync] doInitializeSync called, familyManager:', !!familyManager)
   if (familyManager) return // Already initialized
 
-  // Initialize family manager
-  familyManager = await createFamilyManager()
-  console.log('[Sync] FamilyManager created, isConfigured:', familyManager.isConfigured())
+  try {
+    // Initialize family manager
+    familyManager = await createFamilyManager()
+    console.log('[Sync] FamilyManager created, isConfigured:', familyManager.isConfigured())
 
-  // Initialize projector (this also ensures sync_state table exists)
-  projector = await createProjector()
+    // Initialize projector (this also ensures sync_state table exists)
+    projector = await createProjector()
+  } catch (err) {
+    console.error('[Sync] Failed to initialize core sync components:', err)
+    updateSyncState('error', 'Failed to initialize sync')
+    return // Allow app to work without sync
+  }
 
   // If we're part of a family, initialize event log and transport
   if (familyManager.isConfigured()) {
@@ -93,10 +99,11 @@ async function doInitializeSync(): Promise<void> {
         console.log(`[Sync] Projector state reloaded: lastIndex=${projector.getState().lastProcessedIndex}`)
       }
 
-      // Initialize WebRTC transport
+      // Initialize WebRTC transport (non-blocking - failures are logged, not thrown)
       await initializeWebRTC(config)
     } catch (err) {
-      console.error('[Sync] Failed to initialize:', err)
+      console.error('[Sync] Failed to initialize event log or transport:', err)
+      updateSyncState('error', 'Sync unavailable - working offline')
       // Don't throw - allow app to work without sync
     }
   }
