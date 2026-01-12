@@ -10,7 +10,9 @@ import type {
   CoopMemberRole,
   CoopEvent,
   CreateCoopEvent,
-  UpdateCoopEvent
+  UpdateCoopEvent,
+  CoopSharingPreferences,
+  UpdateCoopSharingPreferences
 } from '../../shared/types'
 
 // Generate a 6-character invite code
@@ -366,4 +368,104 @@ export async function updateCoopEvent(id: string, data: UpdateCoopEvent): Promis
 export async function deleteCoopEvent(id: string): Promise<void> {
   const db = await getDatabase()
   await db.run('DELETE FROM coop_events WHERE id = ?', id)
+}
+
+// ============================================================================
+// Co-op Sharing Preferences
+// ============================================================================
+
+function rowToCoopSharingPreferences(row: Record<string, unknown>): CoopSharingPreferences {
+  return {
+    id: row.id as string,
+    groupId: row.group_id as string,
+    shareEvents: Boolean(row.share_events),
+    shareResources: Boolean(row.share_resources),
+    shareReadingLists: Boolean(row.share_reading_lists),
+    sharePackages: Boolean(row.share_packages),
+    updatedAt: row.updated_at as string
+  }
+}
+
+export async function getCoopSharingPreferences(groupId: string): Promise<CoopSharingPreferences | null> {
+  const db = await getDatabase()
+  const rows = await db.all<Record<string, unknown>>(
+    'SELECT * FROM coop_sharing_preferences WHERE group_id = ?',
+    groupId
+  )
+  return rows.length > 0 ? rowToCoopSharingPreferences(rows[0]) : null
+}
+
+export async function createCoopSharingPreferences(groupId: string): Promise<CoopSharingPreferences> {
+  const db = await getDatabase()
+  const id = uuidv4()
+
+  await db.run(
+    `INSERT INTO coop_sharing_preferences (id, group_id, share_events, share_resources, share_reading_lists, share_packages)
+     VALUES (?, ?, TRUE, FALSE, FALSE, FALSE)`,
+    id,
+    groupId
+  )
+
+  const rows = await db.all<Record<string, unknown>>(
+    'SELECT * FROM coop_sharing_preferences WHERE id = ?',
+    id
+  )
+  return rowToCoopSharingPreferences(rows[0])
+}
+
+export async function updateCoopSharingPreferences(
+  groupId: string,
+  data: UpdateCoopSharingPreferences
+): Promise<CoopSharingPreferences> {
+  const db = await getDatabase()
+
+  // Check if preferences exist, create if not
+  let prefs = await getCoopSharingPreferences(groupId)
+  if (!prefs) {
+    prefs = await createCoopSharingPreferences(groupId)
+  }
+
+  const updates: string[] = []
+  const values: unknown[] = []
+
+  if (data.shareEvents !== undefined) {
+    updates.push('share_events = ?')
+    values.push(data.shareEvents)
+  }
+  if (data.shareResources !== undefined) {
+    updates.push('share_resources = ?')
+    values.push(data.shareResources)
+  }
+  if (data.shareReadingLists !== undefined) {
+    updates.push('share_reading_lists = ?')
+    values.push(data.shareReadingLists)
+  }
+  if (data.sharePackages !== undefined) {
+    updates.push('share_packages = ?')
+    values.push(data.sharePackages)
+  }
+
+  if (updates.length > 0) {
+    updates.push('updated_at = CURRENT_TIMESTAMP')
+    values.push(groupId)
+
+    await db.run(
+      `UPDATE coop_sharing_preferences SET ${updates.join(', ')} WHERE group_id = ?`,
+      ...values
+    )
+  }
+
+  const rows = await db.all<Record<string, unknown>>(
+    'SELECT * FROM coop_sharing_preferences WHERE group_id = ?',
+    groupId
+  )
+  return rowToCoopSharingPreferences(rows[0])
+}
+
+export async function getOrCreateCoopSharingPreferences(groupId: string): Promise<CoopSharingPreferences> {
+  let prefs = await getCoopSharingPreferences(groupId)
+  if (!prefs) {
+    prefs = await createCoopSharingPreferences(groupId)
+  }
+  return prefs
 }

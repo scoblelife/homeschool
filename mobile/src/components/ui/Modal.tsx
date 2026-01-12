@@ -12,7 +12,11 @@ interface ModalProps {
 export function Modal({ visible, onClose, title, children, footer }: ModalProps) {
   return (
     <RNModal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: '#fff' }}
+        accessibilityViewIsModal
+        accessibilityLabel={`${title} dialog`}
+      >
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
@@ -28,10 +32,20 @@ export function Modal({ visible, onClose, title, children, footer }: ModalProps)
               borderBottomColor: '#e5e7eb',
             }}
           >
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity
+              onPress={onClose}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel"
+              accessibilityHint="Closes this dialog"
+            >
               <Text style={{ color: '#6b7280', fontSize: 16 }}>Cancel</Text>
             </TouchableOpacity>
-            <Text style={{ fontSize: 18, fontWeight: '600', color: '#1f2937' }}>{title}</Text>
+            <Text
+              style={{ fontSize: 18, fontWeight: '600', color: '#1f2937' }}
+              accessibilityRole="header"
+            >
+              {title}
+            </Text>
             <View style={{ width: 50 }} />
           </View>
 
@@ -80,10 +94,20 @@ export function ModalHeader({ title, onClose, rightAction }: ModalHeaderProps) {
         borderBottomColor: '#e5e7eb',
       }}
     >
-      <TouchableOpacity onPress={onClose}>
+      <TouchableOpacity
+        onPress={onClose}
+        accessibilityRole="button"
+        accessibilityLabel="Cancel"
+        accessibilityHint="Closes this dialog"
+      >
         <Text style={{ color: '#6b7280', fontSize: 16 }}>Cancel</Text>
       </TouchableOpacity>
-      <Text style={{ fontSize: 18, fontWeight: '600', color: '#1f2937' }}>{title}</Text>
+      <Text
+        style={{ fontSize: 18, fontWeight: '600', color: '#1f2937' }}
+        accessibilityRole="header"
+      >
+        {title}
+      </Text>
       {rightAction || <View style={{ width: 50 }} />}
     </View>
   )

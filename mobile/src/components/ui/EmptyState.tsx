@@ -10,6 +10,8 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+  const accessibilityMessage = description ? `${title}. ${description}` : title
+
   return (
     <View
       style={{
@@ -19,6 +21,9 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
         alignItems: 'center',
         justifyContent: 'center',
       }}
+      accessible
+      accessibilityLabel={accessibilityMessage}
+      accessibilityRole="text"
     >
       {icon && (
         <View
@@ -31,15 +36,23 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
             alignItems: 'center',
             marginBottom: 16,
           }}
+          accessibilityElementsHidden
         >
           <Ionicons name={icon} size={32} color="#9ca3af" />
         </View>
       )}
-      <Text style={{ fontSize: 16, fontWeight: '600', color: '#374151', textAlign: 'center' }}>
+      <Text
+        style={{ fontSize: 16, fontWeight: '600', color: '#374151', textAlign: 'center' }}
+        accessibilityRole="header"
+        importantForAccessibility="no"
+      >
         {title}
       </Text>
       {description && (
-        <Text style={{ fontSize: 14, color: '#9ca3af', textAlign: 'center', marginTop: 4 }}>
+        <Text
+          style={{ fontSize: 14, color: '#9ca3af', textAlign: 'center', marginTop: 4 }}
+          importantForAccessibility="no"
+        >
           {description}
         </Text>
       )}

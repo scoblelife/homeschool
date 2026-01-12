@@ -110,6 +110,20 @@ async function runMigrations(): Promise<void> {
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `)
+
+  // Create coop_sharing_preferences table if it doesn't exist
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS coop_sharing_preferences (
+      id VARCHAR PRIMARY KEY,
+      group_id VARCHAR NOT NULL UNIQUE,
+      share_events BOOLEAN DEFAULT TRUE,
+      share_resources BOOLEAN DEFAULT FALSE,
+      share_reading_lists BOOLEAN DEFAULT FALSE,
+      share_packages BOOLEAN DEFAULT FALSE,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (group_id) REFERENCES coop_groups(id) ON DELETE CASCADE
+    )
+  `)
 }
 
 export async function initializeSchema(): Promise<void> {
@@ -497,6 +511,44 @@ export async function initializeSchema(): Promise<void> {
       grade_level VARCHAR NOT NULL,
       subject_id VARCHAR NOT NULL,
       domain VARCHAR NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Create curriculum_packages table for commercial curriculum products
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS curriculum_packages (
+      id VARCHAR PRIMARY KEY,
+      name VARCHAR NOT NULL,
+      publisher VARCHAR,
+      subject_ids VARCHAR,
+      grade_levels VARCHAR,
+      website_url VARCHAR,
+      notes VARCHAR,
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Create assessments table for tracking standardized tests and evaluations
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS assessments (
+      id VARCHAR PRIMARY KEY,
+      student_id VARCHAR NOT NULL REFERENCES students(id),
+      type VARCHAR NOT NULL,
+      name VARCHAR NOT NULL,
+      provider VARCHAR,
+      date DATE NOT NULL,
+      scheduled_time VARCHAR,
+      location VARCHAR,
+      status VARCHAR NOT NULL DEFAULT 'scheduled',
+      score VARCHAR,
+      percentile INTEGER,
+      grade_equivalent VARCHAR,
+      results_url VARCHAR,
+      notes VARCHAR,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )

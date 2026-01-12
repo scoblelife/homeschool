@@ -171,13 +171,28 @@ function BookCard({
                 {showMenu && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-                    <div className="absolute right-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[100px]">
+                    <div className="absolute right-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[120px]">
                       <button
                         onClick={() => { onEdit(); setShowMenu(false) }}
                         className="w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50"
                       >
                         Edit
                       </button>
+                      <a
+                        href={book.isbn
+                          ? `https://www.goodreads.com/search?q=${encodeURIComponent(book.isbn)}`
+                          : `https://www.goodreads.com/search?q=${encodeURIComponent(book.title + (book.author ? ' ' + book.author : ''))}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setShowMenu(false)}
+                        className="w-full px-3 py-1.5 text-left text-sm text-fuchsia-600 hover:bg-fuchsia-50 flex items-center gap-1"
+                      >
+                        Goodreads
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
                       <button
                         onClick={() => { onDelete(); setShowMenu(false) }}
                         className="w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50"

@@ -3,7 +3,7 @@
     "name": "Homeschool",
     "slug": "homeschool",
     "version": "0.1.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "scheme": "homeschool",
     "userInterfaceStyle": "automatic",
@@ -20,8 +20,10 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan book barcodes.",
         "NSPhotoLibraryUsageDescription": "This app needs access to the photo library to save book cover images.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIRequiresFullScreen": false
       },
+      "requireFullScreen": false,
       "config": {
         "usesNonExemptEncryption": false
       },

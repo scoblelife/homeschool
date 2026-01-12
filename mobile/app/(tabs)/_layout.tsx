@@ -1,7 +1,15 @@
 import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
+import { useDeviceType } from '../../src/hooks/useDeviceType'
 
 export default function TabLayout() {
+  const { isTablet, isLandscape } = useDeviceType()
+
+  // Tablet-specific styling
+  const tabBarHeight = isTablet ? 64 : 50
+  const iconSize = isTablet ? 26 : 24
+  const labelFontSize = isTablet ? 12 : 10
+
   return (
     <Tabs
       screenOptions={{
@@ -10,10 +18,23 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: '#fff',
           borderTopColor: '#e5e7eb',
+          height: tabBarHeight,
+          paddingBottom: isTablet ? 8 : 4,
+          paddingTop: isTablet ? 8 : 4,
         },
-        headerStyle: { backgroundColor: '#fff' },
+        tabBarLabelStyle: {
+          fontSize: labelFontSize,
+        },
+        headerStyle: {
+          backgroundColor: '#fff',
+          // Larger header on tablets
+          ...(isTablet && { height: 64 }),
+        },
         headerTintColor: '#1f2937',
-        headerTitleStyle: { fontWeight: '600' },
+        headerTitleStyle: {
+          fontWeight: '600',
+          fontSize: isTablet ? 20 : 17,
+        },
       }}
     >
       <Tabs.Screen

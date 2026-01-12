@@ -38,6 +38,9 @@ export function Badge({ children, variant = 'default', size = 'md', style }: Bad
         borderRadius: 4,
         ...style,
       }}
+      accessible
+      accessibilityRole="text"
+      accessibilityLabel={children}
     >
       <Text style={{ fontSize: sizes.fontSize, color: colors.text, fontWeight: '500' }}>
         {children}

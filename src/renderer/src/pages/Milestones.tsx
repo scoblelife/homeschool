@@ -3,6 +3,7 @@ import { format, parseISO } from 'date-fns'
 import { Dialog, Tab } from '@headlessui/react'
 import { useStore } from '../stores/useStore'
 import { useMilestones } from '../hooks/useDatabase'
+import { MilestoneCertificate } from '../features/certificates'
 import type { Milestone, UpdateMilestone, MilestoneResource, CreateResource } from '../../../shared/types'
 
 type StatusFilter = 'all' | 'not_started' | 'in_progress' | 'completed'
@@ -16,11 +17,13 @@ const statusLabels: Record<Milestone['status'], { label: string; color: string; 
 function MilestoneCard({
   milestone,
   onStatusChange,
-  onEdit
+  onEdit,
+  onPrintCertificate
 }: {
   milestone: Milestone
   onStatusChange: (status: Milestone['status']) => void
   onEdit: () => void
+  onPrintCertificate: () => void
 }) {
   const [resources, setResources] = useState<MilestoneResource[]>([])
   const [showResources, setShowResources] = useState(false)
@@ -170,6 +173,17 @@ function MilestoneCard({
           <button onClick={onEdit} className="text-fuchsia-600 hover:text-fuchsia-700 text-sm">
             Edit
           </button>
+          {milestone.status === 'completed' && (
+            <button
+              onClick={onPrintCertificate}
+              className="text-green-600 hover:text-green-700 text-sm flex items-center gap-1"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              Certificate
+            </button>
+          )}
         </div>
       </div>
 
@@ -283,6 +297,7 @@ export default function Milestones(): JSX.Element {
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null)
   const [editForm, setEditForm] = useState<UpdateMilestone>({})
   const [isInitializing, setIsInitializing] = useState(false)
+  const [certificateMilestone, setCertificateMilestone] = useState<Milestone | null>(null)
 
   const groupedMilestones = useMemo(() => {
     let filtered = milestones
@@ -487,6 +502,7 @@ export default function Milestones(): JSX.Element {
                     milestone={milestone}
                     onStatusChange={(status) => handleStatusChange(milestone, status)}
                     onEdit={() => openEditModal(milestone)}
+                    onPrintCertificate={() => setCertificateMilestone(milestone)}
                   />
                 ))}
               </div>
@@ -560,6 +576,15 @@ export default function Milestones(): JSX.Element {
           </Dialog.Panel>
         </div>
       </Dialog>
+
+      {/* Milestone Certificate Modal */}
+      {certificateMilestone && (
+        <MilestoneCertificate
+          milestone={certificateMilestone}
+          isOpen={!!certificateMilestone}
+          onClose={() => setCertificateMilestone(null)}
+        />
+      )}
     </div>
   )
 }

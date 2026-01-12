@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useStore } from '../stores/useStore'
 import type {
   CreateStudent,
@@ -132,14 +132,20 @@ export function useActivities(filters?: {
 
 export function useMilestones(studentId?: string) {
   const { milestones, setMilestones } = useStore()
+  const [isLoading, setIsLoading] = useState(true)
 
   const loadMilestones = useCallback(async () => {
-    if (!studentId) {
-      setMilestones([])
-      return
+    setIsLoading(true)
+    try {
+      if (!studentId) {
+        setMilestones([])
+        return
+      }
+      const data = await window.api.getMilestones(studentId)
+      setMilestones(data)
+    } finally {
+      setIsLoading(false)
     }
-    const data = await window.api.getMilestones(studentId)
-    setMilestones(data)
   }, [studentId, setMilestones])
 
   useEffect(() => {
@@ -163,5 +169,5 @@ export function useMilestones(studentId?: string) {
     return newMilestones
   }, [setMilestones])
 
-  return { milestones, loadMilestones, updateMilestone, deleteMilestone, initializeMilestones }
+  return { milestones, isLoading, loadMilestones, updateMilestone, deleteMilestone, initializeMilestones }
 }

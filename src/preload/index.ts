@@ -53,6 +53,9 @@ import type {
   ActivityStandardMapping,
   StandardCoverage,
   CurriculumReport,
+  CurriculumPackage,
+  CreateCurriculumPackage,
+  UpdateCurriculumPackage,
   CoopGroup,
   CreateCoopGroup,
   UpdateCoopGroup,
@@ -62,6 +65,8 @@ import type {
   CoopEvent,
   CreateCoopEvent,
   UpdateCoopEvent,
+  CoopSharingPreferences,
+  UpdateCoopSharingPreferences,
   AIAPI,
   AuthAPI,
   ComplianceAPI,
@@ -239,6 +244,7 @@ const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI = {
     start: string
     end: string
     allDay: boolean
+    colorId?: string
   }) => ipcRenderer.invoke('google:calendar:createEvent', calendarId, event) as Promise<string>,
   updateGoogleCalendarEvent: (calendarId: string, eventId: string, event: {
     summary: string
@@ -246,6 +252,7 @@ const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI = {
     start: string
     end: string
     allDay: boolean
+    colorId?: string
   }) => ipcRenderer.invoke('google:calendar:updateEvent', calendarId, eventId, event) as Promise<void>,
   deleteGoogleCalendarEvent: (calendarId: string, eventId: string) =>
     ipcRenderer.invoke('google:calendar:deleteEvent', calendarId, eventId) as Promise<void>,
@@ -439,6 +446,18 @@ const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI = {
   getCurriculumReport: (studentId: string, gradeLevel: GradeLevel, startDate?: string, endDate?: string) =>
     ipcRenderer.invoke('curriculum:getCurriculumReport', studentId, gradeLevel, startDate, endDate) as Promise<CurriculumReport>,
 
+  // Curriculum Packages
+  getCurriculumPackages: () =>
+    ipcRenderer.invoke('packages:getAll') as Promise<CurriculumPackage[]>,
+  getCurriculumPackage: (id: string) =>
+    ipcRenderer.invoke('packages:get', id) as Promise<CurriculumPackage | null>,
+  createCurriculumPackage: (data: CreateCurriculumPackage) =>
+    ipcRenderer.invoke('packages:create', data) as Promise<CurriculumPackage>,
+  updateCurriculumPackage: (id: string, data: UpdateCurriculumPackage) =>
+    ipcRenderer.invoke('packages:update', id, data) as Promise<CurriculumPackage>,
+  deleteCurriculumPackage: (id: string) =>
+    ipcRenderer.invoke('packages:delete', id) as Promise<void>,
+
   // Co-op Groups
   getCoopGroups: () =>
     ipcRenderer.invoke('coop:getGroups') as Promise<CoopGroup[]>,
@@ -478,6 +497,12 @@ const api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI = {
     ipcRenderer.invoke('coop:updateEvent', id, data) as Promise<CoopEvent>,
   deleteCoopEvent: (id: string) =>
     ipcRenderer.invoke('coop:deleteEvent', id) as Promise<void>,
+
+  // Co-op Sharing Preferences
+  getCoopSharingPreferences: (groupId: string) =>
+    ipcRenderer.invoke('coop:getSharingPreferences', groupId) as Promise<CoopSharingPreferences>,
+  updateCoopSharingPreferences: (groupId: string, data: UpdateCoopSharingPreferences) =>
+    ipcRenderer.invoke('coop:updateSharingPreferences', groupId, data) as Promise<CoopSharingPreferences>,
 
   // AI Insights
   aiInitialize: () =>
