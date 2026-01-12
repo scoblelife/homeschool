@@ -1,38 +1,21 @@
 {
-  description = "Homeschool Sync Infrastructure and Worker Deployment";
+  description = "Homeschool Infrastructure and Signaling Server Deployment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    terranix.url = "github:terranix/terranix";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, terranix, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        tofu = pkgs.opentofu;
 
-        # Worker configuration - use relative path from infra dir
-        workerName = "homeschool-sync";
-        stagingUrl = "https://homeschool-sync-staging.scott4717.workers.dev";
-        productionUrl = "https://homeschool-sync.scott4717.workers.dev";
-
-        # Common script preamble
-        preamble = ''
-          set -euo pipefail
-
-          # Check required env vars
-          check_env() {
-            if [ -z "''${CLOUDFLARE_API_TOKEN:-}" ]; then
-              echo "Error: CLOUDFLARE_API_TOKEN is not set"
-              exit 1
-            fi
-          }
-        '';
+        # Signaling server configuration
+        signalingUrl = "https://homeschool-signaling.fly.dev";
 
         # Health check function
-        healthCheck = url: ''
+        healthCheck = ''
           health_check() {
             local url="$1"
             local max_attempts=5
@@ -45,6 +28,8 @@
               STATUS=$(${pkgs.curl}/bin/curl -s -o /dev/null -w "%{http_code}" "$url/health" || echo "000")
               if [ "$STATUS" = "200" ]; then
                 echo "Health check passed!"
+                RESPONSE=$(${pkgs.curl}/bin/curl -s "$url/health")
+                echo "$RESPONSE" | ${pkgs.jq}/bin/jq .
                 return 0
               fi
               echo "Attempt $attempt/$max_attempts: Status $STATUS"
@@ -56,259 +41,91 @@
           }
         '';
 
-        # Generate terraform JSON from terranix config
-        terraformConfig = terranix.lib.terranixConfiguration {
-          inherit system;
-          modules = [ ./config.nix ];
-        };
-
       in
       {
-        # Default package generates the terraform config
-        packages.default = terraformConfig;
-
-        # Development shell with all tools
+        # Development shell with deployment tools
         devShells.default = pkgs.mkShell {
           buildInputs = [
-            tofu
-            terranix.packages.${system}.terranix
+            pkgs.flyctl
             pkgs.jq
-            pkgs.nodejs_22
             pkgs.curl
           ];
 
           shellHook = ''
             echo "Homeschool Infrastructure Shell"
             echo ""
-            echo "Infrastructure commands:"
-            echo "  nix run .#infra-apply    # Create KV namespaces"
-            echo "  nix run .#infra-destroy  # Destroy infrastructure"
+            echo "Signaling Server commands:"
+            echo "  nix run .#signaling-deploy  # Deploy to Fly.io"
+            echo "  nix run .#signaling-status  # Check deployment status"
+            echo "  nix run .#signaling-logs    # View logs"
+            echo "  nix run .#signaling-health  # Health check"
             echo ""
-            echo "Worker commands:"
-            echo "  nix run .#worker-test           # Type check worker"
-            echo "  nix run .#worker-deploy-staging # Deploy to staging"
-            echo "  nix run .#worker-deploy-prod    # Deploy to production"
-            echo "  nix run .#worker-promote        # Promote staging to production"
+            echo "Or from signaling/ directory:"
+            echo "  fly deploy                  # Deploy using Dockerfile"
+            echo "  fly status                  # Check status"
+            echo "  fly logs                    # View logs"
             echo ""
-            echo "Required: CLOUDFLARE_API_TOKEN"
+            echo "URL: ${signalingUrl}"
             echo ""
           '';
         };
 
         # ============= Apps =============
         apps = {
-          # ---------- Infrastructure ----------
-
-          infra-apply = {
+          # Deploy signaling server to Fly.io
+          signaling-deploy = {
             type = "app";
-            program = toString (pkgs.writeShellScript "infra-apply" ''
-              ${preamble}
+            program = toString (pkgs.writeShellScript "signaling-deploy" ''
+              set -euo pipefail
+              ${healthCheck}
 
-              if [ -z "''${TF_VAR_cloudflare_account_id:-}" ]; then
-                echo "Error: TF_VAR_cloudflare_account_id is not set"
-                exit 1
-              fi
+              # Find signaling directory relative to git root
+              REPO_ROOT=$(${pkgs.git}/bin/git rev-parse --show-toplevel)
+              cd "$REPO_ROOT/signaling"
 
-              cd "$(dirname "$0")/../infra" 2>/dev/null || cd "${./.}"
-
-              echo "Generating Terraform config..."
-              ${terranix.packages.${system}.terranix}/bin/terranix > config.tf.json
-
-              echo "Initializing OpenTofu..."
-              ${tofu}/bin/tofu init
-
-              echo "Applying infrastructure..."
-              ${tofu}/bin/tofu apply -auto-approve
+              echo "Deploying signaling server to Fly.io..."
+              ${pkgs.flyctl}/bin/fly deploy
 
               echo ""
-              echo "Infrastructure applied successfully!"
-              ${tofu}/bin/tofu output -json | ${pkgs.jq}/bin/jq .
+              echo "Deployment complete! Running health check..."
+              health_check "${signalingUrl}"
             '');
           };
 
-          infra-destroy = {
+          # Check deployment status
+          signaling-status = {
             type = "app";
-            program = toString (pkgs.writeShellScript "infra-destroy" ''
-              ${preamble}
+            program = toString (pkgs.writeShellScript "signaling-status" ''
+              set -euo pipefail
 
-              cd "$(dirname "$0")/../infra" 2>/dev/null || cd "${./.}"
-
-              echo "Destroying infrastructure..."
-              ${tofu}/bin/tofu destroy -auto-approve
-            '');
-          };
-
-          infra-outputs = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "infra-outputs" ''
-              cd "$(dirname "$0")/../infra" 2>/dev/null || cd "${./.}"
-              ${tofu}/bin/tofu output -json | ${pkgs.jq}/bin/jq .
-            '');
-          };
-
-          # ---------- Worker ----------
-
-          worker-test = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "worker-test" ''
-              ${preamble}
-
-              # Find worker directory relative to git root
               REPO_ROOT=$(${pkgs.git}/bin/git rev-parse --show-toplevel)
-              cd "$REPO_ROOT/worker"
+              cd "$REPO_ROOT/signaling"
 
-              echo "Installing dependencies..."
-              ${pkgs.nodejs_22}/bin/npm ci
-
-              echo "Running type check..."
-              ${pkgs.nodejs_22}/bin/npx tsc --noEmit
-
-              echo "Worker tests passed!"
+              ${pkgs.flyctl}/bin/fly status
             '');
           };
 
-          worker-deploy-staging = {
+          # View logs
+          signaling-logs = {
             type = "app";
-            program = toString (pkgs.writeShellScript "worker-deploy-staging" ''
-              ${preamble}
-              ${healthCheck stagingUrl}
+            program = toString (pkgs.writeShellScript "signaling-logs" ''
+              set -euo pipefail
 
-              check_env
-
-              # Find worker directory relative to git root
               REPO_ROOT=$(${pkgs.git}/bin/git rev-parse --show-toplevel)
-              cd "$REPO_ROOT/worker"
+              cd "$REPO_ROOT/signaling"
 
-              echo "Installing dependencies..."
-              ${pkgs.nodejs_22}/bin/npm ci
-
-              echo "Deploying to staging..."
-              ${pkgs.nodejs_22}/bin/npx wrangler deploy --env staging
-
-              health_check "${stagingUrl}"
-
-              echo ""
-              echo "Staging deployment complete!"
-              echo "URL: ${stagingUrl}"
+              ${pkgs.flyctl}/bin/fly logs
             '');
           };
 
-          worker-deploy-prod = {
+          # Health check
+          signaling-health = {
             type = "app";
-            program = toString (pkgs.writeShellScript "worker-deploy-prod" ''
-              ${preamble}
-              ${healthCheck productionUrl}
+            program = toString (pkgs.writeShellScript "signaling-health" ''
+              set -euo pipefail
+              ${healthCheck}
 
-              check_env
-
-              # Find worker directory relative to git root
-              REPO_ROOT=$(${pkgs.git}/bin/git rev-parse --show-toplevel)
-              cd "$REPO_ROOT/worker"
-
-              echo "Installing dependencies..."
-              ${pkgs.nodejs_22}/bin/npm ci
-
-              echo "Deploying to production..."
-              ${pkgs.nodejs_22}/bin/npx wrangler deploy
-
-              health_check "${productionUrl}"
-
-              echo ""
-              echo "Production deployment complete!"
-              echo "URL: ${productionUrl}"
-            '');
-          };
-
-          worker-promote = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "worker-promote" ''
-              ${preamble}
-              ${healthCheck stagingUrl}
-              ${healthCheck productionUrl}
-
-              check_env
-
-              echo "Validating staging health before promotion..."
-              health_check "${stagingUrl}"
-
-              # Find worker directory relative to git root
-              REPO_ROOT=$(${pkgs.git}/bin/git rev-parse --show-toplevel)
-              cd "$REPO_ROOT/worker"
-
-              echo "Installing dependencies..."
-              ${pkgs.nodejs_22}/bin/npm ci
-
-              echo "Promoting staging to production..."
-              ${pkgs.nodejs_22}/bin/npx wrangler deploy
-
-              health_check "${productionUrl}"
-
-              echo ""
-              echo "Promotion complete!"
-              echo "Production URL: ${productionUrl}"
-            '');
-          };
-
-          # Combined CI workflow
-          ci-deploy-staging = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "ci-deploy-staging" ''
-              ${preamble}
-              ${healthCheck stagingUrl}
-
-              check_env
-
-              # Find worker directory relative to git root
-              REPO_ROOT=$(${pkgs.git}/bin/git rev-parse --show-toplevel)
-              cd "$REPO_ROOT/worker"
-
-              echo "=== Worker CI: Deploy to Staging ==="
-
-              echo "Step 1/3: Installing dependencies..."
-              ${pkgs.nodejs_22}/bin/npm ci
-
-              echo "Step 2/3: Type checking..."
-              ${pkgs.nodejs_22}/bin/npx tsc --noEmit
-
-              echo "Step 3/3: Deploying to staging..."
-              ${pkgs.nodejs_22}/bin/npx wrangler deploy --env staging
-
-              health_check "${stagingUrl}"
-
-              echo ""
-              echo "=== CI Deploy to Staging Complete ==="
-              echo "URL: ${stagingUrl}"
-            '');
-          };
-
-          ci-deploy-prod = {
-            type = "app";
-            program = toString (pkgs.writeShellScript "ci-deploy-prod" ''
-              ${preamble}
-              ${healthCheck productionUrl}
-
-              check_env
-
-              # Find worker directory relative to git root
-              REPO_ROOT=$(${pkgs.git}/bin/git rev-parse --show-toplevel)
-              cd "$REPO_ROOT/worker"
-
-              echo "=== Worker CI: Deploy to Production ==="
-
-              echo "Step 1/3: Installing dependencies..."
-              ${pkgs.nodejs_22}/bin/npm ci
-
-              echo "Step 2/3: Type checking..."
-              ${pkgs.nodejs_22}/bin/npx tsc --noEmit
-
-              echo "Step 3/3: Deploying to production..."
-              ${pkgs.nodejs_22}/bin/npx wrangler deploy
-
-              health_check "${productionUrl}"
-
-              echo ""
-              echo "=== CI Deploy to Production Complete ==="
-              echo "URL: ${productionUrl}"
+              health_check "${signalingUrl}"
             '');
           };
         };

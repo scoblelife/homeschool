@@ -1,11 +1,23 @@
 import { defineConfig } from 'vitest/config'
+import react from '@vitejs/plugin-react'
+import { resolve } from 'path'
 
 export default defineConfig({
+  plugins: [react()],
   test: {
     globals: true,
-    environment: 'node',
-    include: ['src/**/*.{test,spec}.{js,ts}'],
+    testTimeout: 30000,
     exclude: ['node_modules', 'dist', 'out', 'mobile'],
-    testTimeout: 30000, // 30 seconds for integration tests
+    // Use jsdom for React component tests, node for sync tests
+    environmentMatchGlobs: [
+      ['src/renderer/**/*.{test,spec}.tsx', 'jsdom'],
+      ['src/renderer/**/*.{test,spec}.ts', 'jsdom'],
+      ['src/sync/**/*.{test,spec}.ts', 'node'],
+    ],
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src/renderer/src'),
+    },
   },
 })

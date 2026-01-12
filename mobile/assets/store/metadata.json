@@ -1,0 +1,34 @@
+{
+  "appName": "Homeschool",
+  "subtitle": "Track Learning, Celebrate Progress",
+  "privacyPolicyUrl": "https://homeschool.scoble.life/privacy.html",
+  "termsOfServiceUrl": "https://homeschool.scoble.life/terms.html",
+  "supportUrl": "https://homeschool.scoble.life/support.html",
+  "supportEmail": "support@scoble.life",
+  "websiteUrl": "https://homeschool.scoble.life",
+  "copyright": "2026 Scoble Life",
+  "primaryCategory": "Education",
+  "secondaryCategory": "Productivity",
+  "contentRating": "4+",
+  "ageRating": "Everyone",
+  "keywords": [
+    "homeschool",
+    "education",
+    "learning",
+    "tracking",
+    "curriculum",
+    "attendance",
+    "portfolio",
+    "unschool",
+    "homeschooling",
+    "parent"
+  ],
+  "locales": {
+    "en-US": {
+      "name": "Homeschool",
+      "subtitle": "Track Learning, Celebrate Progress",
+      "description": "appstore-description.txt",
+      "keywords": "homeschool,education,learning,tracking,curriculum,attendance,portfolio,unschool"
+    }
+  }
+}

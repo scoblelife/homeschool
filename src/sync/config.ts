@@ -11,10 +11,14 @@ export interface RTCIceServer {
   credential?: string
 }
 
-// Cloudflare Worker URL for signaling
-// Deploy your own or use the default (when deployed)
-export const WORKER_URL =
-  process.env.HOMESCHOOL_WORKER_URL || 'https://homeschool-sync.scott4717.workers.dev'
+// Fly.io signaling server URL
+// This handles only device discovery and WebRTC connection setup
+// All actual sync data flows P2P via WebRTC
+export const SIGNALING_SERVER_URL =
+  process.env.HOMESCHOOL_SIGNALING_URL || 'https://homeschool-signaling.fly.dev'
+
+// Legacy alias (will be removed)
+export const WORKER_URL = SIGNALING_SERVER_URL
 
 // Legacy signaling server (will be removed)
 export const SIGNALING_URL = process.env.HOMESCHOOL_SIGNALING_URL || 'http://localhost:8080'
