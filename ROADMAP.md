@@ -217,41 +217,28 @@ The core features are complete. Now focus on shipping to users, polishing the mo
 ---
 
 ### Phase 9: Community Network
-**Goal:** Connect homeschool families beyond a single device.
+**Goal:** Connect homeschool families via P2P networking.
 
-- [x] **9.1 Cloud account system**
-  - ✅ Auth service with Supabase integration
-  - ✅ Optional cloud account (local-first default)
-  - ✅ OAuth and email/password support (code ready)
-  - ⏳ Backend connection pending
-  - Location: `src/auth/authService.ts`
-
-- [x] **9.2 Cloud backup**
-  - ✅ Encryption infrastructure (PBKDF2 key derivation)
-  - ✅ Backup/restore API structure
-  - ⏳ Backend connection pending
-  - Location: `src/auth/cloudBackup.ts`
-
-- [x] **9.3 Co-op networking**
+- [x] **9.1 Co-op networking**
   - ✅ Co-op groups with P2P sync
   - ✅ Selective sharing preferences
   - ✅ Group member management
-  - ⏳ Cloud sync (requires backend)
+  - ✅ WebRTC P2P communication
   - Location: `src/renderer/src/features/coop/`
 
-- [ ] **9.4 Field trip discovery**
-  - Browse public field trips from other families
+- [ ] **9.2 Field trip discovery**
+  - Browse field trips from co-op members
   - Filter by location, date, age group
   - Request to join a field trip
   - Location: `src/renderer/src/features/fieldTrips/Discovery.tsx`
 
-- [ ] **9.5 Resource sharing**
-  - Share activity templates publicly
+- [ ] **9.3 Resource sharing**
+  - Share activity templates with co-op
   - Rate and review shared templates
   - Curriculum reviews from community
   - Location: `src/renderer/src/features/community/`
 
-- [ ] **9.6 Mentor matching**
+- [ ] **9.4 Mentor matching**
   - Experienced homeschoolers opt-in as mentors
   - New families can request mentorship
   - In-app messaging (or external contact)
@@ -341,19 +328,18 @@ The core features are complete. Now focus on shipping to users, polishing the mo
 **Current Phase:** Final polish
 **Blockers:**
 - Widgets (7.2-7.5): Require native Xcode/Android Studio development
-- Community (9.4-9.6): Require cloud backend deployment
-- Backend-dependent features pending Supabase setup
+- Community (9.2-9.4): P2P features need additional implementation
 
 **Completed Phases:**
 - ✅ Phase 6: Ship & Learn (100%)
 - ✅ Phase 7: Mobile-First Polish (80% - native widgets pending)
 - ✅ Phase 8: AI-Powered Insights (100%)
-- ✅ Phase 9: Community Network (50% - backend pending)
+- ✅ Phase 9: Community Network (25% - P2P features pending)
 - ✅ Phase 10: Compliance Automation (100%)
 
 **Remaining Tasks:**
 - 7.2-7.5: iOS/Android widgets, share sheet, voice shortcuts (native code)
-- 9.4-9.6: Field trip discovery, resource sharing, mentor matching (backend)
+- 9.2-9.4: Field trip discovery, resource sharing, mentor matching (P2P)
 
 ---
 

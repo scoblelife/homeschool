@@ -243,42 +243,28 @@ When ALL tasks across ALL phases are marked `[x]`, output:
 
 ### Phase 9: Community Network
 
-**Goal:** Connect homeschool families beyond a single device.
+**Goal:** Connect homeschool families via P2P networking.
 
-- [ ] **9.1 Cloud account system**
-  - Optional cloud account (email + password or OAuth)
-  - Local-first remains default (works without account)
-  - Account enables: cloud backup, cross-family sharing
-  - Use Cloudflare D1 or Supabase for backend
-  - Location: `src/auth/`, `worker/src/auth.ts`
+- [ ] **9.1 Co-op networking**
+  - Co-op groups with P2P sync
+  - Selective sharing preferences
+  - Group member management
+  - WebRTC P2P communication
+  - Location: `src/renderer/src/features/coop/`
 
-- [ ] **9.2 Cloud backup**
-  - Encrypted backup of CRDT event log to cloud
-  - Automatic daily backup (if opted in)
-  - Manual backup/restore option
-  - End-to-end encrypted (user holds key)
-  - Location: `src/sync/cloudBackup.ts`
-
-- [ ] **9.3 Co-op networking**
-  - Co-op groups sync via cloud (not just local P2P)
-  - Invite members via link or email
-  - Shared calendar visible to all members
-  - Group announcements
-  - Location: `src/renderer/src/features/coop/CloudSync.tsx`
-
-- [ ] **9.4 Field trip discovery**
-  - Browse public field trips from other families
+- [ ] **9.2 Field trip discovery**
+  - Browse field trips from co-op members
   - Filter by location, date, age group
   - Request to join a field trip
   - Location: `src/renderer/src/features/fieldTrips/Discovery.tsx`
 
-- [ ] **9.5 Resource sharing**
-  - Share activity templates publicly
+- [ ] **9.3 Resource sharing**
+  - Share activity templates with co-op
   - Rate and review shared templates
   - Curriculum reviews from community
   - Location: `src/renderer/src/features/community/`
 
-- [ ] **9.6 Mentor matching**
+- [ ] **9.4 Mentor matching**
   - Experienced homeschoolers opt-in as mentors
   - New families can request mentorship
   - In-app messaging (or external contact)
