@@ -13,6 +13,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
 import { format } from 'date-fns'
 import { useStore } from '../stores/useStore'
+import { SubjectSuggestions } from '../features/aiInsights'
 import type { ActivityType, CreateActivity, Activity } from '../../../shared/types'
 
 interface QuickAddProps {
@@ -387,6 +388,15 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                             autoFocus
                           />
+                          {/* AI Subject Suggestions based on title */}
+                          {title.length >= 5 && !selectedSubjectId && (
+                            <SubjectSuggestions
+                              description={title}
+                              subjects={subjects}
+                              onSelect={setSelectedSubjectId}
+                              selectedSubjectId={selectedSubjectId}
+                            />
+                          )}
                         </div>
 
                         {/* Duration Quick Select */}
