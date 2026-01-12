@@ -9,7 +9,7 @@ import { Timer } from '../features/timer'
 import { StreakDisplay, useStreakTracking } from '../features/streaks'
 import { SubjectBalance } from '../features/balance'
 import { AchievementCard } from '../features/celebrations'
-import { ActivitySuggestions, LearningPatterns } from '../features/aiInsights'
+import { ActivitySuggestions, LearningPatterns, CompliancePrediction } from '../features/aiInsights'
 import { ErrorBoundary, WidgetErrorFallback } from '../components/ErrorBoundary'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
@@ -292,6 +292,18 @@ export default function Dashboard(): JSX.Element {
               studentId={selectedStudent.id}
               studentName={selectedStudent.name}
               gradeLevel={selectedStudent.gradeLevel}
+            />
+          </ErrorBoundary>
+        </div>
+      )}
+
+      {/* Compliance Prediction (when student selected) */}
+      {selectedStudent && (
+        <div className="mb-6">
+          <ErrorBoundary fallback={<WidgetErrorFallback />}>
+            <CompliancePrediction
+              studentId={selectedStudent.id}
+              studentName={selectedStudent.name}
             />
           </ErrorBoundary>
         </div>
