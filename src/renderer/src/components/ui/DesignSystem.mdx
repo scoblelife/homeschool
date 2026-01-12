@@ -1,0 +1,158 @@
+# Homeschool Design System
+
+A consistent, accessible design language for the Homeschool app across desktop and mobile platforms.
+
+## Design Philosophy
+
+The Homeschool app uses a **warm, approachable, and educational** design language that feels friendly to families while maintaining clarity and professionalism for tracking academic progress.
+
+### Core Principles
+
+1. **Clarity First** - Information should be immediately scannable
+2. **Student-Centric Colors** - Each child has a distinctive color for easy identification
+3. **Encouraging Tone** - Success states use warm, positive colors
+4. **Accessible** - WCAG AA compliant contrast ratios
+5. **Consistent** - Same patterns on desktop and mobile
+
+## Colors
+
+### Brand Colors
+
+| Name | Hex | Usage |
+|------|-----|-------|
+| Primary (Fuchsia) | `#d946ef` | Primary actions, brand identity |
+| Primary Light | `#fdf4ff` | Primary backgrounds |
+| Primary Dark | `#a21caf` | Primary hover states |
+
+### Student Colors
+
+Each student is assigned a distinct color for easy visual identification:
+
+| Color | Hex | Tailwind |
+|-------|-----|----------|
+| Fuchsia | `#d946ef` | `fuchsia-500` |
+| Teal | `#14b8a6` | `teal-500` |
+| Blue | `#3b82f6` | `blue-500` |
+| Orange | `#f97316` | `orange-500` |
+| Purple | `#8b5cf6` | `purple-500` |
+| Green | `#22c55e` | `green-500` |
+
+### Status Colors
+
+| Status | Background | Text | Usage |
+|--------|------------|------|-------|
+| Success | `#d1fae5` | `#059669` | Completed, achievements |
+| Warning | `#fef3c7` | `#d97706` | Attention needed, deadlines |
+| Danger | `#fee2e2` | `#dc2626` | Errors, overdue |
+| Info | `#dbeafe` | `#2563eb` | Information, tips |
+
+### Neutral Colors
+
+| Name | Hex | Usage |
+|------|-----|-------|
+| Text Primary | `#1f2937` | Main text |
+| Text Secondary | `#6b7280` | Secondary text |
+| Text Tertiary | `#9ca3af` | Placeholder, hints |
+| Border | `#e5e7eb` | Borders, dividers |
+| Background | `#f9fafb` | Page background |
+| Surface | `#ffffff` | Card backgrounds |
+
+## Typography
+
+### Font Weights
+
+- **Regular (400)** - Body text
+- **Medium (500)** - Labels, badges
+- **Semibold (600)** - Buttons, headings
+- **Bold (700)** - Emphasis
+
+### Font Sizes
+
+| Name | Size | Line Height | Usage |
+|------|------|-------------|-------|
+| xs | 12px | 16px | Captions, badges |
+| sm | 14px | 20px | Secondary text, buttons |
+| base | 16px | 24px | Body text |
+| lg | 18px | 28px | Section headings |
+| xl | 20px | 28px | Page titles |
+| 2xl | 24px | 32px | Hero text |
+
+## Spacing
+
+Uses a 4px base grid:
+
+| Name | Value | Usage |
+|------|-------|-------|
+| 1 | 4px | Tight spacing |
+| 2 | 8px | Small gaps |
+| 3 | 12px | Component padding |
+| 4 | 16px | Standard gaps |
+| 5 | 20px | Section gaps |
+| 6 | 24px | Large gaps |
+
+## Border Radius
+
+| Name | Value | Usage |
+|------|-------|-------|
+| sm | 4px | Badges, small elements |
+| md | 6px | Buttons (sm) |
+| lg | 8px | Buttons (md), inputs |
+| xl | 12px | Cards |
+
+## Shadows
+
+| Name | Value | Usage |
+|------|-------|-------|
+| sm | `0 1px 2px rgba(0,0,0,0.05)` | Subtle depth |
+| base | `0 1px 3px rgba(0,0,0,0.1)` | Cards |
+| md | `0 4px 6px rgba(0,0,0,0.1)` | Dropdowns, popovers |
+
+## Components
+
+### Button Variants
+
+- **Primary**: Main actions (fuchsia background)
+- **Secondary**: Alternative actions (gray background)
+- **Outline**: Tertiary actions (border only)
+- **Ghost**: Minimal actions (no background)
+- **Danger**: Destructive actions (red)
+
+### Button Sizes
+
+- **sm**: 32px height, 12px padding
+- **md**: 40px height, 16px padding
+- **lg**: 48px height, 20px padding
+
+### Card Patterns
+
+Cards are the primary container for content groupings:
+
+- White background
+- 12px border radius
+- 1px border in `#e5e7eb`
+- Subtle shadow
+- 16-24px padding
+
+### Badge Patterns
+
+Badges indicate status or categorization:
+
+- Rounded (4px radius)
+- Small padding (6-8px horizontal, 2-3px vertical)
+- Medium font weight
+- Pastel background with dark text
+
+## Accessibility
+
+- All interactive elements have visible focus states
+- Color contrast meets WCAG AA (4.5:1 for text)
+- Touch targets are minimum 44x44px on mobile
+- Icons have aria-labels when used alone
+- Form inputs have associated labels
+
+## Animation
+
+- Use `duration-200` for most transitions
+- Use `duration-300` for larger state changes
+- Prefer `ease-out` for entering, `ease-in` for leaving
+- Respect `prefers-reduced-motion`
