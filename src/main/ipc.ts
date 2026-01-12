@@ -23,7 +23,8 @@ import {
   curriculumRepo,
   coopRepo,
   packagesRepo,
-  assessmentsRepo
+  assessmentsRepo,
+  umbrellaRepo
 } from '../database'
 import * as googleAuth from './google-auth'
 import * as googleCalendar from './google-calendar'
@@ -80,7 +81,13 @@ import type {
   CreateCurriculumPackage,
   UpdateCurriculumPackage,
   CreateAssessment,
-  UpdateAssessment
+  UpdateAssessment,
+  CreateUmbrellaSchool,
+  UpdateUmbrellaSchool,
+  CreateUmbrellaSchoolEnrollment,
+  UpdateUmbrellaSchoolEnrollment,
+  CreateUmbrellaSchoolReport,
+  UpdateUmbrellaSchoolReport
 } from '../shared/types'
 
 // Simple iCal parser for extracting events
@@ -1189,6 +1196,82 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('assessments:getStats', async (_, studentId: string, startDate?: string, endDate?: string) => {
     return assessmentsRepo.getAssessmentStats(studentId, startDate, endDate)
+  })
+
+  // ============================================================================
+  // Umbrella Schools
+  // ============================================================================
+
+  ipcMain.handle('umbrella:getSchools', async () => {
+    return umbrellaRepo.getUmbrellaSchools()
+  })
+
+  ipcMain.handle('umbrella:getSchool', async (_, id: string) => {
+    return umbrellaRepo.getUmbrellaSchoolById(id)
+  })
+
+  ipcMain.handle('umbrella:createSchool', async (_, data: CreateUmbrellaSchool) => {
+    return umbrellaRepo.createUmbrellaSchool(data)
+  })
+
+  ipcMain.handle('umbrella:updateSchool', async (_, id: string, data: UpdateUmbrellaSchool) => {
+    return umbrellaRepo.updateUmbrellaSchool(id, data)
+  })
+
+  ipcMain.handle('umbrella:deleteSchool', async (_, id: string) => {
+    return umbrellaRepo.deleteUmbrellaSchool(id)
+  })
+
+  // Umbrella School Enrollments
+
+  ipcMain.handle('umbrella:getEnrollments', async (_, schoolId?: string, studentId?: string) => {
+    return umbrellaRepo.getEnrollments(schoolId, studentId)
+  })
+
+  ipcMain.handle('umbrella:getEnrollment', async (_, id: string) => {
+    return umbrellaRepo.getEnrollmentById(id)
+  })
+
+  ipcMain.handle('umbrella:createEnrollment', async (_, data: CreateUmbrellaSchoolEnrollment) => {
+    return umbrellaRepo.createEnrollment(data)
+  })
+
+  ipcMain.handle('umbrella:updateEnrollment', async (_, id: string, data: UpdateUmbrellaSchoolEnrollment) => {
+    return umbrellaRepo.updateEnrollment(id, data)
+  })
+
+  ipcMain.handle('umbrella:deleteEnrollment', async (_, id: string) => {
+    return umbrellaRepo.deleteEnrollment(id)
+  })
+
+  // Umbrella School Reports
+
+  ipcMain.handle('umbrella:getReports', async (_, schoolId?: string, studentId?: string) => {
+    return umbrellaRepo.getReports(schoolId, studentId)
+  })
+
+  ipcMain.handle('umbrella:getReport', async (_, id: string) => {
+    return umbrellaRepo.getReportById(id)
+  })
+
+  ipcMain.handle('umbrella:getPendingReports', async (_, schoolId?: string) => {
+    return umbrellaRepo.getPendingReports(schoolId)
+  })
+
+  ipcMain.handle('umbrella:createReport', async (_, data: CreateUmbrellaSchoolReport) => {
+    return umbrellaRepo.createReport(data)
+  })
+
+  ipcMain.handle('umbrella:updateReport', async (_, id: string, data: UpdateUmbrellaSchoolReport) => {
+    return umbrellaRepo.updateReport(id, data)
+  })
+
+  ipcMain.handle('umbrella:deleteReport', async (_, id: string) => {
+    return umbrellaRepo.deleteReport(id)
+  })
+
+  ipcMain.handle('umbrella:markReportSubmitted', async (_, id: string) => {
+    return umbrellaRepo.markReportSubmitted(id)
   })
 }
 

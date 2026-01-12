@@ -554,6 +554,69 @@ export async function initializeSchema(): Promise<void> {
     )
   `)
 
+  // Create umbrella_schools table for tracking cover school enrollments
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS umbrella_schools (
+      id VARCHAR PRIMARY KEY,
+      name VARCHAR NOT NULL,
+      state VARCHAR NOT NULL,
+      contact_name VARCHAR,
+      contact_email VARCHAR,
+      contact_phone VARCHAR,
+      website_url VARCHAR,
+      address VARCHAR,
+      enrollment_fee DECIMAL,
+      annual_fee DECIMAL,
+      enrollment_start_date DATE,
+      enrollment_end_date DATE,
+      report_frequency VARCHAR,
+      report_due_day INTEGER,
+      requirements_json VARCHAR,
+      notes VARCHAR,
+      is_active BOOLEAN DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Create umbrella_school_enrollments table for per-student enrollments
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS umbrella_school_enrollments (
+      id VARCHAR PRIMARY KEY,
+      umbrella_school_id VARCHAR NOT NULL REFERENCES umbrella_schools(id),
+      student_id VARCHAR NOT NULL REFERENCES students(id),
+      student_id_at_school VARCHAR,
+      grade_level VARCHAR,
+      enrolled_date DATE NOT NULL,
+      withdrawn_date DATE,
+      status VARCHAR NOT NULL DEFAULT 'active',
+      notes VARCHAR,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(umbrella_school_id, student_id)
+    )
+  `)
+
+  // Create umbrella_school_reports table for tracking submitted reports
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS umbrella_school_reports (
+      id VARCHAR PRIMARY KEY,
+      umbrella_school_id VARCHAR NOT NULL REFERENCES umbrella_schools(id),
+      student_id VARCHAR NOT NULL REFERENCES students(id),
+      report_type VARCHAR NOT NULL,
+      period_start DATE NOT NULL,
+      period_end DATE NOT NULL,
+      due_date DATE,
+      submitted_date DATE,
+      status VARCHAR NOT NULL DEFAULT 'pending',
+      content_json VARCHAR,
+      file_path VARCHAR,
+      notes VARCHAR,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
   // Run migrations for existing databases
   await runMigrations()
 }

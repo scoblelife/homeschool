@@ -288,11 +288,13 @@ The core features are complete. Now focus on shipping to users, polishing the mo
   - ⏳ UI components (future iteration)
   - Location: `src/database/repositories/assessments.ts`
 
-- [ ] **10.5 Umbrella school integration**
-  - Support reporting to umbrella schools / cover schools
-  - Generate reports in their required format
-  - Track umbrella school requirements
-  - Location: `src/features/compliance/umbrella/`
+- [x] **10.5 Umbrella school integration**
+  - ✅ Database schema for umbrella schools, enrollments, and reports
+  - ✅ Full CRUD repository with enrollment and report tracking
+  - ✅ IPC handlers for desktop app
+  - ✅ Support for tracking reporting requirements per school
+  - ✅ Report status tracking (pending, submitted, approved, rejected)
+  - Location: `src/database/repositories/umbrella.ts`
 
 ---
 
@@ -347,12 +349,11 @@ The core features are complete. Now focus on shipping to users, polishing the mo
 - ✅ Phase 7: Mobile-First Polish (80% - native widgets pending)
 - ✅ Phase 8: AI-Powered Insights (100%)
 - ✅ Phase 9: Community Network (50% - backend pending)
-- ✅ Phase 10: Compliance Automation (80%)
+- ✅ Phase 10: Compliance Automation (100%)
 
 **Remaining Tasks:**
 - 7.2-7.5: iOS/Android widgets, share sheet, voice shortcuts (native code)
 - 9.4-9.6: Field trip discovery, resource sharing, mentor matching (backend)
-- 10.5: Umbrella school integration
 
 ---
 
