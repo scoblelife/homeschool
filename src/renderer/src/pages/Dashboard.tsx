@@ -9,6 +9,7 @@ import { Timer } from '../features/timer'
 import { StreakDisplay, useStreakTracking } from '../features/streaks'
 import { SubjectBalance } from '../features/balance'
 import { AchievementCard } from '../features/celebrations'
+import { ActivitySuggestions } from '../features/aiInsights'
 import { ErrorBoundary, WidgetErrorFallback } from '../components/ErrorBoundary'
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
@@ -264,6 +265,20 @@ export default function Dashboard(): JSX.Element {
             <AchievementCard
               studentId={selectedStudent.id}
               studentName={selectedStudent.name}
+            />
+          </ErrorBoundary>
+        </div>
+      )}
+
+      {/* AI Activity Suggestions (when student selected) */}
+      {selectedStudent && (
+        <div className="mb-6">
+          <ErrorBoundary fallback={<WidgetErrorFallback />}>
+            <ActivitySuggestions
+              studentId={selectedStudent.id}
+              studentName={selectedStudent.name}
+              gradeLevel={selectedStudent.gradeLevel}
+              subjects={subjects}
             />
           </ErrorBoundary>
         </div>
