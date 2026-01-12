@@ -152,7 +152,7 @@ export default function Activities(): JSX.Element {
         <button
           onClick={() => setFilterType('')}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            filterType === '' ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            filterType === '' ? 'bg-fuchsia-100 text-fuchsia-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
           All
@@ -163,7 +163,7 @@ export default function Activities(): JSX.Element {
             onClick={() => setFilterType(type.value)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               filterType === type.value
-                ? 'bg-indigo-100 text-indigo-700'
+                ? 'bg-fuchsia-100 text-fuchsia-700'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -226,7 +226,7 @@ export default function Activities(): JSX.Element {
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={() => openEditModal(activity)}
-                    className="text-indigo-500 hover:text-indigo-700 text-sm"
+                    className="text-fuchsia-500 hover:text-fuchsia-700 text-sm"
                   >
                     Edit
                   </button>
@@ -263,7 +263,7 @@ export default function Activities(): JSX.Element {
                       onClick={() => setFormData({ ...formData, activityType: type.value })}
                       className={`p-2 rounded-lg text-center transition-colors ${
                         formData.activityType === type.value
-                          ? 'bg-indigo-100 ring-2 ring-indigo-500'
+                          ? 'bg-fuchsia-100 ring-2 ring-fuchsia-500'
                           : 'bg-gray-50 hover:bg-gray-100'
                       }`}
                     >

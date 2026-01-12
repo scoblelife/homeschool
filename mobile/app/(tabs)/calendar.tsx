@@ -32,11 +32,11 @@ const activityTypeIcons: Record<string, string> = {
 }
 
 const fieldTripTypeColors: Record<string, { bg: string; color: string; icon: string }> = {
-  field_trip: { bg: '#fef3c7', color: '#d97706', icon: '🚌' },
-  park_day: { bg: '#dcfce7', color: '#16a34a', icon: '🌳' },
-  game_night: { bg: '#f3e8ff', color: '#9333ea', icon: '🎲' },
-  playdate: { bg: '#fce7f3', color: '#db2777', icon: '👋' },
-  coop_class: { bg: '#dbeafe', color: '#2563eb', icon: '📚' },
+  field_trip: { bg: '#fef3c7', color: '#f59e0b', icon: '🚌' },
+  park_day: { bg: '#dcfce7', color: '#22c55e', icon: '🌳' },
+  game_night: { bg: '#fdf4ff', color: '#d946ef', icon: '🎲' },
+  playdate: { bg: '#e0f2fe', color: '#14b8a6', icon: '👋' },
+  coop_class: { bg: '#dbeafe', color: '#3b82f6', icon: '📚' },
   custom: { bg: '#f3f4f6', color: '#6b7280', icon: '📅' },
 }
 

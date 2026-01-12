@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   shareButton: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#d946ef',
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 8,

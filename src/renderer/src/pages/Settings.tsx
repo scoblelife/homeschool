@@ -449,7 +449,7 @@ export default function Settings(): JSX.Element {
             <ul className="space-y-2 text-sm text-gray-600 mb-4">
               {formatRequirements(stateInfo).map((req, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="text-indigo-500 mt-0.5">
+                  <span className="text-fuchsia-500 mt-0.5">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
@@ -474,7 +474,7 @@ export default function Settings(): JSX.Element {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-indigo-600 hover:text-indigo-800 block truncate"
+                    className="text-sm text-fuchsia-600 hover:text-fuchsia-700 block truncate"
                   >
                     {url}
                   </a>
@@ -566,7 +566,7 @@ export default function Settings(): JSX.Element {
               id="email-enabled"
               checked={emailConfig.enabled}
               onChange={(e) => saveEmailConfig({ ...emailConfig, enabled: e.target.checked })}
-              className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
+              className="w-4 h-4 text-fuchsia-600 rounded focus:ring-fuchsia-500"
             />
             <label htmlFor="email-enabled" className="text-sm font-medium text-gray-700">
               Enable weekly email summaries
@@ -619,7 +619,7 @@ export default function Settings(): JSX.Element {
                   href="https://resend.com/api-keys"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-indigo-600 hover:text-indigo-800"
+                  className="text-fuchsia-600 hover:text-fuchsia-700"
                 >
                   resend.com/api-keys
                 </a>
@@ -714,7 +714,7 @@ export default function Settings(): JSX.Element {
                       })
                     }
                     onBlur={() => handleSaveMapping(subject.id)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-fuchsia-500 focus:border-fuchsia-500"
                     placeholder="Skylight chore name..."
                   />
                   <span className="text-yellow-500">⭐</span>
@@ -730,7 +730,7 @@ export default function Settings(): JSX.Element {
                       })
                     }
                     onBlur={() => handleSaveMapping(subject.id)}
-                    className="w-16 px-2 py-2 border border-gray-300 rounded-lg text-center focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-16 px-2 py-2 border border-gray-300 rounded-lg text-center focus:ring-fuchsia-500 focus:border-fuchsia-500"
                   />
                   {hasMapping && (
                     <span className="text-green-500 text-sm">✓</span>

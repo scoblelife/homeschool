@@ -171,7 +171,7 @@ export default function SyncScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#7c3aed" />
+        <ActivityIndicator size="large" color="#d946ef" />
       </View>
     )
   }
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
     color: '#6b7280',
   },
   managerBadge: {
-    backgroundColor: '#f3e8ff',
+    backgroundColor: '#fdf4ff',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
   },
   managerBadgeText: {
     fontSize: 12,
-    color: '#7c3aed',
+    color: '#d946ef',
     fontWeight: '500',
   },
   section: {
@@ -544,7 +544,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   primaryButton: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: '#d946ef',
     borderRadius: 10,
     paddingVertical: 16,
     alignItems: 'center',
@@ -562,10 +562,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#7c3aed',
+    borderColor: '#d946ef',
   },
   outlineButtonText: {
-    color: '#7c3aed',
+    color: '#d946ef',
     fontSize: 16,
     fontWeight: '600',
   },

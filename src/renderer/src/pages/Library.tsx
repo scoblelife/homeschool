@@ -35,9 +35,9 @@ function BookCard({
   const progressPercent = book.totalPages ? Math.round((currentPage / book.totalPages) * 100) : 0
 
   return (
-    <div className="group rounded-xl bg-white border border-gray-200 hover:border-indigo-200 hover:shadow-lg transition-all duration-200 overflow-hidden">
+    <div className="group rounded-xl bg-white border border-gray-200 hover:border-fuchsia-200 hover:shadow-lg transition-all duration-200 overflow-hidden">
       {/* Cover Image Section */}
-      <div className="relative aspect-[3/4] bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
+      <div className="relative aspect-[3/4] bg-gradient-to-br from-fuchsia-100 via-purple-50 to-pink-100">
         {book.coverImagePath ? (
           <img
             src={`file://${book.coverImagePath}`}
@@ -97,7 +97,7 @@ function BookCard({
                 strokeLinecap="round"
               />
             </svg>
-            <span className="absolute text-[10px] font-bold text-indigo-600">{progressPercent}%</span>
+            <span className="absolute text-[10px] font-bold text-fuchsia-600">{progressPercent}%</span>
           </div>
         )}
       </div>
@@ -123,7 +123,7 @@ function BookCard({
             <span className="text-xs text-gray-400">{book.genre}</span>
           )}
           {book.readingLevel && (
-            <span className="text-xs px-1.5 py-0.5 bg-indigo-50 text-indigo-600 rounded">{book.readingLevel}</span>
+            <span className="text-xs px-1.5 py-0.5 bg-fuchsia-50 text-fuchsia-600 rounded">{book.readingLevel}</span>
           )}
         </div>
 
@@ -139,7 +139,7 @@ function BookCard({
                 <div className="w-full bg-gray-100 rounded-full h-1.5">
                   <div
                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                      status === 'finished' ? 'bg-green-500' : 'bg-indigo-500'
+                      status === 'finished' ? 'bg-green-500' : 'bg-fuchsia-500'
                     }`}
                     style={{ width: `${progressPercent}%` }}
                   />
@@ -151,7 +151,7 @@ function BookCard({
               <select
                 value={status}
                 onChange={(e) => onUpdateProgress({ status: e.target.value as ReadingStatus })}
-                className="text-xs border-0 bg-gray-100 rounded-lg px-2 py-1.5 text-gray-700 focus:ring-2 focus:ring-indigo-500"
+                className="text-xs border-0 bg-gray-100 rounded-lg px-2 py-1.5 text-gray-700 focus:ring-2 focus:ring-fuchsia-500"
               >
                 <option value="not_started">Not Started</option>
                 <option value="reading">Reading</option>
@@ -415,7 +415,7 @@ export default function Library(): JSX.Element {
                 onClick={() => setFilterStatus(status)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   filterStatus === status
-                    ? 'bg-indigo-100 text-indigo-700'
+                    ? 'bg-fuchsia-100 text-fuchsia-700'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >

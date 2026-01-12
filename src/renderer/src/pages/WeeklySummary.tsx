@@ -172,19 +172,19 @@ export default function WeeklySummary(): JSX.Element {
       ) : (
         <>
           {/* Family Overview */}
-          <div className="card mb-8 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100">
+          <div className="card mb-8 bg-gradient-to-r from-fuchsia-50 to-purple-50 border-fuchsia-100">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Family Overview</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-white/60 rounded-lg p-4 text-center">
                 <div className="text-sm font-medium text-gray-500">Total Activities</div>
-                <div className="text-3xl font-bold text-indigo-600 mt-1">{totals.currentActivities}</div>
+                <div className="text-3xl font-bold text-fuchsia-600 mt-1">{totals.currentActivities}</div>
                 <div className={`text-sm mt-1 ${getChangeColor(totals.currentActivities - totals.previousActivities)}`}>
                   {formatChange(totals.currentActivities - totals.previousActivities)} vs last week
                 </div>
               </div>
               <div className="bg-white/60 rounded-lg p-4 text-center">
                 <div className="text-sm font-medium text-gray-500">Total Hours</div>
-                <div className="text-3xl font-bold text-indigo-600 mt-1">
+                <div className="text-3xl font-bold text-fuchsia-600 mt-1">
                   {Math.round((totals.currentMinutes / 60) * 10) / 10}
                 </div>
                 <div className={`text-sm mt-1 ${getChangeColor(totals.currentMinutes - totals.previousMinutes)}`}>
@@ -193,13 +193,13 @@ export default function WeeklySummary(): JSX.Element {
               </div>
               <div className="bg-white/60 rounded-lg p-4 text-center">
                 <div className="text-sm font-medium text-gray-500">Students Active</div>
-                <div className="text-3xl font-bold text-indigo-600 mt-1">
+                <div className="text-3xl font-bold text-fuchsia-600 mt-1">
                   {studentData.filter((s) => s.current.totalActivities > 0).length} / {students.length}
                 </div>
               </div>
               <div className="bg-white/60 rounded-lg p-4 text-center">
                 <div className="text-sm font-medium text-gray-500">Avg Per Day</div>
-                <div className="text-3xl font-bold text-indigo-600 mt-1">
+                <div className="text-3xl font-bold text-fuchsia-600 mt-1">
                   {Math.round(totals.currentActivities / 7)} activities
                 </div>
               </div>
@@ -387,7 +387,7 @@ export default function WeeklySummary(): JSX.Element {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-indigo-600 h-2 rounded-full transition-all"
+                            className="bg-fuchsia-500 h-2 rounded-full transition-all"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>

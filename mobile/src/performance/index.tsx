@@ -5,6 +5,7 @@
  * and memory usage for React Native.
  */
 
+import React from 'react'
 import { InteractionManager } from 'react-native'
 
 interface PerformanceMark {

@@ -173,19 +173,19 @@ export default function Dashboard(): JSX.Element {
 
       {/* Milestone Progress (when student selected) */}
       {selectedStudent && milestones.length > 0 && (
-        <div className="card mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-100">
+        <div className="card mb-6 bg-gradient-to-r from-fuchsia-50 to-purple-50 border-fuchsia-100">
           <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">Learning Progress</h2>
               <p className="text-sm text-gray-500">{milestoneStats.completed} of {milestoneStats.total} milestones completed</p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-indigo-600">{milestoneStats.percentage}%</div>
+              <div className="text-3xl font-bold text-fuchsia-600">{milestoneStats.percentage}%</div>
             </div>
           </div>
           <div className="w-full bg-white/50 rounded-full h-3 mb-4">
             <div
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+              className="bg-gradient-to-r from-fuchsia-500 to-purple-500 h-3 rounded-full transition-all duration-500"
               style={{ width: `${milestoneStats.percentage}%` }}
             />
           </div>
@@ -573,7 +573,7 @@ export default function Dashboard(): JSX.Element {
         <div className="mt-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">Focus This Week</h2>
-            <Link to="/weekly-planner" className="text-sm text-indigo-600 hover:text-indigo-800">
+            <Link to="/weekly-planner" className="text-sm text-fuchsia-600 hover:text-fuchsia-700">
               View Full Plan →
             </Link>
           </div>
@@ -590,7 +590,7 @@ export default function Dashboard(): JSX.Element {
                   }`}
                 >
                   <div className="flex items-start gap-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-50 text-fuchsia-600">
                       {subject?.name}
                     </span>
                     {milestone.status === 'in_progress' && (

@@ -197,7 +197,7 @@ The narrative should read as a cohesive educational summary suitable for inclusi
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               isLoading || isGenerating || subjectData.length === 0
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                : 'bg-fuchsia-500 text-white hover:bg-fuchsia-600'
             }`}
           >
             {isLoading || isGenerating ? (
@@ -217,11 +217,11 @@ The narrative should read as a cohesive educational summary suitable for inclusi
 
       {/* Data Summary */}
       {subjectData.length > 0 && !narrative && (
-        <div className="p-4 bg-indigo-50 rounded-lg">
-          <p className="text-sm text-indigo-700 mb-2">
+        <div className="p-4 bg-fuchsia-50 rounded-lg">
+          <p className="text-sm text-fuchsia-700 mb-2">
             Data available for narrative generation:
           </p>
-          <ul className="text-sm text-indigo-600 space-y-1">
+          <ul className="text-sm text-fuchsia-600 space-y-1">
             <li>• {totalActivities} activities across {subjectData.length} subjects</li>
             <li>• {totalHours} total learning hours</li>
             <li>• Top subjects: {subjectData.slice(0, 3).map(s => s.name).join(', ')}</li>
@@ -239,14 +239,14 @@ The narrative should read as a cohesive educational summary suitable for inclusi
                 onClick={() => {
                   navigator.clipboard.writeText(narrative)
                 }}
-                className="text-xs text-indigo-600 hover:text-indigo-800"
+                className="text-xs text-fuchsia-600 hover:text-fuchsia-800"
               >
                 Copy
               </button>
               <button
                 onClick={generateNarrative}
                 disabled={isLoading || isGenerating}
-                className="text-xs text-indigo-600 hover:text-indigo-800"
+                className="text-xs text-fuchsia-600 hover:text-fuchsia-800"
               >
                 Regenerate
               </button>

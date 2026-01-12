@@ -223,7 +223,7 @@ export default function FieldTripsScreen() {
                             marginRight: 12,
                           }}
                         >
-                          <Ionicons name={typeOption?.icon || 'calendar'} size={20} color="#9333ea" />
+                          <Ionicons name={typeOption?.icon || 'calendar'} size={20} color="#d946ef" />
                         </View>
                         <View style={{ flex: 1 }}>
                           <Text style={{ fontSize: 15, fontWeight: '600', color: '#1f2937' }}>{trip.title}</Text>

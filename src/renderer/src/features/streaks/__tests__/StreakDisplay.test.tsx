@@ -55,7 +55,7 @@ describe('StreakDisplay', () => {
       <StreakDisplay
         studentId="test-student-1"
         studentName="Test Student"
-        studentColor="indigo"
+        studentColor="fuchsia"
       />
     )
 

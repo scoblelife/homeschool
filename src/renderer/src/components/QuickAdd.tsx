@@ -192,7 +192,7 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center text-2xl z-40"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-fuchsia-500 hover:bg-fuchsia-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center text-2xl z-40"
         title="Quick Add Activity"
       >
         +
@@ -226,13 +226,13 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
                   {/* Header */}
-                  <div className="bg-indigo-600 px-6 py-4">
+                  <div className="bg-fuchsia-500 px-6 py-4">
                     <Dialog.Title className="text-lg font-semibold text-white">
                       {step === 'recent' && 'Quick Add Activity'}
                       {step === 'type' && 'Select Activity Type'}
                       {step === 'details' && 'Activity Details'}
                     </Dialog.Title>
-                    <p className="text-indigo-200 text-sm mt-1">
+                    <p className="text-fuchsia-200 text-sm mt-1">
                       {step === 'recent' && 'Tap to log or create new'}
                       {step === 'type' && 'What kind of activity?'}
                       {step === 'details' && 'Almost done!'}
@@ -256,7 +256,7 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                                     key={index}
                                     onClick={() => handleQuickLog(template)}
                                     disabled={isLoading}
-                                    className="p-3 bg-gray-50 hover:bg-indigo-50 rounded-lg text-left transition-colors disabled:opacity-50 border border-gray-200 hover:border-indigo-300"
+                                    className="p-3 bg-gray-50 hover:bg-fuchsia-50 rounded-lg text-left transition-colors disabled:opacity-50 border border-gray-200 hover:border-fuchsia-300"
                                   >
                                     <div className="flex items-center gap-2 mb-1">
                                       <span className="text-lg">{typeInfo?.icon}</span>
@@ -278,7 +278,7 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                         <div className="pt-4 border-t border-gray-200">
                           <button
                             onClick={() => setStep('type')}
-                            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+                            className="w-full py-3 bg-fuchsia-500 hover:bg-fuchsia-600 text-white rounded-lg font-medium transition-colors"
                           >
                             + New Activity
                           </button>
@@ -297,7 +297,7 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                                 setSelectedType(type.value)
                                 setStep('details')
                               }}
-                              className="p-3 bg-gray-50 hover:bg-indigo-50 rounded-lg text-center transition-colors border border-gray-200 hover:border-indigo-300"
+                              className="p-3 bg-gray-50 hover:bg-fuchsia-50 rounded-lg text-center transition-colors border border-gray-200 hover:border-fuchsia-300"
                             >
                               <div className="text-2xl mb-1">{type.icon}</div>
                               <div className="text-xs text-gray-700">{type.label}</div>
@@ -318,13 +318,13 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                     {step === 'details' && (
                       <div className="space-y-4">
                         {/* Selected Type Display */}
-                        <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-lg">
+                        <div className="flex items-center gap-3 p-3 bg-fuchsia-50 rounded-lg">
                           <span className="text-2xl">{getTypeInfo(selectedType)?.icon}</span>
                           <div>
-                            <div className="font-medium text-indigo-900">{getTypeInfo(selectedType)?.label}</div>
+                            <div className="font-medium text-fuchsia-900">{getTypeInfo(selectedType)?.label}</div>
                             <button
                               onClick={() => setStep('type')}
-                              className="text-xs text-indigo-600 hover:text-indigo-800"
+                              className="text-xs text-fuchsia-600 hover:text-fuchsia-800"
                             >
                               Change
                             </button>
@@ -347,7 +347,7 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                                 }}
                                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                                   selectedStudentIds.includes(student.id)
-                                    ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-500'
+                                    ? 'bg-fuchsia-100 text-fuchsia-700 ring-2 ring-fuchsia-500'
                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                               >
@@ -367,7 +367,7 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                                 onClick={() => setSelectedSubjectId(subject.id)}
                                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                                   selectedSubjectId === subject.id
-                                    ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-500'
+                                    ? 'bg-fuchsia-100 text-fuchsia-700 ring-2 ring-fuchsia-500'
                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                               >
@@ -385,7 +385,7 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="e.g., Chapter 5 worksheet"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
                             autoFocus
                           />
                           {/* AI Subject Suggestions based on title */}
@@ -409,7 +409,7 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                                 onClick={() => setDuration(duration === mins ? null : mins)}
                                 className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                                   duration === mins
-                                    ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-500'
+                                    ? 'bg-fuchsia-100 text-fuchsia-700 ring-2 ring-fuchsia-500'
                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                               >
@@ -430,7 +430,7 @@ export default function QuickAdd({ onActivityCreated }: QuickAddProps): JSX.Elem
                           <button
                             onClick={handleSubmit}
                             disabled={isLoading || !selectedSubjectId || !title.trim() || selectedStudentIds.length === 0}
-                            className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 py-2.5 bg-fuchsia-500 hover:bg-fuchsia-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {isLoading ? 'Saving...' : 'Log Activity'}
                           </button>

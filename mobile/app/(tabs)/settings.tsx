@@ -25,14 +25,12 @@ const gradeLevels: { value: GradeLevel; label: string }[] = [
 ]
 
 const colorOptions = [
-  { value: 'child1', label: 'Fuchsia', color: '#d946ef' },
-  { value: 'child2', label: 'Teal', color: '#14b8a6' },
-  { value: 'amber', label: 'Amber', color: '#f59e0b' },
+  { value: 'fuchsia', label: 'Fuchsia', color: '#d946ef' },
+  { value: 'teal', label: 'Teal', color: '#14b8a6' },
   { value: 'blue', label: 'Blue', color: '#3b82f6' },
+  { value: 'orange', label: 'Orange', color: '#f97316' },
+  { value: 'purple', label: 'Purple', color: '#a855f7' },
   { value: 'green', label: 'Green', color: '#22c55e' },
-  { value: 'purple', label: 'Purple', color: '#8b5cf6' },
-  { value: 'rose', label: 'Rose', color: '#f43f5e' },
-  { value: 'indigo', label: 'Indigo', color: '#6366f1' },
 ]
 
 export default function SettingsScreen() {

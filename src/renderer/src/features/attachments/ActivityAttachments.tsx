@@ -93,7 +93,7 @@ export function ActivityAttachments({ activityId, readOnly = false }: Props) {
           <button
             onClick={handleAdd}
             disabled={adding}
-            className="inline-flex items-center px-2 py-1 text-xs font-medium text-indigo-600 hover:text-indigo-700 disabled:opacity-50"
+            className="inline-flex items-center px-2 py-1 text-xs font-medium text-fuchsia-600 hover:text-fuchsia-700 disabled:opacity-50"
           >
             <svg
               className="w-4 h-4 mr-1"
@@ -119,7 +119,7 @@ export function ActivityAttachments({ activityId, readOnly = false }: Props) {
           {attachments.map((attachment) => (
             <div
               key={attachment.id}
-              className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 cursor-pointer hover:ring-2 hover:ring-indigo-500"
+              className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 cursor-pointer hover:ring-2 hover:ring-fuchsia-500"
               onClick={() => setSelectedAttachment(attachment)}
             >
               <img

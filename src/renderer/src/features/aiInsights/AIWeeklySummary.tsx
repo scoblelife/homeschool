@@ -107,7 +107,7 @@ export function AIWeeklySummary({
   return (
     <div className="mt-4">
       {summary ? (
-        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 rounded-lg border border-purple-100 overflow-hidden">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-full px-4 py-3 flex items-center justify-between hover:bg-purple-100/50 transition-colors"
@@ -152,7 +152,7 @@ export function AIWeeklySummary({
         <button
           onClick={handleGenerateSummary}
           disabled={isGenerating || weekData.totalActivities === 0}
-          className="w-full p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-100 hover:from-purple-100 hover:to-indigo-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full p-3 bg-gradient-to-r from-purple-50 to-fuchsia-50 rounded-lg border border-purple-100 hover:from-purple-100 hover:to-fuchsia-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <div className="flex items-center justify-center gap-2">
             {isGenerating ? (

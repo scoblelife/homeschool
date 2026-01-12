@@ -143,7 +143,7 @@ export function StandardsList({ gradeLevel, onSelectStandard, selectedIds = [] }
                   </span>
                 </div>
                 {selectedCount > 0 && (
-                  <span className="px-2 py-0.5 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-full">
+                  <span className="px-2 py-0.5 text-xs bg-fuchsia-100 dark:bg-fuchsia-900 text-fuchsia-700 dark:text-fuchsia-300 rounded-full">
                     {selectedCount} mapped
                   </span>
                 )}
@@ -161,7 +161,7 @@ export function StandardsList({ gradeLevel, onSelectStandard, selectedIds = [] }
                         onClick={() => onSelectStandard?.(standard)}
                         className={`px-4 py-3 cursor-pointer transition-colors ${
                           isSelected
-                            ? 'bg-indigo-50 dark:bg-indigo-900/30'
+                            ? 'bg-fuchsia-50 dark:bg-fuchsia-900/30'
                             : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                         }`}
                       >
@@ -172,8 +172,8 @@ export function StandardsList({ gradeLevel, onSelectStandard, selectedIds = [] }
                                 type="checkbox"
                                 checked={isSelected}
                                 onChange={() => {}}
-                                className="w-4 h-4 text-indigo-600 border-gray-300 rounded
-                                  focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
+                                className="w-4 h-4 text-fuchsia-600 border-gray-300 rounded
+                                  focus:ring-fuchsia-500 dark:border-gray-600 dark:bg-gray-700"
                               />
                             </div>
                           )}

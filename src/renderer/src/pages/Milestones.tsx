@@ -89,7 +89,7 @@ function MilestoneCard({
               {statusInfo.label}
             </span>
             {milestone.category && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-50 text-fuchsia-600">
                 {milestone.category}
               </span>
             )}
@@ -113,7 +113,7 @@ function MilestoneCard({
           <div className="mt-3">
             <button
               onClick={() => setShowResources(!showResources)}
-              className="text-xs text-indigo-600 hover:text-indigo-800"
+              className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
             >
               {showResources ? 'Hide Resources' : 'Show Resources'}
             </button>
@@ -148,7 +148,7 @@ function MilestoneCard({
                 )}
                 <button
                   onClick={() => setShowAddResource(true)}
-                  className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded hover:bg-indigo-200"
+                  className="text-xs bg-fuchsia-100 text-fuchsia-700 px-2 py-1 rounded hover:bg-fuchsia-200"
                 >
                   + Add Resource
                 </button>
@@ -167,7 +167,7 @@ function MilestoneCard({
             <option value="in_progress">In Progress</option>
             <option value="completed">Completed</option>
           </select>
-          <button onClick={onEdit} className="text-indigo-600 hover:text-indigo-800 text-sm">
+          <button onClick={onEdit} className="text-fuchsia-600 hover:text-fuchsia-700 text-sm">
             Edit
           </button>
         </div>
@@ -187,7 +187,7 @@ function MilestoneCard({
                 <Tab
                   className={({ selected }) =>
                     `px-4 py-2 rounded-lg text-sm font-medium ${
-                      selected ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600'
+                      selected ? 'bg-fuchsia-100 text-fuchsia-700' : 'bg-gray-100 text-gray-600'
                     }`
                   }
                 >
@@ -196,7 +196,7 @@ function MilestoneCard({
                 <Tab
                   className={({ selected }) =>
                     `px-4 py-2 rounded-lg text-sm font-medium ${
-                      selected ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600'
+                      selected ? 'bg-fuchsia-100 text-fuchsia-700' : 'bg-gray-100 text-gray-600'
                     }`
                   }
                 >
@@ -396,11 +396,11 @@ export default function Milestones(): JSX.Element {
       <div className="card mb-6">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-medium text-gray-700">Overall Progress</span>
-          <span className="text-sm font-semibold text-indigo-600">{stats.percentage}%</span>
+          <span className="text-sm font-semibold text-fuchsia-600">{stats.percentage}%</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
           <div
-            className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-fuchsia-500 to-purple-500 h-3 rounded-full transition-all duration-500"
             style={{ width: `${stats.percentage}%` }}
           />
         </div>
@@ -447,7 +447,7 @@ export default function Milestones(): JSX.Element {
                 onClick={() => setFilterStatus(status)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   filterStatus === status
-                    ? 'bg-indigo-100 text-indigo-700'
+                    ? 'bg-fuchsia-100 text-fuchsia-700'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >

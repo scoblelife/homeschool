@@ -270,14 +270,14 @@ export default function Calendar(): JSX.Element {
                     onClick={() => handleSelectDate(day)}
                     className={`aspect-square p-2 rounded-lg text-left transition-colors ${
                       !isCurrentMonth ? 'text-gray-300' : 'text-gray-900'
-                    } ${isSelected ? 'bg-indigo-100 ring-2 ring-indigo-500' : 'hover:bg-gray-50'} ${
+                    } ${isSelected ? 'bg-fuchsia-100 ring-2 ring-fuchsia-500' : 'hover:bg-gray-50'} ${
                       isToday && !isSelected ? 'bg-yellow-50' : ''
                     } ${hasFieldTrip && isCurrentMonth && !isSelected ? firstTripColors?.bg : ''} ${
                       isBusy && isCurrentMonth && !isSelected && !hasFieldTrip ? 'bg-red-50' : ''
                     }`}
                   >
                     <div
-                      className={`text-sm font-medium ${isToday ? 'text-indigo-600' : ''} ${hasFieldTrip && isCurrentMonth ? firstTripColors?.text : ''} ${isBusy && isCurrentMonth && !hasFieldTrip ? 'text-red-600' : ''}`}
+                      className={`text-sm font-medium ${isToday ? 'text-fuchsia-600' : ''} ${hasFieldTrip && isCurrentMonth ? firstTripColors?.text : ''} ${isBusy && isCurrentMonth && !hasFieldTrip ? 'text-red-600' : ''}`}
                     >
                       {format(day, 'd')}
                     </div>
@@ -476,7 +476,7 @@ export default function Calendar(): JSX.Element {
                       onClick={() => setFormData({ ...formData, activityType: type.value })}
                       className={`p-2 rounded-lg text-center transition-colors ${
                         formData.activityType === type.value
-                          ? 'bg-indigo-100 ring-2 ring-indigo-500'
+                          ? 'bg-fuchsia-100 ring-2 ring-fuchsia-500'
                           : 'bg-gray-50 hover:bg-gray-100'
                       }`}
                     >

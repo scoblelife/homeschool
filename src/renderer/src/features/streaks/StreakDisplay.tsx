@@ -28,7 +28,7 @@ interface StreakDisplayProps {
 export function StreakDisplay({
   studentId,
   studentName,
-  studentColor = 'indigo',
+  studentColor = 'fuchsia',
   compact = false,
 }: StreakDisplayProps): JSX.Element {
   const [showBadgesModal, setShowBadgesModal] = useState(false)
@@ -69,7 +69,7 @@ export function StreakDisplay({
           {streakData.badges.length > 0 && (
             <button
               onClick={() => setShowBadgesModal(true)}
-              className="text-sm text-indigo-600 hover:text-indigo-800"
+              className="text-sm text-fuchsia-600 hover:text-fuchsia-800"
             >
               View Badges ({streakData.badges.length})
             </button>
