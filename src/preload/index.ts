@@ -61,10 +61,11 @@ import type {
   UpdateCoopMember,
   CoopEvent,
   CreateCoopEvent,
-  UpdateCoopEvent
+  UpdateCoopEvent,
+  AIAPI
 } from '../shared/types'
 
-const api: DatabaseAPI & SyncAPI = {
+const api: DatabaseAPI & SyncAPI & AIAPI = {
   // Students
   getStudents: () => ipcRenderer.invoke('db:students:getAll'),
   getStudent: (id: string) => ipcRenderer.invoke('db:students:get', id),
@@ -467,7 +468,28 @@ const api: DatabaseAPI & SyncAPI = {
   updateCoopEvent: (id: string, data: UpdateCoopEvent) =>
     ipcRenderer.invoke('coop:updateEvent', id, data) as Promise<CoopEvent>,
   deleteCoopEvent: (id: string) =>
-    ipcRenderer.invoke('coop:deleteEvent', id) as Promise<void>
+    ipcRenderer.invoke('coop:deleteEvent', id) as Promise<void>,
+
+  // AI Insights
+  aiInitialize: () =>
+    ipcRenderer.invoke('ai:initialize') as Promise<{ success: boolean }>,
+  aiIsAvailable: () =>
+    ipcRenderer.invoke('ai:isAvailable') as Promise<boolean>,
+  aiGetConfig: () =>
+    ipcRenderer.invoke('ai:getConfig') as Promise<{ apiKey: string | null; enabled: boolean; cacheEnabled: boolean }>,
+  aiSetApiKey: (apiKey: string | null) =>
+    ipcRenderer.invoke('ai:setApiKey', apiKey) as Promise<{ success: boolean }>,
+  aiSetEnabled: (enabled: boolean) =>
+    ipcRenderer.invoke('ai:setEnabled', enabled) as Promise<{ success: boolean }>,
+  aiComplete: (prompt: string, options?: {
+    maxTokens?: number
+    temperature?: number
+    systemPrompt?: string
+    useCache?: boolean
+  }) =>
+    ipcRenderer.invoke('ai:complete', prompt, options) as Promise<{ success: boolean; response?: string; error?: string }>,
+  aiClearCache: () =>
+    ipcRenderer.invoke('ai:clearCache') as Promise<{ success: boolean }>
 }
 
 contextBridge.exposeInMainWorld('api', api)

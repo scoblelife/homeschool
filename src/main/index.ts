@@ -5,6 +5,7 @@ import { initializeSchema, seedDefaultSubjects, seedMilestoneTemplates, closeDat
 import { registerIpcHandlers } from './ipc'
 import { registerSyncIPC, shutdownSync } from './sync-ipc'
 import { errorReporting } from '../errorReporting'
+import { registerAIHandlers } from '../ai'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -69,6 +70,13 @@ app.whenReady().then(async () => {
     registerSyncIPC()
   } catch (err) {
     console.error('[Main] Failed to register sync IPC:', err)
+  }
+
+  // Register AI handlers (optional - AI features can fail gracefully)
+  try {
+    registerAIHandlers()
+  } catch (err) {
+    console.error('[Main] Failed to register AI IPC:', err)
   }
 
   // Always create window, even if initialization partially failed
