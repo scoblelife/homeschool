@@ -995,8 +995,127 @@ export interface AIAPI {
   aiClearCache: () => Promise<{ success: boolean }>
 }
 
+// ============ Auth Types ============
+
+export interface AuthUser {
+  id: string
+  email?: string
+  createdAt?: string
+}
+
+export interface AuthState {
+  isConfigured: boolean
+  isAuthenticated: boolean
+  user: AuthUser | null
+}
+
+export interface BackupMetadata {
+  id: string
+  userId: string
+  createdAt: string
+  size: number
+  checksum: string
+  version: number
+}
+
+export interface AuthAPI {
+  // Configuration
+  authConfigure: (config: { supabaseUrl: string; supabaseAnonKey: string }) => Promise<{ success: boolean }>
+  authIsConfigured: () => Promise<boolean>
+
+  // Auth State
+  authGetState: () => Promise<AuthState>
+
+  // Sign Up/In/Out
+  authSignUp: (email: string, password: string) => Promise<{ user: AuthUser | null; error: string | null }>
+  authSignIn: (email: string, password: string) => Promise<{ user: AuthUser | null; error: string | null }>
+  authSignInWithOAuth: (provider: 'google' | 'github' | 'apple') => Promise<{ error: string | null }>
+  authSignOut: () => Promise<{ error: string | null }>
+  authResetPassword: (email: string) => Promise<{ error: string | null }>
+
+  // Cloud Backup
+  backupSetKey: (password: string, salt?: number[]) => Promise<{ success: boolean; salt: number[] }>
+  backupHasKey: () => Promise<boolean>
+  backupCreate: (eventLog: string) => Promise<{ success: boolean; error?: string; metadata?: BackupMetadata }>
+  backupList: () => Promise<{ backups: BackupMetadata[]; error?: string }>
+  backupRestore: (backupId: string) => Promise<{ success: boolean; data?: string; error?: string }>
+  backupDelete: (backupId: string) => Promise<{ success: boolean; error?: string }>
+}
+
+// ============ Compliance Types ============
+
+export interface StateRequirement {
+  state: string
+  stateCode: string
+  requiresNotice: boolean
+  noticeDeadline?: string
+  requiredSubjects: string[]
+  recordKeeping: 'none' | 'attendance' | 'portfolio' | 'detailed'
+  assessmentRequired: boolean
+  assessmentType?: 'standardized_test' | 'evaluation' | 'either' | 'none'
+  assessmentFrequency?: string
+  minHours?: number
+  minDays?: number
+  teacherQualifications: string
+  filingDeadlines: Array<{
+    name: string
+    date: string
+    description: string
+  }>
+  notes?: string
+}
+
+export interface ComplianceDeadline {
+  name: string
+  date: Date
+  description: string
+  daysUntil: number
+}
+
+export interface ComplianceDocumentData {
+  students: Student[]
+  parentName: string
+  address: string
+  city: string
+  state: string
+  zip: string
+  phone?: string
+  email?: string
+  schoolYear: string
+  schoolName?: string
+}
+
+export interface GeneratedDocument {
+  title: string
+  content: string
+  format: 'text' | 'html'
+}
+
+export interface ComplianceAPI {
+  // State Requirements
+  complianceGetSupportedStates: () => Promise<Array<{ code: string; name: string }>>
+  complianceGetStateRequirements: (stateCode: string) => Promise<StateRequirement | null>
+  complianceGetUpcomingDeadlines: (stateCode: string, referenceDate?: string) => Promise<ComplianceDeadline[]>
+
+  // Document Generation
+  complianceGenerateNoticeOfIntent: (data: ComplianceDocumentData) => Promise<GeneratedDocument>
+  complianceGenerateAttendanceRecord: (
+    data: ComplianceDocumentData,
+    attendanceData: Array<{ date: string; status: string }>
+  ) => Promise<GeneratedDocument>
+  complianceGenerateIHIP: (
+    data: ComplianceDocumentData,
+    curriculum: Array<{ subject: string; materials: string; goals: string }>
+  ) => Promise<GeneratedDocument>
+  complianceGenerateQuarterlyReport: (
+    data: ComplianceDocumentData,
+    quarter: 1 | 2 | 3 | 4,
+    activities: Array<{ subject: string; description: string; hours: number }>
+  ) => Promise<GeneratedDocument>
+}
+
 declare global {
   interface Window {
-    api: DatabaseAPI & SyncAPI & AIAPI
+    api: DatabaseAPI & SyncAPI & AIAPI & AuthAPI & ComplianceAPI
   }
 }
