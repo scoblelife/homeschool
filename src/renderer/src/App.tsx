@@ -18,6 +18,7 @@ import Templates from './pages/Templates'
 import Recommendations from './pages/Recommendations'
 import Resources from './pages/Resources'
 import Coop from './pages/Coop'
+import ContentLibrary from './pages/ContentLibrary'
 import ApiServices from './pages/ApiServices'
 import { useInitializeData } from './hooks/useDatabase'
 
@@ -44,6 +45,7 @@ export default function App(): JSX.Element {
         <Route path="library" element={<Library />} />
         <Route path="field-trips" element={<FieldTrips />} />
         <Route path="coop" element={<Coop />} />
+        <Route path="content-library" element={<ContentLibrary />} />
         <Route path="api-services" element={<ApiServices />} />
         <Route path="settings" element={<Settings />} />
       </Route>
