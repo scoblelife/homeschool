@@ -73,8 +73,11 @@ export default function WeeklyPlanner(): JSX.Element {
   }, [selectedMilestoneIds])
 
   const loadWeeklyPlan = async () => {
-    if (!selectedStudentId) return
-    const plan = await window.api.getWeeklyPlan(selectedStudentId, currentWeekStart)
+    const currentStudentId = selectedStudentId // Capture at call time
+    if (!currentStudentId) return
+    const plan = await window.api.getWeeklyPlan(currentStudentId, currentWeekStart)
+    // Verify student hasn't changed during async operation
+    if (currentStudentId !== selectedStudentId) return
     if (plan) {
       setSelectedMilestoneIds(plan.milestoneIds)
     } else {
@@ -111,8 +114,11 @@ export default function WeeklyPlanner(): JSX.Element {
   }
 
   const loadSyncRecords = async () => {
-    if (!selectedStudentId) return
-    const records = await window.api.getCalendarSyncRecordsForWeek(currentWeekStart, selectedStudentId)
+    const currentStudentId = selectedStudentId // Capture at call time
+    if (!currentStudentId) return
+    const records = await window.api.getCalendarSyncRecordsForWeek(currentWeekStart, currentStudentId)
+    // Verify student hasn't changed during async operation
+    if (currentStudentId !== selectedStudentId) return
     setSyncRecords(records)
   }
 
