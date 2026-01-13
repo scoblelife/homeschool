@@ -99,31 +99,31 @@ The core features are complete. Now focus on shipping to users, polishing the mo
   - ✅ Respects system permissions
   - Location: `mobile/src/notifications/`
 
-- [ ] **7.2 iOS widgets**
-  - Today widget: show activities logged today + streak
-  - Timer widget: quick start/stop current timer
-  - Quick-add widget: tap to open quick-add modal
-  - Use expo-apple-targets or react-native-widget-extension
-  - Location: `mobile/ios/widgets/`, `mobile/src/widgets/`
+- [x] **7.2 iOS widgets**
+  - ✅ Today widget: show activities logged today + streak
+  - ✅ Timer widget: quick start/stop current timer
+  - ✅ Quick-add widget: tap to open quick-add modal
+  - ✅ WidgetKit implementation with App Groups for data sharing
+  - Location: `mobile/ios/HomeschoolWidget/`, `mobile/src/widgets/`
 
-- [ ] **7.3 Android widgets**
-  - Today widget: activities logged + streak count
-  - Timer widget: start/stop timer
-  - Quick-add widget: open quick-add
-  - Use react-native-android-widget
+- [x] **7.3 Android widgets**
+  - ✅ Today widget: activities logged + streak count
+  - ✅ Timer widget: start/stop timer
+  - ✅ Quick-add widget: open quick-add
+  - ✅ AppWidgetProvider implementations with SharedPreferences
   - Location: `mobile/android/app/src/main/java/.../widgets/`
 
-- [ ] **7.4 Share sheet integration**
-  - iOS Share Extension: share photo → create activity
-  - Android Share target: receive images/text
-  - Pre-fill activity with shared content
-  - Location: `mobile/ios/ShareExtension/`, `mobile/android/.../ShareActivity.java`
+- [x] **7.4 Share sheet integration**
+  - ✅ iOS Share Extension: share photo/text → create activity
+  - ✅ Android Share target: receive images/text via ShareActivity
+  - ✅ Pre-fill activity with shared content
+  - Location: `mobile/ios/ShareExtension/`, `mobile/android/.../ShareActivity.kt`
 
-- [ ] **7.5 Voice shortcuts**
-  - Siri Shortcuts: "Log reading for Emma"
-  - Google Assistant routines: "Log activity"
-  - Expose key actions as shortcut intents
-  - Location: `mobile/src/shortcuts/`, native config
+- [x] **7.5 Voice shortcuts**
+  - ✅ Siri Shortcuts: donate shortcuts for log, timer, today actions
+  - ✅ Android App Shortcuts: static shortcuts in shortcuts.xml
+  - ✅ React Native bridge modules for both platforms
+  - Location: `mobile/src/shortcuts/`, `mobile/ios/Homeschool/SiriShortcutsModule.swift`
 
 - [x] **7.6 Offline resilience**
   - ✅ CRDT event log queues all writes
@@ -327,19 +327,17 @@ The core features are complete. Now focus on shipping to users, polishing the mo
 ## Current Status
 
 **Last Updated:** 2026-01-12
-**Current Phase:** Final polish
-**Blockers:**
-- Widgets (7.2-7.5): Require native Xcode/Android Studio development
+**Current Phase:** COMPLETE
+**Blockers:** None
 
 **Completed Phases:**
 - ✅ Phase 6: Ship & Learn (100%)
-- ✅ Phase 7: Mobile-First Polish (80% - native widgets pending)
+- ✅ Phase 7: Mobile-First Polish (100%)
 - ✅ Phase 8: AI-Powered Insights (100%)
 - ✅ Phase 9: Community Network (100%)
 - ✅ Phase 10: Compliance Automation (100%)
 
-**Remaining Tasks:**
-- 7.2-7.5: iOS/Android widgets, share sheet, voice shortcuts (native code)
+**All roadmap tasks complete!**
 
 ---
 

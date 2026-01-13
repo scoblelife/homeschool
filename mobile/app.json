@@ -52,6 +52,7 @@
       "expo-sqlite",
       "expo-asset",
       "./plugins/withWebRTC",
+      "./plugins/withWidgets",
       "expo-notifications",
       [
         "expo-quick-actions",
