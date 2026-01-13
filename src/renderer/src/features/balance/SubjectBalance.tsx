@@ -77,31 +77,31 @@ export function SubjectBalance({
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Weekly Subject Balance</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Weekly Subject Balance</h3>
           <button
             onClick={() => setShowSettings(true)}
-            className="text-sm text-fuchsia-600 hover:text-fuchsia-800"
+            className="text-sm text-fuchsia-600 hover:text-fuchsia-800 dark:text-fuchsia-400 dark:hover:text-fuchsia-300"
           >
             {hasTargets ? 'Edit Targets' : 'Set Targets'}
           </button>
         </div>
 
         {!hasTargets ? (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Set weekly hour targets for each subject to track balance.
           </p>
         ) : (
           <>
             {/* Alerts for under-target subjects */}
             {underTargetSubjects.length > 0 && (
-              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg">
                 <div className="flex items-start gap-2">
                   <span className="text-amber-500 text-lg">⚠️</span>
                   <div className="flex-1">
-                    <div className="font-medium text-amber-800">Subjects Need Attention</div>
-                    <ul className="mt-1 text-sm text-amber-700 space-y-1">
+                    <div className="font-medium text-amber-800 dark:text-amber-300">Subjects Need Attention</div>
+                    <ul className="mt-1 text-sm text-amber-700 dark:text-amber-400 space-y-1">
                       {underTargetSubjects.map((subject) => (
                         <li key={subject.subjectId}>
                           {getBalanceRecommendation(subject)}
@@ -155,23 +155,23 @@ function BalanceBar({ data }: BalanceBarProps): JSX.Element {
   return (
     <div>
       <div className="flex items-center justify-between text-sm mb-1">
-        <span className="font-medium text-gray-700">{data.subjectName}</span>
-        <span className="text-gray-500">
+        <span className="font-medium text-gray-700 dark:text-gray-200">{data.subjectName}</span>
+        <span className="text-gray-500 dark:text-gray-400">
           {formatMinutes(data.actualMinutes)} / {formatMinutes(data.targetMinutes)}
         </span>
       </div>
-      <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="relative h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
         <div
           className={`absolute h-full ${barColor} rounded-full transition-all duration-300`}
           style={{ width: `${Math.min(percentage, 100)}%` }}
         />
         {/* Target line */}
-        <div className="absolute h-full w-0.5 bg-gray-400 left-[100%] transform -translate-x-1/2" />
+        <div className="absolute h-full w-0.5 bg-gray-400 dark:bg-gray-500 left-[100%] transform -translate-x-1/2" />
       </div>
-      <div className="flex justify-between text-xs text-gray-400 mt-0.5">
+      <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-0.5">
         <span>{Math.round(data.percentageOfTarget)}% of target</span>
         {data.status === 'under' && (
-          <span className="text-amber-600">
+          <span className="text-amber-600 dark:text-amber-400">
             {formatMinutes(data.targetMinutes - data.actualMinutes)} remaining
           </span>
         )}
@@ -237,11 +237,11 @@ function TargetSettingsModal({
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-          <Dialog.Title className="text-lg font-semibold text-gray-900 mb-2">
+        <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+          <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             Weekly Hour Targets
           </Dialog.Title>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Set target hours per week for {studentName}'s subjects. You'll be alerted when subjects
             fall significantly below target.
           </p>
@@ -254,7 +254,7 @@ function TargetSettingsModal({
               return (
                 <div key={subject.id} className="flex items-center gap-4">
                   <div className="flex-1">
-                    <label className="text-sm font-medium text-gray-700">{subject.name}</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{subject.name}</label>
                   </div>
                   <div className="flex items-center gap-2">
                     <input
@@ -266,10 +266,10 @@ function TargetSettingsModal({
                       onChange={(e) =>
                         handleTargetChange(subject.id, parseFloat(e.target.value) || 0)
                       }
-                      className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-center text-sm"
+                      className="w-20 px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-center text-sm"
                       placeholder="0"
                     />
-                    <span className="text-sm text-gray-500">hrs/week</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">hrs/week</span>
                   </div>
                 </div>
               )
@@ -345,12 +345,12 @@ export function SubjectBalanceAlert({
   if (underTargetSubjects.length === 0) return null
 
   return (
-    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+    <div className="p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg">
       <div className="flex items-start gap-2">
         <span className="text-amber-500">⚠️</span>
         <div className="text-sm">
-          <span className="font-medium text-amber-800">Behind on: </span>
-          <span className="text-amber-700">
+          <span className="font-medium text-amber-800 dark:text-amber-300">Behind on: </span>
+          <span className="text-amber-700 dark:text-amber-400">
             {underTargetSubjects.map((s) => s.name).join(', ')}
           </span>
         </div>
