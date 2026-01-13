@@ -27,13 +27,13 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: 'bg-gray-100 text-gray-600',
-  primary: 'bg-fuchsia-100 text-fuchsia-700',
-  secondary: 'bg-sky-100 text-sky-700',
-  success: 'bg-green-100 text-green-700',
-  warning: 'bg-amber-100 text-amber-700',
-  danger: 'bg-red-100 text-red-700',
-  info: 'bg-blue-100 text-blue-700',
+  default: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
+  primary: 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/50 dark:text-fuchsia-300',
+  secondary: 'bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300',
+  success: 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300',
+  warning: 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300',
+  danger: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300',
+  info: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
 }
 
 const dotColors: Record<BadgeVariant, string> = {
@@ -83,12 +83,12 @@ Badge.displayName = 'Badge'
 export type StudentColor = 'fuchsia' | 'teal' | 'blue' | 'orange' | 'purple' | 'green'
 
 const studentColorClasses: Record<StudentColor, string> = {
-  fuchsia: 'bg-fuchsia-100 text-fuchsia-700',
-  teal: 'bg-teal-100 text-teal-700',
-  blue: 'bg-blue-100 text-blue-700',
-  orange: 'bg-orange-100 text-orange-700',
-  purple: 'bg-purple-100 text-purple-700',
-  green: 'bg-green-100 text-green-700',
+  fuchsia: 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/50 dark:text-fuchsia-300',
+  teal: 'bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300',
+  blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300',
+  orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300',
+  purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300',
+  green: 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300',
 }
 
 export interface StudentBadgeProps extends Omit<BadgeProps, 'variant'> {

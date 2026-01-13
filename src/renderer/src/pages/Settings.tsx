@@ -348,21 +348,21 @@ export default function Settings(): JSX.Element {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Settings</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Settings</h1>
 
       {/* Students Section */}
-      <div className="card mb-8">
+      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Students</h2>
-          <button onClick={openAddModal} className="btn btn-primary">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Students</h2>
+          <button onClick={openAddModal} className="px-4 py-2 text-sm font-semibold rounded-lg bg-fuchsia-500 text-white hover:bg-fuchsia-600 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 transition-colors">
             + Add Student
           </button>
         </div>
 
         {students.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-500 mb-4">No students added yet.</p>
-            <button onClick={openAddModal} className="btn btn-primary">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">No students added yet.</p>
+            <button onClick={openAddModal} className="px-4 py-2 text-sm font-semibold rounded-lg bg-fuchsia-500 text-white hover:bg-fuchsia-600 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 transition-colors">
               Add Your First Student
             </button>
           </div>
@@ -371,7 +371,7 @@ export default function Settings(): JSX.Element {
             {students.map((student) => (
               <div
                 key={student.id}
-                className={`flex items-center gap-4 p-4 bg-gray-50 rounded-lg border-l-4 ${
+                className={`flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-l-4 ${
                   getStudentColor(student.color).border
                 }`}
               >
@@ -383,8 +383,8 @@ export default function Settings(): JSX.Element {
                   {student.name.charAt(0)}
                 </div>
                 <div className="flex-1">
-                  <div className="font-semibold text-gray-900">{student.name}</div>
-                  <div className="text-sm text-gray-500">
+                  <div className="font-semibold text-gray-900 dark:text-white">{student.name}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
                     {student.gradeLevel === 'pre-k' ? 'Pre-K' : student.gradeLevel === '1st' ? '1st Grade' : '2nd Grade'} •{' '}
                     Born {format(parseISO(student.dateOfBirth), 'MMMM d, yyyy')}
                   </div>
@@ -392,7 +392,7 @@ export default function Settings(): JSX.Element {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setCertificateStudent(student)}
-                    className="btn btn-secondary text-sm flex items-center gap-1"
+                    className="px-3 py-1.5 text-sm font-semibold rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1"
                     title="Print Grade Certificate"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -402,13 +402,13 @@ export default function Settings(): JSX.Element {
                   </button>
                   <button
                     onClick={() => openEditModal(student.id)}
-                    className="btn btn-secondary text-sm"
+                    className="px-3 py-1.5 text-sm font-semibold rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(student.id)}
-                    className="btn btn-danger text-sm"
+                    className="px-3 py-1.5 text-sm font-semibold rounded-md bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 transition-colors"
                   >
                     Delete
                   </button>
@@ -420,18 +420,18 @@ export default function Settings(): JSX.Element {
       </div>
 
       {/* State Requirements Section */}
-      <div className="card mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">State Requirements</h2>
-        <p className="text-sm text-gray-600 mb-4">
+      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">State Requirements</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Select your state to see homeschool requirements and ensure compliance.
         </p>
 
         <div className="mb-4">
-          <label className="label">Your State</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Your State</label>
           <select
             value={selectedStateCode || ''}
             onChange={(e) => handleStateChange(e.target.value)}
-            className="input"
+            className="block w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500"
           >
             <option value="">Select your state...</option>
             {availableStates.map((state) => (
@@ -443,28 +443,28 @@ export default function Settings(): JSX.Element {
         </div>
 
         {stateInfo && (
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-medium text-gray-900">{stateInfo.name} Requirements</h3>
+              <h3 className="font-medium text-gray-900 dark:text-white">{stateInfo.name} Requirements</h3>
               <span
                 className={`text-xs px-2 py-1 rounded-full ${
                   stateInfo.regulationLevel === 'minimal'
-                    ? 'bg-green-100 text-green-800'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300'
                     : stateInfo.regulationLevel === 'low'
-                    ? 'bg-blue-100 text-blue-800'
+                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300'
                     : stateInfo.regulationLevel === 'moderate'
-                    ? 'bg-amber-100 text-amber-800'
-                    : 'bg-red-100 text-red-800'
+                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'
                 }`}
               >
                 {stateInfo.regulationLevel.charAt(0).toUpperCase() + stateInfo.regulationLevel.slice(1)} Regulation
               </span>
             </div>
 
-            <ul className="space-y-2 text-sm text-gray-600 mb-4">
+            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300 mb-4">
               {formatRequirements(stateInfo).map((req, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="text-fuchsia-500 mt-0.5">
+                  <span className="text-fuchsia-500 dark:text-fuchsia-400 mt-0.5">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
@@ -475,21 +475,21 @@ export default function Settings(): JSX.Element {
             </ul>
 
             {stateInfo.notes && (
-              <div className="text-sm text-gray-600 bg-white rounded p-3 border border-gray-200">
+              <div className="text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 rounded p-3 border border-gray-200 dark:border-gray-600">
                 <strong>Notes:</strong> {stateInfo.notes}
               </div>
             )}
 
             {stateInfo.resources.length > 0 && (
               <div className="mt-3">
-                <div className="text-xs text-gray-500 mb-1">Official Resources:</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Official Resources:</div>
                 {stateInfo.resources.map((url, i) => (
                   <a
                     key={i}
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-fuchsia-600 hover:text-fuchsia-700 block truncate"
+                    className="text-sm text-fuchsia-600 hover:text-fuchsia-700 dark:text-fuchsia-400 dark:hover:text-fuchsia-300 block truncate"
                   >
                     {url}
                   </a>
@@ -506,20 +506,20 @@ export default function Settings(): JSX.Element {
       </div>
 
       {/* Google Calendar Section */}
-      <div className="card mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Google Calendar Sync</h2>
-        <p className="text-sm text-gray-600 mb-4">
+      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Google Calendar Sync</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Sync your weekly plan milestones to Google Calendar. Events will automatically appear on your Skylight calendar.
         </p>
 
         {googleAuthStatus === null ? (
-          <div className="text-gray-500">Loading...</div>
+          <div className="text-gray-500 dark:text-gray-400">Loading...</div>
         ) : !googleAuthStatus.isAuthenticated ? (
           <div className="space-y-4">
             <button
               onClick={handleConnectGoogle}
               disabled={isConnecting}
-              className="btn btn-primary flex items-center gap-2"
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-fuchsia-500 text-white hover:bg-fuchsia-600 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 transition-colors flex items-center gap-2"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
@@ -529,24 +529,24 @@ export default function Settings(): JSX.Element {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
+            <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center gap-3">
               <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
               <div>
-                <p className="font-medium text-green-800">Connected to Google Calendar</p>
-                <p className="text-sm text-green-600">Ready to sync milestones</p>
+                <p className="font-medium text-green-800 dark:text-green-300">Connected to Google Calendar</p>
+                <p className="text-sm text-green-600 dark:text-green-400">Ready to sync milestones</p>
               </div>
             </div>
 
             <div>
-              <label className="label">Sync to Calendar</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Sync to Calendar</label>
               <select
                 value={selectedCalendarId || ''}
                 onChange={(e) => handleSelectCalendar(e.target.value)}
-                className="input"
+                className="block w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500"
               >
                 <option value="">Select a calendar...</option>
                 {calendars.map((cal) => (
@@ -555,12 +555,12 @@ export default function Settings(): JSX.Element {
                   </option>
                 ))}
               </select>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Milestones from your weekly plan will be synced to this calendar.
               </p>
             </div>
 
-            <button onClick={handleDisconnectGoogle} className="btn btn-secondary text-red-600">
+            <button onClick={handleDisconnectGoogle} className="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-red-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-red-400 dark:hover:bg-gray-600 transition-colors">
               Disconnect Google Calendar
             </button>
           </div>
@@ -568,9 +568,9 @@ export default function Settings(): JSX.Element {
       </div>
 
       {/* Email Summary Section */}
-      <div className="card mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Weekly Email Summary</h2>
-        <p className="text-sm text-gray-600 mb-4">
+      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Weekly Email Summary</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Receive a weekly email summarizing your students' homeschool activities.
         </p>
 
@@ -581,36 +581,36 @@ export default function Settings(): JSX.Element {
               id="email-enabled"
               checked={emailConfig.enabled}
               onChange={(e) => saveEmailConfig({ ...emailConfig, enabled: e.target.checked })}
-              className="w-4 h-4 text-fuchsia-600 rounded focus:ring-fuchsia-500"
+              className="w-4 h-4 text-fuchsia-600 rounded focus:ring-fuchsia-500 dark:bg-gray-700 dark:border-gray-600"
             />
-            <label htmlFor="email-enabled" className="text-sm font-medium text-gray-700">
+            <label htmlFor="email-enabled" className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Enable weekly email summaries
             </label>
           </div>
 
           <div>
-            <label className="label">Recipient Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Recipient Email</label>
             <input
               type="email"
               value={emailConfig.recipientEmail}
               onChange={(e) => setEmailConfig({ ...emailConfig, recipientEmail: e.target.value })}
               onBlur={() => saveEmailConfig(emailConfig)}
-              className="input"
+              className="block w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
               placeholder="your@email.com"
             />
           </div>
 
           <div>
-            <label className="label">Send Method</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Send Method</label>
             <select
               value={emailConfig.method}
               onChange={(e) => saveEmailConfig({ ...emailConfig, method: e.target.value as 'mailto' | 'resend' })}
-              className="input"
+              className="block w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500"
             >
               <option value="mailto">Open in Email Client (mailto)</option>
               <option value="resend">Send via Resend API</option>
             </select>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               {emailConfig.method === 'mailto'
                 ? 'Opens your default email client with a pre-filled email.'
                 : 'Sends the email directly using the Resend API.'}
@@ -619,22 +619,22 @@ export default function Settings(): JSX.Element {
 
           {emailConfig.method === 'resend' && (
             <div>
-              <label className="label">Resend API Key</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Resend API Key</label>
               <input
                 type="password"
                 value={emailConfig.resendApiKey || ''}
                 onChange={(e) => setEmailConfig({ ...emailConfig, resendApiKey: e.target.value })}
                 onBlur={() => saveEmailConfig(emailConfig)}
-                className="input"
+                className="block w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                 placeholder="re_xxxxxxxxxxxx"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Get your API key from{' '}
                 <a
                   href="https://resend.com/api-keys"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-fuchsia-600 hover:text-fuchsia-700"
+                  className="text-fuchsia-600 hover:text-fuchsia-700 dark:text-fuchsia-400 dark:hover:text-fuchsia-300"
                 >
                   resend.com/api-keys
                 </a>
@@ -643,13 +643,13 @@ export default function Settings(): JSX.Element {
           )}
 
           <div className="flex gap-3 pt-2">
-            <button onClick={handlePreviewEmail} className="btn btn-secondary">
+            <button onClick={handlePreviewEmail} className="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors">
               Preview Email
             </button>
             <button
               onClick={handleSendTestEmail}
               disabled={isSendingEmail || !emailConfig.recipientEmail}
-              className="btn btn-primary"
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-fuchsia-500 text-white hover:bg-fuchsia-600 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 transition-colors disabled:opacity-50"
             >
               {isSendingEmail ? 'Sending...' : 'Send Test Email'}
             </button>
@@ -659,8 +659,8 @@ export default function Settings(): JSX.Element {
             <div
               className={`p-3 rounded-lg text-sm ${
                 emailStatus.success
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                  ? 'bg-green-50 text-green-800 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800'
+                  : 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800'
               }`}
             >
               {emailStatus.message}
@@ -673,14 +673,14 @@ export default function Settings(): JSX.Element {
       <Dialog open={emailPreviewHtml !== null} onClose={() => setEmailPreviewHtml(null)} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b">
-              <Dialog.Title className="text-lg font-semibold text-gray-900">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
                 Email Preview
               </Dialog.Title>
               <button
                 onClick={() => setEmailPreviewHtml(null)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -691,7 +691,7 @@ export default function Settings(): JSX.Element {
               {emailPreviewHtml && (
                 <iframe
                   srcDoc={emailPreviewHtml}
-                  className="w-full h-[500px] border rounded"
+                  className="w-full h-[500px] border border-gray-200 dark:border-gray-700 rounded"
                   title="Email Preview"
                 />
               )}
@@ -701,14 +701,14 @@ export default function Settings(): JSX.Element {
       </Dialog>
 
       {/* Skylight Chore Mapping Section */}
-      <div className="card mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Skylight Chore Mapping</h2>
-        <p className="text-sm text-gray-600 mb-4">
+      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Skylight Chore Mapping</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Map each subject to a Skylight chore name. When you complete milestones, you'll see these names in the daily checklist.
         </p>
 
         {subjects.length === 0 ? (
-          <div className="text-gray-500">Loading subjects...</div>
+          <div className="text-gray-500 dark:text-gray-400">Loading subjects...</div>
         ) : (
           <div className="space-y-3">
             {subjects.map((subject) => {
@@ -716,9 +716,9 @@ export default function Settings(): JSX.Element {
               const hasMapping = choreMappings.some(m => m.subjectId === subject.id)
 
               return (
-                <div key={subject.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <div className="w-32 font-medium text-gray-700 truncate">{subject.name}</div>
-                  <span className="text-gray-400">→</span>
+                <div key={subject.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <div className="w-32 font-medium text-gray-700 dark:text-gray-200 truncate">{subject.name}</div>
+                  <span className="text-gray-400 dark:text-gray-500">→</span>
                   <input
                     type="text"
                     value={formValue.choreName}
@@ -729,7 +729,7 @@ export default function Settings(): JSX.Element {
                       })
                     }
                     onBlur={() => handleSaveMapping(subject.id)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-fuchsia-500 focus:border-fuchsia-500"
+                    className="flex-1 px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     placeholder="Skylight chore name..."
                   />
                   <span className="text-yellow-500">⭐</span>
@@ -745,10 +745,10 @@ export default function Settings(): JSX.Element {
                       })
                     }
                     onBlur={() => handleSaveMapping(subject.id)}
-                    className="w-16 px-2 py-2 border border-gray-300 rounded-lg text-center focus:ring-fuchsia-500 focus:border-fuchsia-500"
+                    className="w-16 px-2 py-2 border rounded-lg text-center bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500"
                   />
                   {hasMapping && (
-                    <span className="text-green-500 text-sm">✓</span>
+                    <span className="text-green-500 dark:text-green-400 text-sm">✓</span>
                   )}
                 </div>
               )
@@ -756,25 +756,25 @@ export default function Settings(): JSX.Element {
           </div>
         )}
 
-        <p className="text-xs text-gray-500 mt-4">
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
           These mappings are used when generating the daily Skylight checklist for completed milestones.
         </p>
       </div>
 
       {/* Support Section */}
-      <div className="card mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Support</h2>
-        <p className="text-sm text-gray-600 mb-4">
+      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Support</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
           Have feedback, found a bug, or want to request a feature? We'd love to hear from you.
         </p>
-        <FeedbackButton className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors" />
+        <FeedbackButton className="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 rounded-lg transition-colors" />
       </div>
 
       {/* About Section */}
-      <div className="card">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">About</h2>
-        <div className="text-sm text-gray-600 space-y-2">
-          <p><strong>Homeschool Manager</strong> v0.1.3</p>
+      <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">About</h2>
+        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+          <p><strong className="text-gray-900 dark:text-white">Homeschool Manager</strong> v0.1.3</p>
           <p>A desktop application for managing homeschool education.</p>
           <p>Data is stored locally on your device. Family sync uses encrypted peer-to-peer connections - your data never touches our servers.</p>
         </div>
@@ -784,43 +784,43 @@ export default function Settings(): JSX.Element {
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               {editingStudent ? 'Edit Student' : 'Add Student'}
             </Dialog.Title>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="label">Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Name</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="input"
+                  className="block w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                   placeholder="Enter student name"
                   required
                 />
               </div>
 
               <div>
-                <label className="label">Date of Birth</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Date of Birth</label>
                 <input
                   type="date"
                   value={formData.dateOfBirth}
                   onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                  className="input"
+                  className="block w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="label">Grade Level</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Grade Level</label>
                 <select
                   value={formData.gradeLevel}
                   onChange={(e) =>
                     setFormData({ ...formData, gradeLevel: e.target.value as GradeLevel })
                   }
-                  className="input"
+                  className="block w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500"
                 >
                   <option value="pre-k">Pre-K (4 years old)</option>
                   <option value="1st">1st Grade (6 years old)</option>
@@ -829,7 +829,7 @@ export default function Settings(): JSX.Element {
               </div>
 
               <div>
-                <label className="label">Color</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Color</label>
                 <div className="grid grid-cols-3 gap-2">
                   {STUDENT_COLORS.map((color) => {
                     const isSelected = formData.color === color.id ||
@@ -843,11 +843,11 @@ export default function Settings(): JSX.Element {
                         className={`p-2 rounded-lg flex items-center gap-2 transition-colors ${
                           isSelected
                             ? `ring-2 ${color.ring} ${color.bgLight}`
-                            : 'bg-gray-50 hover:bg-gray-100'
+                            : 'bg-gray-50 hover:bg-gray-100 dark:bg-gray-700/50 dark:hover:bg-gray-700'
                         }`}
                       >
                         <div className={`w-5 h-5 rounded-full ${color.bg}`} />
-                        <span className="text-sm">{color.name}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-200">{color.name}</span>
                       </button>
                     )
                   })}
@@ -855,24 +855,24 @@ export default function Settings(): JSX.Element {
               </div>
 
               <div>
-                <label className="label">Google Calendar Feed URL (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Google Calendar Feed URL (optional)</label>
                 <input
                   type="url"
                   value={formData.calendarFeedUrl}
                   onChange={(e) => setFormData({ ...formData, calendarFeedUrl: e.target.value })}
-                  className="input"
+                  className="block w-full border rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-fuchsia-500 focus:border-fuchsia-500 placeholder:text-gray-400 dark:placeholder:text-gray-500"
                   placeholder="https://calendar.google.com/calendar/ical/..."
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Get this from Google Calendar → Settings → Your Calendar → Secret address in iCal format
                 </p>
               </div>
 
               <div className="flex justify-end gap-3 pt-4">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="btn btn-secondary">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors">
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="px-4 py-2 text-sm font-semibold rounded-lg bg-fuchsia-500 text-white hover:bg-fuchsia-600 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 transition-colors">
                   {editingStudent ? 'Save Changes' : 'Add Student'}
                 </button>
               </div>

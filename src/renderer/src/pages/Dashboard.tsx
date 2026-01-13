@@ -103,17 +103,17 @@ export default function Dashboard(): JSX.Element {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             {selectedStudent ? `${selectedStudent.name}'s Dashboard` : 'Dashboard'}
           </h1>
-          <p className="text-gray-500 mt-1">{format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{format(new Date(), 'EEEE, MMMM d, yyyy')}</p>
         </div>
         {/* Quick Actions */}
         <div className="flex gap-3">
-          <Link to="/log" className="btn btn-secondary">
+          <Link to="/log" className="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors">
             + Log Activity
           </Link>
-          <Link to="/weekly-planner" className="btn btn-primary">
+          <Link to="/weekly-planner" className="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-lg bg-fuchsia-500 text-white hover:bg-fuchsia-600 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500 transition-colors">
             Weekly Plan
           </Link>
         </div>
@@ -129,34 +129,34 @@ export default function Dashboard(): JSX.Element {
 
       {/* Milestone Progress (when student selected) */}
       {selectedStudent && milestones.length > 0 && (
-        <div className="card mb-6 bg-gradient-to-r from-fuchsia-50 to-purple-50 border-fuchsia-100">
+        <div className="p-4 mb-6 rounded-xl border shadow-sm bg-gradient-to-r from-fuchsia-50 to-purple-50 border-fuchsia-100 dark:from-fuchsia-950/30 dark:to-purple-950/30 dark:border-fuchsia-900/50">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">Learning Progress</h2>
-              <p className="text-sm text-gray-500">{milestoneStats.completed} of {milestoneStats.total} milestones completed</p>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Learning Progress</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{milestoneStats.completed} of {milestoneStats.total} milestones completed</p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-fuchsia-600">{milestoneStats.percentage}%</div>
+              <div className="text-3xl font-bold text-fuchsia-600 dark:text-fuchsia-400">{milestoneStats.percentage}%</div>
             </div>
           </div>
-          <div className="w-full bg-white/50 rounded-full h-3 mb-4">
+          <div className="w-full bg-white/50 dark:bg-gray-800/50 rounded-full h-3 mb-4">
             <div
               className="bg-gradient-to-r from-fuchsia-500 to-purple-500 h-3 rounded-full transition-all duration-500"
               style={{ width: `${milestoneStats.percentage}%` }}
             />
           </div>
           <div className="grid grid-cols-3 gap-4 text-center text-sm">
-            <div className="bg-white/60 rounded-lg p-2">
-              <div className="text-xl font-bold text-green-600">{milestoneStats.completed}</div>
-              <div className="text-gray-500 text-xs">Completed</div>
+            <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-2">
+              <div className="text-xl font-bold text-green-600 dark:text-green-400">{milestoneStats.completed}</div>
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Completed</div>
             </div>
-            <div className="bg-white/60 rounded-lg p-2">
-              <div className="text-xl font-bold text-amber-600">{milestoneStats.inProgress}</div>
-              <div className="text-gray-500 text-xs">In Progress</div>
+            <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-2">
+              <div className="text-xl font-bold text-amber-600 dark:text-amber-400">{milestoneStats.inProgress}</div>
+              <div className="text-gray-500 dark:text-gray-400 text-xs">In Progress</div>
             </div>
-            <div className="bg-white/60 rounded-lg p-2">
-              <div className="text-xl font-bold text-gray-400">{milestoneStats.total - milestoneStats.completed - milestoneStats.inProgress}</div>
-              <div className="text-gray-500 text-xs">Not Started</div>
+            <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-2">
+              <div className="text-xl font-bold text-gray-400 dark:text-gray-500">{milestoneStats.total - milestoneStats.completed - milestoneStats.inProgress}</div>
+              <div className="text-gray-500 dark:text-gray-400 text-xs">Not Started</div>
             </div>
           </div>
         </div>
@@ -248,36 +248,36 @@ export default function Dashboard(): JSX.Element {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="card hover:shadow-md transition-shadow">
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-xl">
               📚
             </div>
             <div>
-              <div className="text-sm font-medium text-gray-500">Today's Sessions</div>
-              <div className="text-2xl font-bold text-gray-900">{todaySessions.length}</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Today's Sessions</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{todaySessions.length}</div>
             </div>
           </div>
         </div>
-        <div className="card hover:shadow-md transition-shadow">
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-xl">
               ✏️
             </div>
             <div>
-              <div className="text-sm font-medium text-gray-500">Recent Activities</div>
-              <div className="text-2xl font-bold text-gray-900">{recentActivities.length}</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Recent Activities</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{recentActivities.length}</div>
             </div>
           </div>
         </div>
-        <div className="card hover:shadow-md transition-shadow">
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-xl">
               🎯
             </div>
             <div>
-              <div className="text-sm font-medium text-gray-500">Subjects</div>
-              <div className="text-2xl font-bold text-gray-900">{subjects.length}</div>
+              <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Subjects</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{subjects.length}</div>
             </div>
           </div>
         </div>
@@ -285,12 +285,12 @@ export default function Dashboard(): JSX.Element {
 
       {/* Upcoming Field Trips */}
       {upcomingFieldTrips.length > 0 && (
-        <div className="card mb-8 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-100">
+        <div className="p-4 mb-8 rounded-xl border shadow-sm bg-gradient-to-r from-amber-50 to-orange-50 border-amber-100 dark:from-amber-950/30 dark:to-orange-950/30 dark:border-amber-900/50">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <span>🚌</span> Upcoming Field Trips
             </h2>
-            <Link to="/field-trips" className="text-sm text-amber-600 hover:text-amber-800">
+            <Link to="/field-trips" className="text-sm text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300">
               View All →
             </Link>
           </div>
@@ -303,23 +303,23 @@ export default function Dashboard(): JSX.Element {
                 <div
                   key={trip.id}
                   className={`p-4 rounded-lg ${
-                    isTripToday ? 'bg-amber-100 ring-2 ring-amber-400' : 'bg-white/60'
+                    isTripToday ? 'bg-amber-100 dark:bg-amber-900/50 ring-2 ring-amber-400' : 'bg-white/60 dark:bg-gray-800/60'
                   }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{trip.title}</div>
-                      <div className="text-sm text-gray-600 mt-1">
+                      <div className="font-medium text-gray-900 dark:text-white">{trip.title}</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                         📍 {trip.location}
                       </div>
-                      <div className="text-sm text-amber-700 mt-1 font-medium">
+                      <div className="text-sm text-amber-700 dark:text-amber-400 mt-1 font-medium">
                         📅 {isTripToday ? 'Today!' : format(tripDate, 'EEEE, MMM d')}
                       </div>
                       <div className="mt-2 flex flex-wrap gap-1">
                         {tripStudents.map((s) => (
                           <span
                             key={s.id}
-                            className="text-xs px-1.5 py-0.5 rounded bg-purple-100 text-purple-700"
+                            className="text-xs px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
                           >
                             {s.name}
                           </span>
@@ -336,25 +336,25 @@ export default function Dashboard(): JSX.Element {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Today's Sessions */}
-        <div className="card">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Today's Sessions</h2>
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Today's Sessions</h2>
           {todaySessions.length === 0 ? (
-            <p className="text-gray-500 text-sm">No sessions scheduled for today.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">No sessions scheduled for today.</p>
           ) : (
             <ul className="space-y-3">
               {todaySessions.map((session) => {
                 const student = getStudentById(session.studentId)
                 const subject = getSubjectById(session.subjectId)
                 return (
-                  <li key={session.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <li key={session.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                     <div
                       className={`w-2 h-2 rounded-full ${
                         getStudentColor(student?.color || 'fuchsia').bg
                       }`}
                     />
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{subject?.name}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="font-medium text-gray-900 dark:text-white">{subject?.name}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {student?.name}
                         {session.startTime && ` • ${session.startTime}`}
                       </div>
@@ -367,29 +367,29 @@ export default function Dashboard(): JSX.Element {
         </div>
 
         {/* Recent Activities */}
-        <div className="card">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activities</h2>
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activities</h2>
           {recentActivities.length === 0 ? (
-            <p className="text-gray-500 text-sm">No activities recorded yet.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">No activities recorded yet.</p>
           ) : (
             <ul className="space-y-3">
               {recentActivities.map((activity) => {
                 const student = getStudentById(activity.studentId)
                 const subject = getSubjectById(activity.subjectId)
                 return (
-                  <li key={activity.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <li key={activity.id} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                     <div
                       className={`w-2 h-2 rounded-full ${
                         getStudentColor(student?.color || 'fuchsia').bg
                       }`}
                     />
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">{activity.title}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="font-medium text-gray-900 dark:text-white">{activity.title}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {subject?.name} • {activity.activityType.replace('_', ' ')}
                       </div>
                     </div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-gray-400 dark:text-gray-500">
                       {format(parseISO(activity.dateCompleted), 'MMM d')}
                     </div>
                   </li>
@@ -404,8 +404,8 @@ export default function Dashboard(): JSX.Element {
       {selectedStudent && suggestedMilestones.length > 0 && (
         <div className="mt-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Focus This Week</h2>
-            <Link to="/weekly-planner" className="text-sm text-fuchsia-600 hover:text-fuchsia-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Focus This Week</h2>
+            <Link to="/weekly-planner" className="text-sm text-fuchsia-600 hover:text-fuchsia-700 dark:text-fuchsia-400 dark:hover:text-fuchsia-300">
               View Full Plan →
             </Link>
           </div>
@@ -417,21 +417,21 @@ export default function Dashboard(): JSX.Element {
                   key={milestone.id}
                   className={`p-4 rounded-lg border-l-4 ${
                     milestone.status === 'in_progress'
-                      ? 'bg-amber-50 border-l-amber-500'
-                      : 'bg-white border-l-gray-300 border border-gray-200'
+                      ? 'bg-amber-50 border-l-amber-500 dark:bg-amber-950/30 dark:border-l-amber-400'
+                      : 'bg-white border-l-gray-300 border border-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:border-l-gray-600'
                   }`}
                 >
                   <div className="flex items-start gap-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-50 text-fuchsia-600">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-50 text-fuchsia-600 dark:bg-fuchsia-900/50 dark:text-fuchsia-300">
                       {subject?.name}
                     </span>
                     {milestone.status === 'in_progress' && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-600">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-300">
                         In Progress
                       </span>
                     )}
                   </div>
-                  <h3 className="font-medium text-gray-900 mt-2 text-sm">{milestone.title}</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-white mt-2 text-sm">{milestone.title}</h3>
                 </div>
               )
             })}
@@ -442,7 +442,7 @@ export default function Dashboard(): JSX.Element {
       {/* Students Overview (if no student selected) */}
       {!selectedStudentId && students.length > 0 && (
         <div className="mt-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Students</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Students</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {students.map((student) => {
               const gradeLabels: Record<string, string> = {
@@ -456,7 +456,7 @@ export default function Dashboard(): JSX.Element {
               return (
                 <div
                   key={student.id}
-                  className={`card border-l-4 hover:shadow-md transition-shadow ${
+                  className={`p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm border-l-4 hover:shadow-md transition-shadow ${
                     getStudentColor(student.color).border
                   }`}
                 >
@@ -469,8 +469,8 @@ export default function Dashboard(): JSX.Element {
                       {student.name.charAt(0)}
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900">{student.name}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="font-semibold text-gray-900 dark:text-white">{student.name}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {gradeLabels[student.gradeLevel] || student.gradeLevel}
                       </div>
                     </div>
