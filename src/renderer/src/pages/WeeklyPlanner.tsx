@@ -97,10 +97,10 @@ export default function WeeklyPlanner(): JSX.Element {
   }, [])
 
   useEffect(() => {
-    if (calendarId) {
+    if (calendarId && selectedStudentId) {
       loadSyncRecords()
     }
-  }, [currentWeekStart, calendarId])
+  }, [currentWeekStart, calendarId, selectedStudentId])
 
   const loadCalendarSettings = async () => {
     const savedCalendarId = await window.api.getSetting('google_calendar_id')
@@ -111,7 +111,8 @@ export default function WeeklyPlanner(): JSX.Element {
   }
 
   const loadSyncRecords = async () => {
-    const records = await window.api.getCalendarSyncRecordsForWeek(currentWeekStart)
+    if (!selectedStudentId) return
+    const records = await window.api.getCalendarSyncRecordsForWeek(currentWeekStart, selectedStudentId)
     setSyncRecords(records)
   }
 
@@ -121,7 +122,7 @@ export default function WeeklyPlanner(): JSX.Element {
 
     setIsSyncing(true)
     try {
-      const currentRecords = await window.api.getCalendarSyncRecordsForWeek(currentWeekStart)
+      const currentRecords = await window.api.getCalendarSyncRecordsForWeek(currentWeekStart, selectedStudentId)
       const currentRecordMap = new Map(currentRecords.map(r => [r.milestoneId, r]))
 
       // Get subjects for milestone titles
@@ -200,22 +201,18 @@ export default function WeeklyPlanner(): JSX.Element {
             allDay: syncAllDay,
             colorId
           })
-          await window.api.upsertCalendarSyncRecord(milestoneId, currentWeekStart, eventId, calendarId)
+          await window.api.upsertCalendarSyncRecord(milestoneId, currentWeekStart, eventId, calendarId, selectedStudentId)
         }
 
         currentRecordMap.delete(milestoneId)
       }
 
-      // Delete events for milestones no longer in the plan (only for current student)
+      // Delete events for milestones no longer in the plan for this student
+      // Since we now filter by student, all remaining records belong to current student
       const remainingRecords = Array.from(currentRecordMap.values())
       for (const record of remainingRecords) {
-        // Only delete if this milestone belongs to the current student
-        const milestone = milestones.find(m => m.id === record.milestoneId)
-        if (milestone) {
-          await window.api.deleteGoogleCalendarEvent(calendarId, record.googleEventId)
-          await window.api.deleteCalendarSyncRecord(record.milestoneId, currentWeekStart)
-        }
-        // If milestone not found in current student's milestones, leave it alone (belongs to another student)
+        await window.api.deleteGoogleCalendarEvent(calendarId, record.googleEventId)
+        await window.api.deleteCalendarSyncRecord(record.milestoneId, currentWeekStart, selectedStudentId)
       }
 
       await loadSyncRecords()

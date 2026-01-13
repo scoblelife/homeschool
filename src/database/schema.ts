@@ -458,13 +458,21 @@ export async function initializeSchema(): Promise<void> {
     CREATE TABLE IF NOT EXISTS calendar_sync (
       id VARCHAR PRIMARY KEY,
       milestone_id VARCHAR NOT NULL,
+      student_id VARCHAR,
       week_start DATE NOT NULL,
       google_event_id VARCHAR NOT NULL,
       calendar_id VARCHAR NOT NULL,
       synced_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(milestone_id, week_start)
+      UNIQUE(student_id, milestone_id, week_start)
     )
   `)
+
+  // Migration: Add student_id column if it doesn't exist (for existing databases)
+  try {
+    await db.run(`ALTER TABLE calendar_sync ADD COLUMN student_id VARCHAR`)
+  } catch {
+    // Column already exists, ignore
+  }
 
   // Create user_settings table for app settings (including Google credentials)
   await db.run(`

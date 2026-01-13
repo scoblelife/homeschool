@@ -863,9 +863,9 @@ export interface DatabaseAPI {
   deleteGoogleCalendarEvent: (calendarId: string, eventId: string) => Promise<void>
 
   // Calendar Sync
-  getCalendarSyncRecord: (milestoneId: string, weekStart: string) => Promise<CalendarSyncRecord | null>
-  getCalendarSyncRecordsForWeek: (weekStart: string) => Promise<CalendarSyncRecord[]>
-  upsertCalendarSyncRecord: (milestoneId: string, weekStart: string, googleEventId: string, calendarId: string) => Promise<CalendarSyncRecord>
+  getCalendarSyncRecord: (milestoneId: string, weekStart: string, studentId?: string) => Promise<CalendarSyncRecord | null>
+  getCalendarSyncRecordsForWeek: (weekStart: string, studentId?: string) => Promise<CalendarSyncRecord[]>
+  upsertCalendarSyncRecord: (milestoneId: string, weekStart: string, googleEventId: string, calendarId: string, studentId?: string) => Promise<CalendarSyncRecord>
 
   // Skylight Chore Mappings
   getChoreMappings: () => Promise<SubjectChoreMapping[]>
@@ -887,8 +887,8 @@ export interface DatabaseAPI {
   deleteFamilyGoal: (id: string) => Promise<void>
   achieveFamilyGoal: (id: string) => Promise<FamilyGoal>
   getFamilyTotalStars: () => Promise<number>
-  deleteCalendarSyncRecord: (milestoneId: string, weekStart: string) => Promise<void>
-  deleteCalendarSyncRecordsForWeek: (weekStart: string) => Promise<void>
+  deleteCalendarSyncRecord: (milestoneId: string, weekStart: string, studentId?: string) => Promise<void>
+  deleteCalendarSyncRecordsForWeek: (weekStart: string, studentId?: string) => Promise<void>
 
   // User Settings
   getSetting: (key: string) => Promise<string | null>
@@ -1047,6 +1047,7 @@ export interface GoogleCalendarEvent {
 export interface CalendarSyncRecord {
   id: string
   milestoneId: string
+  studentId: string | null
   weekStart: string
   googleEventId: string
   calendarId: string

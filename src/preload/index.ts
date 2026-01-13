@@ -278,16 +278,16 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
     ipcRenderer.invoke('google:calendar:deleteEvent', calendarId, eventId) as Promise<void>,
 
   // Calendar Sync
-  getCalendarSyncRecord: (milestoneId: string, weekStart: string) =>
-    ipcRenderer.invoke('calendar:sync:getRecord', milestoneId, weekStart),
-  getCalendarSyncRecordsForWeek: (weekStart: string) =>
-    ipcRenderer.invoke('calendar:sync:getRecordsForWeek', weekStart),
-  upsertCalendarSyncRecord: (milestoneId: string, weekStart: string, googleEventId: string, calendarId: string) =>
-    ipcRenderer.invoke('calendar:sync:upsert', milestoneId, weekStart, googleEventId, calendarId),
-  deleteCalendarSyncRecord: (milestoneId: string, weekStart: string) =>
-    ipcRenderer.invoke('calendar:sync:delete', milestoneId, weekStart),
-  deleteCalendarSyncRecordsForWeek: (weekStart: string) =>
-    ipcRenderer.invoke('calendar:sync:deleteWeek', weekStart),
+  getCalendarSyncRecord: (milestoneId: string, weekStart: string, studentId?: string) =>
+    ipcRenderer.invoke('calendar:sync:getRecord', milestoneId, weekStart, studentId),
+  getCalendarSyncRecordsForWeek: (weekStart: string, studentId?: string) =>
+    ipcRenderer.invoke('calendar:sync:getRecordsForWeek', weekStart, studentId),
+  upsertCalendarSyncRecord: (milestoneId: string, weekStart: string, googleEventId: string, calendarId: string, studentId?: string) =>
+    ipcRenderer.invoke('calendar:sync:upsert', milestoneId, weekStart, googleEventId, calendarId, studentId),
+  deleteCalendarSyncRecord: (milestoneId: string, weekStart: string, studentId?: string) =>
+    ipcRenderer.invoke('calendar:sync:delete', milestoneId, weekStart, studentId),
+  deleteCalendarSyncRecordsForWeek: (weekStart: string, studentId?: string) =>
+    ipcRenderer.invoke('calendar:sync:deleteWeek', weekStart, studentId),
 
   // Skylight Chore Mappings
   getChoreMappings: () => ipcRenderer.invoke('chore:mappings:getAll'),

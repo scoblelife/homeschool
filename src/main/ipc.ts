@@ -626,24 +626,24 @@ export function registerIpcHandlers(): void {
   })
 
   // Calendar Sync
-  ipcMain.handle('calendar:sync:getRecord', async (_, milestoneId: string, weekStart: string) => {
-    return calendarSyncRepo.getSyncRecord(milestoneId, weekStart)
+  ipcMain.handle('calendar:sync:getRecord', async (_, milestoneId: string, weekStart: string, studentId?: string) => {
+    return calendarSyncRepo.getSyncRecord(milestoneId, weekStart, studentId)
   })
 
-  ipcMain.handle('calendar:sync:getRecordsForWeek', async (_, weekStart: string) => {
-    return calendarSyncRepo.getSyncRecordsForWeek(weekStart)
+  ipcMain.handle('calendar:sync:getRecordsForWeek', async (_, weekStart: string, studentId?: string) => {
+    return calendarSyncRepo.getSyncRecordsForWeek(weekStart, studentId)
   })
 
-  ipcMain.handle('calendar:sync:upsert', async (_, milestoneId: string, weekStart: string, googleEventId: string, calendarId: string) => {
-    return calendarSyncRepo.upsertSyncRecord(milestoneId, weekStart, googleEventId, calendarId)
+  ipcMain.handle('calendar:sync:upsert', async (_, milestoneId: string, weekStart: string, googleEventId: string, calendarId: string, studentId?: string) => {
+    return calendarSyncRepo.upsertSyncRecord(milestoneId, weekStart, googleEventId, calendarId, studentId)
   })
 
-  ipcMain.handle('calendar:sync:delete', async (_, milestoneId: string, weekStart: string) => {
-    return calendarSyncRepo.deleteSyncRecord(milestoneId, weekStart)
+  ipcMain.handle('calendar:sync:delete', async (_, milestoneId: string, weekStart: string, studentId?: string) => {
+    return calendarSyncRepo.deleteSyncRecord(milestoneId, weekStart, studentId)
   })
 
-  ipcMain.handle('calendar:sync:deleteWeek', async (_, weekStart: string) => {
-    return calendarSyncRepo.deleteSyncRecordsForWeek(weekStart)
+  ipcMain.handle('calendar:sync:deleteWeek', async (_, weekStart: string, studentId?: string) => {
+    return calendarSyncRepo.deleteSyncRecordsForWeek(weekStart, studentId)
   })
 
   // Skylight Chore Mappings
