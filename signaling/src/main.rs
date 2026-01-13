@@ -26,13 +26,13 @@ use store::Store;
 
 #[tokio::main]
 async fn main() {
-    // Initialize logging
+    // Initialize logging with JSON format for Fly.io
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| "homeschool_signaling=info,tower_http=info".into()),
         )
-        .with(tracing_subscriber::fmt::layer())
+        .with(tracing_subscriber::fmt::layer().json())
         .init();
 
     // Create shared state
