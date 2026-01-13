@@ -421,6 +421,75 @@ export interface CoopSharingPreferences {
 
 export type UpdateCoopSharingPreferences = Partial<Omit<CoopSharingPreferences, 'id' | 'groupId' | 'updatedAt'>>
 
+// Shared Resources (resources shared with co-op groups)
+export type SharedResourceType = 'link' | 'template' | 'curriculum' | 'book' | 'other'
+
+export interface SharedResource {
+  id: string
+  groupId: string
+  sharedBy: string // CoopMember id
+  resourceType: SharedResourceType
+  title: string
+  description?: string
+  url?: string
+  subject?: string
+  gradeLevel?: string
+  averageRating: number
+  ratingCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateSharedResource = Omit<SharedResource, 'id' | 'averageRating' | 'ratingCount' | 'createdAt' | 'updatedAt'>
+export type UpdateSharedResource = Partial<Omit<CreateSharedResource, 'groupId' | 'sharedBy'>>
+
+export interface ResourceRating {
+  id: string
+  resourceId: string
+  memberId: string // CoopMember id
+  rating: number // 1-5
+  review?: string
+  createdAt: string
+}
+
+export type CreateResourceRating = Omit<ResourceRating, 'id' | 'createdAt'>
+
+// Mentor Matching
+export type MentorExpertise = 'new_to_homeschool' | 'curriculum' | 'special_needs' | 'high_school' | 'college_prep' | 'organization' | 'legal' | 'other'
+
+export interface MentorProfile {
+  id: string
+  memberId: string // CoopMember id
+  yearsHomeschooling: number
+  expertise: MentorExpertise[]
+  bio: string
+  maxMentees: number
+  currentMenteeCount: number
+  isAcceptingRequests: boolean
+  contactEmail?: string
+  contactPhone?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateMentorProfile = Omit<MentorProfile, 'id' | 'currentMenteeCount' | 'createdAt' | 'updatedAt'>
+export type UpdateMentorProfile = Partial<Omit<CreateMentorProfile, 'memberId'>>
+
+export type MentorRequestStatus = 'pending' | 'accepted' | 'declined'
+
+export interface MentorRequest {
+  id: string
+  mentorId: string // MentorProfile id
+  requesterId: string // CoopMember id
+  message: string
+  status: MentorRequestStatus
+  responseMessage?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateMentorRequest = Omit<MentorRequest, 'id' | 'status' | 'responseMessage' | 'createdAt' | 'updatedAt'>
+
 // Activity Tasks (todos for field trips/activities)
 export type TaskPhase = 'pre' | 'day_of' | 'post'
 
@@ -910,6 +979,7 @@ export interface DatabaseAPI {
 
   // Co-op Events
   getCoopEvents: (groupId: string) => Promise<CoopEvent[]>
+  getAllUpcomingCoopEvents: () => Promise<(CoopEvent & { groupName: string; organizerName: string })[]>
   getCoopEvent: (id: string) => Promise<CoopEvent | null>
   createCoopEvent: (data: CreateCoopEvent) => Promise<CoopEvent>
   updateCoopEvent: (id: string, data: UpdateCoopEvent) => Promise<CoopEvent>
@@ -918,6 +988,29 @@ export interface DatabaseAPI {
   // Co-op Sharing Preferences
   getCoopSharingPreferences: (groupId: string) => Promise<CoopSharingPreferences>
   updateCoopSharingPreferences: (groupId: string, data: UpdateCoopSharingPreferences) => Promise<CoopSharingPreferences>
+
+  // Shared Resources
+  getSharedResources: (groupId: string) => Promise<(SharedResource & { sharedByName: string })[]>
+  getAllSharedResources: () => Promise<(SharedResource & { groupName: string; sharedByName: string })[]>
+  getSharedResource: (id: string) => Promise<SharedResource | null>
+  createSharedResource: (data: CreateSharedResource) => Promise<SharedResource>
+  updateSharedResource: (id: string, data: UpdateSharedResource) => Promise<SharedResource>
+  deleteSharedResource: (id: string) => Promise<void>
+  getResourceRatings: (resourceId: string) => Promise<(ResourceRating & { memberName: string })[]>
+  createResourceRating: (data: CreateResourceRating) => Promise<ResourceRating>
+  deleteResourceRating: (id: string) => Promise<void>
+
+  // Mentor Matching
+  getMentorProfiles: () => Promise<(MentorProfile & { memberName: string; groupName: string })[]>
+  getMentorProfile: (id: string) => Promise<MentorProfile | null>
+  getMyMentorProfile: (memberId: string) => Promise<MentorProfile | null>
+  createMentorProfile: (data: CreateMentorProfile) => Promise<MentorProfile>
+  updateMentorProfile: (id: string, data: UpdateMentorProfile) => Promise<MentorProfile>
+  deleteMentorProfile: (id: string) => Promise<void>
+  getMentorRequests: (mentorId: string) => Promise<(MentorRequest & { requesterName: string })[]>
+  getMyMentorRequests: (requesterId: string) => Promise<(MentorRequest & { mentorName: string })[]>
+  createMentorRequest: (data: CreateMentorRequest) => Promise<MentorRequest>
+  respondToMentorRequest: (id: string, status: MentorRequestStatus, responseMessage?: string) => Promise<MentorRequest>
 
   // Assessments
   getAssessments: (studentId?: string) => Promise<Assessment[]>

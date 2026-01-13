@@ -1,0 +1,1 @@
+export { ResourceSharing } from './ResourceSharing'

@@ -67,6 +67,17 @@ import type {
   UpdateCoopEvent,
   CoopSharingPreferences,
   UpdateCoopSharingPreferences,
+  SharedResource,
+  CreateSharedResource,
+  UpdateSharedResource,
+  ResourceRating,
+  CreateResourceRating,
+  MentorProfile,
+  CreateMentorProfile,
+  UpdateMentorProfile,
+  MentorRequest,
+  CreateMentorRequest,
+  MentorRequestStatus,
   Assessment,
   CreateAssessment,
   UpdateAssessment,
@@ -498,6 +509,8 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
   // Co-op Events
   getCoopEvents: (groupId: string) =>
     ipcRenderer.invoke('coop:getEvents', groupId) as Promise<CoopEvent[]>,
+  getAllUpcomingCoopEvents: () =>
+    ipcRenderer.invoke('coop:getAllUpcomingEvents') as Promise<(CoopEvent & { groupName: string; organizerName: string })[]>,
   getCoopEvent: (id: string) =>
     ipcRenderer.invoke('coop:getEvent', id) as Promise<CoopEvent | null>,
   createCoopEvent: (data: CreateCoopEvent) =>
@@ -512,6 +525,48 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
     ipcRenderer.invoke('coop:getSharingPreferences', groupId) as Promise<CoopSharingPreferences>,
   updateCoopSharingPreferences: (groupId: string, data: UpdateCoopSharingPreferences) =>
     ipcRenderer.invoke('coop:updateSharingPreferences', groupId, data) as Promise<CoopSharingPreferences>,
+
+  // Shared Resources
+  getSharedResources: (groupId: string) =>
+    ipcRenderer.invoke('resources:getShared', groupId) as Promise<(SharedResource & { sharedByName: string })[]>,
+  getAllSharedResources: () =>
+    ipcRenderer.invoke('resources:getAllShared') as Promise<(SharedResource & { groupName: string; sharedByName: string })[]>,
+  getSharedResource: (id: string) =>
+    ipcRenderer.invoke('resources:getSharedResource', id) as Promise<SharedResource | null>,
+  createSharedResource: (data: CreateSharedResource) =>
+    ipcRenderer.invoke('resources:createShared', data) as Promise<SharedResource>,
+  updateSharedResource: (id: string, data: UpdateSharedResource) =>
+    ipcRenderer.invoke('resources:updateShared', id, data) as Promise<SharedResource>,
+  deleteSharedResource: (id: string) =>
+    ipcRenderer.invoke('resources:deleteShared', id) as Promise<void>,
+  getResourceRatings: (resourceId: string) =>
+    ipcRenderer.invoke('resources:getRatings', resourceId) as Promise<(ResourceRating & { memberName: string })[]>,
+  createResourceRating: (data: CreateResourceRating) =>
+    ipcRenderer.invoke('resources:createRating', data) as Promise<ResourceRating>,
+  deleteResourceRating: (id: string) =>
+    ipcRenderer.invoke('resources:deleteRating', id) as Promise<void>,
+
+  // Mentor Matching
+  getMentorProfiles: () =>
+    ipcRenderer.invoke('mentors:getProfiles') as Promise<(MentorProfile & { memberName: string; groupName: string })[]>,
+  getMentorProfile: (id: string) =>
+    ipcRenderer.invoke('mentors:getProfile', id) as Promise<MentorProfile | null>,
+  getMyMentorProfile: (memberId: string) =>
+    ipcRenderer.invoke('mentors:getMyProfile', memberId) as Promise<MentorProfile | null>,
+  createMentorProfile: (data: CreateMentorProfile) =>
+    ipcRenderer.invoke('mentors:createProfile', data) as Promise<MentorProfile>,
+  updateMentorProfile: (id: string, data: UpdateMentorProfile) =>
+    ipcRenderer.invoke('mentors:updateProfile', id, data) as Promise<MentorProfile>,
+  deleteMentorProfile: (id: string) =>
+    ipcRenderer.invoke('mentors:deleteProfile', id) as Promise<void>,
+  getMentorRequests: (mentorId: string) =>
+    ipcRenderer.invoke('mentors:getRequests', mentorId) as Promise<(MentorRequest & { requesterName: string })[]>,
+  getMyMentorRequests: (requesterId: string) =>
+    ipcRenderer.invoke('mentors:getMyRequests', requesterId) as Promise<(MentorRequest & { mentorName: string })[]>,
+  createMentorRequest: (data: CreateMentorRequest) =>
+    ipcRenderer.invoke('mentors:createRequest', data) as Promise<MentorRequest>,
+  respondToMentorRequest: (id: string, status: MentorRequestStatus, responseMessage?: string) =>
+    ipcRenderer.invoke('mentors:respondToRequest', id, status, responseMessage) as Promise<MentorRequest>,
 
   // Assessments
   getAssessments: (studentId?: string) =>

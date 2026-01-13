@@ -1,9 +1,15 @@
 import { useState } from 'react'
 import { CoopGroupList, CoopGroupDetail } from '../features/coop'
+import { FieldTripDiscovery } from '../features/fieldTrips'
+import { ResourceSharing } from '../features/community'
+import { MentorMatching } from '../features/mentorship'
 import type { CoopGroup } from '../../../shared/types'
+
+type TabType = 'groups' | 'discover' | 'resources' | 'mentors'
 
 export default function Coop() {
   const [selectedGroup, setSelectedGroup] = useState<CoopGroup | null>(null)
+  const [activeTab, setActiveTab] = useState<TabType>('groups')
 
   const handleGroupDeleted = () => {
     setSelectedGroup(null)
@@ -20,26 +26,80 @@ export default function Coop() {
         </p>
       </div>
 
-      {/* Info box */}
-      <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-        <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-          What are Co-op Groups?
-        </h3>
-        <p className="text-sm text-blue-700 dark:text-blue-300">
-          Co-op groups let you connect with other homeschool families to plan park days,
-          field trips, game nights, and group classes. Create a group and share the invite
-          code with other families to get started!
-        </p>
-      </div>
+      {/* Tabs - only show when not viewing a group detail */}
+      {!selectedGroup && (
+        <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700 mb-6">
+          <button
+            onClick={() => setActiveTab('groups')}
+            className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'groups'
+                ? 'border-fuchsia-500 text-fuchsia-600 dark:text-fuchsia-400'
+                : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+            }`}
+          >
+            My Groups
+          </button>
+          <button
+            onClick={() => setActiveTab('discover')}
+            className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'discover'
+                ? 'border-fuchsia-500 text-fuchsia-600 dark:text-fuchsia-400'
+                : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+            }`}
+          >
+            Discover Events
+          </button>
+          <button
+            onClick={() => setActiveTab('resources')}
+            className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'resources'
+                ? 'border-fuchsia-500 text-fuchsia-600 dark:text-fuchsia-400'
+                : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+            }`}
+          >
+            Shared Resources
+          </button>
+          <button
+            onClick={() => setActiveTab('mentors')}
+            className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'mentors'
+                ? 'border-fuchsia-500 text-fuchsia-600 dark:text-fuchsia-400'
+                : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+            }`}
+          >
+            Mentors
+          </button>
+        </div>
+      )}
 
+      {/* Tab Content */}
       {selectedGroup ? (
         <CoopGroupDetail
           group={selectedGroup}
           onBack={() => setSelectedGroup(null)}
           onGroupDeleted={handleGroupDeleted}
         />
+      ) : activeTab === 'groups' ? (
+        <>
+          {/* Info box */}
+          <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+              What are Co-op Groups?
+            </h3>
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              Co-op groups let you connect with other homeschool families to plan park days,
+              field trips, game nights, and group classes. Create a group and share the invite
+              code with other families to get started!
+            </p>
+          </div>
+          <CoopGroupList onSelectGroup={setSelectedGroup} />
+        </>
+      ) : activeTab === 'discover' ? (
+        <FieldTripDiscovery />
+      ) : activeTab === 'resources' ? (
+        <ResourceSharing />
       ) : (
-        <CoopGroupList onSelectGroup={setSelectedGroup} />
+        <MentorMatching />
       )}
     </div>
   )
