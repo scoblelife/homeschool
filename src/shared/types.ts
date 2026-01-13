@@ -1019,6 +1019,13 @@ export interface DatabaseAPI {
   createAssessment: (data: CreateAssessment) => Promise<Assessment>
   updateAssessment: (id: string, data: UpdateAssessment) => Promise<Assessment | null>
   deleteAssessment: (id: string) => Promise<void>
+
+  // Window Controls
+  windowMinimize: () => Promise<void>
+  windowMaximize: () => Promise<void>
+  windowClose: () => Promise<void>
+  windowIsMaximized: () => Promise<boolean>
+  windowGetPlatform: () => Promise<string>
 }
 
 // Google Calendar Types

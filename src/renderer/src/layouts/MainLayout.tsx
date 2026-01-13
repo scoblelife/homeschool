@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useStore } from '../stores/useStore'
 import { SyncStatusIndicator } from '../components/sync'
 import { TimerIndicator } from '../features/timer'
+import { TitleBar } from '../components/TitleBar'
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: '🏠' },
@@ -37,9 +38,14 @@ export default function MainLayout(): JSX.Element {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Title Bar */}
+      <TitleBar />
+
+      {/* Main container with sidebar and content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
         {/* Header */}
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
@@ -119,10 +125,11 @@ export default function MainLayout(): JSX.Element {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <Outlet />
-      </main>
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }

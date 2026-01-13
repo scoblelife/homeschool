@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { initializeSchema, seedDefaultSubjects, seedMilestoneTemplates, closeDatabase } from '../database'
@@ -8,15 +8,18 @@ import { errorReporting } from '../errorReporting'
 import { registerAIHandlers } from '../ai'
 import { registerComplianceIpcHandlers } from './compliance-ipc'
 
+let mainWindow: BrowserWindow | null = null
+
 function createWindow(): void {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 900,
     minHeight: 600,
     show: false,
     autoHideMenuBar: true,
-    titleBarStyle: 'hiddenInset',
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 16, y: 12 },
     webPreferences: {
       preload: join(__dirname, '../preload/index.cjs'),
       sandbox: false
@@ -24,7 +27,7 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+    mainWindow?.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -39,9 +42,39 @@ function createWindow(): void {
   }
 }
 
+// Window control IPC handlers
+function registerWindowControls(): void {
+  ipcMain.handle('window:minimize', () => {
+    mainWindow?.minimize()
+  })
+
+  ipcMain.handle('window:maximize', () => {
+    if (mainWindow?.isMaximized()) {
+      mainWindow.restore()
+    } else {
+      mainWindow?.maximize()
+    }
+  })
+
+  ipcMain.handle('window:close', () => {
+    mainWindow?.close()
+  })
+
+  ipcMain.handle('window:isMaximized', () => {
+    return mainWindow?.isMaximized() ?? false
+  })
+
+  ipcMain.handle('window:getPlatform', () => {
+    return process.platform
+  })
+}
+
 app.whenReady().then(async () => {
   // Initialize error reporting first
   errorReporting.initialize()
+
+  // Register window control handlers
+  registerWindowControls()
 
   electronApp.setAppUserModelId('com.homeschool')
 

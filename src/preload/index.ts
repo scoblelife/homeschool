@@ -680,7 +680,14 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
       content?: string
       filePath?: string
       error?: string
-    }>
+    }>,
+
+  // Window Controls
+  windowMinimize: () => ipcRenderer.invoke('window:minimize'),
+  windowMaximize: () => ipcRenderer.invoke('window:maximize'),
+  windowClose: () => ipcRenderer.invoke('window:close'),
+  windowIsMaximized: () => ipcRenderer.invoke('window:isMaximized') as Promise<boolean>,
+  windowGetPlatform: () => ipcRenderer.invoke('window:getPlatform') as Promise<string>
 }
 
 contextBridge.exposeInMainWorld('api', api)
