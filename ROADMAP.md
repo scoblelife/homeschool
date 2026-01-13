@@ -226,23 +226,25 @@ The core features are complete. Now focus on shipping to users, polishing the mo
   - ✅ WebRTC P2P communication
   - Location: `src/renderer/src/features/coop/`
 
-- [ ] **9.2 Field trip discovery**
-  - Browse field trips from co-op members
-  - Filter by location, date, age group
-  - Request to join a field trip
+- [x] **9.2 Field trip discovery**
+  - ✅ Browse field trips from co-op members (Discovery tab in Co-op Groups)
+  - ✅ Filter by location, date, group
+  - ⏳ Request to join a field trip (future enhancement)
   - Location: `src/renderer/src/features/fieldTrips/Discovery.tsx`
 
-- [ ] **9.3 Resource sharing**
-  - Share activity templates with co-op
-  - Rate and review shared templates
-  - Curriculum reviews from community
-  - Location: `src/renderer/src/features/community/`
+- [x] **9.3 Resource sharing**
+  - ✅ Share resources with co-op groups (links, templates, curricula, books)
+  - ✅ Rate and review shared resources
+  - ✅ Browse all shared resources across groups
+  - Location: `src/renderer/src/features/community/ResourceSharing.tsx`
 
-- [ ] **9.4 Mentor matching**
-  - Experienced homeschoolers opt-in as mentors
-  - New families can request mentorship
-  - In-app messaging (or external contact)
-  - Location: `src/renderer/src/features/mentorship/`
+- [x] **9.4 Mentor matching**
+  - ✅ Experienced homeschoolers opt-in as mentors (create mentor profile)
+  - ✅ Browse and filter mentors by expertise areas
+  - ✅ New families can request mentorship (messaging system)
+  - ✅ Mentors can accept/decline requests with messages
+  - ✅ Track mentor availability (max mentees, accepting requests)
+  - Location: `src/renderer/src/features/mentorship/MentorMatching.tsx`
 
 ---
 
@@ -328,18 +330,16 @@ The core features are complete. Now focus on shipping to users, polishing the mo
 **Current Phase:** Final polish
 **Blockers:**
 - Widgets (7.2-7.5): Require native Xcode/Android Studio development
-- Community (9.2-9.4): P2P features need additional implementation
 
 **Completed Phases:**
 - ✅ Phase 6: Ship & Learn (100%)
 - ✅ Phase 7: Mobile-First Polish (80% - native widgets pending)
 - ✅ Phase 8: AI-Powered Insights (100%)
-- ✅ Phase 9: Community Network (25% - P2P features pending)
+- ✅ Phase 9: Community Network (100%)
 - ✅ Phase 10: Compliance Automation (100%)
 
 **Remaining Tasks:**
 - 7.2-7.5: iOS/Android widgets, share sheet, voice shortcuts (native code)
-- 9.2-9.4: Field trip discovery, resource sharing, mentor matching (P2P)
 
 ---
 

@@ -124,6 +124,78 @@ async function runMigrations(): Promise<void> {
       FOREIGN KEY (group_id) REFERENCES coop_groups(id) ON DELETE CASCADE
     )
   `)
+
+  // Create shared_resources table if it doesn't exist
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS shared_resources (
+      id VARCHAR PRIMARY KEY,
+      group_id VARCHAR NOT NULL,
+      shared_by VARCHAR NOT NULL,
+      resource_type VARCHAR NOT NULL DEFAULT 'link',
+      title VARCHAR NOT NULL,
+      description VARCHAR,
+      url VARCHAR,
+      subject VARCHAR,
+      grade_level VARCHAR,
+      average_rating DECIMAL(3,2) DEFAULT 0,
+      rating_count INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (group_id) REFERENCES coop_groups(id) ON DELETE CASCADE,
+      FOREIGN KEY (shared_by) REFERENCES coop_members(id) ON DELETE CASCADE
+    )
+  `)
+
+  // Create resource_ratings table if it doesn't exist
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS resource_ratings (
+      id VARCHAR PRIMARY KEY,
+      resource_id VARCHAR NOT NULL,
+      member_id VARCHAR NOT NULL,
+      rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+      review VARCHAR,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (resource_id) REFERENCES shared_resources(id) ON DELETE CASCADE,
+      FOREIGN KEY (member_id) REFERENCES coop_members(id) ON DELETE CASCADE,
+      UNIQUE (resource_id, member_id)
+    )
+  `)
+
+  // Create mentor_profiles table if it doesn't exist
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS mentor_profiles (
+      id VARCHAR PRIMARY KEY,
+      member_id VARCHAR NOT NULL UNIQUE,
+      years_homeschooling INTEGER NOT NULL,
+      expertise VARCHAR NOT NULL,
+      bio VARCHAR NOT NULL,
+      max_mentees INTEGER NOT NULL DEFAULT 3,
+      current_mentee_count INTEGER NOT NULL DEFAULT 0,
+      is_accepting_requests BOOLEAN DEFAULT TRUE,
+      contact_email VARCHAR,
+      contact_phone VARCHAR,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (member_id) REFERENCES coop_members(id) ON DELETE CASCADE
+    )
+  `)
+
+  // Create mentor_requests table if it doesn't exist
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS mentor_requests (
+      id VARCHAR PRIMARY KEY,
+      mentor_id VARCHAR NOT NULL,
+      requester_id VARCHAR NOT NULL,
+      message VARCHAR NOT NULL,
+      status VARCHAR NOT NULL DEFAULT 'pending',
+      response_message VARCHAR,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (mentor_id) REFERENCES mentor_profiles(id) ON DELETE CASCADE,
+      FOREIGN KEY (requester_id) REFERENCES coop_members(id) ON DELETE CASCADE,
+      UNIQUE (mentor_id, requester_id)
+    )
+  `)
 }
 
 export async function initializeSchema(): Promise<void> {

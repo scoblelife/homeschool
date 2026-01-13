@@ -78,6 +78,13 @@ import type {
   CreateCoopEvent,
   UpdateCoopEvent,
   UpdateCoopSharingPreferences,
+  CreateSharedResource,
+  UpdateSharedResource,
+  CreateResourceRating,
+  CreateMentorProfile,
+  UpdateMentorProfile,
+  CreateMentorRequest,
+  MentorRequestStatus,
   CreateCurriculumPackage,
   UpdateCurriculumPackage,
   CreateAssessment,
@@ -1140,6 +1147,10 @@ export function registerIpcHandlers(): void {
     return coopRepo.getCoopEvents(groupId)
   })
 
+  ipcMain.handle('coop:getAllUpcomingEvents', async () => {
+    return coopRepo.getAllUpcomingCoopEvents()
+  })
+
   ipcMain.handle('coop:getEvent', async (_, id: string) => {
     return coopRepo.getCoopEvent(id)
   })
@@ -1163,6 +1174,84 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('coop:updateSharingPreferences', async (_, groupId: string, data: UpdateCoopSharingPreferences) => {
     return coopRepo.updateCoopSharingPreferences(groupId, data)
+  })
+
+  // Shared Resources
+  ipcMain.handle('resources:getShared', async (_, groupId: string) => {
+    return coopRepo.getSharedResources(groupId)
+  })
+
+  ipcMain.handle('resources:getAllShared', async () => {
+    return coopRepo.getAllSharedResources()
+  })
+
+  ipcMain.handle('resources:getSharedResource', async (_, id: string) => {
+    return coopRepo.getSharedResource(id)
+  })
+
+  ipcMain.handle('resources:createShared', async (_, data: CreateSharedResource) => {
+    return coopRepo.createSharedResource(data)
+  })
+
+  ipcMain.handle('resources:updateShared', async (_, id: string, data: UpdateSharedResource) => {
+    return coopRepo.updateSharedResource(id, data)
+  })
+
+  ipcMain.handle('resources:deleteShared', async (_, id: string) => {
+    return coopRepo.deleteSharedResource(id)
+  })
+
+  ipcMain.handle('resources:getRatings', async (_, resourceId: string) => {
+    return coopRepo.getResourceRatings(resourceId)
+  })
+
+  ipcMain.handle('resources:createRating', async (_, data: CreateResourceRating) => {
+    return coopRepo.createResourceRating(data)
+  })
+
+  ipcMain.handle('resources:deleteRating', async (_, id: string) => {
+    return coopRepo.deleteResourceRating(id)
+  })
+
+  // Mentor Matching
+  ipcMain.handle('mentors:getProfiles', async () => {
+    return coopRepo.getMentorProfiles()
+  })
+
+  ipcMain.handle('mentors:getProfile', async (_, id: string) => {
+    return coopRepo.getMentorProfile(id)
+  })
+
+  ipcMain.handle('mentors:getMyProfile', async (_, memberId: string) => {
+    return coopRepo.getMyMentorProfile(memberId)
+  })
+
+  ipcMain.handle('mentors:createProfile', async (_, data: CreateMentorProfile) => {
+    return coopRepo.createMentorProfile(data)
+  })
+
+  ipcMain.handle('mentors:updateProfile', async (_, id: string, data: UpdateMentorProfile) => {
+    return coopRepo.updateMentorProfile(id, data)
+  })
+
+  ipcMain.handle('mentors:deleteProfile', async (_, id: string) => {
+    return coopRepo.deleteMentorProfile(id)
+  })
+
+  ipcMain.handle('mentors:getRequests', async (_, mentorId: string) => {
+    return coopRepo.getMentorRequests(mentorId)
+  })
+
+  ipcMain.handle('mentors:getMyRequests', async (_, requesterId: string) => {
+    return coopRepo.getMyMentorRequests(requesterId)
+  })
+
+  ipcMain.handle('mentors:createRequest', async (_, data: CreateMentorRequest) => {
+    return coopRepo.createMentorRequest(data)
+  })
+
+  ipcMain.handle('mentors:respondToRequest', async (_, id: string, status: MentorRequestStatus, responseMessage?: string) => {
+    return coopRepo.respondToMentorRequest(id, status, responseMessage)
   })
 
   // Assessments
