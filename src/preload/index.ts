@@ -78,6 +78,12 @@ import type {
   MentorRequest,
   CreateMentorRequest,
   MentorRequestStatus,
+  ExternalEventSource,
+  CreateExternalEventSource,
+  UpdateExternalEventSource,
+  ExternalEvent,
+  CreateExternalEvent,
+  UpdateExternalEvent,
   Assessment,
   CreateAssessment,
   UpdateAssessment,
@@ -147,6 +153,7 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
 
   // Milestones
   getMilestones: (studentId: string) => ipcRenderer.invoke('db:milestones:getAll', studentId),
+  getAllMilestones: () => ipcRenderer.invoke('db:milestones:getAllStudents'),
   getMilestone: (id: string) => ipcRenderer.invoke('db:milestones:get', id),
   createMilestone: (data: CreateMilestone) => ipcRenderer.invoke('db:milestones:create', data),
   updateMilestone: (id: string, data: UpdateMilestone) =>
@@ -567,6 +574,32 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
     ipcRenderer.invoke('mentors:createRequest', data) as Promise<MentorRequest>,
   respondToMentorRequest: (id: string, status: MentorRequestStatus, responseMessage?: string) =>
     ipcRenderer.invoke('mentors:respondToRequest', id, status, responseMessage) as Promise<MentorRequest>,
+
+  // External Event Sources (Community Integrations)
+  getExternalEventSources: (coopGroupId?: string) =>
+    ipcRenderer.invoke('external:getSources', coopGroupId) as Promise<ExternalEventSource[]>,
+  getExternalEventSource: (id: string) =>
+    ipcRenderer.invoke('external:getSource', id) as Promise<ExternalEventSource | null>,
+  createExternalEventSource: (data: CreateExternalEventSource) =>
+    ipcRenderer.invoke('external:createSource', data) as Promise<ExternalEventSource>,
+  updateExternalEventSource: (id: string, data: UpdateExternalEventSource) =>
+    ipcRenderer.invoke('external:updateSource', id, data) as Promise<ExternalEventSource>,
+  deleteExternalEventSource: (id: string) =>
+    ipcRenderer.invoke('external:deleteSource', id) as Promise<void>,
+
+  // External Events
+  getExternalEvents: (sourceId?: string) =>
+    ipcRenderer.invoke('external:getEvents', sourceId) as Promise<ExternalEvent[]>,
+  getExternalEvent: (id: string) =>
+    ipcRenderer.invoke('external:getEvent', id) as Promise<ExternalEvent | null>,
+  createExternalEvent: (data: CreateExternalEvent) =>
+    ipcRenderer.invoke('external:createEvent', data) as Promise<ExternalEvent>,
+  updateExternalEvent: (id: string, data: UpdateExternalEvent) =>
+    ipcRenderer.invoke('external:updateEvent', id, data) as Promise<ExternalEvent>,
+  deleteExternalEvent: (id: string) =>
+    ipcRenderer.invoke('external:deleteEvent', id) as Promise<void>,
+  importExternalEventToFieldTrip: (externalEventId: string, studentIds: string[]) =>
+    ipcRenderer.invoke('external:importToFieldTrip', externalEventId, studentIds) as Promise<string>,
 
   // Assessments
   getAssessments: (studentId?: string) =>

@@ -124,13 +124,13 @@ export function Timer({ onSessionSaved }: TimerProps) {
   const selectedSubject = selectedSubjectId ? subjects.find((s) => s.id === selectedSubjectId) : null
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Session Timer</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Session Timer</h3>
         {activeSession && (
           <span
             className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-              isPaused ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
+              isPaused ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300' : 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300'
             }`}
           >
             {isPaused ? 'Paused' : 'Running'}
@@ -142,11 +142,11 @@ export function Timer({ onSessionSaved }: TimerProps) {
         <div className="space-y-4">
           {/* Timer Display */}
           <div className="text-center">
-            <div className="text-5xl font-mono font-bold text-gray-900 tabular-nums">{displayTime}</div>
-            <div className="mt-2 text-sm text-gray-500">
+            <div className="text-5xl font-mono font-bold text-gray-900 dark:text-white tabular-nums">{displayTime}</div>
+            <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
               {activeStudent?.name} - {activeSubject?.name}
             </div>
-            {activeSession.title && <div className="text-sm text-gray-600 font-medium">{activeSession.title}</div>}
+            {activeSession.title && <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">{activeSession.title}</div>}
           </div>
 
           {/* Control Buttons */}
@@ -197,8 +197,8 @@ export function Timer({ onSessionSaved }: TimerProps) {
         </div>
       ) : (
         <div className="text-center py-6">
-          <div className="text-5xl font-mono font-bold text-gray-300 tabular-nums">00:00:00</div>
-          <p className="mt-4 text-gray-500 text-sm">Start a timer to track your learning session</p>
+          <div className="text-5xl font-mono font-bold text-gray-300 dark:text-gray-600 tabular-nums">00:00:00</div>
+          <p className="mt-4 text-gray-500 dark:text-gray-400 text-sm">Start a timer to track your learning session</p>
           <button
             onClick={handleStart}
             className="mt-4 inline-flex items-center px-6 py-3 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 font-medium"
@@ -241,16 +241,16 @@ export function Timer({ onSessionSaved }: TimerProps) {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md bg-white rounded-2xl p-6 shadow-xl">
-                  <Dialog.Title className="text-lg font-semibold text-gray-900">Start Timer</Dialog.Title>
+                <Dialog.Panel className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl">
+                  <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">Start Timer</Dialog.Title>
 
                   <div className="mt-4 space-y-4">
                     {/* Student Selection */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Student</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Student</label>
                       <Listbox value={selectedStudentId} onChange={setSelectedStudentId}>
                         <div className="relative">
-                          <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
+                          <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-gray-900 dark:text-white">
                             <span className="block truncate">
                               {selectedStudent?.name || 'Select student...'}
                             </span>
@@ -261,13 +261,13 @@ export function Timer({ onSessionSaved }: TimerProps) {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                           >
-                            <Listbox.Options className="absolute z-10 w-full py-1 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                            <Listbox.Options className="absolute z-10 w-full py-1 mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto">
                               {students.map((student) => (
                                 <Listbox.Option
                                   key={student.id}
                                   value={student.id}
                                   className={({ active }) =>
-                                    `cursor-pointer select-none py-2 px-3 ${active ? 'bg-fuchsia-50 text-fuchsia-900' : 'text-gray-900'}`
+                                    `cursor-pointer select-none py-2 px-3 ${active ? 'bg-fuchsia-50 dark:bg-fuchsia-900/30 text-fuchsia-900 dark:text-fuchsia-200' : 'text-gray-900 dark:text-white'}`
                                   }
                                 >
                                   {student.name}
@@ -281,10 +281,10 @@ export function Timer({ onSessionSaved }: TimerProps) {
 
                     {/* Subject Selection */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
                       <Listbox value={selectedSubjectId} onChange={setSelectedSubjectId}>
                         <div className="relative">
-                          <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
+                          <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-gray-900 dark:text-white">
                             <span className="block truncate">
                               {selectedSubject?.name || 'Select subject...'}
                             </span>
@@ -295,13 +295,13 @@ export function Timer({ onSessionSaved }: TimerProps) {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                           >
-                            <Listbox.Options className="absolute z-10 w-full py-1 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                            <Listbox.Options className="absolute z-10 w-full py-1 mt-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto">
                               {subjects.map((subject) => (
                                 <Listbox.Option
                                   key={subject.id}
                                   value={subject.id}
                                   className={({ active }) =>
-                                    `cursor-pointer select-none py-2 px-3 ${active ? 'bg-fuchsia-50 text-fuchsia-900' : 'text-gray-900'}`
+                                    `cursor-pointer select-none py-2 px-3 ${active ? 'bg-fuchsia-50 dark:bg-fuchsia-900/30 text-fuchsia-900 dark:text-fuchsia-200' : 'text-gray-900 dark:text-white'}`
                                   }
                                 >
                                   {subject.name}
@@ -315,15 +315,15 @@ export function Timer({ onSessionSaved }: TimerProps) {
 
                     {/* Optional Title */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Title <span className="text-gray-400">(optional)</span>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Title <span className="text-gray-400 dark:text-gray-500">(optional)</span>
                       </label>
                       <input
                         type="text"
                         value={sessionTitle}
                         onChange={(e) => setSessionTitle(e.target.value)}
                         placeholder="e.g., Math practice, Reading time"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
                       />
                     </div>
                   </div>
@@ -331,7 +331,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                   <div className="mt-6 flex justify-end gap-3">
                     <button
                       onClick={() => setShowStartDialog(false)}
-                      className="px-4 py-2 text-gray-700 hover:text-gray-900"
+                      className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                     >
                       Cancel
                     </button>
@@ -376,27 +376,27 @@ export function Timer({ onSessionSaved }: TimerProps) {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md bg-white rounded-2xl p-6 shadow-xl">
-                  <Dialog.Title className="text-lg font-semibold text-gray-900">Save Session</Dialog.Title>
+                <Dialog.Panel className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl">
+                  <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">Save Session</Dialog.Title>
 
                   <div className="mt-4 space-y-4">
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="text-3xl font-mono font-bold text-center text-gray-900">{displayTime}</div>
-                      <div className="text-center text-sm text-gray-500 mt-1">
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                      <div className="text-3xl font-mono font-bold text-center text-gray-900 dark:text-white">{displayTime}</div>
+                      <div className="text-center text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {activeStudent?.name} - {activeSubject?.name}
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Notes <span className="text-gray-400">(optional)</span>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Notes <span className="text-gray-400 dark:text-gray-500">(optional)</span>
                       </label>
                       <textarea
                         value={sessionNotes}
                         onChange={(e) => setSessionNotes(e.target.value)}
                         placeholder="What did you work on?"
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
                       />
                     </div>
                   </div>
@@ -404,7 +404,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                   <div className="mt-6 flex justify-between">
                     <button
                       onClick={handleDiscard}
-                      className="px-4 py-2 text-red-600 hover:text-red-700"
+                      className="px-4 py-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                       disabled={saving}
                     >
                       Discard

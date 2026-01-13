@@ -7,9 +7,9 @@ import type { Book, BookWithProgress, CreateBook, UpdateStudentBook, ReadingStat
 type StatusFilter = 'all' | 'not_started' | 'reading' | 'finished'
 
 const statusLabels: Record<ReadingStatus, { label: string; color: string; bg: string }> = {
-  not_started: { label: 'Not Started', color: 'text-gray-600', bg: 'bg-gray-100' },
-  reading: { label: 'Reading', color: 'text-blue-600', bg: 'bg-blue-100' },
-  finished: { label: 'Finished', color: 'text-green-600', bg: 'bg-green-100' }
+  not_started: { label: 'Not Started', color: 'text-gray-600 dark:text-gray-300', bg: 'bg-gray-100 dark:bg-gray-700' },
+  reading: { label: 'Reading', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-900/50' },
+  finished: { label: 'Finished', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/50' }
 }
 
 function BookCard({
@@ -35,9 +35,9 @@ function BookCard({
   const progressPercent = book.totalPages ? Math.round((currentPage / book.totalPages) * 100) : 0
 
   return (
-    <div className="group rounded-xl bg-white border border-gray-200 hover:border-fuchsia-200 hover:shadow-lg transition-all duration-200 overflow-hidden">
+    <div className="group rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-fuchsia-200 dark:hover:border-fuchsia-500/50 hover:shadow-lg transition-all duration-200 overflow-hidden">
       {/* Cover Image Section */}
-      <div className="relative aspect-[3/4] bg-gradient-to-br from-fuchsia-100 via-purple-50 to-pink-100">
+      <div className="relative aspect-[3/4] bg-gradient-to-br from-fuchsia-100 via-purple-50 to-pink-100 dark:from-fuchsia-900/30 dark:via-purple-900/20 dark:to-pink-900/30">
         {book.coverImagePath ? (
           <img
             src={`file://${book.coverImagePath}`}
@@ -69,14 +69,14 @@ function BookCard({
             {studentId && status !== 'finished' && book.totalPages && (
               <button
                 onClick={onLogReading}
-                className="px-3 py-2 bg-white rounded-lg text-sm font-medium text-gray-900 hover:bg-gray-100 transition-colors shadow-lg"
+                className="px-3 py-2 bg-white dark:bg-gray-700 rounded-lg text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors shadow-lg"
               >
                 Log Reading
               </button>
             )}
             <button
               onClick={onEdit}
-              className="p-2 bg-white rounded-lg text-gray-600 hover:bg-gray-100 transition-colors shadow-lg"
+              className="p-2 bg-white dark:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors shadow-lg"
               title="Edit"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,55 +88,55 @@ function BookCard({
 
         {/* Progress Ring for books being read */}
         {studentId && status === 'reading' && book.totalPages && (
-          <div className="absolute bottom-2 left-2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
+          <div className="absolute bottom-2 left-2 w-10 h-10 bg-white dark:bg-gray-700 rounded-full shadow-lg flex items-center justify-center">
             <svg className="w-8 h-8 -rotate-90">
-              <circle cx="16" cy="16" r="12" fill="none" stroke="#e5e7eb" strokeWidth="3" />
+              <circle cx="16" cy="16" r="12" fill="none" className="stroke-gray-200 dark:stroke-gray-600" strokeWidth="3" />
               <circle
-                cx="16" cy="16" r="12" fill="none" stroke="#6366f1" strokeWidth="3"
+                cx="16" cy="16" r="12" fill="none" className="stroke-fuchsia-500" strokeWidth="3"
                 strokeDasharray={`${progressPercent * 0.754} 100`}
                 strokeLinecap="round"
               />
             </svg>
-            <span className="absolute text-[10px] font-bold text-fuchsia-600">{progressPercent}%</span>
+            <span className="absolute text-[10px] font-bold text-fuchsia-600 dark:text-fuchsia-400">{progressPercent}%</span>
           </div>
         )}
       </div>
 
       {/* Book Info Section */}
       <div className="p-3">
-        <h3 className="font-semibold text-gray-900 leading-tight line-clamp-2 mb-1" title={book.title}>
+        <h3 className="font-semibold text-gray-900 dark:text-white leading-tight line-clamp-2 mb-1" title={book.title}>
           {book.title}
         </h3>
         {book.author && (
-          <p className="text-sm text-gray-500 truncate">{book.author}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{book.author}</p>
         )}
 
         {/* Metadata Tags */}
         <div className="mt-2 flex flex-wrap gap-1">
           {book.totalPages && (
-            <span className="text-xs text-gray-400">{book.totalPages} pages</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">{book.totalPages} pages</span>
           )}
           {book.totalPages && (book.genre || book.readingLevel) && (
-            <span className="text-xs text-gray-300">•</span>
+            <span className="text-xs text-gray-300 dark:text-gray-600">•</span>
           )}
           {book.genre && (
-            <span className="text-xs text-gray-400">{book.genre}</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">{book.genre}</span>
           )}
           {book.readingLevel && (
-            <span className="text-xs px-1.5 py-0.5 bg-fuchsia-50 text-fuchsia-600 rounded">{book.readingLevel}</span>
+            <span className="text-xs px-1.5 py-0.5 bg-fuchsia-50 dark:bg-fuchsia-900/50 text-fuchsia-600 dark:text-fuchsia-400 rounded">{book.readingLevel}</span>
           )}
         </div>
 
         {/* Student Progress Section */}
         {studentId && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
             {book.totalPages && (
               <div className="mb-2">
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
                   <span>Page {currentPage}</span>
                   <span>{book.totalPages}</span>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
                   <div
                     className={`h-1.5 rounded-full transition-all duration-300 ${
                       status === 'finished' ? 'bg-green-500' : 'bg-fuchsia-500'
@@ -151,7 +151,7 @@ function BookCard({
               <select
                 value={status}
                 onChange={(e) => onUpdateProgress({ status: e.target.value as ReadingStatus })}
-                className="text-xs border-0 bg-gray-100 rounded-lg px-2 py-1.5 text-gray-700 focus:ring-2 focus:ring-fuchsia-500"
+                className="text-xs border-0 bg-gray-100 dark:bg-gray-700 rounded-lg px-2 py-1.5 text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-fuchsia-500"
               >
                 <option value="not_started">Not Started</option>
                 <option value="reading">Reading</option>
@@ -162,7 +162,7 @@ function BookCard({
               <div className="relative">
                 <button
                   onClick={() => setShowMenu(!showMenu)}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 >
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -171,10 +171,10 @@ function BookCard({
                 {showMenu && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-                    <div className="absolute right-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[120px]">
+                    <div className="absolute right-0 bottom-full mb-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20 min-w-[120px]">
                       <button
                         onClick={() => { onEdit(); setShowMenu(false) }}
-                        className="w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50"
+                        className="w-full px-3 py-1.5 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         Edit
                       </button>
@@ -186,7 +186,7 @@ function BookCard({
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => setShowMenu(false)}
-                        className="w-full px-3 py-1.5 text-left text-sm text-fuchsia-600 hover:bg-fuchsia-50 flex items-center gap-1"
+                        className="w-full px-3 py-1.5 text-left text-sm text-fuchsia-600 dark:text-fuchsia-400 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/30 flex items-center gap-1"
                       >
                         Goodreads
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -195,7 +195,7 @@ function BookCard({
                       </a>
                       <button
                         onClick={() => { onDelete(); setShowMenu(false) }}
-                        className="w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50"
+                        className="w-full px-3 py-1.5 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30"
                       >
                         Delete
                       </button>
@@ -371,9 +371,9 @@ export default function Library(): JSX.Element {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Library</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Library</h1>
           {selectedStudent && (
-            <p className="text-sm text-gray-500 mt-1">{selectedStudent.name}'s Reading Progress</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{selectedStudent.name}'s Reading Progress</p>
           )}
         </div>
         <div className="flex gap-3">
@@ -391,20 +391,20 @@ export default function Library(): JSX.Element {
         <div className="card mb-6">
           <div className="grid grid-cols-4 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-              <div className="text-sm text-gray-500">Total Books</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Total Books</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-green-600">{stats.finished}</div>
-              <div className="text-sm text-gray-500">Finished</div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.finished}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Finished</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-blue-600">{stats.reading}</div>
-              <div className="text-sm text-gray-500">Reading</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.reading}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Reading</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-400">{stats.notStarted}</div>
-              <div className="text-sm text-gray-500">Not Started</div>
+              <div className="text-2xl font-bold text-gray-400 dark:text-gray-500">{stats.notStarted}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Not Started</div>
             </div>
           </div>
         </div>
@@ -430,8 +430,8 @@ export default function Library(): JSX.Element {
                 onClick={() => setFilterStatus(status)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   filterStatus === status
-                    ? 'bg-fuchsia-100 text-fuchsia-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-700 dark:text-fuchsia-300'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {status === 'all'
@@ -450,7 +450,7 @@ export default function Library(): JSX.Element {
       {/* Book Grid */}
       {filteredBooks.length === 0 ? (
         <div className="card text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-gray-400">
             {books.length === 0
               ? 'No books in your library yet. Add your first book!'
               : 'No books match your search or filters.'}
@@ -483,8 +483,8 @@ export default function Library(): JSX.Element {
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               {editingBook ? 'Edit Book' : 'Add Book'}
             </Dialog.Title>
 
@@ -600,16 +600,16 @@ export default function Library(): JSX.Element {
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Log Reading
             </Dialog.Title>
 
             {loggingBook && (
               <form onSubmit={handleLogReading} className="space-y-4">
                 <div>
-                  <p className="text-gray-700 font-medium">{loggingBook.title}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-gray-700 dark:text-gray-200 font-medium">{loggingBook.title}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     Currently on page {loggingBook.studentProgress?.currentPage || 0}
                     {loggingBook.totalPages && ` of ${loggingBook.totalPages}`}
                   </p>

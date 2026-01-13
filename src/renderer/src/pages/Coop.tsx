@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { CoopGroupList, CoopGroupDetail } from '../features/coop'
 import { FieldTripDiscovery } from '../features/fieldTrips'
-import { ResourceSharing } from '../features/community'
+import { ResourceSharing, ExternalSources } from '../features/community'
 import { MentorMatching } from '../features/mentorship'
 import type { CoopGroup } from '../../../shared/types'
 
-type TabType = 'groups' | 'discover' | 'resources' | 'mentors'
+type TabType = 'groups' | 'discover' | 'external' | 'resources' | 'mentors'
 
 export default function Coop() {
   const [selectedGroup, setSelectedGroup] = useState<CoopGroup | null>(null)
@@ -48,6 +48,16 @@ export default function Coop() {
             }`}
           >
             Discover Events
+          </button>
+          <button
+            onClick={() => setActiveTab('external')}
+            className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'external'
+                ? 'border-fuchsia-500 text-fuchsia-600 dark:text-fuchsia-400'
+                : 'border-transparent text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+            }`}
+          >
+            Community Sources
           </button>
           <button
             onClick={() => setActiveTab('resources')}
@@ -96,6 +106,8 @@ export default function Coop() {
         </>
       ) : activeTab === 'discover' ? (
         <FieldTripDiscovery />
+      ) : activeTab === 'external' ? (
+        <ExternalSources />
       ) : activeTab === 'resources' ? (
         <ResourceSharing />
       ) : (

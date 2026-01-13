@@ -31,18 +31,18 @@ import type {
 type StatusFilter = 'all' | 'planned' | 'completed' | 'cancelled'
 
 const statusLabels: Record<FieldTripStatus, { label: string; color: string; bg: string }> = {
-  planned: { label: 'Planned', color: 'text-blue-600', bg: 'bg-blue-100' },
-  completed: { label: 'Completed', color: 'text-green-600', bg: 'bg-green-100' },
-  cancelled: { label: 'Cancelled', color: 'text-gray-600', bg: 'bg-gray-100' }
+  planned: { label: 'Planned', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-900/50' },
+  completed: { label: 'Completed', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/50' },
+  cancelled: { label: 'Cancelled', color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-100 dark:bg-gray-700' }
 }
 
 const activityTypeConfig: Record<EventActivityType, { icon: string; label: string; color: string; bg: string }> = {
-  field_trip: { icon: '🚌', label: 'Field Trip', color: 'text-amber-700', bg: 'bg-amber-100' },
-  park_day: { icon: '🌳', label: 'Park Day', color: 'text-green-700', bg: 'bg-green-100' },
-  game_night: { icon: '🎲', label: 'Game Night', color: 'text-purple-700', bg: 'bg-purple-100' },
-  playdate: { icon: '👋', label: 'Playdate', color: 'text-pink-700', bg: 'bg-pink-100' },
-  coop_class: { icon: '📚', label: 'Co-op Class', color: 'text-blue-700', bg: 'bg-blue-100' },
-  custom: { icon: '📅', label: 'Other', color: 'text-gray-700', bg: 'bg-gray-100' }
+  field_trip: { icon: '🚌', label: 'Field Trip', color: 'text-amber-700 dark:text-amber-300', bg: 'bg-amber-100 dark:bg-amber-900/50' },
+  park_day: { icon: '🌳', label: 'Park Day', color: 'text-green-700 dark:text-green-300', bg: 'bg-green-100 dark:bg-green-900/50' },
+  game_night: { icon: '🎲', label: 'Game Night', color: 'text-purple-700 dark:text-purple-300', bg: 'bg-purple-100 dark:bg-purple-900/50' },
+  playdate: { icon: '👋', label: 'Playdate', color: 'text-pink-700 dark:text-pink-300', bg: 'bg-pink-100 dark:bg-pink-900/50' },
+  coop_class: { icon: '📚', label: 'Co-op Class', color: 'text-blue-700 dark:text-blue-300', bg: 'bg-blue-100 dark:bg-blue-900/50' },
+  custom: { icon: '📅', label: 'Other', color: 'text-gray-700 dark:text-gray-300', bg: 'bg-gray-100 dark:bg-gray-700' }
 }
 
 const phaseLabels: Record<TaskPhase, { label: string; icon: string }> = {
@@ -59,10 +59,10 @@ const contactRoleLabels: Record<ContactRole, string> = {
 }
 
 const rsvpStatusLabels: Record<RSVPStatus, { label: string; color: string; bg: string }> = {
-  invited: { label: 'Invited', color: 'text-gray-600', bg: 'bg-gray-100' },
-  confirmed: { label: 'Confirmed', color: 'text-green-600', bg: 'bg-green-100' },
-  declined: { label: 'Declined', color: 'text-red-600', bg: 'bg-red-100' },
-  maybe: { label: 'Maybe', color: 'text-amber-600', bg: 'bg-amber-100' }
+  invited: { label: 'Invited', color: 'text-gray-600 dark:text-gray-400', bg: 'bg-gray-100 dark:bg-gray-700' },
+  confirmed: { label: 'Confirmed', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/50' },
+  declined: { label: 'Declined', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-100 dark:bg-red-900/50' },
+  maybe: { label: 'Maybe', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-100 dark:bg-amber-900/50' }
 }
 
 // Activity types that show RSVP section (group events)
@@ -226,12 +226,12 @@ function FieldTripCard({
     <div
       className={`p-4 rounded-lg border-l-4 ${
         trip.status === 'completed'
-          ? 'bg-green-50 border-l-green-500'
+          ? 'bg-green-50 dark:bg-green-900/20 border-l-green-500'
           : trip.status === 'cancelled'
-            ? 'bg-gray-50 border-l-gray-300'
+            ? 'bg-gray-50 dark:bg-gray-700/50 border-l-gray-300 dark:border-l-gray-600'
             : isUpcoming
-              ? 'bg-blue-50 border-l-blue-500'
-              : 'bg-amber-50 border-l-amber-500'
+              ? 'bg-blue-50 dark:bg-blue-900/20 border-l-blue-500'
+              : 'bg-amber-50 dark:bg-amber-900/20 border-l-amber-500'
       }`}
     >
       <div className="flex items-start justify-between gap-4">
@@ -240,13 +240,13 @@ function FieldTripCard({
             <span className={`text-sm px-2 py-0.5 rounded-full ${activityConfig.bg} ${activityConfig.color}`}>
               {activityConfig.icon} {activityConfig.label}
             </span>
-            <h3 className="font-medium text-gray-900">{trip.title}</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white">{trip.title}</h3>
             <span className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.bg} ${statusInfo.color}`}>
               {statusInfo.label}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 flex-wrap">
+          <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 dark:text-gray-300 flex-wrap">
             <MapLink location={trip.location} />
             <span>•</span>
             <span>📅 {format(tripDate, 'EEEE, MMMM d, yyyy')}</span>
@@ -265,7 +265,7 @@ function FieldTripCard({
           </div>
 
           {trip.description && (
-            <p className="text-sm text-gray-600 mt-2">{trip.description}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">{trip.description}</p>
           )}
 
           {/* Students */}
@@ -273,7 +273,7 @@ function FieldTripCard({
             {tripStudents.map((student) => (
               <span
                 key={student.id}
-                className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700"
+                className="text-xs px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300"
               >
                 {student.name}
               </span>
@@ -285,7 +285,7 @@ function FieldTripCard({
             {tripSubjects.map((subject) => (
               <span
                 key={subject.id}
-                className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-700"
+                className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-700 dark:text-fuchsia-300"
               >
                 {subject.name}
               </span>
@@ -298,7 +298,7 @@ function FieldTripCard({
               href={trip.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-2 text-sm text-blue-600 hover:underline"
+              className="inline-block mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
               onClick={(e) => e.stopPropagation()}
             >
               🔗 Visit Website
@@ -307,20 +307,20 @@ function FieldTripCard({
 
           {/* Learning Outcomes */}
           {trip.learningOutcomes && (
-            <div className="mt-3 p-2 bg-white/50 rounded text-sm">
-              <strong className="text-gray-700">Learning Outcomes:</strong>
-              <p className="text-gray-600 mt-1">{trip.learningOutcomes}</p>
+            <div className="mt-3 p-2 bg-white/50 dark:bg-gray-800/50 rounded text-sm">
+              <strong className="text-gray-700 dark:text-gray-200">Learning Outcomes:</strong>
+              <p className="text-gray-600 dark:text-gray-300 mt-1">{trip.learningOutcomes}</p>
             </div>
           )}
 
           {/* Notes */}
           {trip.notes && (
-            <p className="text-sm text-gray-500 mt-2 italic">Notes: {trip.notes}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 italic">Notes: {trip.notes}</p>
           )}
 
           {/* Alert for past unfinished activities */}
           {isPastTrip && trip.status === 'planned' && (
-            <p className="text-sm text-amber-600 mt-2">
+            <p className="text-sm text-amber-600 dark:text-amber-400 mt-2">
               ⚠️ This activity date has passed. Update the status to completed or cancelled.
             </p>
           )}
@@ -328,14 +328,14 @@ function FieldTripCard({
           {/* Task progress indicator */}
           <button
             onClick={onToggleExpand}
-            className="mt-3 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+            className="mt-3 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           >
             <span>{isExpanded ? '▼' : '▶'}</span>
             <span>
               Tasks: {tasks.filter((t) => t.completedAt).length}/{tasks.length}
             </span>
             {tasks.length > 0 && (
-              <div className="flex-1 max-w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="flex-1 max-w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-green-500 transition-all"
                   style={{
@@ -351,20 +351,20 @@ function FieldTripCard({
           <select
             value={trip.status}
             onChange={(e) => onStatusChange(e.target.value as FieldTripStatus)}
-            className="text-sm border border-gray-300 rounded-lg px-2 py-1"
+            className="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           >
             <option value="planned">Planned</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
-          <button onClick={onEdit} className="text-fuchsia-600 hover:text-fuchsia-700 text-sm">
+          <button onClick={onEdit} className="text-fuchsia-600 hover:text-fuchsia-700 dark:text-fuchsia-400 dark:hover:text-fuchsia-300 text-sm">
             Edit
           </button>
-          <button onClick={onDuplicate} className="text-gray-600 hover:text-gray-800 text-sm">
+          <button onClick={onDuplicate} className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 text-sm">
             Duplicate
           </button>
           <ShareButton trip={trip} students={students} subjects={subjects} />
-          <button onClick={onDelete} className="text-red-500 hover:text-red-700 text-sm">
+          <button onClick={onDelete} className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm">
             Delete
           </button>
         </div>
@@ -372,13 +372,13 @@ function FieldTripCard({
 
       {/* Expandable Tasks Section */}
       {isExpanded && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           {/* Add Task Form */}
           <div className="flex gap-2 mb-4">
             <select
               value={newTaskPhase}
               onChange={(e) => onNewTaskPhaseChange(e.target.value as TaskPhase)}
-              className="text-sm border border-gray-300 rounded-lg px-2 py-1.5"
+              className="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               {(Object.entries(phaseLabels) as [TaskPhase, typeof phaseLabels.pre][]).map(
                 ([phase, config]) => (
@@ -393,7 +393,7 @@ function FieldTripCard({
               value={newTaskTitle}
               onChange={(e) => onNewTaskTitleChange(e.target.value)}
               placeholder="Add a task..."
-              className="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-1.5"
+              className="flex-1 text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
               onKeyDown={(e) => e.key === 'Enter' && onAddTask()}
             />
             <button
@@ -413,29 +413,29 @@ function FieldTripCard({
             const phaseConfig = phaseLabels[phase]
             return (
               <div key={phase} className="mb-3">
-                <div className="text-xs font-medium text-gray-500 mb-1">
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                   {phaseConfig.icon} {phaseConfig.label}
                 </div>
                 <div className="space-y-1">
                   {phaseTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="flex items-center gap-2 p-2 bg-white/50 rounded"
+                      className="flex items-center gap-2 p-2 bg-white/50 dark:bg-gray-800/50 rounded"
                     >
                       <input
                         type="checkbox"
                         checked={!!task.completedAt}
                         onChange={() => onToggleTask(task.id)}
-                        className="w-4 h-4 rounded border-gray-300"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
                       />
                       <span
-                        className={`flex-1 text-sm ${task.completedAt ? 'line-through text-gray-400' : 'text-gray-700'}`}
+                        className={`flex-1 text-sm ${task.completedAt ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-200'}`}
                       >
                         {task.title}
                       </span>
                       <button
                         onClick={() => onDeleteTask(task.id)}
-                        className="text-gray-400 hover:text-red-500 text-xs"
+                        className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 text-xs"
                       >
                         ✕
                       </button>
@@ -447,37 +447,37 @@ function FieldTripCard({
           })}
 
           {tasks.length === 0 && (
-            <p className="text-sm text-gray-400 text-center py-2">
+            <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-2">
               No tasks yet. Add tasks to track preparation steps.
             </p>
           )}
 
           {/* Contacts Section */}
-          <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm font-medium text-gray-700">📞 Contacts</div>
+              <div className="text-sm font-medium text-gray-700 dark:text-gray-200">📞 Contacts</div>
               <button
                 onClick={() => setShowContactForm(!showContactForm)}
-                className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
+                className="text-xs text-fuchsia-600 hover:text-fuchsia-700 dark:text-fuchsia-400 dark:hover:text-fuchsia-300"
               >
                 {showContactForm ? 'Cancel' : '+ Add'}
               </button>
             </div>
 
             {showContactForm && (
-              <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-2">
+              <div className="mb-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2">
                 <input
                   type="text"
                   value={newContactName}
                   onChange={(e) => setNewContactName(e.target.value)}
                   placeholder="Contact name"
-                  className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                  className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <select
                     value={newContactRole}
                     onChange={(e) => setNewContactRole(e.target.value as ContactRole)}
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
+                    className="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     {(Object.entries(contactRoleLabels) as [ContactRole, string][]).map(
                       ([role, label]) => (
@@ -492,7 +492,7 @@ function FieldTripCard({
                     value={newContactPhone}
                     onChange={(e) => setNewContactPhone(e.target.value)}
                     placeholder="Phone"
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
+                    className="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                 </div>
                 <input
@@ -500,14 +500,14 @@ function FieldTripCard({
                   value={newContactEmail}
                   onChange={(e) => setNewContactEmail(e.target.value)}
                   placeholder="Email"
-                  className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                  className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
                 <input
                   type="text"
                   value={newContactNotes}
                   onChange={(e) => setNewContactNotes(e.target.value)}
                   placeholder="Website URL or notes"
-                  className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                  className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
                 <button
                   onClick={handleAddContact}
@@ -524,13 +524,13 @@ function FieldTripCard({
                 {contacts.map((contact) => (
                   <div
                     key={contact.id}
-                    className="p-2 bg-white/50 rounded"
+                    className="p-2 bg-white/50 dark:bg-gray-800/50 rounded"
                   >
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium text-gray-700">{contact.name}</div>
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-200">{contact.name}</div>
                       <button
                         onClick={() => onDeleteContact(contact.id)}
-                        className="text-gray-400 hover:text-red-500 text-xs"
+                        className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 text-xs"
                       >
                         ✕
                       </button>
@@ -539,7 +539,7 @@ function FieldTripCard({
                       <select
                         value={contact.role || 'other'}
                         onChange={(e) => onUpdateContact(contact.id, { role: e.target.value as ContactRole })}
-                        className="text-xs border border-gray-200 rounded px-1.5 py-0.5 bg-white"
+                        className="text-xs border border-gray-200 dark:border-gray-600 rounded px-1.5 py-0.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       >
                         {(Object.entries(contactRoleLabels) as [ContactRole, string][]).map(
                           ([role, label]) => (
@@ -548,17 +548,17 @@ function FieldTripCard({
                         )}
                       </select>
                     </div>
-                    <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-0.5">
                       {contact.phone && (
-                        <div>📞 <a href={`tel:${contact.phone}`} className="hover:text-fuchsia-600">{contact.phone}</a></div>
+                        <div>📞 <a href={`tel:${contact.phone}`} className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400">{contact.phone}</a></div>
                       )}
                       {contact.email && (
-                        <div>✉️ <a href={`mailto:${contact.email}`} className="hover:text-fuchsia-600">{contact.email}</a></div>
+                        <div>✉️ <a href={`mailto:${contact.email}`} className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400">{contact.email}</a></div>
                       )}
                       {contact.notes && (
                         <div>
                           {contact.notes.startsWith('http') ? (
-                            <>🔗 <a href={contact.notes} target="_blank" rel="noopener noreferrer" className="hover:text-fuchsia-600">{contact.notes}</a></>
+                            <>🔗 <a href={contact.notes} target="_blank" rel="noopener noreferrer" className="hover:text-fuchsia-600 dark:hover:text-fuchsia-400">{contact.notes}</a></>
                           ) : (
                             <>📝 {contact.notes}</>
                           )}
@@ -570,7 +570,7 @@ function FieldTripCard({
               </div>
             ) : (
               !showContactForm && (
-                <p className="text-xs text-gray-400 text-center py-1">
+                <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-1">
                   No contacts added
                 </p>
               )
@@ -579,41 +579,41 @@ function FieldTripCard({
 
           {/* RSVP Section - Only for group events */}
           {showRSVP && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-sm font-medium text-gray-700">
+                <div className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   📝 RSVPs
                   {rsvps.length > 0 && (
-                    <span className="ml-2 text-xs text-gray-500">
+                    <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
                       ({rsvpSummary.confirmed} confirmed, {rsvpSummary.totalAttending} attending)
                     </span>
                   )}
                 </div>
                 <button
                   onClick={() => setShowRSVPForm(!showRSVPForm)}
-                  className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
+                  className="text-xs text-fuchsia-600 hover:text-fuchsia-700 dark:text-fuchsia-400 dark:hover:text-fuchsia-300"
                 >
                   {showRSVPForm ? 'Cancel' : '+ Add'}
                 </button>
               </div>
 
               {showRSVPForm && (
-                <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-2">
+                <div className="mb-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2">
                   <input
                     type="text"
                     value={newRSVPName}
                     onChange={(e) => setNewRSVPName(e.target.value)}
                     placeholder="Family name"
-                    className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                    className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                   <div className="flex gap-2 items-center">
-                    <label className="text-xs text-gray-600">Attending:</label>
+                    <label className="text-xs text-gray-600 dark:text-gray-400">Attending:</label>
                     <input
                       type="number"
                       value={newRSVPCount}
                       onChange={(e) => setNewRSVPCount(parseInt(e.target.value) || 1)}
                       min="1"
-                      className="w-16 text-sm border border-gray-300 rounded px-2 py-1"
+                      className="w-16 text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     />
                   </div>
                   <button
@@ -633,14 +633,14 @@ function FieldTripCard({
                     return (
                       <div
                         key={rsvp.id}
-                        className="flex items-center justify-between p-2 bg-white/50 rounded"
+                        className="flex items-center justify-between p-2 bg-white/50 dark:bg-gray-800/50 rounded"
                       >
                         <div className="flex items-center gap-2">
                           <div>
-                            <div className="text-sm font-medium text-gray-700">
+                            <div className="text-sm font-medium text-gray-700 dark:text-gray-200">
                               {rsvp.familyName}
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
                               {rsvp.attendingCount} {rsvp.attendingCount === 1 ? 'person' : 'people'}
                             </div>
                           </div>
@@ -661,7 +661,7 @@ function FieldTripCard({
                           </select>
                           <button
                             onClick={() => onDeleteRSVP(rsvp.id)}
-                            className="text-gray-400 hover:text-red-500 text-xs"
+                            className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 text-xs"
                           >
                             ✕
                           </button>
@@ -672,7 +672,7 @@ function FieldTripCard({
                 </div>
               ) : (
                 !showRSVPForm && (
-                  <p className="text-xs text-gray-400 text-center py-1">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-1">
                     No RSVPs yet. Add families to track attendance.
                   </p>
                 )
@@ -681,32 +681,32 @@ function FieldTripCard({
           )}
 
           {/* Expenses Section */}
-          <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm font-medium text-gray-700">
+              <div className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 💰 Expenses
                 {expenses.length > 0 && (
-                  <span className="ml-2 text-xs text-gray-500">
+                  <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
                     (Total: ${expenseTotal.toFixed(2)})
                   </span>
                 )}
               </div>
               <button
                 onClick={() => setShowExpenseForm(!showExpenseForm)}
-                className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
+                className="text-xs text-fuchsia-600 hover:text-fuchsia-700 dark:text-fuchsia-400 dark:hover:text-fuchsia-300"
               >
                 {showExpenseForm ? 'Cancel' : '+ Add'}
               </button>
             </div>
 
             {showExpenseForm && (
-              <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-2">
+              <div className="mb-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 space-y-2">
                 <input
                   type="text"
                   value={newExpenseDesc}
                   onChange={(e) => setNewExpenseDesc(e.target.value)}
                   placeholder="Description"
-                  className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                  className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -716,12 +716,12 @@ function FieldTripCard({
                     placeholder="Amount"
                     min="0"
                     step="0.01"
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
+                    className="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                   <select
                     value={newExpenseCategory}
                     onChange={(e) => setNewExpenseCategory(e.target.value as ExpenseCategory)}
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
+                    className="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   >
                     {(Object.entries(expenseCategoryLabels) as [ExpenseCategory, { label: string; icon: string }][]).map(
                       ([cat, config]) => (
@@ -751,19 +751,19 @@ function FieldTripCard({
                   return (
                     <div
                       key={expense.id}
-                      className="p-2 bg-white/50 rounded"
+                      className="p-2 bg-white/50 dark:bg-gray-800/50 rounded"
                     >
                       <div className="flex items-center justify-between">
-                        <div className="text-sm font-medium text-gray-700">
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-200">
                           {expense.description}
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-gray-700">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                             ${expense.amount.toFixed(2)}
                           </span>
                           <button
                             onClick={() => onDeleteExpense(expense.id)}
-                            className="text-gray-400 hover:text-red-500 text-xs"
+                            className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 text-xs"
                           >
                             ✕
                           </button>
@@ -773,7 +773,7 @@ function FieldTripCard({
                         <select
                           value={expense.category || 'other'}
                           onChange={(e) => onUpdateExpense(expense.id, { category: e.target.value as ExpenseCategory })}
-                          className="text-xs border border-gray-200 rounded px-1.5 py-0.5 bg-white"
+                          className="text-xs border border-gray-200 dark:border-gray-600 rounded px-1.5 py-0.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         >
                           {(Object.entries(expenseCategoryLabels) as [ExpenseCategory, { label: string; icon: string }][]).map(
                             ([cat, config]) => (
@@ -788,7 +788,7 @@ function FieldTripCard({
               </div>
             ) : (
               !showExpenseForm && (
-                <p className="text-xs text-gray-400 text-center py-1">
+                <p className="text-xs text-gray-400 dark:text-gray-500 text-center py-1">
                   No expenses recorded yet.
                 </p>
               )
@@ -1148,8 +1148,8 @@ export default function FieldTrips(): JSX.Element {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Activities</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Activities</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Plan field trips, park days, playdates, and social events
           </p>
         </div>
@@ -1162,20 +1162,20 @@ export default function FieldTrips(): JSX.Element {
       <div className="card mb-6">
         <div className="grid grid-cols-4 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-            <div className="text-sm text-gray-500">Total Activities</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Total Activities</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-blue-600">{stats.upcoming}</div>
-            <div className="text-sm text-gray-500">Upcoming</div>
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.upcoming}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Upcoming</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-            <div className="text-sm text-gray-500">Completed</div>
+            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.completed}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Completed</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-amber-600">{stats.planned}</div>
-            <div className="text-sm text-gray-500">Planned</div>
+            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.planned}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Planned</div>
           </div>
         </div>
       </div>
@@ -1188,8 +1188,8 @@ export default function FieldTrips(): JSX.Element {
             onClick={() => setFilterStatus(status)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filterStatus === status
-                ? 'bg-fuchsia-100 text-fuchsia-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-700 dark:text-fuchsia-300'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
@@ -1200,7 +1200,7 @@ export default function FieldTrips(): JSX.Element {
       {/* Activities List */}
       {filteredTrips.length === 0 ? (
         <div className="card text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-gray-500 dark:text-gray-400">
             {trips.length === 0
               ? 'No activities planned yet. Start by planning your first activity!'
               : 'No activities match your filter.'}
@@ -1258,8 +1258,8 @@ export default function FieldTrips(): JSX.Element {
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 my-8">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-6 my-8">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               {editingTrip ? 'Edit Activity' : 'Plan Activity'}
             </Dialog.Title>
 
@@ -1277,7 +1277,7 @@ export default function FieldTrips(): JSX.Element {
                         className={`p-2 rounded-lg text-center transition-all ${
                           formData.activityType === type
                             ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
-                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                            : 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
                         }`}
                       >
                         <div className="text-xl">{config.icon}</div>
@@ -1374,8 +1374,8 @@ export default function FieldTrips(): JSX.Element {
                       onClick={() => toggleStudentSelection(student.id)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                         formData.studentIds.includes(student.id)
-                          ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-500'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 ring-2 ring-purple-500'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                     >
                       {student.name}
@@ -1394,8 +1394,8 @@ export default function FieldTrips(): JSX.Element {
                       onClick={() => toggleSubjectSelection(subject.id)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                         formData.subjectIds.includes(subject.id)
-                          ? 'bg-fuchsia-100 text-fuchsia-700 ring-2 ring-fuchsia-500'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-700 dark:text-fuchsia-300 ring-2 ring-fuchsia-500'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                       }`}
                     >
                       {subject.name}
@@ -1478,14 +1478,14 @@ export default function FieldTrips(): JSX.Element {
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Duplicate Activity
             </Dialog.Title>
 
             {duplicatingTrip && (
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   Create a copy of <span className="font-medium">{duplicatingTrip.title}</span>
                 </p>
 
@@ -1502,25 +1502,25 @@ export default function FieldTrips(): JSX.Element {
 
                 <div className="space-y-2">
                   <label className="label">Copy Options</label>
-                  <label className="flex items-center gap-2 text-sm">
+                  <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                     <input
                       type="checkbox"
                       checked={duplicateCopyTasks}
                       onChange={(e) => setDuplicateCopyTasks(e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                     />
                     <span>Copy tasks (will be reset to incomplete)</span>
                   </label>
-                  <label className="flex items-center gap-2 text-sm">
+                  <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                     <input
                       type="checkbox"
                       checked={duplicateCopyContacts}
                       onChange={(e) => setDuplicateCopyContacts(e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                     />
                     <span>Copy contacts</span>
                   </label>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     RSVPs, expenses, and payments are not copied.
                   </p>
                 </div>
