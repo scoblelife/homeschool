@@ -43,6 +43,15 @@ const recurrenceOptions: { value: RecurrencePattern; label: string }[] = [
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
+/**
+ * Render UI for managing recurring activity schedules and interacting with due items.
+ *
+ * Shows activities due today, provides one-tap actions to log or skip scheduled items,
+ * and includes controls to create, edit, and delete recurring schedules via modals.
+ *
+ * @param onActivityCreated - Optional callback invoked after a recurring activity is created or logged; used to notify parent components of new activity creation.
+ * @returns The rendered Recurring Activities React element.
+ */
 export default function RecurringActivities({ onActivityCreated }: RecurringActivitiesProps): JSX.Element {
   const { students, subjects, selectedStudentId, getStudentById, getSubjectById } = useStore()
   const [dueActivities, setDueActivities] = useState<RecurringActivity[]>([])
@@ -331,7 +340,21 @@ export default function RecurringActivities({ onActivityCreated }: RecurringActi
   )
 }
 
-// Manage Recurring Activities Modal
+/**
+ * Modal dialog for listing recurring activities and managing schedules.
+ *
+ * Displays existing recurring activities (or an empty state), lets the user delete individual schedules, and provides a button to open the create-schedule flow.
+ *
+ * @param isOpen - Whether the modal is visible
+ * @param onClose - Callback invoked to close the modal
+ * @param activities - Array of recurring activity objects to display
+ * @param onDelete - Async callback invoked with an activity id to delete that recurring activity
+ * @param onCreate - Callback invoked to initiate creating a new recurring activity
+ * @param getStudentById - Lookup that returns a student object (with `name`) for a given student id, or `undefined`
+ * @param getSubjectById - Lookup that returns a subject object (with `name`) for a given subject id, or `undefined`
+ * @param getTypeInfo - Lookup that returns display info (`icon` and `label`) for a given activity type, or `undefined`
+ * @returns A JSX element rendering the manage-recurring-activities modal
+ */
 function ManageRecurringModal({
   isOpen,
   onClose,
@@ -449,7 +472,23 @@ function ManageRecurringModal({
   )
 }
 
-// Create Recurring Activity Modal
+/**
+ * Modal dialog for creating a recurring activity schedule.
+ *
+ * Controlled by the provided `formData` and `setFormData`, it presents inputs for activity
+ * type, student, subject, title, recurrence pattern (including custom days), optional time,
+ * and duration, and invokes `onSubmit` to create the schedule.
+ *
+ * @param isOpen - Whether the modal is visible
+ * @param onClose - Callback to close the modal
+ * @param formData - Controlled form state for the new recurring activity (all CreateRecurringActivity fields except `isActive`)
+ * @param setFormData - Setter for updating the controlled `formData`
+ * @param onSubmit - Async callback invoked when the user submits the form to create the schedule
+ * @param isProcessing - When true, disables submit actions and shows progress state
+ * @param students - Available students to assign to the recurring activity (id and name)
+ * @param subjects - Available subjects to assign to the recurring activity (id and name)
+ * @returns A JSX element rendering the "Create Recurring Activity" modal
+ */
 function CreateRecurringModal({
   isOpen,
   onClose,

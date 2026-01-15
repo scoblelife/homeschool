@@ -36,9 +36,9 @@ try {
 const APP_GROUP = 'group.com.scoblelife.homeschool';
 
 /**
- * Update widget data for iOS and Android widgets
- * iOS: Data is shared via App Groups and read by the widget extension
- * Android: Data is stored in SharedPreferences and read by widget providers
+ * Update the platform widget state with the provided widget fields.
+ *
+ * @param data - Partial widget properties to write to the platform widget storage; only supplied fields are updated
  */
 export async function updateWidgetData(data: Partial<WidgetData>): Promise<void> {
   if (Platform.OS === 'ios') {
@@ -48,6 +48,18 @@ export async function updateWidgetData(data: Partial<WidgetData>): Promise<void>
   }
 }
 
+/**
+ * Persist the provided widget fields to the iOS app group and request a widget refresh.
+ *
+ * Persists any fields present on `data` into the iOS shared group storage and then triggers a widget timeline reload. If the native SharedGroupPreferences module is not available this function is a no-op. Errors encountered during persistence are caught and logged.
+ *
+ * @param data - Partial widget data to persist. Supported fields:
+ *   - `activitiesLogged`: total activities logged
+ *   - `streakDays`: current streak length in days
+ *   - `timerActive`: whether a timer is active
+ *   - `timerSubject`: subject/name of the active timer
+ *   - `timerMinutes`: remaining or configured timer minutes
+ */
 async function updateWidgetDataIOS(data: Partial<WidgetData>): Promise<void> {
   if (!SharedGroupPreferences) {
     console.log('[Widgets] Native module not available, using fallback storage');
@@ -101,6 +113,14 @@ async function updateWidgetDataIOS(data: Partial<WidgetData>): Promise<void> {
   }
 }
 
+/**
+ * Syncs the provided widget fields to the Android widget via the native WidgetModule.
+ *
+ * Only the fields present on `data` are forwarded: `activitiesLogged`, `streakDays`, and the timer fields
+ * (`timerActive`, `timerSubject`, `timerMinutes`). If the native module is not available the function returns without action.
+ *
+ * @param data - Partial widget state to apply to the Android widget
+ */
 async function updateWidgetDataAndroid(data: Partial<WidgetData>): Promise<void> {
   try {
     const WidgetModule = NativeModules.WidgetModule;
@@ -152,24 +172,29 @@ export async function reloadWidgets(): Promise<void> {
 }
 
 /**
- * Update activity count for today
- * Call this whenever an activity is logged
+ * Update today's activity count displayed in the app widget.
+ *
+ * @param count - Total number of activities logged for today
  */
 export async function updateActivityCount(count: number): Promise<void> {
   await updateWidgetData({ activitiesLogged: count });
 }
 
 /**
- * Update streak count
- * Call this when the streak changes
+ * Update the widget's streak count.
+ *
+ * @param days - The number of consecutive days in the current streak
  */
 export async function updateStreakCount(days: number): Promise<void> {
   await updateWidgetData({ streakDays: days });
 }
 
 /**
- * Update timer status
- * Call this when timer starts/stops or updates
+ * Set the widget timer state and associated subject and minutes.
+ *
+ * @param active - Whether the timer is currently running.
+ * @param subject - Optional description of the current timer; pass `undefined` to clear the subject.
+ * @param minutes - Minutes elapsed for the timer; defaults to `0` when omitted.
  */
 export async function updateTimerStatus(
   active: boolean,

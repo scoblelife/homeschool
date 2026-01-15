@@ -12,6 +12,21 @@ const statusLabels: Record<ReadingStatus, { label: string; color: string; bg: st
   finished: { label: 'Finished', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/50' }
 }
 
+/**
+ * Render a card displaying a book's cover, metadata, student progress, and contextual actions.
+ *
+ * Shows cover image (with fallback), status badge, quick-action overlay (Log Reading, Edit),
+ * a progress ring when reading, metadata tags (pages, genre, reading level), and — when a
+ * student is selected — page progress, a status selector, and an action menu (Edit, Goodreads, Delete).
+ *
+ * @param book - The book record including student progress (BookWithProgress)
+ * @param studentId - Selected student ID, or `null` to render the card without student-specific controls
+ * @param onEdit - Callback invoked when the user chooses to edit the book
+ * @param onDelete - Callback invoked when the user chooses to delete the book
+ * @param onUpdateProgress - Callback invoked with an `UpdateStudentBook` payload when the student's reading status or progress changes
+ * @param onLogReading - Callback invoked to open the Log Reading flow for this book
+ * @returns A React element representing the interactive book card
+ */
 function BookCard({
   book,
   studentId,
@@ -218,6 +233,14 @@ function BookCard({
   )
 }
 
+/**
+ * Render the Library UI for viewing, filtering, and managing books and student reading progress.
+ *
+ * Displays a book grid with search and status filters, per-student progress and stats (when a student is selected),
+ * and provides controls for adding, editing, deleting books, scanning ISBNs, and logging reading sessions.
+ *
+ * @returns The rendered Library page React element
+ */
 export default function Library(): JSX.Element {
   const { selectedStudentId, getSelectedStudent } = useStore()
   const selectedStudent = getSelectedStudent()

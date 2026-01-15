@@ -30,6 +30,16 @@ export function getStudentColor(colorId: string) {
   return STUDENT_COLORS.find(c => c.id === colorId) || STUDENT_COLORS[0]
 }
 
+/**
+ * Render the Settings page for managing students, integrations, and application preferences.
+ *
+ * Renders UI and controls for student CRUD, state homeschool requirements, family sync, Google Calendar
+ * integration, weekly email summary configuration (preview and test send), Skylight chore mappings,
+ * support feedback, and about information. Also manages related local state, side effects that load
+ * and persist settings, and modals for adding/editing students, email preview, and grade certificates.
+ *
+ * @returns A React element containing the full Settings page UI and its interactive controls/modals.
+ */
 export default function Settings(): JSX.Element {
   const { students, createStudent, updateStudent, deleteStudent } = useStudents()
   const [isModalOpen, setIsModalOpen] = useState(false)

@@ -139,6 +139,17 @@ export interface FormFieldProps {
   children: ReactNode
 }
 
+/**
+ * Render a labeled form field containing content and contextual feedback.
+ *
+ * @param label - Content for the field label (text or React node)
+ * @param htmlFor - The id of the associated form control to forward to the label
+ * @param required - If true, shows a required indicator on the label
+ * @param error - Error message to display below the children; when present it is shown in red and the hint is suppressed
+ * @param hint - Supplemental hint text shown below the children when no error is present
+ * @param children - Field input or other controls to render beneath the label
+ * @returns A JSX element combining the label, children, and either an error message or hint
+ */
 export function FormField({ label, htmlFor, required, error, hint, children }: FormFieldProps) {
   return (
     <div className="space-y-1">

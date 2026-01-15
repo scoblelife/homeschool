@@ -22,6 +22,13 @@ import ContentLibrary from './pages/ContentLibrary'
 import ApiServices from './pages/ApiServices'
 import { useInitializeData } from './hooks/useDatabase'
 
+/**
+ * Renders the application's route tree within the main layout and initializes required app data.
+ *
+ * The component invokes initialization logic (useInitializeData) during render to prepare app state, then returns the router with nested routes for each page.
+ *
+ * @returns The root JSX element containing the app's Routes and nested page routes.
+ */
 export default function App(): JSX.Element {
   useInitializeData()
 

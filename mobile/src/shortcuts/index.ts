@@ -37,9 +37,9 @@ export const SHORTCUTS: Shortcut[] = [
 ];
 
 /**
- * Register shortcuts with the system
- * On iOS, this donates Siri Shortcuts
- * On Android, this would set up App Actions (requires Play Console configuration)
+ * Register platform-specific shortcuts for the app.
+ *
+ * On iOS this donates Siri Shortcuts so the system can surface voice and prediction suggestions; on Android this relies on declarative App Actions configuration (Play Console / shortcuts.xml).
  */
 export async function registerShortcuts(): Promise<void> {
   if (Platform.OS === 'ios') {
@@ -49,6 +49,12 @@ export async function registerShortcuts(): Promise<void> {
   }
 }
 
+/**
+ * Donates the app's predefined voice shortcuts to Siri on iOS.
+ *
+ * Attempts to obtain the native SiriShortcuts module and donate each entry from `SHORTCUTS`.
+ * If the native module is unavailable the function returns without throwing; failures during donation are caught and logged.
+ */
 async function registerShortcutsIOS(): Promise<void> {
   try {
     const SiriShortcutsModule = NativeModules.SiriShortcutsModule;
@@ -74,6 +80,11 @@ async function registerShortcutsIOS(): Promise<void> {
   }
 }
 
+/**
+ * No-op placeholder for registering Android shortcuts; Android App Actions are configured declaratively.
+ *
+ * Performs no runtime registration because Android App Actions are set up via the Play Console and shortcuts.xml.
+ */
 async function registerShortcutsAndroid(): Promise<void> {
   // Android App Actions are configured in the Play Console
   // and linked to the app via shortcuts.xml
@@ -82,8 +93,9 @@ async function registerShortcutsAndroid(): Promise<void> {
 }
 
 /**
- * Handle a shortcut being invoked
- * Returns the shortcut type if the URL is a shortcut deep link
+ * Determine which app shortcut is represented by the given deep link URL.
+ *
+ * @returns `'log_activity'` for log deep links, `'start_timer'` for timer deep links, `'view_today'` for today/home deep links, or `null` if the URL does not match a known shortcut.
  */
 export function parseShortcutFromURL(url: string): ShortcutType | null {
   if (url.includes('homeschool://log')) {
@@ -97,7 +109,10 @@ export function parseShortcutFromURL(url: string): ShortcutType | null {
 }
 
 /**
- * Set up listener for shortcut invocations
+ * Subscribes to app deep-link events and invokes the callback when a recognized shortcut URL is received.
+ *
+ * @param onShortcut - Callback invoked with the detected `ShortcutType` when a shortcut URL is handled
+ * @returns A function that removes the URL event subscription when called
  */
 export function setupShortcutListener(
   onShortcut: (type: ShortcutType) => void
@@ -126,8 +141,12 @@ export function setupShortcutListener(
 }
 
 /**
- * Present Siri Shortcuts voice setup for a specific shortcut
- * iOS only
+ * Presents the Siri Shortcuts setup UI for the specified shortcut on iOS.
+ *
+ * Attempts to invoke the native Siri Shortcuts configuration UI for the shortcut identified by `shortcutId`.
+ *
+ * @param shortcutId - The shortcut identifier to configure.
+ * @returns `true` if the setup UI was presented successfully, `false` otherwise.
  */
 export async function presentShortcutSetup(shortcutId: ShortcutType): Promise<boolean> {
   if (Platform.OS !== 'ios') {

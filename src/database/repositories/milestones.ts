@@ -57,6 +57,12 @@ export async function getMilestoneTemplates(gradeLevel?: GradeLevel): Promise<Mi
   return rows.map(rowToMilestoneTemplate)
 }
 
+/**
+ * Fetches all milestones for a given student ordered by subject, category, and title.
+ *
+ * @param studentId - The student ID to retrieve milestones for
+ * @returns An array of `Milestone` objects for the specified student, ordered by `subjectId`, `category`, then `title`
+ */
 export async function getMilestones(studentId: string): Promise<Milestone[]> {
   const db = await getDatabase()
   const rows = await db.all(
@@ -66,6 +72,11 @@ export async function getMilestones(studentId: string): Promise<Milestone[]> {
   return rows.map(rowToMilestone)
 }
 
+/**
+ * Retrieve all milestones in the database.
+ *
+ * @returns An array of `Milestone` objects ordered by student id, subject id, category, then title
+ */
 export async function getAllMilestones(): Promise<Milestone[]> {
   const db = await getDatabase()
   const rows = await db.all(
@@ -74,6 +85,11 @@ export async function getAllMilestones(): Promise<Milestone[]> {
   return rows.map(rowToMilestone)
 }
 
+/**
+ * Fetches a milestone by its id.
+ *
+ * @returns The milestone matching `id` if found, `null` otherwise.
+ */
 export async function getMilestone(id: string): Promise<Milestone | null> {
   const db = await getDatabase()
   const rows = await db.all('SELECT * FROM milestones WHERE id = ?', id)

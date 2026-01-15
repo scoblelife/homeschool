@@ -41,6 +41,14 @@ const STATUS_LABELS: Record<AttendanceStatus, string> = {
 
 const ALL_STATUSES: AttendanceStatus[] = ['school', 'holiday', 'sick', 'vacation', 'other']
 
+/**
+ * Renders an interactive monthly attendance calendar for the provided students.
+ *
+ * Displays a student selector (when multiple students exist), month navigation, a 6x7 calendar grid with per-day attendance indicators, a legend for status colors, and a modal to view/edit a selected day's attendance and notes.
+ *
+ * @param students - Array of students to show in the selector and whose attendance can be viewed/edited
+ * @returns The attendance calendar UI as a React element
+ */
 export function AttendanceCalendar({ students }: Props) {
   const {
     records,

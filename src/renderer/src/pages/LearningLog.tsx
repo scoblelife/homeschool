@@ -19,6 +19,17 @@ const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
   { value: 'field_trip', label: 'Field Trip', icon: '🚌' }
 ]
 
+/**
+ * Render and manage the Learning Log UI for viewing, filtering, creating, editing, and deleting student activities.
+ *
+ * Provides:
+ * - A top-level activity list with type filters and per-activity edit/delete actions.
+ * - A modal form to log new activities (supports selecting multiple students with per-student notes) or edit an existing activity.
+ * - Conditional fields for reading (book title, pages) and assessment (score, max score), subject and date selection, duration, and optional notes.
+ * - Client-side form validation requiring a subject and title; creating one activity per selected student and updating notes for edits.
+ *
+ * @returns A JSX element containing the Learning Log user interface.
+ */
 export default function Activities(): JSX.Element {
   const { students, subjects, selectedStudentId, getStudentById, getSubjectById } = useStore()
   const { activities, createActivity, updateActivity, deleteActivity } = useActivities({

@@ -10,6 +10,11 @@ import { registerComplianceIpcHandlers } from './compliance-ipc'
 
 let mainWindow: BrowserWindow | null = null
 
+/**
+ * Creates and assigns the application's main BrowserWindow with the app's preferred options and loads renderer content.
+ *
+ * The window is created with size constraints, a hidden title bar, positioned traffic lights, a preload script, and an autohidden menu bar. It is shown when ready, external links are opened in the system browser while in-app navigations are denied, and the renderer is loaded from the development URL when present or from the packaged index.html otherwise.
+ */
 function createWindow(): void {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -42,7 +47,16 @@ function createWindow(): void {
   }
 }
 
-// Window control IPC handlers
+/**
+ * Registers IPC handlers that allow the renderer to control the main application window and query the platform.
+ *
+ * Handled channels:
+ * - `window:minimize` — minimizes the main window.
+ * - `window:maximize` — toggles maximize/restore for the main window.
+ * - `window:close` — closes the main window.
+ * - `window:isMaximized` — returns `true` if the main window is maximized, `false` otherwise.
+ * - `window:getPlatform` — returns the current OS platform string (process.platform).
+ */
 function registerWindowControls(): void {
   ipcMain.handle('window:minimize', () => {
     mainWindow?.minimize()

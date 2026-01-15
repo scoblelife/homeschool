@@ -7,7 +7,17 @@ const WIDGET_BUNDLE_ID = 'com.scoblelife.homeschool.widget';
 const APP_GROUP = 'group.com.scoblelife.homeschool';
 
 /**
- * Add widget target to Xcode project
+ * Add a HomeschoolWidget app extension target to the iOS Xcode project and wire its sources, plist/entitlements,
+ * build settings, and embed phase into the main app target.
+ *
+ * If a target named "HomeschoolWidget" already exists the config is returned unchanged. The function will:
+ * - create an app extension target named "HomeschoolWidget" with bundle identifier "com.scoblelife.homeschool.widget",
+ * - add Swift, Info.plist, and entitlements files from the HomeschoolWidget directory to a PBXGroup and the target,
+ * - configure per-target build settings (Info.plist path, entitlements, Swift version, device families, runpath, bundle id, skip install, asset catalog color names),
+ * - add an "Embed App Extensions" copy-files build phase to the main app target and mark the widget product for embedding.
+ *
+ * @param {object} config - Expo config plugin object being modified.
+ * @returns {object} The (possibly modified) Expo config object.
  */
 function withWidgetTarget(config) {
   return withXcodeProject(config, async (config) => {
@@ -108,7 +118,11 @@ function withWidgetTarget(config) {
 }
 
 /**
- * Add App Groups entitlement to main app
+ * Adds the App Groups entitlement to the app's entitlements plist.
+ *
+ * Sets `com.apple.security.application-groups` to an array containing the plugin's app group value.
+ * @param {object} config - Expo config object to modify.
+ * @returns {object} The modified config with the App Groups entitlement applied.
  */
 function withAppGroups(config) {
   return withEntitlementsPlist(config, (config) => {

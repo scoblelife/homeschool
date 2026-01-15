@@ -130,6 +130,21 @@ export function useActivities(filters?: {
   return { activities, loadActivities, createActivity, updateActivity, deleteActivity }
 }
 
+/**
+ * Provide milestone state and async operations for a specific student or for all students.
+ *
+ * Loads milestones on mount (or when `studentId` changes) and exposes loading state plus helpers
+ * to reload, update, delete, and initialize milestones.
+ *
+ * @param studentId - If provided, load milestones for that student; if omitted, load milestones for all students.
+ * @returns An object with:
+ *  - `milestones`: the current list of milestones from the store
+ *  - `isLoading`: `true` while milestones are being loaded, `false` otherwise
+ *  - `loadMilestones`: function to reload milestones according to the current `studentId`
+ *  - `updateMilestone(id, data)`: updates a milestone and returns the updated milestone
+ *  - `deleteMilestone(id)`: deletes the milestone with the given id
+ *  - `initializeMilestones(studentId, gradeLevel)`: initializes milestones for a student and returns the created milestones
+ */
 export function useMilestones(studentId?: string) {
   const { milestones, setMilestones } = useStore()
   const [isLoading, setIsLoading] = useState(true)

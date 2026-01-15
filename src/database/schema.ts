@@ -198,6 +198,14 @@ async function runMigrations(): Promise<void> {
   `)
 }
 
+/**
+ * Create the application's core database schema and apply migrations for existing databases.
+ *
+ * This initializes all primary and domain-specific tables (students, subjects, sessions, activities,
+ * milestones and related tables, calendar synchronization, user settings, curriculum and assessment
+ * tables, external event sources/events, etc.) if they do not exist, and then runs migrations to
+ * update any existing databases to the current schema.
+ */
 export async function initializeSchema(): Promise<void> {
   const db = await getDatabase()
 

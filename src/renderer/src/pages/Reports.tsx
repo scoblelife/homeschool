@@ -4,6 +4,13 @@ import { useStore } from '../stores/useStore'
 import { PortfolioExport } from '../features/portfolio'
 import type { ActivitySummary, DailySummary } from '../../../shared/types'
 
+/**
+ * Renders the reports dashboard for the currently selected student, providing date-range controls, subject and daily activity summaries, quick-range presets, and a portfolio export.
+ *
+ * The component loads activity and daily summaries for the selected student and date range, displays aggregate totals and visual breakdowns, and shows a placeholder when no student is selected.
+ *
+ * @returns The JSX element representing the reports dashboard.
+ */
 export default function Reports(): JSX.Element {
   const { students, selectedStudentId, getSelectedStudent } = useStore()
   const [dateRange, setDateRange] = useState({

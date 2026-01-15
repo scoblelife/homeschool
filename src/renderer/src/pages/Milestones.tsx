@@ -14,6 +14,17 @@ const statusLabels: Record<Milestone['status'], { label: string; color: string; 
   completed: { label: 'Completed', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/50' }
 }
 
+/**
+ * Renders a card for a single milestone showing its title, status, metadata, resources, and actions.
+ *
+ * Displays the milestone title, status badge, category, description, target date, and evidence notes; provides a resources panel with add/upload/delete/open actions, a status selector, an Edit action, and a Certificate action when completed.
+ *
+ * @param milestone - The milestone data to display
+ * @param onStatusChange - Callback invoked with the new status when the milestone status is changed
+ * @param onEdit - Callback invoked when the Edit action is triggered
+ * @param onPrintCertificate - Callback invoked when the Certificate action is triggered
+ * @returns The rendered JSX element representing the milestone card
+ */
 function MilestoneCard({
   milestone,
   onStatusChange,
@@ -285,6 +296,14 @@ function MilestoneCard({
   )
 }
 
+/**
+ * Render the Milestones UI for viewing, filtering, grouping, and managing milestones for a single student or all students.
+ *
+ * Renders an overall progress summary, controls to filter by student/subject/status, lists of milestones grouped
+ * by subject (or by student then subject in All Students mode), and modals for editing milestones and viewing certificates.
+ *
+ * @returns A JSX element containing the complete milestones interface (progress overview, filters, grouped milestone lists, and related modals).
+ */
 export default function Milestones(): JSX.Element {
   const { subjects, students, selectedStudentId, getSelectedStudent, getSubjectById, getStudentById } = useStore()
   const selectedStudent = getSelectedStudent()

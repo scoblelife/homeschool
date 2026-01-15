@@ -7,6 +7,13 @@ import type { CoopGroup } from '../../../shared/types'
 
 type TabType = 'groups' | 'discover' | 'external' | 'resources' | 'mentors'
 
+/**
+ * Render the Co-op Groups page with tabs for My Groups, Discover Events, Community Sources, Shared Resources, and Mentors.
+ *
+ * Displays a group detail view when a group is selected; otherwise shows the tabbed list and corresponding content.
+ *
+ * @returns The JSX element for the Co-op Groups page.
+ */
 export default function Coop() {
   const [selectedGroup, setSelectedGroup] = useState<CoopGroup | null>(null)
   const [activeTab, setActiveTab] = useState<TabType>('groups')

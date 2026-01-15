@@ -336,7 +336,10 @@ export class OfflineQueue {
 }
 
 /**
- * Hook-friendly function to queue a write
+ * Enqueues an event write for offline-safe delivery and attempts immediate sync when possible.
+ *
+ * @param type - The event type to emit when the write is synced
+ * @param data - The payload to store and later deliver for the event
  */
 export async function queueOfflineWrite<T extends Record<string, unknown>>(
   type: EventType,
@@ -347,7 +350,9 @@ export async function queueOfflineWrite<T extends Record<string, unknown>>(
 }
 
 /**
- * Get the singleton instance
+ * Access the global OfflineQueue singleton.
+ *
+ * @returns The shared OfflineQueue instance used for queuing and syncing offline writes
  */
 export function getOfflineQueue(): OfflineQueue {
   return OfflineQueue.getInstance()

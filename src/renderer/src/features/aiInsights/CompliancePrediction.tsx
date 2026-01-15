@@ -27,6 +27,17 @@ interface CompliancePredictionProps {
   requiredHours?: number // Allow override from state requirements
 }
 
+/**
+ * Render a collapsible compliance prediction card with a year-end hours forecast and practical suggestions for a student.
+ *
+ * Calculates current and projected hours, days remaining, daily averages, and a status (on_track | at_risk | behind).
+ * When available, optionally augments deterministic suggestions with AI-generated recommendations.
+ *
+ * @param studentId - The unique identifier of the student to analyze
+ * @param studentName - The display name used in messages
+ * @param requiredHours - The target hours for the school year (defaults to 180)
+ * @returns A React element showing the prediction UI, or `null` while AI initialization is pending
+ */
 export function CompliancePrediction({
   studentId,
   studentName,

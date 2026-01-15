@@ -14,6 +14,13 @@ import { Dialog } from '@headlessui/react'
 import { QRCodeSVG } from 'qrcode.react'
 import type { SyncStatus, SyncPeerInfo, SyncRecoveryStatus, SyncRecoveryResult } from '../../../../shared/types'
 
+/**
+ * Render the Family Sync settings UI for viewing and managing peer-to-peer sync.
+ *
+ * Provides controls and views for status display, creating or joining a family, generating and sharing invites (QR/code), viewing peers and device info, troubleshooting and recovery (health checks, backups, recovery, reset), and actions for leaving or managing members.
+ *
+ * @returns The rendered React element for the Family Sync settings interface.
+ */
 export default function SyncSettings(): JSX.Element {
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -876,7 +883,14 @@ export default function SyncSettings(): JSX.Element {
 }
 
 /**
- * PeerList - Shows all devices in the mesh network
+ * Render the list of mesh network devices and manager controls for each peer.
+ *
+ * @param peers - Array of peer entries to display. Each entry provides device name, peer ID, online status, and last-seen timestamp.
+ * @param currentDeviceId - The peer ID of the current device; used to label the matching entry as this device.
+ * @param isManager - When true, show controls (e.g., Remove) for managing other peers.
+ * @param onKickMember - Callback invoked to remove a peer; receives the peer's deviceId and deviceName.
+ * @param isProcessing - When true, disables interactive controls to indicate an in-progress operation.
+ * @returns The rendered peer list UI or a placeholder message when no peers are present.
  */
 function PeerList({
   peers,
