@@ -12,3 +12,10 @@ export * from './syncEmitter'
 export { Hyperswarm, createTopic } from './hyperswarm'
 export { WebRTCSwarm, PeerConnection, type SignalingProvider, type SignalingMessage } from './webrtc'
 export { HttpSignalingProvider, type HttpSignalingConfig } from './httpSignaling'
+export {
+  OfflineQueue,
+  getOfflineQueue,
+  queueOfflineWrite,
+  type QueuedWrite,
+  type OfflineStatus,
+} from './offlineQueue'

@@ -490,6 +490,43 @@ export interface MentorRequest {
 
 export type CreateMentorRequest = Omit<MentorRequest, 'id' | 'status' | 'responseMessage' | 'createdAt' | 'updatedAt'>
 
+// External Event Sources (Community Integrations)
+export type ExternalSourceType = 'facebook' | 'skool' | 'ical' | 'manual'
+
+export interface ExternalEventSource {
+  id: string
+  coopGroupId?: string | null
+  sourceType: ExternalSourceType
+  sourceName: string
+  sourceUrl?: string | null
+  syncEnabled: boolean
+  lastSyncedAt?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type CreateExternalEventSource = Omit<ExternalEventSource, 'id' | 'lastSyncedAt' | 'createdAt' | 'updatedAt'>
+export type UpdateExternalEventSource = Partial<Omit<CreateExternalEventSource, 'sourceType'>>
+
+export interface ExternalEvent {
+  id: string
+  sourceId: string
+  externalEventId?: string | null
+  title: string
+  description?: string | null
+  location?: string | null
+  eventDate: string
+  startTime?: string | null
+  endTime?: string | null
+  eventUrl?: string | null
+  importedToFieldTripId?: string | null
+  lastSyncedAt?: string | null
+  createdAt: string
+}
+
+export type CreateExternalEvent = Omit<ExternalEvent, 'id' | 'lastSyncedAt' | 'createdAt'>
+export type UpdateExternalEvent = Partial<Omit<CreateExternalEvent, 'sourceId'>>
+
 // Activity Tasks (todos for field trips/activities)
 export type TaskPhase = 'pre' | 'day_of' | 'post'
 
@@ -772,6 +809,7 @@ export interface DatabaseAPI {
 
   // Milestones
   getMilestones: (studentId: string) => Promise<Milestone[]>
+  getAllMilestones: () => Promise<Milestone[]>
   getMilestone: (id: string) => Promise<Milestone | null>
   createMilestone: (data: CreateMilestone) => Promise<Milestone>
   updateMilestone: (id: string, data: UpdateMilestone) => Promise<Milestone>
@@ -863,9 +901,9 @@ export interface DatabaseAPI {
   deleteGoogleCalendarEvent: (calendarId: string, eventId: string) => Promise<void>
 
   // Calendar Sync
-  getCalendarSyncRecord: (milestoneId: string, weekStart: string) => Promise<CalendarSyncRecord | null>
-  getCalendarSyncRecordsForWeek: (weekStart: string) => Promise<CalendarSyncRecord[]>
-  upsertCalendarSyncRecord: (milestoneId: string, weekStart: string, googleEventId: string, calendarId: string) => Promise<CalendarSyncRecord>
+  getCalendarSyncRecord: (milestoneId: string, weekStart: string, studentId?: string) => Promise<CalendarSyncRecord | null>
+  getCalendarSyncRecordsForWeek: (weekStart: string, studentId?: string) => Promise<CalendarSyncRecord[]>
+  upsertCalendarSyncRecord: (milestoneId: string, weekStart: string, googleEventId: string, calendarId: string, studentId?: string) => Promise<CalendarSyncRecord>
 
   // Skylight Chore Mappings
   getChoreMappings: () => Promise<SubjectChoreMapping[]>
@@ -887,8 +925,8 @@ export interface DatabaseAPI {
   deleteFamilyGoal: (id: string) => Promise<void>
   achieveFamilyGoal: (id: string) => Promise<FamilyGoal>
   getFamilyTotalStars: () => Promise<number>
-  deleteCalendarSyncRecord: (milestoneId: string, weekStart: string) => Promise<void>
-  deleteCalendarSyncRecordsForWeek: (weekStart: string) => Promise<void>
+  deleteCalendarSyncRecord: (milestoneId: string, weekStart: string, studentId?: string) => Promise<void>
+  deleteCalendarSyncRecordsForWeek: (weekStart: string, studentId?: string) => Promise<void>
 
   // User Settings
   getSetting: (key: string) => Promise<string | null>
@@ -1012,6 +1050,21 @@ export interface DatabaseAPI {
   createMentorRequest: (data: CreateMentorRequest) => Promise<MentorRequest>
   respondToMentorRequest: (id: string, status: MentorRequestStatus, responseMessage?: string) => Promise<MentorRequest>
 
+  // External Event Sources (Community Integrations)
+  getExternalEventSources: (coopGroupId?: string) => Promise<ExternalEventSource[]>
+  getExternalEventSource: (id: string) => Promise<ExternalEventSource | null>
+  createExternalEventSource: (data: CreateExternalEventSource) => Promise<ExternalEventSource>
+  updateExternalEventSource: (id: string, data: UpdateExternalEventSource) => Promise<ExternalEventSource>
+  deleteExternalEventSource: (id: string) => Promise<void>
+
+  // External Events
+  getExternalEvents: (sourceId?: string) => Promise<ExternalEvent[]>
+  getExternalEvent: (id: string) => Promise<ExternalEvent | null>
+  createExternalEvent: (data: CreateExternalEvent) => Promise<ExternalEvent>
+  updateExternalEvent: (id: string, data: UpdateExternalEvent) => Promise<ExternalEvent>
+  deleteExternalEvent: (id: string) => Promise<void>
+  importExternalEventToFieldTrip: (externalEventId: string, studentIds: string[]) => Promise<string>
+
   // Assessments
   getAssessments: (studentId?: string) => Promise<Assessment[]>
   getAssessment: (id: string) => Promise<Assessment | null>
@@ -1019,6 +1072,13 @@ export interface DatabaseAPI {
   createAssessment: (data: CreateAssessment) => Promise<Assessment>
   updateAssessment: (id: string, data: UpdateAssessment) => Promise<Assessment | null>
   deleteAssessment: (id: string) => Promise<void>
+
+  // Window Controls
+  windowMinimize: () => Promise<void>
+  windowMaximize: () => Promise<void>
+  windowClose: () => Promise<void>
+  windowIsMaximized: () => Promise<boolean>
+  windowGetPlatform: () => Promise<string>
 }
 
 // Google Calendar Types
@@ -1040,6 +1100,7 @@ export interface GoogleCalendarEvent {
 export interface CalendarSyncRecord {
   id: string
   milestoneId: string
+  studentId: string | null
   weekStart: string
   googleEventId: string
   calendarId: string

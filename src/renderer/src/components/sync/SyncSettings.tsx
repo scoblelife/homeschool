@@ -286,8 +286,8 @@ export default function SyncSettings(): JSX.Element {
   if (isLoading) {
     return (
       <div className="card">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Family Sync</h2>
-        <div className="text-gray-500">Loading...</div>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Family Sync</h2>
+        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
       </div>
     )
   }
@@ -296,16 +296,16 @@ export default function SyncSettings(): JSX.Element {
     <div className="card">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Family Sync</h2>
-          <p className="text-sm text-gray-500">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Family Sync</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Sync your data across family devices without any servers
           </p>
         </div>
         {syncStatus?.isEnabled && (
           <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
             syncStatus.isConnected
-              ? 'bg-green-100 text-green-700'
-              : 'bg-yellow-100 text-yellow-700'
+              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+              : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
           }`}>
             <span className={`w-2 h-2 rounded-full ${
               syncStatus.isConnected ? 'bg-green-500' : 'bg-yellow-500'
@@ -316,11 +316,11 @@ export default function SyncSettings(): JSX.Element {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-4">
+          <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
           <button
             onClick={() => setError(null)}
-            className="text-xs text-red-600 underline mt-1"
+            className="text-xs text-red-600 dark:text-red-400 underline mt-1"
           >
             Dismiss
           </button>
@@ -330,12 +330,12 @@ export default function SyncSettings(): JSX.Element {
       {!syncStatus?.isEnabled ? (
         // Not in a family yet
         <div className="space-y-4">
-          <div className="bg-fuchsia-50 border border-fuchsia-200 rounded-lg p-4">
+          <div className="bg-fuchsia-50 dark:bg-fuchsia-900/30 border border-fuchsia-200 dark:border-fuchsia-800 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <div className="text-2xl">🔐</div>
               <div>
-                <p className="font-medium text-fuchsia-900">Private P2P Sync</p>
-                <p className="text-sm text-fuchsia-700 mt-1">
+                <p className="font-medium text-fuchsia-900 dark:text-fuchsia-300">Private P2P Sync</p>
+                <p className="text-sm text-fuchsia-700 dark:text-fuchsia-400 mt-1">
                   Your data syncs directly between family devices using encrypted peer-to-peer connections.
                   No servers, no cloud storage - your data stays yours.
                 </p>
@@ -346,22 +346,22 @@ export default function SyncSettings(): JSX.Element {
           <div className="grid grid-cols-2 gap-4">
             <button
               onClick={() => setShowCreateModal(true)}
-              className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-fuchsia-500 hover:bg-fuchsia-50 transition-colors text-left"
+              className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-fuchsia-500 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/30 transition-colors text-left"
             >
               <div className="text-2xl mb-2">✨</div>
-              <div className="font-medium text-gray-900">Create Family</div>
-              <p className="text-sm text-gray-500 mt-1">
+              <div className="font-medium text-gray-900 dark:text-white">Create Family</div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Start a new family sync group and invite others
               </p>
             </button>
 
             <button
               onClick={() => setShowJoinModal(true)}
-              className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-fuchsia-500 hover:bg-fuchsia-50 transition-colors text-left"
+              className="p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-fuchsia-500 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/30 transition-colors text-left"
             >
               <div className="text-2xl mb-2">🔗</div>
-              <div className="font-medium text-gray-900">Join Family</div>
-              <p className="text-sm text-gray-500 mt-1">
+              <div className="font-medium text-gray-900 dark:text-white">Join Family</div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Enter a code from another family device
               </p>
             </button>
@@ -371,18 +371,18 @@ export default function SyncSettings(): JSX.Element {
         // In a family
         <div className="space-y-6">
           {/* Device Info */}
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-2">
-                  <div className="text-sm text-gray-500">This Device</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">This Device</div>
                   {isManager && (
-                    <span className="px-2 py-0.5 text-xs font-medium bg-fuchsia-100 text-fuchsia-700 rounded-full">
+                    <span className="px-2 py-0.5 text-xs font-medium bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-300 rounded-full">
                       Manager
                     </span>
                   )}
                 </div>
-                <div className="font-medium text-gray-900">
+                <div className="font-medium text-gray-900 dark:text-white">
                   {syncStatus.familyStatus.deviceName || 'Unnamed Device'}
                 </div>
                 <div className="text-xs text-gray-400 font-mono mt-1">
@@ -402,20 +402,20 @@ export default function SyncSettings(): JSX.Element {
           {/* Mesh Network Status */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-medium text-gray-900">Family Mesh Network</h3>
-              <div className="text-sm text-gray-500">
+              <h3 className="font-medium text-gray-900 dark:text-white">Family Mesh Network</h3>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
                 {syncStatus.connectedPeers.length} device{syncStatus.connectedPeers.length !== 1 ? 's' : ''} online
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-3">
               <div className="flex items-start gap-2">
                 <span className="text-lg">🛡️</span>
                 <div>
-                  <p className="text-sm text-blue-900 font-medium">
+                  <p className="text-sm text-blue-900 dark:text-blue-300 font-medium">
                     Your data never touches our servers
                   </p>
-                  <p className="text-xs text-blue-700 mt-1">
+                  <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
                     All connections below are direct device-to-device using end-to-end encryption.
                     Only devices in this list can see your data.
                   </p>
@@ -440,17 +440,17 @@ export default function SyncSettings(): JSX.Element {
           </div>
 
           {/* Actions */}
-          <div className="pt-4 border-t border-gray-200 flex items-center justify-between">
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
             <button
               onClick={handleLeaveFamily}
               disabled={isProcessing}
-              className="text-sm text-red-600 hover:text-red-700"
+              className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
             >
               Leave Family Sync
             </button>
             <button
               onClick={handleOpenTroubleshoot}
-              className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 flex items-center gap-1"
             >
               <span>🔧</span>
               Troubleshoot
@@ -463,13 +463,13 @@ export default function SyncSettings(): JSX.Element {
       <Dialog open={showCreateModal} onClose={() => setShowCreateModal(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Create Family Sync
             </Dialog.Title>
 
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Create a new family sync group. You'll get a QR code to share with other family devices.
               </p>
 
@@ -482,7 +482,7 @@ export default function SyncSettings(): JSX.Element {
                   className="input"
                   placeholder="e.g., Mom's MacBook, Kitchen iPad"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   This helps identify this device in the family network
                 </p>
               </div>
@@ -512,13 +512,13 @@ export default function SyncSettings(): JSX.Element {
       <Dialog open={showJoinModal} onClose={() => setShowJoinModal(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Join Family
             </Dialog.Title>
 
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Enter the sync code from another family device. You can find it by clicking "Show QR Code" on that device.
               </p>
 
@@ -542,7 +542,7 @@ export default function SyncSettings(): JSX.Element {
                   placeholder="Paste the sync code here..."
                   rows={4}
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Copy the code shown below the QR code on the other device
                 </p>
               </div>
@@ -572,14 +572,14 @@ export default function SyncSettings(): JSX.Element {
       <Dialog open={showQRModal} onClose={() => setShowQRModal(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4 text-center">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
               Invite Family Member
             </Dialog.Title>
 
             <div className="space-y-4">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                <p className="text-sm text-amber-800 flex items-center gap-2">
+              <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                <p className="text-sm text-amber-800 dark:text-amber-300 flex items-center gap-2">
                   <span>⚠️</span>
                   Only share this code with trusted family members
                 </p>
@@ -587,7 +587,7 @@ export default function SyncSettings(): JSX.Element {
 
               {qrData && (
                 <div className="flex flex-col items-center gap-4">
-                  <div className="bg-white p-4 rounded-lg border">
+                  <div className="bg-white p-4 rounded-lg border dark:border-gray-600">
                     <QRCodeSVG
                       value={qrData}
                       size={180}
@@ -598,13 +598,13 @@ export default function SyncSettings(): JSX.Element {
 
                   {/* Share Buttons */}
                   <div className="w-full space-y-3">
-                    <p className="text-sm text-gray-600 text-center">Send invite via:</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 text-center">Send invite via:</p>
                     <div className="grid grid-cols-2 gap-3">
                       <button
                         onClick={async () => {
                           await window.api.syncShareInvite('email', qrData)
                         }}
-                        className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg transition-colors"
                       >
                         <span className="text-xl">📧</span>
                         <span className="font-medium">Email</span>
@@ -613,7 +613,7 @@ export default function SyncSettings(): JSX.Element {
                         onClick={async () => {
                           await window.api.syncShareInvite('sms', qrData)
                         }}
-                        className="flex items-center justify-center gap-2 px-4 py-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors"
+                        className="flex items-center justify-center gap-2 px-4 py-3 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 rounded-lg transition-colors"
                       >
                         <span className="text-xl">💬</span>
                         <span className="font-medium">Text</span>
@@ -622,10 +622,10 @@ export default function SyncSettings(): JSX.Element {
 
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-200" />
+                        <div className="w-full border-t border-gray-200 dark:border-gray-700" />
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white text-gray-500">or copy code</span>
+                        <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">or copy code</span>
                       </div>
                     </div>
 
@@ -648,7 +648,7 @@ export default function SyncSettings(): JSX.Element {
                             setTimeout(() => { btn.textContent = originalText }, 1500)
                           }
                         }}
-                        className="absolute top-2 right-2 px-2 py-1 text-xs bg-fuchsia-100 text-fuchsia-700 rounded hover:bg-fuchsia-200 transition-colors"
+                        className="absolute top-2 right-2 px-2 py-1 text-xs bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-300 rounded hover:bg-fuchsia-200 dark:hover:bg-fuchsia-900/50 transition-colors"
                       >
                         Copy All
                       </button>
@@ -674,22 +674,22 @@ export default function SyncSettings(): JSX.Element {
       <Dialog open={showTroubleshootModal} onClose={() => setShowTroubleshootModal(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Sync Troubleshooting
             </Dialog.Title>
 
             <div className="space-y-6">
               {/* Health Status */}
               <div>
-                <h3 className="font-medium text-gray-900 mb-2">Sync Health</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2">Sync Health</h3>
                 {isCheckingHealth ? (
-                  <div className="text-gray-500">Checking...</div>
+                  <div className="text-gray-500 dark:text-gray-400">Checking...</div>
                 ) : healthStatus ? (
                   <div className={`p-3 rounded-lg ${
                     healthStatus.isCorrupted
-                      ? 'bg-red-50 border border-red-200'
-                      : 'bg-green-50 border border-green-200'
+                      ? 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
+                      : 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
                   }`}>
                     <div className="flex items-center gap-2">
                       <span className="text-xl">
@@ -697,23 +697,23 @@ export default function SyncSettings(): JSX.Element {
                       </span>
                       <div>
                         <div className={`font-medium ${
-                          healthStatus.isCorrupted ? 'text-red-900' : 'text-green-900'
+                          healthStatus.isCorrupted ? 'text-red-900 dark:text-red-300' : 'text-green-900 dark:text-green-300'
                         }`}>
                           {healthStatus.isCorrupted ? 'Issues Detected' : 'Healthy'}
                         </div>
                         {healthStatus.isCorrupted && healthStatus.corruptionDetails && (
-                          <div className="text-sm text-red-700 mt-1">
+                          <div className="text-sm text-red-700 dark:text-red-400 mt-1">
                             {healthStatus.corruptionDetails}
                           </div>
                         )}
-                        <div className="text-sm text-gray-600 mt-1">
+                        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                           {healthStatus.eventLogLength} events in sync log
                         </div>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-gray-500">Unable to check health</div>
+                  <div className="text-gray-500 dark:text-gray-400">Unable to check health</div>
                 )}
               </div>
 
@@ -721,14 +721,14 @@ export default function SyncSettings(): JSX.Element {
               {recoveryResult && (
                 <div className={`p-3 rounded-lg ${
                   recoveryResult.success
-                    ? 'bg-green-50 border border-green-200'
-                    : 'bg-red-50 border border-red-200'
+                    ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
+                    : 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
                 }`}>
                   <div className="flex items-center gap-2">
                     <span className="text-xl">
                       {recoveryResult.success ? '✅' : '❌'}
                     </span>
-                    <div className={recoveryResult.success ? 'text-green-900' : 'text-red-900'}>
+                    <div className={recoveryResult.success ? 'text-green-900 dark:text-green-300' : 'text-red-900 dark:text-red-300'}>
                       {recoveryResult.message}
                     </div>
                   </div>
@@ -738,17 +738,17 @@ export default function SyncSettings(): JSX.Element {
               {/* Recovery Actions */}
               {healthStatus?.isCorrupted && healthStatus.canRecover && (
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-2">Recovery Options</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-white mb-2">Recovery Options</h3>
                   <button
                     onClick={handleRecoverSync}
                     disabled={isProcessing}
-                    className="w-full p-3 text-left border rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50"
+                    className="w-full p-3 text-left border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors disabled:opacity-50"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-xl">🔄</span>
                       <div>
-                        <div className="font-medium text-gray-900">Attempt Recovery</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="font-medium text-gray-900 dark:text-white">Attempt Recovery</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                           Try to repair the sync log by salvaging valid events
                         </div>
                       </div>
@@ -760,25 +760,25 @@ export default function SyncSettings(): JSX.Element {
               {/* Backups */}
               {backups.length > 0 && (
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-2">Available Backups</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-white mb-2">Available Backups</h3>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {backups.map((backup) => (
                       <div
                         key={backup.name}
-                        className="flex items-center justify-between p-2 border rounded-lg"
+                        className="flex items-center justify-between p-2 border border-gray-200 dark:border-gray-600 rounded-lg"
                       >
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {new Date(backup.timestamp).toLocaleString()}
                           </div>
-                          <div className="text-xs text-gray-500 font-mono">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
                             {backup.name}
                           </div>
                         </div>
                         <button
                           onClick={() => handleRestoreBackup(backup.name)}
                           disabled={isProcessing}
-                          className="text-xs px-2 py-1 text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50"
+                          className="text-xs px-2 py-1 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors disabled:opacity-50"
                         >
                           Restore
                         </button>
@@ -789,9 +789,9 @@ export default function SyncSettings(): JSX.Element {
               )}
 
               {/* Reset Option */}
-              <div className="pt-4 border-t border-gray-200">
-                <h3 className="font-medium text-gray-900 mb-2">Reset Sync</h3>
-                <p className="text-sm text-gray-600 mb-3">
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="font-medium text-gray-900 dark:text-white mb-2">Reset Sync</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                   If sync continues to have issues, you can reset all sync data.
                   This will delete your sync history but preserve your local data.
                   You'll need to rejoin the family.
@@ -799,7 +799,7 @@ export default function SyncSettings(): JSX.Element {
                 <button
                   onClick={() => setShowResetConfirmModal(true)}
                   disabled={isProcessing}
-                  className="px-4 py-2 text-sm text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 text-sm text-red-600 dark:text-red-400 border border-red-300 dark:border-red-700 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors disabled:opacity-50"
                 >
                   Reset Sync Data
                 </button>
@@ -822,14 +822,14 @@ export default function SyncSettings(): JSX.Element {
       <Dialog open={showResetConfirmModal} onClose={() => setShowResetConfirmModal(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Confirm Reset
             </Dialog.Title>
 
             <div className="space-y-4">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                <p className="text-sm text-amber-800 flex items-start gap-2">
+              <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                <p className="text-sm text-amber-800 dark:text-amber-300 flex items-start gap-2">
                   <span className="text-lg">⚠️</span>
                   <span>
                     This will delete all sync data including your event history.
@@ -840,14 +840,14 @@ export default function SyncSettings(): JSX.Element {
               </div>
 
               {recoveryResult && !recoveryResult.success && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-sm text-red-700">{recoveryResult.message}</p>
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                  <p className="text-sm text-red-700 dark:text-red-300">{recoveryResult.message}</p>
                 </div>
               )}
 
               {recoveryResult && recoveryResult.success && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                  <p className="text-sm text-green-700">{recoveryResult.message}</p>
+                <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                  <p className="text-sm text-green-700 dark:text-green-300">{recoveryResult.message}</p>
                 </div>
               )}
 
@@ -893,7 +893,7 @@ function PeerList({
 }): JSX.Element {
   if (peers.length === 0) {
     return (
-      <div className="text-center py-6 text-gray-500">
+      <div className="text-center py-6 text-gray-500 dark:text-gray-400">
         <div className="text-3xl mb-2">📡</div>
         <p>No other devices connected yet</p>
         <p className="text-sm mt-1">Share your QR code to add family devices</p>
@@ -908,26 +908,26 @@ function PeerList({
         return (
           <div
             key={peer.peerId}
-            className="flex items-center gap-3 p-3 bg-white border rounded-lg"
+            className="flex items-center gap-3 p-3 bg-white dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg"
           >
             <div className={`w-3 h-3 rounded-full ${
-              peer.isOnline ? 'bg-green-500' : 'bg-gray-300'
+              peer.isOnline ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-500'
             }`} />
             <div className="flex-1">
-              <div className="font-medium text-gray-900">
+              <div className="font-medium text-gray-900 dark:text-white">
                 {peer.deviceName || 'Unknown Device'}
                 {isCurrentDevice && (
                   <span className="ml-2 text-xs text-gray-400">(This device)</span>
                 )}
               </div>
-              <div className="text-xs text-gray-500 font-mono">
+              <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
                 {peer.peerId.slice(0, 16)}...
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
                 {peer.isOnline ? (
-                  <span className="text-green-600">Online</span>
+                  <span className="text-green-600 dark:text-green-400">Online</span>
                 ) : (
                   <span>Last seen {formatLastSeen(peer.lastSeen)}</span>
                 )}
@@ -936,7 +936,7 @@ function PeerList({
                 <button
                   onClick={() => onKickMember(peer.peerId, peer.deviceName || 'Unknown Device')}
                   disabled={isProcessing}
-                  className="text-xs px-2 py-1 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                  className="text-xs px-2 py-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors disabled:opacity-50"
                   title="Remove from family"
                 >
                   Remove

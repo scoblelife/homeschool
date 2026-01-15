@@ -91,12 +91,12 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Achievements</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white">Achievements</h3>
           <button
             onClick={() => setShowModal(true)}
-            className="text-sm text-fuchsia-600 hover:text-fuchsia-800"
+            className="text-sm text-fuchsia-600 hover:text-fuchsia-800 dark:text-fuchsia-400 dark:hover:text-fuchsia-300"
           >
             View All ({unlocked.length}/{ACHIEVEMENT_DEFINITIONS.length})
           </button>
@@ -104,17 +104,17 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
 
         {/* Stats summary */}
         <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-xl font-bold text-gray-900">{stats.totalHours}</div>
-            <div className="text-xs text-gray-500">Hours</div>
+          <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalHours}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Hours</div>
           </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-xl font-bold text-gray-900">{stats.totalActivities}</div>
-            <div className="text-xs text-gray-500">Activities</div>
+          <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="text-xl font-bold text-gray-900 dark:text-white">{stats.totalActivities}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Activities</div>
           </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-xl font-bold text-gray-900">{stats.booksFinished}</div>
-            <div className="text-xs text-gray-500">Books</div>
+          <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="text-xl font-bold text-gray-900 dark:text-white">{stats.booksFinished}</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">Books</div>
           </div>
         </div>
 
@@ -124,7 +124,7 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
             {recentAchievements.map((achievement) => (
               <span
                 key={achievement.id}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 rounded-full text-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded-full text-sm"
                 title={achievement.description}
               >
                 {achievement.icon} {achievement.name}
@@ -132,7 +132,7 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">Keep learning to unlock achievements!</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Keep learning to unlock achievements!</p>
         )}
       </div>
 
@@ -176,12 +176,12 @@ function AchievementModal({
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] flex flex-col">
-          <div className="p-4 border-b">
-            <Dialog.Title className="text-lg font-semibold text-gray-900">
+        <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] flex flex-col">
+          <div className="p-4 border-b dark:border-gray-700">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white">
               {studentName}'s Achievements
             </Dialog.Title>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {unlocked.length} of {ACHIEVEMENT_DEFINITIONS.length} unlocked
             </p>
           </div>
@@ -195,8 +195,8 @@ function AchievementModal({
               return (
                 <div key={category.id}>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-gray-700">{category.name}</h4>
-                    <span className="text-sm text-gray-500">Current: {category.current}</span>
+                    <h4 className="font-medium text-gray-700 dark:text-gray-200">{category.name}</h4>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Current: {category.current}</span>
                   </div>
 
                   <div className="space-y-2">
@@ -212,8 +212,8 @@ function AchievementModal({
                           key={achievement.id}
                           className={`flex items-center gap-3 p-3 rounded-lg ${
                             isUnlocked
-                              ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200'
-                              : 'bg-gray-50 border border-gray-100'
+                              ? 'bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/30 border border-amber-200 dark:border-amber-800'
+                              : 'bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600'
                           }`}
                         >
                           <span className={`text-2xl ${isUnlocked ? '' : 'grayscale opacity-40'}`}>
@@ -222,29 +222,29 @@ function AchievementModal({
                           <div className="flex-1 min-w-0">
                             <div
                               className={`font-medium ${
-                                isUnlocked ? 'text-gray-900' : 'text-gray-400'
+                                isUnlocked ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'
                               }`}
                             >
                               {achievement.name}
                             </div>
-                            <div className={`text-xs ${isUnlocked ? 'text-gray-600' : 'text-gray-400'}`}>
+                            <div className={`text-xs ${isUnlocked ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}`}>
                               {achievement.description}
                             </div>
                             {!isUnlocked && (
                               <div className="mt-1">
-                                <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                <div className="h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                                   <div
                                     className="h-full bg-fuchsia-400 rounded-full transition-all"
                                     style={{ width: `${progress}%` }}
                                   />
                                 </div>
-                                <div className="text-xs text-gray-400 mt-0.5">
+                                <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                                   {category.current} / {achievement.threshold}
                                 </div>
                               </div>
                             )}
                             {isUnlocked && unlockedData?.unlockedAt && (
-                              <div className="text-xs text-amber-600 mt-0.5">
+                              <div className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
                                 Unlocked {format(parseISO(unlockedData.unlockedAt), 'MMM d, yyyy')}
                               </div>
                             )}
@@ -261,7 +261,7 @@ function AchievementModal({
             })}
           </div>
 
-          <div className="p-4 border-t flex justify-end">
+          <div className="p-4 border-t dark:border-gray-700 flex justify-end">
             <button onClick={onClose} className="btn btn-secondary">
               Close
             </button>

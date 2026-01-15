@@ -213,7 +213,7 @@ export default function Calendar(): JSX.Element {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Calendar</h1>
         <div className="flex items-center gap-4">
           <button
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
@@ -221,7 +221,7 @@ export default function Calendar(): JSX.Element {
           >
             ← Prev
           </button>
-          <span className="text-lg font-semibold">{format(currentMonth, 'MMMM yyyy')}</span>
+          <span className="text-lg font-semibold text-gray-900 dark:text-white">{format(currentMonth, 'MMMM yyyy')}</span>
           <button
             onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
             className="btn btn-secondary"
@@ -244,7 +244,7 @@ export default function Calendar(): JSX.Element {
             {/* Day headers */}
             <div className="grid grid-cols-7 mb-2">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+                <div key={day} className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 py-2">
                   {day}
                 </div>
               ))}
@@ -269,15 +269,15 @@ export default function Calendar(): JSX.Element {
                     key={day.toISOString()}
                     onClick={() => handleSelectDate(day)}
                     className={`aspect-square p-2 rounded-lg text-left transition-colors ${
-                      !isCurrentMonth ? 'text-gray-300' : 'text-gray-900'
-                    } ${isSelected ? 'bg-fuchsia-100 ring-2 ring-fuchsia-500' : 'hover:bg-gray-50'} ${
-                      isToday && !isSelected ? 'bg-yellow-50' : ''
+                      !isCurrentMonth ? 'text-gray-300 dark:text-gray-600' : 'text-gray-900 dark:text-white'
+                    } ${isSelected ? 'bg-fuchsia-100 dark:bg-fuchsia-900/50 ring-2 ring-fuchsia-500' : 'hover:bg-gray-50 dark:hover:bg-gray-700'} ${
+                      isToday && !isSelected ? 'bg-yellow-50 dark:bg-yellow-900/30' : ''
                     } ${hasFieldTrip && isCurrentMonth && !isSelected ? firstTripColors?.bg : ''} ${
-                      isBusy && isCurrentMonth && !isSelected && !hasFieldTrip ? 'bg-red-50' : ''
+                      isBusy && isCurrentMonth && !isSelected && !hasFieldTrip ? 'bg-red-50 dark:bg-red-900/30' : ''
                     }`}
                   >
                     <div
-                      className={`text-sm font-medium ${isToday ? 'text-fuchsia-600' : ''} ${hasFieldTrip && isCurrentMonth ? firstTripColors?.text : ''} ${isBusy && isCurrentMonth && !hasFieldTrip ? 'text-red-600' : ''}`}
+                      className={`text-sm font-medium ${isToday ? 'text-fuchsia-600 dark:text-fuchsia-400' : ''} ${hasFieldTrip && isCurrentMonth ? firstTripColors?.text : ''} ${isBusy && isCurrentMonth && !hasFieldTrip ? 'text-red-600 dark:text-red-400' : ''}`}
                     >
                       {format(day, 'd')}
                     </div>
@@ -307,7 +307,7 @@ export default function Calendar(): JSX.Element {
             </div>
 
             {/* Legend */}
-            <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-500">
+            <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500" />
                 <span>Activities</span>
@@ -343,7 +343,7 @@ export default function Calendar(): JSX.Element {
         {/* Selected Day Details */}
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               {format(selectedDate, 'EEEE, MMMM d')}
             </h2>
             <button onClick={openAddActivity} className="btn btn-primary text-sm">
@@ -355,7 +355,7 @@ export default function Calendar(): JSX.Element {
               {/* Field Trips / Activities */}
               {selectedDayEvents.fieldTrips.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-600 mb-2">
+                  <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                     Events ({selectedDayEvents.fieldTrips.length})
                   </h3>
                   <ul className="space-y-2">
@@ -363,14 +363,14 @@ export default function Calendar(): JSX.Element {
                       const tripStudents = students.filter((s) => trip.studentIds.includes(s.id))
                       const colors = getFieldTripColors(trip.activityType)
                       return (
-                        <li key={trip.id} className={`p-2 ${colors.bg} rounded-lg text-sm`}>
+                        <li key={trip.id} className={`p-2 ${colors.bg} dark:bg-opacity-20 rounded-lg text-sm`}>
                           <div className={`font-medium ${colors.textDark} flex items-center gap-2`}>
                             <span>{colors.icon}</span>
                             {trip.title}
                             <span className={`text-xs px-1.5 py-0.5 rounded ${
-                              trip.status === 'completed' ? 'bg-green-100 text-green-700' :
-                              trip.status === 'cancelled' ? 'bg-gray-100 text-gray-600' :
-                              'bg-blue-100 text-blue-700'
+                              trip.status === 'completed' ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' :
+                              trip.status === 'cancelled' ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' :
+                              'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
                             }`}>
                               {trip.status}
                             </span>
@@ -378,7 +378,7 @@ export default function Calendar(): JSX.Element {
                           <div className={`${colors.text} mt-1`}>
                             📍 {trip.location}
                           </div>
-                          <div className="text-gray-500 mt-1">
+                          <div className="text-gray-500 dark:text-gray-400 mt-1">
                             {tripStudents.map((s) => s.name).join(', ')}
                           </div>
                           {trip.websiteUrl && (
@@ -386,7 +386,7 @@ export default function Calendar(): JSX.Element {
                               href={trip.websiteUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline mt-1 inline-block"
+                              className="text-blue-600 dark:text-blue-400 hover:underline mt-1 inline-block"
                             >
                               🔗 Website
                             </a>
@@ -401,13 +401,13 @@ export default function Calendar(): JSX.Element {
               {/* Busy Events */}
               {selectedDayBusy.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-red-600 mb-2">
+                  <h3 className="text-sm font-medium text-red-600 dark:text-red-400 mb-2">
                     Busy ({selectedDayBusy.length})
                   </h3>
                   <ul className="space-y-2">
                     {selectedDayBusy.map((event, idx) => (
-                      <li key={idx} className="p-2 bg-red-50 rounded-lg text-sm">
-                        <div className="font-medium text-red-700">
+                      <li key={idx} className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg text-sm">
+                        <div className="font-medium text-red-700 dark:text-red-300">
                           {event.summary || 'Busy'}
                         </div>
                       </li>
@@ -418,24 +418,24 @@ export default function Calendar(): JSX.Element {
 
               {/* Activities */}
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                   Activities ({selectedDayEvents.activities.length})
                 </h3>
                 {selectedDayEvents.activities.length === 0 ? (
-                  <p className="text-sm text-gray-400">No activities logged</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500">No activities logged</p>
                 ) : (
                   <ul className="space-y-2">
                     {selectedDayEvents.activities.map((activity) => {
                       const student = getStudentById(activity.studentId)
                       const typeInfo = activityTypes.find((t) => t.value === activity.activityType)
                       return (
-                        <li key={activity.id} className="p-2 bg-green-50 rounded-lg flex items-start justify-between">
+                        <li key={activity.id} className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg flex items-start justify-between">
                           <div>
-                            <div className="font-medium text-gray-900 flex items-center gap-2">
+                            <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                               <span>{typeInfo?.icon}</span>
                               {activity.title}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
                               {student?.name} • {typeInfo?.label}
                               {activity.durationMinutes && ` • ${activity.durationMinutes} min`}
                             </div>
@@ -460,8 +460,8 @@ export default function Calendar(): JSX.Element {
       <Dialog open={showAddActivity} onClose={() => setShowAddActivity(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Log Activity - {format(selectedDate, 'MMM d, yyyy')}
             </Dialog.Title>
 
@@ -476,12 +476,12 @@ export default function Calendar(): JSX.Element {
                       onClick={() => setFormData({ ...formData, activityType: type.value })}
                       className={`p-2 rounded-lg text-center transition-colors ${
                         formData.activityType === type.value
-                          ? 'bg-fuchsia-100 ring-2 ring-fuchsia-500'
-                          : 'bg-gray-50 hover:bg-gray-100'
+                          ? 'bg-fuchsia-100 dark:bg-fuchsia-900/50 ring-2 ring-fuchsia-500'
+                          : 'bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600'
                       }`}
                     >
                       <div className="text-xl">{type.icon}</div>
-                      <div className="text-xs mt-1">{type.label}</div>
+                      <div className="text-xs mt-1 text-gray-700 dark:text-gray-300">{type.label}</div>
                     </button>
                   ))}
                 </div>

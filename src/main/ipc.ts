@@ -24,7 +24,8 @@ import {
   coopRepo,
   packagesRepo,
   assessmentsRepo,
-  umbrellaRepo
+  umbrellaRepo,
+  externalSourcesRepo
 } from '../database'
 import * as googleAuth from './google-auth'
 import * as googleCalendar from './google-calendar'
@@ -94,7 +95,11 @@ import type {
   CreateUmbrellaSchoolEnrollment,
   UpdateUmbrellaSchoolEnrollment,
   CreateUmbrellaSchoolReport,
-  UpdateUmbrellaSchoolReport
+  UpdateUmbrellaSchoolReport,
+  CreateExternalEventSource,
+  UpdateExternalEventSource,
+  CreateExternalEvent,
+  UpdateExternalEvent
 } from '../shared/types'
 
 // Simple iCal parser for extracting events
@@ -283,6 +288,10 @@ export function registerIpcHandlers(): void {
   // Milestones
   ipcMain.handle('db:milestones:getAll', async (_, studentId: string) => {
     return milestonesRepo.getMilestones(studentId)
+  })
+
+  ipcMain.handle('db:milestones:getAllStudents', async () => {
+    return milestonesRepo.getAllMilestones()
   })
 
   ipcMain.handle('db:milestones:get', async (_, id: string) => {
@@ -626,24 +635,24 @@ export function registerIpcHandlers(): void {
   })
 
   // Calendar Sync
-  ipcMain.handle('calendar:sync:getRecord', async (_, milestoneId: string, weekStart: string) => {
-    return calendarSyncRepo.getSyncRecord(milestoneId, weekStart)
+  ipcMain.handle('calendar:sync:getRecord', async (_, milestoneId: string, weekStart: string, studentId?: string) => {
+    return calendarSyncRepo.getSyncRecord(milestoneId, weekStart, studentId)
   })
 
-  ipcMain.handle('calendar:sync:getRecordsForWeek', async (_, weekStart: string) => {
-    return calendarSyncRepo.getSyncRecordsForWeek(weekStart)
+  ipcMain.handle('calendar:sync:getRecordsForWeek', async (_, weekStart: string, studentId?: string) => {
+    return calendarSyncRepo.getSyncRecordsForWeek(weekStart, studentId)
   })
 
-  ipcMain.handle('calendar:sync:upsert', async (_, milestoneId: string, weekStart: string, googleEventId: string, calendarId: string) => {
-    return calendarSyncRepo.upsertSyncRecord(milestoneId, weekStart, googleEventId, calendarId)
+  ipcMain.handle('calendar:sync:upsert', async (_, milestoneId: string, weekStart: string, googleEventId: string, calendarId: string, studentId?: string) => {
+    return calendarSyncRepo.upsertSyncRecord(milestoneId, weekStart, googleEventId, calendarId, studentId)
   })
 
-  ipcMain.handle('calendar:sync:delete', async (_, milestoneId: string, weekStart: string) => {
-    return calendarSyncRepo.deleteSyncRecord(milestoneId, weekStart)
+  ipcMain.handle('calendar:sync:delete', async (_, milestoneId: string, weekStart: string, studentId?: string) => {
+    return calendarSyncRepo.deleteSyncRecord(milestoneId, weekStart, studentId)
   })
 
-  ipcMain.handle('calendar:sync:deleteWeek', async (_, weekStart: string) => {
-    return calendarSyncRepo.deleteSyncRecordsForWeek(weekStart)
+  ipcMain.handle('calendar:sync:deleteWeek', async (_, weekStart: string, studentId?: string) => {
+    return calendarSyncRepo.deleteSyncRecordsForWeek(weekStart, studentId)
   })
 
   // Skylight Chore Mappings
@@ -1252,6 +1261,52 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle('mentors:respondToRequest', async (_, id: string, status: MentorRequestStatus, responseMessage?: string) => {
     return coopRepo.respondToMentorRequest(id, status, responseMessage)
+  })
+
+  // External Event Sources (Community Integrations)
+  ipcMain.handle('external:getSources', async (_, coopGroupId?: string) => {
+    return externalSourcesRepo.getExternalEventSources(coopGroupId)
+  })
+
+  ipcMain.handle('external:getSource', async (_, id: string) => {
+    return externalSourcesRepo.getExternalEventSource(id)
+  })
+
+  ipcMain.handle('external:createSource', async (_, data: CreateExternalEventSource) => {
+    return externalSourcesRepo.createExternalEventSource(data)
+  })
+
+  ipcMain.handle('external:updateSource', async (_, id: string, data: UpdateExternalEventSource) => {
+    return externalSourcesRepo.updateExternalEventSource(id, data)
+  })
+
+  ipcMain.handle('external:deleteSource', async (_, id: string) => {
+    return externalSourcesRepo.deleteExternalEventSource(id)
+  })
+
+  // External Events
+  ipcMain.handle('external:getEvents', async (_, sourceId?: string) => {
+    return externalSourcesRepo.getExternalEvents(sourceId)
+  })
+
+  ipcMain.handle('external:getEvent', async (_, id: string) => {
+    return externalSourcesRepo.getExternalEvent(id)
+  })
+
+  ipcMain.handle('external:createEvent', async (_, data: CreateExternalEvent) => {
+    return externalSourcesRepo.createExternalEvent(data)
+  })
+
+  ipcMain.handle('external:updateEvent', async (_, id: string, data: UpdateExternalEvent) => {
+    return externalSourcesRepo.updateExternalEvent(id, data)
+  })
+
+  ipcMain.handle('external:deleteEvent', async (_, id: string) => {
+    return externalSourcesRepo.deleteExternalEvent(id)
+  })
+
+  ipcMain.handle('external:importToFieldTrip', async (_, externalEventId: string, studentIds: string[]) => {
+    return externalSourcesRepo.importExternalEventToFieldTrip(externalEventId, studentIds)
   })
 
   // Assessments

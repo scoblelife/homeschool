@@ -66,6 +66,14 @@ export async function getMilestones(studentId: string): Promise<Milestone[]> {
   return rows.map(rowToMilestone)
 }
 
+export async function getAllMilestones(): Promise<Milestone[]> {
+  const db = await getDatabase()
+  const rows = await db.all(
+    `SELECT * FROM milestones ORDER BY student_id, subject_id, category, title`
+  )
+  return rows.map(rowToMilestone)
+}
+
 export async function getMilestone(id: string): Promise<Milestone | null> {
   const db = await getDatabase()
   const rows = await db.all('SELECT * FROM milestones WHERE id = ?', id)

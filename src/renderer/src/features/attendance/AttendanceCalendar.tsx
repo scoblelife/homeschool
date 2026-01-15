@@ -252,7 +252,7 @@ export function AttendanceCalendar({ students }: Props) {
                   : 'text-gray-300 dark:text-gray-600 cursor-default'
                 }
                 ${isToday ? 'ring-2 ring-blue-500' : ''}
-                ${isWeekend && isCurrentMonth ? 'bg-gray-50 dark:bg-gray-750' : ''}
+                ${isWeekend && isCurrentMonth ? 'bg-gray-50 dark:bg-gray-700' : ''}
               `}
             >
               <span className={`

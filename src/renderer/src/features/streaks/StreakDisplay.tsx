@@ -47,11 +47,11 @@ export function StreakDisplay({
     return (
       <button
         onClick={() => setShowBadgesModal(true)}
-        className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
+        className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
         title={`${studentName}'s streak`}
       >
         <FlameIcon className={`w-5 h-5 ${flameColor}`} />
-        <span className={`text-sm font-semibold ${streakData.currentStreak > 0 ? 'text-gray-900' : 'text-gray-400'}`}>
+        <span className={`text-sm font-semibold ${streakData.currentStreak > 0 ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'}`}>
           {streakData.currentStreak}
         </span>
         {streakData.badges.length > 0 && (
@@ -63,13 +63,13 @@ export function StreakDisplay({
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-gray-900">{studentName}'s Streak</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white">{studentName}'s Streak</h3>
           {streakData.badges.length > 0 && (
             <button
               onClick={() => setShowBadgesModal(true)}
-              className="text-sm text-fuchsia-600 hover:text-fuchsia-800"
+              className="text-sm text-fuchsia-600 hover:text-fuchsia-800 dark:text-fuchsia-400 dark:hover:text-fuchsia-300"
             >
               View Badges ({streakData.badges.length})
             </button>
@@ -80,31 +80,31 @@ export function StreakDisplay({
           <div className="flex items-center gap-2">
             <FlameIcon className={`w-10 h-10 ${flameColor}`} />
             <div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
                 {streakData.currentStreak}
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
                 {streakData.currentStreak === 1 ? 'day' : 'days'}
               </div>
             </div>
           </div>
 
-          <div className="border-l border-gray-200 pl-4">
-            <div className="text-sm text-gray-500">Best Streak</div>
-            <div className="text-lg font-semibold text-gray-700">
+          <div className="border-l border-gray-200 dark:border-gray-600 pl-4">
+            <div className="text-sm text-gray-500 dark:text-gray-400">Best Streak</div>
+            <div className="text-lg font-semibold text-gray-700 dark:text-gray-200">
               {streakData.longestStreak} days
             </div>
           </div>
         </div>
 
         {atRisk && (
-          <div className="mt-3 text-sm text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+          <div className="mt-3 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 rounded-lg px-3 py-2">
             Log an activity today to keep your streak!
           </div>
         )}
 
         {!active && !atRisk && streakData.currentStreak === 0 && (
-          <div className="mt-3 text-sm text-gray-500">
+          <div className="mt-3 text-sm text-gray-500 dark:text-gray-400">
             Log your first activity to start a streak!
           </div>
         )}
@@ -114,7 +114,7 @@ export function StreakDisplay({
             {streakData.badges.map((badge) => (
               <span
                 key={badge.id}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-800 rounded-full text-xs"
+                className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 rounded-full text-xs"
                 title={badge.description}
               >
                 {badge.icon} {badge.name}
@@ -158,11 +158,11 @@ function BadgesModal({ open, onClose, studentName, streakData }: BadgesModalProp
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-          <Dialog.Title className="text-lg font-semibold text-gray-900 mb-2">
+        <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+          <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             {studentName}'s Badges
           </Dialog.Title>
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Current streak: {streakData.currentStreak} days | Best: {streakData.longestStreak} days
           </p>
 
@@ -175,27 +175,27 @@ function BadgesModal({ open, onClose, studentName, streakData }: BadgesModalProp
                 <div
                   key={badge.id}
                   className={`flex items-center gap-3 p-3 rounded-lg ${
-                    earned ? 'bg-amber-50 border border-amber-200' : 'bg-gray-50 border border-gray-100'
+                    earned ? 'bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800' : 'bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600'
                   }`}
                 >
                   <span className={`text-2xl ${earned ? '' : 'grayscale opacity-50'}`}>
                     {badge.icon}
                   </span>
                   <div className="flex-1">
-                    <div className={`font-medium ${earned ? 'text-gray-900' : 'text-gray-400'}`}>
+                    <div className={`font-medium ${earned ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'}`}>
                       {badge.name}
                     </div>
-                    <div className={`text-xs ${earned ? 'text-gray-600' : 'text-gray-400'}`}>
+                    <div className={`text-xs ${earned ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}`}>
                       {badge.description}
                     </div>
                     {earned && earnedBadge && (
-                      <div className="text-xs text-amber-600 mt-0.5">
+                      <div className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
                         Earned {format(parseISO(earnedBadge.earnedDate), 'MMM d, yyyy')}
                       </div>
                     )}
                   </div>
                   {!earned && (
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-gray-400 dark:text-gray-500">
                       {badge.threshold - streakData.longestStreak > 0
                         ? `${badge.threshold - streakData.longestStreak} more days`
                         : 'Keep going!'}

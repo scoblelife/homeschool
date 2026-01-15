@@ -458,13 +458,21 @@ export async function initializeSchema(): Promise<void> {
     CREATE TABLE IF NOT EXISTS calendar_sync (
       id VARCHAR PRIMARY KEY,
       milestone_id VARCHAR NOT NULL,
+      student_id VARCHAR,
       week_start DATE NOT NULL,
       google_event_id VARCHAR NOT NULL,
       calendar_id VARCHAR NOT NULL,
       synced_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      UNIQUE(milestone_id, week_start)
+      UNIQUE(student_id, milestone_id, week_start)
     )
   `)
+
+  // Migration: Add student_id column if it doesn't exist (for existing databases)
+  try {
+    await db.run(`ALTER TABLE calendar_sync ADD COLUMN student_id VARCHAR`)
+  } catch {
+    // Column already exists, ignore
+  }
 
   // Create user_settings table for app settings (including Google credentials)
   await db.run(`
@@ -686,6 +694,40 @@ export async function initializeSchema(): Promise<void> {
       notes VARCHAR,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Create external_event_sources table for community integrations (Facebook, Skool, iCal)
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS external_event_sources (
+      id VARCHAR PRIMARY KEY,
+      coop_group_id VARCHAR REFERENCES coop_groups(id) ON DELETE CASCADE,
+      source_type VARCHAR NOT NULL,
+      source_name VARCHAR NOT NULL,
+      source_url VARCHAR,
+      sync_enabled BOOLEAN DEFAULT TRUE,
+      last_synced_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Create external_events table for events from external sources
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS external_events (
+      id VARCHAR PRIMARY KEY,
+      source_id VARCHAR NOT NULL REFERENCES external_event_sources(id) ON DELETE CASCADE,
+      external_event_id VARCHAR,
+      title VARCHAR NOT NULL,
+      description TEXT,
+      location VARCHAR,
+      event_date DATE NOT NULL,
+      start_time VARCHAR,
+      end_time VARCHAR,
+      event_url VARCHAR,
+      imported_to_field_trip_id VARCHAR,
+      last_synced_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `)
 

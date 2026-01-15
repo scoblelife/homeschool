@@ -25,12 +25,14 @@ const sizeClasses: Record<InputSize, string> = {
 
 const baseClasses =
   'block w-full border rounded-lg shadow-sm transition-all duration-200 ' +
-  'focus:outline-none focus:ring-2 focus:ring-offset-0 ' +
-  'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50'
+  'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ' +
+  'focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-900 ' +
+  'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 dark:disabled:bg-gray-900 ' +
+  'placeholder:text-gray-400 dark:placeholder:text-gray-500'
 
 const stateClasses = {
-  default: 'border-gray-300 hover:border-gray-400 focus:ring-fuchsia-500 focus:border-fuchsia-500',
-  error: 'border-red-300 focus:ring-red-500 focus:border-red-500',
+  default: 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-fuchsia-500 focus:border-fuchsia-500',
+  error: 'border-red-300 dark:border-red-600 focus:ring-red-500 focus:border-red-500',
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -116,7 +118,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
     return (
       <label
         ref={ref}
-        className={clsx('block text-sm font-medium text-gray-700 mb-1', className)}
+        className={clsx('block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1', className)}
         {...props}
       >
         {children}
@@ -144,8 +146,8 @@ export function FormField({ label, htmlFor, required, error, hint, children }: F
         {label}
       </Label>
       {children}
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {hint && !error && <p className="text-sm text-gray-500">{hint}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {hint && !error && <p className="text-sm text-gray-500 dark:text-gray-400">{hint}</p>}
     </div>
   )
 }

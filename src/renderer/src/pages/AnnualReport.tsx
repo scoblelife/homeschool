@@ -168,8 +168,8 @@ export default function AnnualReport(): JSX.Element {
   if (!selectedStudent) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Annual Report</h1>
-        <p className="text-gray-500">Please select a student to view their annual report.</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Annual Report</h1>
+        <p className="text-gray-500 dark:text-gray-400">Please select a student to view their annual report.</p>
       </div>
     )
   }
@@ -179,24 +179,24 @@ export default function AnnualReport(): JSX.Element {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Annual Report</h1>
-          <p className="text-gray-500">{selectedStudent.name}'s learning progress</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Annual Report</h1>
+          <p className="text-gray-500 dark:text-gray-400">{selectedStudent.name}'s learning progress</p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentYear((y) => y - 1)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-200"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <span className="text-lg font-semibold min-w-[60px] text-center">{currentYear}</span>
+            <span className="text-lg font-semibold min-w-[60px] text-center text-gray-900 dark:text-white">{currentYear}</span>
             <button
               onClick={() => setCurrentYear((y) => y + 1)}
               disabled={currentYear >= new Date().getFullYear()}
-              className="p-2 hover:bg-gray-100 rounded-lg disabled:opacity-50"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg disabled:opacity-50 text-gray-700 dark:text-gray-200"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -210,7 +210,7 @@ export default function AnnualReport(): JSX.Element {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12 text-gray-500">Loading annual data...</div>
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">Loading annual data...</div>
       ) : currentYearStats ? (
         <>
           {/* Year Overview Stats */}
@@ -243,7 +243,7 @@ export default function AnnualReport(): JSX.Element {
 
           {/* Monthly Activity Chart */}
           <div className="card mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Monthly Activity</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Monthly Activity</h2>
             <div className="flex items-end gap-2 h-48">
               {currentYearStats.monthlyData.map((month, i) => {
                 const height = (month.activities / maxMonthlyActivities) * 100
@@ -257,7 +257,7 @@ export default function AnnualReport(): JSX.Element {
                     <div className="relative w-full flex justify-center gap-1" style={{ height: '160px' }}>
                       {/* Previous year bar */}
                       <div
-                        className="w-3 bg-gray-200 rounded-t self-end transition-all"
+                        className="w-3 bg-gray-200 dark:bg-gray-600 rounded-t self-end transition-all"
                         style={{ height: `${previousHeight}%` }}
                         title={`${currentYear - 1}: ${previousMonth?.activities || 0} activities`}
                       />
@@ -268,18 +268,18 @@ export default function AnnualReport(): JSX.Element {
                         title={`${currentYear}: ${month.activities} activities`}
                       />
                     </div>
-                    <span className="text-xs text-gray-500">{month.month}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{month.month}</span>
                   </div>
                 )
               })}
             </div>
-            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <div className={`w-3 h-3 rounded ${getStudentColor(selectedStudent.color).bg}`} />
                 <span>{currentYear}</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded bg-gray-200" />
+                <div className="w-3 h-3 rounded bg-gray-200 dark:bg-gray-600" />
                 <span>{currentYear - 1}</span>
               </div>
             </div>
@@ -287,7 +287,7 @@ export default function AnnualReport(): JSX.Element {
 
           {/* Subject Breakdown */}
           <div className="card mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">By Subject</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">By Subject</h2>
             <div className="space-y-4">
               {subjects.map((subject) => {
                 const current = currentYearStats.bySubject[subject.id] || { activities: 0, minutes: 0 }
@@ -296,10 +296,10 @@ export default function AnnualReport(): JSX.Element {
 
                 return (
                   <div key={subject.id} className="flex items-center gap-4">
-                    <div className="w-32 text-sm font-medium text-gray-700 truncate">{subject.name}</div>
+                    <div className="w-32 text-sm font-medium text-gray-700 dark:text-gray-200 truncate">{subject.name}</div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div
                             className={`h-full ${getStudentColor(selectedStudent.color).bg} transition-all`}
                             style={{
@@ -307,7 +307,7 @@ export default function AnnualReport(): JSX.Element {
                             }}
                           />
                         </div>
-                        <span className="text-sm text-gray-600 min-w-[60px] text-right">
+                        <span className="text-sm text-gray-600 dark:text-gray-300 min-w-[60px] text-right">
                           {formatHours(current.minutes)}
                         </span>
                       </div>
@@ -316,7 +316,7 @@ export default function AnnualReport(): JSX.Element {
                       {previous.minutes > 0 && (
                         <span
                           className={`text-sm ${
-                            change.isPositive ? 'text-green-600' : 'text-red-600'
+                            change.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                           }`}
                         >
                           {change.isPositive ? '↑' : '↓'} {change.value}%
@@ -332,15 +332,15 @@ export default function AnnualReport(): JSX.Element {
           {/* Year-over-Year Comparison Table */}
           {previousYearStats && (
             <div className="card">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Year-over-Year Comparison</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Year-over-Year Comparison</h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2 px-4">Metric</th>
-                      <th className="text-right py-2 px-4">{currentYear - 1}</th>
-                      <th className="text-right py-2 px-4">{currentYear}</th>
-                      <th className="text-right py-2 px-4">Change</th>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-2 px-4 text-gray-700 dark:text-gray-200">Metric</th>
+                      <th className="text-right py-2 px-4 text-gray-700 dark:text-gray-200">{currentYear - 1}</th>
+                      <th className="text-right py-2 px-4 text-gray-700 dark:text-gray-200">{currentYear}</th>
+                      <th className="text-right py-2 px-4 text-gray-700 dark:text-gray-200">Change</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -375,7 +375,7 @@ export default function AnnualReport(): JSX.Element {
           )}
         </>
       ) : (
-        <div className="text-center py-12 text-gray-500">No data available for this year.</div>
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">No data available for this year.</div>
       )}
     </div>
   )
@@ -395,11 +395,11 @@ function StatCard({ title, value, previousValue, formatValue }: StatCardProps): 
   const isPositive = change >= 0
 
   return (
-    <div className="card bg-gradient-to-br from-white to-gray-50">
-      <div className="text-sm font-medium text-gray-500">{title}</div>
-      <div className="text-3xl font-bold text-gray-900 mt-1">{formatValue(value)}</div>
+    <div className="card bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
+      <div className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</div>
+      <div className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{formatValue(value)}</div>
       {previousValue > 0 && (
-        <div className={`text-sm mt-2 ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+        <div className={`text-sm mt-2 ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
           {isPositive ? '↑' : '↓'} {Math.abs(change)}% vs last year
         </div>
       )}
@@ -421,11 +421,11 @@ function ComparisonRow({ label, current, previous, format }: ComparisonRowProps)
   const isPositive = change >= 0
 
   return (
-    <tr className="border-b last:border-b-0">
-      <td className="py-3 px-4 text-gray-700">{label}</td>
-      <td className="py-3 px-4 text-right text-gray-500">{format(previous)}</td>
-      <td className="py-3 px-4 text-right font-medium text-gray-900">{format(current)}</td>
-      <td className={`py-3 px-4 text-right ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+    <tr className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+      <td className="py-3 px-4 text-gray-700 dark:text-gray-200">{label}</td>
+      <td className="py-3 px-4 text-right text-gray-500 dark:text-gray-400">{format(previous)}</td>
+      <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-white">{format(current)}</td>
+      <td className={`py-3 px-4 text-right ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
         {isPositive ? '+' : ''}{change}%
       </td>
     </tr>

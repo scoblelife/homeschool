@@ -200,13 +200,13 @@ export default function RecurringActivities({ onActivityCreated }: RecurringActi
 
   if (dueActivities.length === 0 && allRecurring.length === 0) {
     return (
-      <div className="card mb-6 bg-gradient-to-r from-blue-50 to-fuchsia-50 border-blue-100">
+      <div className="card mb-6 bg-gradient-to-r from-blue-50 to-fuchsia-50 dark:from-blue-950/30 dark:to-fuchsia-950/30 border-blue-100 dark:border-blue-900">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="text-2xl">📅</span>
             <div>
-              <h2 className="font-semibold text-gray-900">Recurring Activities</h2>
-              <p className="text-sm text-gray-500">Set up daily or weekly activities</p>
+              <h2 className="font-semibold text-gray-900 dark:text-white">Recurring Activities</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Set up daily or weekly activities</p>
             </div>
           </div>
           <button
@@ -239,18 +239,18 @@ export default function RecurringActivities({ onActivityCreated }: RecurringActi
     <>
       {/* Due Today Section */}
       {dueActivities.length > 0 && (
-        <div className="card mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200">
+        <div className="card mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 border-amber-200 dark:border-amber-800">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <span className="text-2xl">⏰</span>
               <div>
-                <h2 className="font-semibold text-gray-900">Today's Schedule</h2>
-                <p className="text-sm text-gray-500">{dueActivities.length} activit{dueActivities.length === 1 ? 'y' : 'ies'} scheduled</p>
+                <h2 className="font-semibold text-gray-900 dark:text-white">Today's Schedule</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{dueActivities.length} activit{dueActivities.length === 1 ? 'y' : 'ies'} scheduled</p>
               </div>
             </div>
             <button
               onClick={() => setShowManageModal(true)}
-              className="text-sm text-amber-700 hover:text-amber-900"
+              className="text-sm text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-300"
             >
               Manage Schedules
             </button>
@@ -265,12 +265,12 @@ export default function RecurringActivities({ onActivityCreated }: RecurringActi
               return (
                 <div
                   key={activity.id}
-                  className="flex items-center gap-3 p-3 bg-white rounded-lg border border-amber-200"
+                  className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-amber-200 dark:border-amber-800"
                 >
                   <span className="text-2xl">{typeInfo?.icon}</span>
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900">{activity.title}</div>
-                    <div className="text-sm text-gray-500">
+                    <div className="font-medium text-gray-900 dark:text-white">{activity.title}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                       {subject?.name} • {student?.name}
                       {activity.durationMinutes && ` • ${activity.durationMinutes} min`}
                       {activity.startTime && ` • ${activity.startTime}`}
@@ -279,7 +279,7 @@ export default function RecurringActivities({ onActivityCreated }: RecurringActi
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleSkipActivity(activity)}
-                      className="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                      className="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                     >
                       Skip
                     </button>
@@ -377,7 +377,7 @@ function ManageRecurringModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-xl transition-all">
                 <div className="bg-blue-600 px-6 py-4">
                   <Dialog.Title className="text-lg font-semibold text-white">
                     Manage Recurring Activities
@@ -386,7 +386,7 @@ function ManageRecurringModal({
 
                 <div className="p-6">
                   {activities.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                       <p>No recurring activities set up yet.</p>
                     </div>
                   ) : (
@@ -400,22 +400,22 @@ function ManageRecurringModal({
                         return (
                           <div
                             key={activity.id}
-                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                            className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                           >
                             <span className="text-xl">{typeInfo?.icon}</span>
                             <div className="flex-1">
-                              <div className="font-medium text-gray-900">{activity.title}</div>
-                              <div className="text-sm text-gray-500">
+                              <div className="font-medium text-gray-900 dark:text-white">{activity.title}</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">
                                 {subject?.name} • {student?.name}
                               </div>
-                              <div className="text-xs text-blue-600">
+                              <div className="text-xs text-blue-600 dark:text-blue-400">
                                 {patternLabel}
                                 {activity.startTime && ` at ${activity.startTime}`}
                               </div>
                             </div>
                             <button
                               onClick={() => onDelete(activity.id)}
-                              className="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
+                              className="px-2 py-1 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
                             >
                               Delete
                             </button>
@@ -428,7 +428,7 @@ function ManageRecurringModal({
                   <div className="flex gap-3 mt-6">
                     <button
                       onClick={onClose}
-                      className="flex-1 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                      className="flex-1 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       Close
                     </button>
@@ -495,7 +495,7 @@ function CreateRecurringModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white shadow-xl transition-all">
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-xl transition-all">
                 <div className="bg-blue-600 px-6 py-4">
                   <Dialog.Title className="text-lg font-semibold text-white">
                     Create Recurring Activity
@@ -508,7 +508,7 @@ function CreateRecurringModal({
                 <div className="p-6 space-y-4">
                   {/* Activity Type */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Activity Type</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Activity Type</label>
                     <div className="grid grid-cols-4 gap-2">
                       {activityTypes.map((type) => (
                         <button
@@ -517,12 +517,12 @@ function CreateRecurringModal({
                           onClick={() => setFormData({ ...formData, activityType: type.value })}
                           className={`p-2 rounded-lg text-center transition-colors ${
                             formData.activityType === type.value
-                              ? 'bg-blue-100 ring-2 ring-blue-500'
-                              : 'bg-gray-50 hover:bg-gray-100'
+                              ? 'bg-blue-100 dark:bg-blue-900/50 ring-2 ring-blue-500'
+                              : 'bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600'
                           }`}
                         >
                           <div className="text-xl">{type.icon}</div>
-                          <div className="text-xs mt-1">{type.label}</div>
+                          <div className="text-xs mt-1 text-gray-700 dark:text-gray-300">{type.label}</div>
                         </button>
                       ))}
                     </div>
@@ -530,7 +530,7 @@ function CreateRecurringModal({
 
                   {/* Student */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Student</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Student</label>
                     <div className="flex flex-wrap gap-2">
                       {students.map((student) => (
                         <button
@@ -539,8 +539,8 @@ function CreateRecurringModal({
                           onClick={() => setFormData({ ...formData, studentId: student.id })}
                           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                             formData.studentId === student.id
-                              ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-500'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 ring-2 ring-blue-500'
+                              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                           }`}
                         >
                           {student.name}
@@ -551,7 +551,7 @@ function CreateRecurringModal({
 
                   {/* Subject */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subject</label>
                     <div className="flex flex-wrap gap-2">
                       {subjects.map((subject) => (
                         <button
@@ -560,8 +560,8 @@ function CreateRecurringModal({
                           onClick={() => setFormData({ ...formData, subjectId: subject.id })}
                           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                             formData.subjectId === subject.id
-                              ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-500'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 ring-2 ring-blue-500'
+                              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                           }`}
                         >
                           {subject.name}
@@ -572,19 +572,19 @@ function CreateRecurringModal({
 
                   {/* Title */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Activity Name</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Activity Name</label>
                     <input
                       type="text"
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       placeholder="e.g., Daily reading practice"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
 
                   {/* Recurrence Pattern */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Repeat</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Repeat</label>
                     <select
                       value={formData.recurrencePattern}
                       onChange={(e) => setFormData({
@@ -592,7 +592,7 @@ function CreateRecurringModal({
                         recurrencePattern: e.target.value as RecurrencePattern,
                         recurrenceDays: e.target.value === 'custom' ? [1, 3, 5] : null
                       })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       {recurrenceOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -605,7 +605,7 @@ function CreateRecurringModal({
                   {/* Custom Days */}
                   {formData.recurrencePattern === 'custom' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Days</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Days</label>
                       <div className="flex flex-wrap gap-2">
                         {dayNames.map((day, index) => (
                           <button
@@ -621,7 +621,7 @@ function CreateRecurringModal({
                             className={`w-10 h-10 rounded-full text-sm font-medium transition-colors ${
                               (formData.recurrenceDays || []).includes(index)
                                 ? 'bg-blue-500 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                             }`}
                           >
                             {day}
@@ -634,16 +634,16 @@ function CreateRecurringModal({
                   {/* Time & Duration */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Time (optional)</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Time (optional)</label>
                       <input
                         type="time"
                         value={formData.startTime || ''}
                         onChange={(e) => setFormData({ ...formData, startTime: e.target.value || null })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Duration (min)</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Duration (min)</label>
                       <input
                         type="number"
                         value={formData.durationMinutes || ''}
@@ -653,7 +653,7 @@ function CreateRecurringModal({
                         })}
                         placeholder="30"
                         min="1"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   </div>
@@ -662,7 +662,7 @@ function CreateRecurringModal({
                   <div className="flex gap-3 pt-4">
                     <button
                       onClick={onClose}
-                      className="flex-1 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                      className="flex-1 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       Cancel
                     </button>

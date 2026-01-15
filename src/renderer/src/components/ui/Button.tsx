@@ -23,12 +23,14 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-fuchsia-500 text-white hover:bg-fuchsia-600 focus:ring-fuchsia-500 active:bg-fuchsia-700',
-  secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300',
+    'bg-fuchsia-500 text-white hover:bg-fuchsia-600 focus:ring-fuchsia-500 active:bg-fuchsia-700 dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500',
+  secondary:
+    'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
   outline:
-    'bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-gray-500',
-  ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500',
-  danger: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 active:bg-red-700',
+    'bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-gray-500 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-800 dark:hover:border-gray-500',
+  ghost:
+    'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100',
+  danger: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 active:bg-red-700 dark:bg-red-600 dark:hover:bg-red-500',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {

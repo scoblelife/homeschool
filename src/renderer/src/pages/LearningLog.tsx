@@ -141,7 +141,7 @@ export default function Activities(): JSX.Element {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Learning Log</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Learning Log</h1>
         <button onClick={() => setIsModalOpen(true)} className="btn btn-primary">
           + Log Activity
         </button>
@@ -152,7 +152,7 @@ export default function Activities(): JSX.Element {
         <button
           onClick={() => setFilterType('')}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            filterType === '' ? 'bg-fuchsia-100 text-fuchsia-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            filterType === '' ? 'bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-700 dark:text-fuchsia-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
           }`}
         >
           All
@@ -163,8 +163,8 @@ export default function Activities(): JSX.Element {
             onClick={() => setFilterType(type.value)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               filterType === type.value
-                ? 'bg-fuchsia-100 text-fuchsia-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-700 dark:text-fuchsia-300'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             {type.icon} {type.label}
@@ -174,7 +174,7 @@ export default function Activities(): JSX.Element {
 
       {filteredActivities.length === 0 ? (
         <div className="card text-center py-12">
-          <p className="text-gray-500">No activities recorded yet.</p>
+          <p className="text-gray-500 dark:text-gray-400">No activities recorded yet.</p>
           <button onClick={() => setIsModalOpen(true)} className="btn btn-primary mt-4">
             Log First Activity
           </button>
@@ -195,30 +195,30 @@ export default function Activities(): JSX.Element {
                 <div className="text-2xl">{typeInfo?.icon}</div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-900">{activity.title}</span>
-                    <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">
+                    <span className="font-semibold text-gray-900 dark:text-white">{activity.title}</span>
+                    <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">
                       {typeInfo?.label}
                     </span>
                   </div>
-                  <div className="text-sm text-gray-500 mt-1">
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     {subject?.name} • {student?.name} •{' '}
                     {format(parseISO(activity.dateCompleted), 'MMM d, yyyy')}
                     {activity.durationMinutes && ` • ${activity.durationMinutes} min`}
                   </div>
                   {activity.bookTitle && (
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                       📚 {activity.bookTitle}
                       {activity.pagesRead && ` (${activity.pagesRead} pages)`}
                     </div>
                   )}
                   {activity.grade !== null && activity.maxGrade !== null && (
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                       Grade: {activity.grade}/{activity.maxGrade} (
                       {Math.round((activity.grade / activity.maxGrade) * 100)}%)
                     </div>
                   )}
                   {activity.notes && (
-                    <div className="text-sm text-gray-600 mt-2 prose prose-sm max-w-none">
+                    <div className="text-sm text-gray-600 dark:text-gray-300 mt-2 prose prose-sm dark:prose-invert max-w-none">
                       <Markdown>{activity.notes}</Markdown>
                     </div>
                   )}
@@ -226,13 +226,13 @@ export default function Activities(): JSX.Element {
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={() => openEditModal(activity)}
-                    className="text-fuchsia-500 hover:text-fuchsia-700 text-sm"
+                    className="text-fuchsia-500 hover:text-fuchsia-700 dark:text-fuchsia-400 dark:hover:text-fuchsia-300 text-sm"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => deleteActivity(activity.id)}
-                    className="text-red-500 hover:text-red-700 text-sm"
+                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm"
                   >
                     Delete
                   </button>
@@ -247,8 +247,8 @@ export default function Activities(): JSX.Element {
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)} className="relative z-50">
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               {editingActivity ? 'Edit Activity' : 'Log Activity'}
             </Dialog.Title>
 
@@ -263,12 +263,12 @@ export default function Activities(): JSX.Element {
                       onClick={() => setFormData({ ...formData, activityType: type.value })}
                       className={`p-2 rounded-lg text-center transition-colors ${
                         formData.activityType === type.value
-                          ? 'bg-fuchsia-100 ring-2 ring-fuchsia-500'
-                          : 'bg-gray-50 hover:bg-gray-100'
+                          ? 'bg-fuchsia-100 dark:bg-fuchsia-900/50 ring-2 ring-fuchsia-500'
+                          : 'bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600'
                       }`}
                     >
                       <div className="text-xl">{type.icon}</div>
-                      <div className="text-xs mt-1">{type.label}</div>
+                      <div className="text-xs mt-1 text-gray-700 dark:text-gray-300">{type.label}</div>
                     </button>
                   ))}
                 </div>
@@ -277,7 +277,7 @@ export default function Activities(): JSX.Element {
               {editingActivity ? (
                 <div>
                   <label className="label">Student</label>
-                  <div className="px-3 py-1.5 bg-gray-100 rounded-lg text-sm font-medium text-gray-700">
+                  <div className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200">
                     {getStudentById(editingActivity.studentId)?.name}
                   </div>
                 </div>
@@ -303,8 +303,8 @@ export default function Activities(): JSX.Element {
                         }}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                           selectedStudentIds.includes(s.id)
-                            ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-500'
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 ring-2 ring-purple-500'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                       >
                         {s.name}
@@ -312,7 +312,7 @@ export default function Activities(): JSX.Element {
                     ))}
                   </div>
                   {selectedStudentIds.length === 0 && (
-                    <p className="text-sm text-red-500 mt-1">Select at least one student</p>
+                    <p className="text-sm text-red-500 dark:text-red-400 mt-1">Select at least one student</p>
                   )}
                 </div>
               )}

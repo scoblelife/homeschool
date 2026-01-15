@@ -181,13 +181,13 @@ export default function ApiServices(): JSX.Element {
   const getStatusColor = (status: ServiceStatus['status']) => {
     switch (status) {
       case 'connected':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800'
       case 'disconnected':
-        return 'bg-gray-100 text-gray-600 border-gray-200'
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600'
       case 'error':
-        return 'bg-red-100 text-red-800 border-red-200'
+        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800'
       case 'loading':
-        return 'bg-blue-100 text-blue-800 border-blue-200'
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800'
     }
   }
 
@@ -207,8 +207,8 @@ export default function ApiServices(): JSX.Element {
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">API Services</h1>
-        <p className="text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">API Services</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
           Manage integrations with AI and calendar services
         </p>
       </div>
@@ -233,16 +233,16 @@ export default function ApiServices(): JSX.Element {
       <div className="card mb-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <span className="text-xl">🤖</span> AI Service (Claude)
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Powers weekly summaries, activity suggestions, and smart categorization
             </p>
           </div>
           {aiConfig?.apiKey && (
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              aiConfig.enabled ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+              aiConfig.enabled ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
             }`}>
               {aiConfig.enabled ? 'Enabled' : 'Disabled'}
             </span>
@@ -251,10 +251,10 @@ export default function ApiServices(): JSX.Element {
 
         <div className="space-y-4">
           {/* API Key Status */}
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
             <div>
-              <span className="font-medium text-gray-900">API Key</span>
-              <p className="text-sm text-gray-500">
+              <span className="font-medium text-gray-900 dark:text-white">API Key</span>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {aiConfig?.apiKey
                   ? `••••••••${aiConfig.apiKey.slice(-4)}`
                   : 'Not configured'}
@@ -285,14 +285,14 @@ export default function ApiServices(): JSX.Element {
                 onClick={handleToggleAI}
                 className={`p-3 rounded-lg border text-left ${
                   aiConfig.enabled
-                    ? 'border-green-200 bg-green-50'
-                    : 'border-gray-200 bg-gray-50'
+                    ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/30'
+                    : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50'
                 }`}
               >
-                <div className="font-medium text-gray-900">
+                <div className="font-medium text-gray-900 dark:text-white">
                   {aiConfig.enabled ? 'Disable AI' : 'Enable AI'}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Toggle AI features on/off
                 </p>
               </button>
@@ -300,22 +300,22 @@ export default function ApiServices(): JSX.Element {
               <button
                 onClick={handleTestAI}
                 disabled={!aiConfig.enabled || isTesting}
-                className="p-3 rounded-lg border border-blue-200 bg-blue-50 text-left disabled:opacity-50"
+                className="p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30 text-left disabled:opacity-50"
               >
-                <div className="font-medium text-gray-900">
+                <div className="font-medium text-gray-900 dark:text-white">
                   {isTesting ? 'Testing...' : 'Test Connection'}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Send a test request to Claude
                 </p>
               </button>
 
               <button
                 onClick={handleClearCache}
-                className="p-3 rounded-lg border border-gray-200 bg-gray-50 text-left"
+                className="p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-left"
               >
-                <div className="font-medium text-gray-900">Clear Cache</div>
-                <p className="text-xs text-gray-500 mt-1">
+                <div className="font-medium text-gray-900 dark:text-white">Clear Cache</div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Remove cached AI responses
                 </p>
               </button>
@@ -325,9 +325,9 @@ export default function ApiServices(): JSX.Element {
           {/* Test Result */}
           {aiTestResult && (
             <div className={`p-3 rounded-lg ${
-              aiTestResult.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+              aiTestResult.success ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
             }`}>
-              <p className={`text-sm ${aiTestResult.success ? 'text-green-700' : 'text-red-700'}`}>
+              <p className={`text-sm ${aiTestResult.success ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
                 {aiTestResult.success ? '✓ ' : '✗ '}{aiTestResult.message}
               </p>
             </div>
@@ -339,17 +339,17 @@ export default function ApiServices(): JSX.Element {
       <div className="card mb-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
               <span className="text-xl">📅</span> Google Calendar
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Sync weekly plan milestones to Google Calendar
             </p>
           </div>
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
             googleAuthStatus === 'connected'
-              ? 'bg-green-100 text-green-700'
-              : 'bg-gray-100 text-gray-600'
+              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
           }`}>
             {googleAuthStatus === 'connected'
               ? 'Connected'
@@ -361,8 +361,8 @@ export default function ApiServices(): JSX.Element {
 
         <div className="space-y-4">
           {googleAuthStatus === 'no_credentials' ? (
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className="text-sm text-amber-800 mb-3">
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <p className="text-sm text-amber-800 dark:text-amber-300 mb-3">
                 Google OAuth credentials are not configured. You'll need to create a project
                 in Google Cloud Console and enable the Calendar API.
               </p>
@@ -374,10 +374,10 @@ export default function ApiServices(): JSX.Element {
               </button>
             </div>
           ) : (
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
               <div>
-                <span className="font-medium text-gray-900">Connection Status</span>
-                <p className="text-sm text-gray-500">
+                <span className="font-medium text-gray-900 dark:text-white">Connection Status</span>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {googleAuthStatus === 'connected'
                     ? 'Ready to sync calendars'
                     : 'Credentials set, connect to authorize'}
@@ -408,16 +408,16 @@ export default function ApiServices(): JSX.Element {
       </div>
 
       {/* Usage Tips */}
-      <div className="card bg-gradient-to-r from-blue-50 to-purple-50 border-blue-100">
-        <h3 className="font-semibold text-gray-900 mb-3">Getting Started</h3>
-        <ul className="space-y-2 text-sm text-gray-700">
+      <div className="card bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-blue-100 dark:border-blue-800">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Getting Started</h3>
+        <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
           <li className="flex items-start gap-2">
-            <span className="text-blue-500">1.</span>
-            <span><strong>AI Service:</strong> Get a Claude API key from <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">console.anthropic.com</a></span>
+            <span className="text-blue-500 dark:text-blue-400">1.</span>
+            <span><strong>AI Service:</strong> Get a Claude API key from <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">console.anthropic.com</a></span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-blue-500">2.</span>
-            <span><strong>Google Calendar:</strong> Set up OAuth credentials in <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Cloud Console</a></span>
+            <span className="text-blue-500 dark:text-blue-400">2.</span>
+            <span><strong>Google Calendar:</strong> Set up OAuth credentials in <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">Google Cloud Console</a></span>
           </li>
         </ul>
       </div>
@@ -430,8 +430,8 @@ export default function ApiServices(): JSX.Element {
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Configure Claude API Key
             </Dialog.Title>
             <div className="space-y-4">
@@ -444,7 +444,7 @@ export default function ApiServices(): JSX.Element {
                   className="input"
                   placeholder="sk-ant-..."
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Your API key is stored locally and never sent to our servers.
                 </p>
               </div>
@@ -469,8 +469,8 @@ export default function ApiServices(): JSX.Element {
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Panel className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <Dialog.Title className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Configure Google OAuth
             </Dialog.Title>
             <div className="space-y-4">
@@ -493,7 +493,7 @@ export default function ApiServices(): JSX.Element {
                   className="input"
                   placeholder="GOCSPX-..."
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Create OAuth credentials in Google Cloud Console with Calendar API enabled.
                 </p>
               </div>

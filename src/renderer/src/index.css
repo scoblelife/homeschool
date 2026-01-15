@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply antialiased text-gray-900;
+    @apply antialiased text-gray-900 dark:text-gray-100;
   }
 }
 
@@ -18,43 +18,43 @@
    */
 
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
   }
 
   .btn-primary {
-    @apply bg-fuchsia-500 text-white hover:bg-fuchsia-600 hover:shadow-md focus:ring-fuchsia-500 active:scale-[0.98];
+    @apply bg-fuchsia-500 text-white hover:bg-fuchsia-600 hover:shadow-md focus:ring-fuchsia-500 active:scale-[0.98] dark:bg-fuchsia-600 dark:hover:bg-fuchsia-500;
   }
 
   .btn-secondary {
-    @apply bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-fuchsia-500 active:scale-[0.98];
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-fuchsia-500 active:scale-[0.98] dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600;
   }
 
   .btn-outline {
-    @apply bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-fuchsia-500 active:scale-[0.98];
+    @apply bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-fuchsia-500 active:scale-[0.98] dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-800 dark:hover:border-gray-500;
   }
 
   .btn-ghost {
-    @apply bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-fuchsia-500 active:scale-[0.98];
+    @apply bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-fuchsia-500 active:scale-[0.98] dark:text-gray-300 dark:hover:bg-gray-800;
   }
 
   .btn-danger {
-    @apply bg-red-500 text-white hover:bg-red-600 hover:shadow-md focus:ring-red-500 active:scale-[0.98];
+    @apply bg-red-500 text-white hover:bg-red-600 hover:shadow-md focus:ring-red-500 active:scale-[0.98] dark:bg-red-600 dark:hover:bg-red-500;
   }
 
   .input {
-    @apply block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 text-sm hover:border-gray-400;
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500 text-sm hover:border-gray-400 bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:focus:ring-offset-gray-900 placeholder:text-gray-400 dark:placeholder:text-gray-500;
   }
 
   .input-error {
-    @apply border-red-300 focus:ring-red-500 focus:border-red-500;
+    @apply border-red-300 focus:ring-red-500 focus:border-red-500 dark:border-red-600;
   }
 
   .label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    @apply block text-sm font-medium text-gray-700 mb-1 dark:text-gray-200;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-shadow duration-200;
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 transition-shadow duration-200 dark:bg-gray-800 dark:border-gray-700;
   }
 
   .card-hover {
@@ -62,7 +62,7 @@
   }
 
   .card-interactive {
-    @apply cursor-pointer hover:border-gray-300 active:scale-[0.99];
+    @apply cursor-pointer hover:border-gray-300 active:scale-[0.99] dark:hover:border-gray-600;
   }
 
   /* Badge styles - aligned with design system */
@@ -71,73 +71,73 @@
   }
 
   .badge-default {
-    @apply bg-gray-100 text-gray-600;
+    @apply bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300;
   }
 
   .badge-primary {
-    @apply bg-fuchsia-100 text-fuchsia-700;
+    @apply bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/50 dark:text-fuchsia-300;
   }
 
   .badge-secondary {
-    @apply bg-sky-100 text-sky-700;
+    @apply bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300;
   }
 
   .badge-success {
-    @apply bg-green-100 text-green-700;
+    @apply bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300;
   }
 
   .badge-warning {
-    @apply bg-amber-100 text-amber-700;
+    @apply bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300;
   }
 
   .badge-danger {
-    @apply bg-red-100 text-red-700;
+    @apply bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300;
   }
 
   .badge-info {
-    @apply bg-blue-100 text-blue-700;
+    @apply bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300;
   }
 
   /* Legacy badge aliases for backwards compatibility */
   .badge-indigo {
-    @apply bg-fuchsia-100 text-fuchsia-700;
+    @apply bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/50 dark:text-fuchsia-300;
   }
 
   .badge-green {
-    @apply bg-green-100 text-green-700;
+    @apply bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300;
   }
 
   .badge-amber {
-    @apply bg-amber-100 text-amber-700;
+    @apply bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300;
   }
 
   .badge-gray {
-    @apply bg-gray-100 text-gray-600;
+    @apply bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300;
   }
 
   /* Student color badges */
   .badge-student-fuchsia {
-    @apply bg-fuchsia-100 text-fuchsia-700;
+    @apply bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/50 dark:text-fuchsia-300;
   }
 
   .badge-student-teal {
-    @apply bg-teal-100 text-teal-700;
+    @apply bg-teal-100 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300;
   }
 
   .badge-student-blue {
-    @apply bg-blue-100 text-blue-700;
+    @apply bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300;
   }
 
   .badge-student-orange {
-    @apply bg-orange-100 text-orange-700;
+    @apply bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300;
   }
 
   .badge-student-purple {
-    @apply bg-purple-100 text-purple-700;
+    @apply bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300;
   }
 
   .badge-student-green {
-    @apply bg-green-100 text-green-700;
+    @apply bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300;
   }
 }
 

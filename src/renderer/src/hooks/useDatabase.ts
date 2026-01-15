@@ -137,11 +137,10 @@ export function useMilestones(studentId?: string) {
   const loadMilestones = useCallback(async () => {
     setIsLoading(true)
     try {
-      if (!studentId) {
-        setMilestones([])
-        return
-      }
-      const data = await window.api.getMilestones(studentId)
+      // If no studentId provided, load milestones for ALL students
+      const data = studentId
+        ? await window.api.getMilestones(studentId)
+        : await window.api.getAllMilestones()
       setMilestones(data)
     } finally {
       setIsLoading(false)
