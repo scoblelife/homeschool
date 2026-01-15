@@ -220,75 +220,72 @@ export default function AnnualReport(): JSX.Element {
 
   if (!selectedStudent) {
     return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Annual Report</h1>
-        <p className="text-gray-500">
-          Please select a student to view their annual report.
-        </p>
-      </div>
+      <PageContainer>
+        <PageHeader
+          title="Annual Report"
+          subtitle="Please select a student to view their annual report."
+        />
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Annual Report</h1>
-          <p className="text-gray-500">
-            {selectedStudent.name}'s learning progress
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentYear((y) => y - 1)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+    <PageContainer>
+      <PageHeader
+        title="Annual Report"
+        subtitle={`${selectedStudent.name}'s learning progress`}
+        action={
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentYear((y) => y - 1)}
+                className="p-2 hover:bg-neutral-backgroundDeep rounded-lg"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-            <span className="text-lg font-semibold min-w-[60px] text-center">
-              {currentYear}
-            </span>
-            <button
-              onClick={() => setCurrentYear((y) => y + 1)}
-              disabled={currentYear >= new Date().getFullYear()}
-              className="p-2 hover:bg-gray-100 rounded-lg disabled:opacity-50"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <span className="text-lg font-semibold min-w-[60px] text-center">
+                {currentYear}
+              </span>
+              <button
+                onClick={() => setCurrentYear((y) => y + 1)}
+                disabled={currentYear >= new Date().getFullYear()}
+                className="p-2 hover:bg-neutral-backgroundDeep rounded-lg disabled:opacity-50"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </div>
+            <Button variant="primary" onClick={handleExportReport}>
+              Export Report
+            </Button>
           </div>
-          <Button variant="primary" onClick={handleExportReport}>
-            Export Report
-          </Button>
-        </div>
-      </div>
+        }
+      />
       {isLoading ? (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-neutral-textSecondary">
           Loading annual data...
         </div>
       ) : currentYearStats ? (
@@ -337,7 +334,7 @@ export default function AnnualReport(): JSX.Element {
 
           {/* Monthly Activity Chart */}
           <Card className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <h2 className="text-lg font-semibold text-neutral-text mb-4">
               Monthly Activity
             </h2>
             <div className="flex items-end gap-2 h-48">
@@ -359,7 +356,7 @@ export default function AnnualReport(): JSX.Element {
                     >
                       {/* Previous year bar */}
                       <div
-                        className="w-3 bg-gray-200 rounded-t self-end transition-all"
+                        className="w-3 bg-neutral-border rounded-t self-end transition-all"
                         style={{ height: `${previousHeight}%` }}
                         title={`${currentYear - 1}: ${previousMonth?.activities || 0} activities`}
                       />
@@ -370,12 +367,14 @@ export default function AnnualReport(): JSX.Element {
                         title={`${currentYear}: ${month.activities} activities`}
                       />
                     </div>
-                    <span className="text-xs text-gray-500">{month.month}</span>
+                    <span className="text-xs text-neutral-textSecondary">
+                      {month.month}
+                    </span>
                   </div>
                 );
               })}
             </div>
-            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-gray-500">
+            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-neutral-textSecondary">
               <div className="flex items-center gap-2">
                 <div
                   className={`w-3 h-3 rounded ${getStudentColor(selectedStudent.color).bg}`}
@@ -383,7 +382,7 @@ export default function AnnualReport(): JSX.Element {
                 <span>{currentYear}</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded bg-gray-200" />
+                <div className="w-3 h-3 rounded bg-neutral-border" />
                 <span>{currentYear - 1}</span>
               </div>
             </div>
@@ -391,7 +390,7 @@ export default function AnnualReport(): JSX.Element {
 
           {/* Subject Breakdown */}
           <Card className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <h2 className="text-lg font-semibold text-neutral-text mb-4">
               By Subject
             </h2>
             <div className="space-y-4">
@@ -411,12 +410,12 @@ export default function AnnualReport(): JSX.Element {
 
                 return (
                   <div key={subject.id} className="flex items-center gap-4">
-                    <div className="w-32 text-sm font-medium text-gray-700 truncate">
+                    <div className="w-32 text-sm font-medium text-neutral-text truncate">
                       {subject.name}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="flex-1 h-4 bg-neutral-backgroundDeep rounded-full overflow-hidden">
                           <div
                             className={`h-full ${getStudentColor(selectedStudent.color).bg} transition-all`}
                             style={{
@@ -424,7 +423,7 @@ export default function AnnualReport(): JSX.Element {
                             }}
                           />
                         </div>
-                        <span className="text-sm text-gray-600 min-w-[60px] text-right">
+                        <span className="text-sm text-neutral-textSecondary min-w-[60px] text-right">
                           {formatHours(current.minutes)}
                         </span>
                       </div>
@@ -434,8 +433,8 @@ export default function AnnualReport(): JSX.Element {
                         <span
                           className={`text-sm ${
                             change.isPositive
-                              ? "text-green-600"
-                              : "text-red-600"
+                              ? "text-status-success"
+                              : "text-status-error"
                           }`}
                         >
                           {change.isPositive ? "↑" : "↓"} {change.value}%
@@ -451,7 +450,7 @@ export default function AnnualReport(): JSX.Element {
           {/* Year-over-Year Comparison Table */}
           {previousYearStats && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <h2 className="text-lg font-semibold text-neutral-text mb-4">
                 Year-over-Year Comparison
               </h2>
               <div className="overflow-x-auto">
@@ -512,11 +511,11 @@ export default function AnnualReport(): JSX.Element {
           )}
         </>
       ) : (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-neutral-textSecondary">
           No data available for this year.
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }
 
@@ -542,14 +541,16 @@ function StatCard({
   const isPositive = change >= 0;
 
   return (
-    <Card className="bg-gradient-to-br from-white to-gray-50">
-      <div className="text-sm font-medium text-gray-500">{title}</div>
-      <div className="text-3xl font-bold text-gray-900 mt-1">
+    <Card className="bg-gradient-to-br from-white to-neutral-backgroundDeep">
+      <div className="text-sm font-medium text-neutral-textSecondary">
+        {title}
+      </div>
+      <div className="text-3xl font-bold text-neutral-text mt-1">
         {formatValue(value)}
       </div>
       {previousValue > 0 && (
         <div
-          className={`text-sm mt-2 ${isPositive ? "text-green-600" : "text-red-600"}`}
+          className={`text-sm mt-2 ${isPositive ? "text-status-success" : "text-status-error"}`}
         >
           {isPositive ? "↑" : "↓"} {Math.abs(change)}% vs last year
         </div>
@@ -581,13 +582,15 @@ function ComparisonRow({
 
   return (
     <tr className="border-b last:border-b-0">
-      <td className="py-3 px-4 text-gray-700">{label}</td>
-      <td className="py-3 px-4 text-right text-gray-500">{format(previous)}</td>
-      <td className="py-3 px-4 text-right font-medium text-gray-900">
+      <td className="py-3 px-4 text-neutral-text">{label}</td>
+      <td className="py-3 px-4 text-right text-neutral-textSecondary">
+        {format(previous)}
+      </td>
+      <td className="py-3 px-4 text-right font-medium text-neutral-text">
         {format(current)}
       </td>
       <td
-        className={`py-3 px-4 text-right ${isPositive ? "text-green-600" : "text-red-600"}`}
+        className={`py-3 px-4 text-right ${isPositive ? "text-status-success" : "text-status-error"}`}
       >
         {isPositive ? "+" : ""}
         {change}%
