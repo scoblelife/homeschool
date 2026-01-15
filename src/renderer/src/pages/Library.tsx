@@ -28,8 +28,16 @@ const statusLabels: Record<
     color: "text-gray-600",
     bg: "bg-gray-100",
   },
-  reading: { label: "Reading", color: "text-blue-600", bg: "bg-blue-100" },
-  finished: { label: "Finished", color: "text-green-600", bg: "bg-green-100" },
+  reading: {
+    label: "Reading",
+    color: "text-student-blue-600",
+    bg: "bg-student-blue-100",
+  },
+  finished: {
+    label: "Finished",
+    color: "text-status-success",
+    bg: "bg-status-successLight",
+  },
 };
 
 function BookCard({
@@ -57,9 +65,9 @@ function BookCard({
     : 0;
 
   return (
-    <div className="group rounded-xl bg-white border border-gray-200 hover:border-fuchsia-200 hover:shadow-lg transition-all duration-200 overflow-hidden">
+    <div className="group rounded-xl bg-white border border-gray-200 hover:border-brand-primary hover:shadow-lg transition-all duration-200 overflow-hidden">
       {/* Cover Image Section */}
-      <div className="relative aspect-[3/4] bg-gradient-to-br from-fuchsia-100 via-purple-50 to-pink-100">
+      <div className="relative aspect-[3/4] bg-gradient-to-br from-brand-primaryLight via-student-purple-50 to-student-fuchsia-100">
         {book.coverImagePath ? (
           <img
             src={`file://${book.coverImagePath}`}
@@ -139,13 +147,14 @@ function BookCard({
                 cy="16"
                 r="12"
                 fill="none"
-                stroke="#6366f1"
+                stroke="currentColor"
+                className="text-brand-primary"
                 strokeWidth="3"
                 strokeDasharray={`${progressPercent * 0.754} 100`}
                 strokeLinecap="round"
               />
             </svg>
-            <span className="absolute text-[10px] font-bold text-fuchsia-600">
+            <span className="absolute text-[10px] font-bold text-brand-primary">
               {progressPercent}%
             </span>
           </div>
@@ -178,7 +187,7 @@ function BookCard({
             <span className="text-xs text-gray-400">{book.genre}</span>
           )}
           {book.readingLevel && (
-            <span className="text-xs px-1.5 py-0.5 bg-fuchsia-50 text-fuchsia-600 rounded">
+            <span className="text-xs px-1.5 py-0.5 bg-brand-primaryLight text-brand-primary rounded">
               {book.readingLevel}
             </span>
           )}
@@ -196,7 +205,9 @@ function BookCard({
                 <div className="w-full bg-gray-100 rounded-full h-1.5">
                   <div
                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                      status === "finished" ? "bg-green-500" : "bg-fuchsia-500"
+                      status === "finished"
+                        ? "bg-status-success"
+                        : "bg-brand-primary"
                     }`}
                     style={{ width: `${progressPercent}%` }}
                   />
@@ -210,7 +221,7 @@ function BookCard({
                 onChange={(e) =>
                   onUpdateProgress({ status: e.target.value as ReadingStatus })
                 }
-                className="text-xs border-0 bg-gray-100 rounded-lg px-2 py-1.5 text-gray-700 focus:ring-2 focus:ring-fuchsia-500"
+                className="text-xs border-0 bg-gray-100 rounded-lg px-2 py-1.5 text-gray-700 focus:ring-2 focus:ring-brand-primary"
               >
                 <option value="not_started">Not Started</option>
                 <option value="reading">Reading</option>
@@ -256,7 +267,7 @@ function BookCard({
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => setShowMenu(false)}
-                        className="w-full px-3 py-1.5 text-left text-sm text-fuchsia-600 hover:bg-fuchsia-50 flex items-center gap-1"
+                        className="w-full px-3 py-1.5 text-left text-sm text-brand-primary hover:bg-brand-primaryLight flex items-center gap-1"
                       >
                         Goodreads
                         <svg
@@ -278,7 +289,7 @@ function BookCard({
                           onDelete();
                           setShowMenu(false);
                         }}
-                        className="w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50"
+                        className="w-full px-3 py-1.5 text-left text-sm text-status-error hover:bg-status-errorLight"
                       >
                         Delete
                       </button>
@@ -458,25 +469,25 @@ export default function Library(): JSX.Element {
   };
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Library</h1>
-          {selectedStudent && (
-            <p className="text-sm text-gray-500 mt-1">
-              {selectedStudent.name}'s Reading Progress
-            </p>
-          )}
-        </div>
-        <div className="flex gap-3">
-          <Button variant="secondary" onClick={() => setShowScanner(true)}>
-            Scan Books
-          </Button>
-          <Button variant="primary" onClick={openAddModal}>
-            + Add Book
-          </Button>
-        </div>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Library"
+        subtitle={
+          selectedStudent
+            ? `${selectedStudent.name}'s Reading Progress`
+            : undefined
+        }
+        action={
+          <div className="flex gap-3">
+            <Button variant="secondary" onClick={() => setShowScanner(true)}>
+              Scan Books
+            </Button>
+            <Button variant="primary" onClick={openAddModal}>
+              + Add Book
+            </Button>
+          </div>
+        }
+      />
       {/* Stats */}
       {selectedStudentId && (
         <Card className="mb-6">
@@ -488,13 +499,13 @@ export default function Library(): JSX.Element {
               <div className="text-sm text-gray-500">Total Books</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-2xl font-bold text-status-success">
                 {stats.finished}
               </div>
               <div className="text-sm text-gray-500">Finished</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-2xl font-bold text-student-blue-600">
                 {stats.reading}
               </div>
               <div className="text-sm text-gray-500">Reading</div>
@@ -529,7 +540,7 @@ export default function Library(): JSX.Element {
                 onClick={() => setFilterStatus(status)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   filterStatus === status
-                    ? "bg-fuchsia-100 text-fuchsia-700"
+                    ? "bg-brand-primaryLight text-brand-primary"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -587,7 +598,9 @@ export default function Library(): JSX.Element {
 
             <form onSubmit={handleSubmitBook} className="space-y-4">
               <div>
-                <label className="label">Title *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title *
+                </label>
                 <Input
                   type="text"
                   value={formData.title}
@@ -599,7 +612,9 @@ export default function Library(): JSX.Element {
               </div>
 
               <div>
-                <label className="label">Author</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Author
+                </label>
                 <Input
                   type="text"
                   value={formData.author}
@@ -611,7 +626,9 @@ export default function Library(): JSX.Element {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label">Total Pages</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Total Pages
+                  </label>
                   <Input
                     type="number"
                     value={formData.totalPages || ""}
@@ -628,7 +645,9 @@ export default function Library(): JSX.Element {
                 </div>
 
                 <div>
-                  <label className="label">Reading Level</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Reading Level
+                  </label>
                   <Input
                     type="text"
                     value={formData.readingLevel}
@@ -642,7 +661,9 @@ export default function Library(): JSX.Element {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label">Genre</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Genre
+                  </label>
                   <Input
                     type="text"
                     value={formData.genre}
@@ -654,7 +675,9 @@ export default function Library(): JSX.Element {
                 </div>
 
                 <div>
-                  <label className="label">ISBN</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    ISBN
+                  </label>
                   <Input
                     type="text"
                     value={formData.isbn}
@@ -666,13 +689,15 @@ export default function Library(): JSX.Element {
               </div>
 
               <div>
-                <label className="label">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notes
+                </label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="input"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
                   rows={2}
                 />
               </div>
@@ -723,7 +748,9 @@ export default function Library(): JSX.Element {
                 </div>
 
                 <div>
-                  <label className="label">Pages Read</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Pages Read
+                  </label>
                   <Input
                     type="number"
                     value={logPagesRead}
@@ -735,11 +762,13 @@ export default function Library(): JSX.Element {
                 </div>
 
                 <div>
-                  <label className="label">Notes (optional)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Notes (optional)
+                  </label>
                   <textarea
                     value={logNotes}
                     onChange={(e) => setLogNotes(e.target.value)}
-                    className="input"
+                    className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
                     rows={2}
                     placeholder="What happened in the story? New words learned?"
                   />
@@ -768,6 +797,6 @@ export default function Library(): JSX.Element {
         onClose={() => setShowScanner(false)}
         onBookAdded={() => loadBooks()}
       />
-    </div>
+    </PageContainer>
   );
 }
