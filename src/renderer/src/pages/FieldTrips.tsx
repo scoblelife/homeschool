@@ -47,11 +47,15 @@ const statusLabels: Record<
   FieldTripStatus,
   { label: string; color: string; bg: string }
 > = {
-  planned: { label: "Planned", color: "text-blue-600", bg: "bg-blue-100" },
+  planned: {
+    label: "Planned",
+    color: "text-student-blue-600",
+    bg: "bg-student-blue-100",
+  },
   completed: {
     label: "Completed",
-    color: "text-green-600",
-    bg: "bg-green-100",
+    color: "text-status-success",
+    bg: "bg-status-successLight",
   },
   cancelled: { label: "Cancelled", color: "text-gray-600", bg: "bg-gray-100" },
 };
@@ -63,32 +67,32 @@ const activityTypeConfig: Record<
   field_trip: {
     icon: "🚌",
     label: "Field Trip",
-    color: "text-amber-700",
-    bg: "bg-amber-100",
+    color: "text-status-warning",
+    bg: "bg-status-warningLight",
   },
   park_day: {
     icon: "🌳",
     label: "Park Day",
-    color: "text-green-700",
-    bg: "bg-green-100",
+    color: "text-status-successDark",
+    bg: "bg-status-successLight",
   },
   game_night: {
     icon: "🎲",
     label: "Game Night",
-    color: "text-purple-700",
-    bg: "bg-purple-100",
+    color: "text-student-purple-700",
+    bg: "bg-student-purple-100",
   },
   playdate: {
     icon: "👋",
     label: "Playdate",
-    color: "text-pink-700",
-    bg: "bg-pink-100",
+    color: "text-student-fuchsia-700",
+    bg: "bg-student-fuchsia-100",
   },
   coop_class: {
     icon: "📚",
     label: "Co-op Class",
-    color: "text-blue-700",
-    bg: "bg-blue-100",
+    color: "text-student-blue-700",
+    bg: "bg-student-blue-100",
   },
   custom: {
     icon: "📅",
@@ -118,11 +122,19 @@ const rsvpStatusLabels: Record<
   invited: { label: "Invited", color: "text-gray-600", bg: "bg-gray-100" },
   confirmed: {
     label: "Confirmed",
-    color: "text-green-600",
-    bg: "bg-green-100",
+    color: "text-status-success",
+    bg: "bg-status-successLight",
   },
-  declined: { label: "Declined", color: "text-red-600", bg: "bg-red-100" },
-  maybe: { label: "Maybe", color: "text-amber-600", bg: "bg-amber-100" },
+  declined: {
+    label: "Declined",
+    color: "text-status-error",
+    bg: "bg-status-errorLight",
+  },
+  maybe: {
+    label: "Maybe",
+    color: "text-status-warning",
+    bg: "bg-status-warningLight",
+  },
 };
 
 // Activity types that show RSVP section (group events)
@@ -304,12 +316,12 @@ function FieldTripCard({
     <div
       className={`p-4 rounded-lg border-l-4 ${
         trip.status === "completed"
-          ? "bg-green-50 border-l-green-500"
+          ? "bg-status-successLight border-l-status-success"
           : trip.status === "cancelled"
             ? "bg-gray-50 border-l-gray-300"
             : isUpcoming
-              ? "bg-blue-50 border-l-blue-500"
-              : "bg-amber-50 border-l-amber-500"
+              ? "bg-student-blue-50 border-l-student-blue-500"
+              : "bg-status-warningLight border-l-status-warning"
       }`}
     >
       <div className="flex items-start justify-between gap-4">
@@ -358,7 +370,7 @@ function FieldTripCard({
             {tripStudents.map((student) => (
               <span
                 key={student.id}
-                className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700"
+                className="text-xs px-2 py-0.5 rounded-full bg-student-purple-100 text-student-purple-700"
               >
                 {student.name}
               </span>
@@ -370,7 +382,7 @@ function FieldTripCard({
             {tripSubjects.map((subject) => (
               <span
                 key={subject.id}
-                className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-700"
+                className="text-xs px-2 py-0.5 rounded-full bg-brand-primaryLight text-brand-primaryDark"
               >
                 {subject.name}
               </span>
@@ -383,7 +395,7 @@ function FieldTripCard({
               href={trip.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-2 text-sm text-blue-600 hover:underline"
+              className="inline-block mt-2 text-sm text-student-blue-600 hover:underline"
               onClick={(e) => e.stopPropagation()}
             >
               🔗 Visit Website
@@ -407,7 +419,7 @@ function FieldTripCard({
 
           {/* Alert for past unfinished activities */}
           {isPastTrip && trip.status === "planned" && (
-            <p className="text-sm text-amber-600 mt-2">
+            <p className="text-sm text-status-warning mt-2">
               ⚠️ This activity date has passed. Update the status to completed
               or cancelled.
             </p>
@@ -425,7 +437,7 @@ function FieldTripCard({
             {tasks.length > 0 && (
               <div className="flex-1 max-w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-green-500 transition-all"
+                  className="h-full bg-status-success transition-all"
                   style={{
                     width: `${tasks.length > 0 ? (tasks.filter((t) => t.completedAt).length / tasks.length) * 100 : 0}%`,
                   }}
@@ -447,7 +459,7 @@ function FieldTripCard({
           </select>
           <button
             onClick={onEdit}
-            className="text-fuchsia-600 hover:text-fuchsia-700 text-sm"
+            className="text-brand-primary hover:text-brand-primaryDark text-sm"
           >
             Edit
           </button>
@@ -562,7 +574,7 @@ function FieldTripCard({
               </div>
               <button
                 onClick={() => setShowContactForm(!showContactForm)}
-                className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
+                className="text-xs text-brand-primary hover:text-brand-primaryDark"
               >
                 {showContactForm ? "Cancel" : "+ Add"}
               </button>
@@ -672,7 +684,7 @@ function FieldTripCard({
                           📞{" "}
                           <a
                             href={`tel:${contact.phone}`}
-                            className="hover:text-fuchsia-600"
+                            className="hover:text-brand-primary"
                           >
                             {contact.phone}
                           </a>
@@ -683,7 +695,7 @@ function FieldTripCard({
                           ✉️{" "}
                           <a
                             href={`mailto:${contact.email}`}
-                            className="hover:text-fuchsia-600"
+                            className="hover:text-brand-primary"
                           >
                             {contact.email}
                           </a>
@@ -698,7 +710,7 @@ function FieldTripCard({
                                 href={contact.notes}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="hover:text-fuchsia-600"
+                                className="hover:text-brand-primary"
                               >
                                 {contact.notes}
                               </a>
@@ -736,7 +748,7 @@ function FieldTripCard({
                 </div>
                 <button
                   onClick={() => setShowRSVPForm(!showRSVPForm)}
-                  className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
+                  className="text-xs text-brand-primary hover:text-brand-primaryDark"
                 >
                   {showRSVPForm ? "Cancel" : "+ Add"}
                 </button>
@@ -850,7 +862,7 @@ function FieldTripCard({
               </div>
               <button
                 onClick={() => setShowExpenseForm(!showExpenseForm)}
-                className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
+                className="text-xs text-brand-primary hover:text-brand-primaryDark"
               >
                 {showExpenseForm ? "Cancel" : "+ Add"}
               </button>
@@ -1361,19 +1373,19 @@ export default function FieldTrips(): JSX.Element {
             <div className="text-sm text-gray-500">Total Activities</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-student-blue-600">
               {stats.upcoming}
             </div>
             <div className="text-sm text-gray-500">Upcoming</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-status-success">
               {stats.completed}
             </div>
             <div className="text-sm text-gray-500">Completed</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-amber-600">
+            <div className="text-2xl font-bold text-status-warning">
               {stats.planned}
             </div>
             <div className="text-sm text-gray-500">Planned</div>
@@ -1389,7 +1401,7 @@ export default function FieldTrips(): JSX.Element {
               onClick={() => setFilterStatus(status)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 filterStatus === status
-                  ? "bg-fuchsia-100 text-fuchsia-700"
+                  ? "bg-brand-primaryLight text-brand-primaryDark"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -1476,7 +1488,9 @@ export default function FieldTrips(): JSX.Element {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Activity Type Selector */}
           <div>
-            <label className="label">Activity Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Activity Type
+            </label>
             <div className="grid grid-cols-3 gap-2">
               {(
                 Object.entries(activityTypeConfig) as [
@@ -1504,7 +1518,9 @@ export default function FieldTrips(): JSX.Element {
           </div>
 
           <div>
-            <label className="label">Title *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Title *
+            </label>
             <Input
               type="text"
               value={formData.title}
@@ -1517,7 +1533,9 @@ export default function FieldTrips(): JSX.Element {
           </div>
 
           <div>
-            <label className="label">Location *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Location *
+            </label>
             <Input
               type="text"
               value={formData.location}
@@ -1531,7 +1549,9 @@ export default function FieldTrips(): JSX.Element {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">Date *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date *
+              </label>
               <Input
                 type="date"
                 value={formData.date}
@@ -1543,7 +1563,9 @@ export default function FieldTrips(): JSX.Element {
             </div>
 
             <div>
-              <label className="label">Estimated Cost</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Estimated Cost
+              </label>
               <Input
                 type="number"
                 value={formData.cost || ""}
@@ -1564,7 +1586,9 @@ export default function FieldTrips(): JSX.Element {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">Start Time</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Start Time
+              </label>
               <Input
                 type="time"
                 value={formData.startTime || ""}
@@ -1574,7 +1598,9 @@ export default function FieldTrips(): JSX.Element {
               />
             </div>
             <div>
-              <label className="label">End Time</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                End Time
+              </label>
               <Input
                 type="time"
                 value={formData.endTime || ""}
@@ -1586,7 +1612,9 @@ export default function FieldTrips(): JSX.Element {
           </div>
 
           <div>
-            <label className="label">Students *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Students *
+            </label>
             <div className="flex flex-wrap gap-2">
               {students.map((student) => (
                 <button
@@ -1595,7 +1623,7 @@ export default function FieldTrips(): JSX.Element {
                   onClick={() => toggleStudentSelection(student.id)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     formData.studentIds.includes(student.id)
-                      ? "bg-purple-100 text-purple-700 ring-2 ring-purple-500"
+                      ? "bg-student-purple-100 text-student-purple-700 ring-2 ring-student-purple-500"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
@@ -1606,7 +1634,9 @@ export default function FieldTrips(): JSX.Element {
           </div>
 
           <div>
-            <label className="label">Related Subjects</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Related Subjects
+            </label>
             <div className="flex flex-wrap gap-2">
               {subjects.map((subject) => (
                 <button
@@ -1615,7 +1645,7 @@ export default function FieldTrips(): JSX.Element {
                   onClick={() => toggleSubjectSelection(subject.id)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     formData.subjectIds.includes(subject.id)
-                      ? "bg-fuchsia-100 text-fuchsia-700 ring-2 ring-fuchsia-500"
+                      ? "bg-brand-primaryLight text-brand-primaryDark ring-2 ring-brand-primary"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
@@ -1626,7 +1656,9 @@ export default function FieldTrips(): JSX.Element {
           </div>
 
           <div>
-            <label className="label">Website URL</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Website URL
+            </label>
             <Input
               type="url"
               value={formData.websiteUrl}
@@ -1638,13 +1670,15 @@ export default function FieldTrips(): JSX.Element {
           </div>
 
           <div>
-            <label className="label">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
             <textarea
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="input"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
               rows={2}
               placeholder="What will you see/do?"
             />
@@ -1652,7 +1686,9 @@ export default function FieldTrips(): JSX.Element {
 
           {editingTrip && (
             <div>
-              <label className="label">Learning Outcomes</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Learning Outcomes
+              </label>
               <textarea
                 value={formData.learningOutcomes}
                 onChange={(e) =>
@@ -1666,13 +1702,15 @@ export default function FieldTrips(): JSX.Element {
           )}
 
           <div>
-            <label className="label">Notes</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Notes
+            </label>
             <textarea
               value={formData.notes}
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
-              className="input"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
               rows={2}
               placeholder="Parking info, what to bring, etc."
             />
@@ -1710,7 +1748,9 @@ export default function FieldTrips(): JSX.Element {
             </p>
 
             <div>
-              <label className="label">New Date *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                New Date *
+              </label>
               <Input
                 type="date"
                 value={duplicateDate}
@@ -1720,13 +1760,15 @@ export default function FieldTrips(): JSX.Element {
             </div>
 
             <div className="space-y-2">
-              <label className="label">Copy Options</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Copy Options
+              </label>
               <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
                   checked={duplicateCopyTasks}
                   onChange={(e) => setDuplicateCopyTasks(e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 text-student-blue-600 focus:ring-student-blue-500"
                 />
                 <span>Copy tasks (will be reset to incomplete)</span>
               </label>
@@ -1735,7 +1777,7 @@ export default function FieldTrips(): JSX.Element {
                   type="checkbox"
                   checked={duplicateCopyContacts}
                   onChange={(e) => setDuplicateCopyContacts(e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 text-student-blue-600 focus:ring-student-blue-500"
                 />
                 <span>Copy contacts</span>
               </label>
