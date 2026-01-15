@@ -23,6 +23,13 @@ function getCurrentWeekStart(): Date {
   return startOfWeek(new Date(), { weekStartsOn: 1 })
 }
 
+/**
+ * Render the weekly planner UI for the currently selected student and manage weekly planning, resources, and calendar synchronization.
+ *
+ * Loads and displays the student's milestones for the selected week, provides controls to add/remove milestones, manage resources, auto-suggest a weekly plan, navigate weeks, print the plan, and sync milestones with Google Calendar.
+ *
+ * @returns The rendered Weekly Planner React element
+ */
 export default function WeeklyPlanner(): JSX.Element {
   const { selectedStudentId, getSelectedStudent, getSubjectById } = useStore()
   const { milestones, isLoading: milestonesLoading } = useMilestones(selectedStudentId ?? undefined)

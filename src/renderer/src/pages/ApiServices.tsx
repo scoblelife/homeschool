@@ -14,6 +14,16 @@ interface ServiceStatus {
   message?: string
 }
 
+/**
+ * Render the API Services settings UI for managing AI (Claude) and Google Calendar integrations.
+ *
+ * The component displays service status cards, controls to add/update/remove an AI API key,
+ * enable/disable and test the AI integration, clear AI cache, and configure/connect/disconnect
+ * Google OAuth credentials. It also includes modals for entering the Claude API key and
+ * Google OAuth client credentials and shows contextual status messages and action buttons.
+ *
+ * @returns The settings UI as a JSX element containing status panels, action controls, and modals.
+ */
 export default function ApiServices(): JSX.Element {
   // AI Service state
   const [aiConfig, setAIConfig] = useState<AIConfig | null>(null)

@@ -42,6 +42,11 @@ const subjectLabels: Record<string, string> = {
   'writing': 'Writing'
 }
 
+/**
+ * Top-level Content Library page that renders the header, tab navigation, and the selected tab's content for managing milestone templates, curriculum packages, educational resources, and learning standards.
+ *
+ * @returns The React element for the Content Library page.
+ */
 export default function ContentLibrary() {
   const [activeTab, setActiveTab] = useState<TabType>('milestones')
 
@@ -93,6 +98,16 @@ export default function ContentLibrary() {
   )
 }
 
+/**
+ * Renders a tab-style button with an icon, label, and optional numeric badge.
+ *
+ * @param active - Whether the tab is currently active (applies active styling).
+ * @param onClick - Click handler invoked when the tab is selected.
+ * @param icon - Icon content to display before the label.
+ * @param label - Visible text label for the tab.
+ * @param count - Optional number shown as a small badge next to the label.
+ * @returns The tab button element.
+ */
 function TabButton({
   active,
   onClick,
@@ -130,7 +145,14 @@ function TabButton({
 
 // =============================================================================
 // MILESTONE TEMPLATES TAB
-// =============================================================================
+/**
+ * Render the Milestone Templates tab with search, filters, stats, and grouped milestone cards.
+ *
+ * Displays grade, subject, and category filters (with dependent resets), a search box, total and shown counts,
+ * and milestone templates grouped by category. Shows an empty state when no milestones match the active filters.
+ *
+ * @returns The rendered tab content as a JSX element.
+ */
 
 function MilestoneTemplatesTab() {
   const [gradeFilter, setGradeFilter] = useState<GradeLevel | 'all'>('all')
@@ -289,6 +311,14 @@ function MilestoneTemplatesTab() {
   )
 }
 
+/**
+ * Render a card showing a milestone template's grade, subject, title, description, and optional resources.
+ *
+ * When the milestone includes resources, the card provides a control to show or hide links to those resources.
+ *
+ * @param milestone - Milestone template data containing `title`, `description`, `gradeLevel`, `subjectId`, and optional `resources` (each with `title` and `url`)
+ * @returns The JSX element for the milestone card
+ */
 function MilestoneCard({ milestone }: { milestone: MilestoneTemplateData }) {
   const [expanded, setExpanded] = useState(false)
 
@@ -338,7 +368,13 @@ function MilestoneCard({ milestone }: { milestone: MilestoneTemplateData }) {
 
 // =============================================================================
 // CURRICULUM PACKAGES TAB
-// =============================================================================
+/**
+ * Render the Curriculum Packages tab UI that lists available curriculum packages and provides search, add, and delete capabilities.
+ *
+ * Fetches curriculum packages, shows an interactive searchable list of PackageCard entries (with an empty state when none or no matches), and exposes an Add Package modal and per-package deletion.
+ *
+ * @returns The JSX element representing the Curriculum Packages tab.
+ */
 
 function CurriculumPackagesTab() {
   const [packages, setPackages] = useState<CurriculumPackage[]>([])
@@ -451,6 +487,14 @@ function CurriculumPackagesTab() {
   )
 }
 
+/**
+ * Render a visual card for a curriculum package showing its name, publisher, status,
+ * subjects, grade levels, optional notes, and website link, and providing a delete action.
+ *
+ * @param package - The curriculum package to display (includes name, publisher, isActive, subjectIds, gradeLevels, notes, and websiteUrl).
+ * @param onDelete - Callback invoked when the Delete action is triggered.
+ * @returns A React element representing the package card.
+ */
 function PackageCard({ package: pkg, onDelete }: { package: CurriculumPackage; onDelete: () => void }) {
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
@@ -511,6 +555,18 @@ function PackageCard({ package: pkg, onDelete }: { package: CurriculumPackage; o
   )
 }
 
+/**
+ * Render a modal dialog allowing the user to create a new curriculum package.
+ *
+ * The modal collects name, publisher, website, subjects, grade levels, and notes;
+ * it resets its form fields each time it is opened. Submitting with a non-empty
+ * name creates the package via the app API and invokes `onSuccess` on success.
+ *
+ * @param isOpen - Whether the modal is visible
+ * @param onClose - Callback invoked to request closing the modal
+ * @param onSuccess - Callback invoked after a package is successfully created
+ * @returns The Add Package modal component UI
+ */
 function AddPackageModal({
   isOpen,
   onClose,
@@ -701,7 +757,14 @@ function AddPackageModal({
 
 // =============================================================================
 // RESOURCES TAB
-// =============================================================================
+/**
+ * Renders the Educational Resources tab with searchable and filterable resource listings.
+ *
+ * Displays a descriptive about box, controls to filter by subject and category and to search by name/description,
+ * counts for total and shown resources, and either an empty state or a responsive grid of ResourceCard entries.
+ *
+ * @returns The tab's JSX element containing filters, statistics, and a grid or empty state of resource cards.
+ */
 
 function ResourcesTab() {
   const resources = LEARNING_RESOURCES
@@ -810,6 +873,14 @@ function ResourcesTab() {
   )
 }
 
+/**
+ * Render a link-styled card for a learning resource.
+ *
+ * Shows the resource name, primary subject, free/paid badge, description, and grade levels; clicking the card opens the resource URL in a new tab.
+ *
+ * @param resource - The learning resource to display in the card
+ * @returns A JSX element representing the resource card that links to the resource's URL
+ */
 function ResourceCard({ resource }: { resource: LearningResource }) {
   return (
     <a
@@ -844,7 +915,14 @@ function ResourceCard({ resource }: { resource: LearningResource }) {
 
 // =============================================================================
 // STANDARDS TAB
-// =============================================================================
+/**
+ * UI tab that displays learning standards with search, grade and subject filters, and grouping by domain.
+ *
+ * Fetches all standards when mounted, shows a loading state while fetching, and renders stats, filter controls,
+ * and standards grouped by their domain. Shows an empty state when no standards match the active filters.
+ *
+ * @returns A JSX element containing the Learning Standards tab UI (filters, stats, and grouped standards list).
+ */
 
 function StandardsTab() {
   const [standards, setStandards] = useState<LearningStandard[]>([])
@@ -854,6 +932,12 @@ function StandardsTab() {
   const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
+    /**
+     * Load learning standards from the API and update component state with the results.
+     *
+     * On success, updates the standards state; on failure, logs the error to the console.
+     * Always clears the loading flag when finished.
+     */
     async function load() {
       try {
         const data = await window.api.getAllStandards()
@@ -1014,7 +1098,11 @@ function StandardsTab() {
 
 // =============================================================================
 // ICONS
-// =============================================================================
+/**
+ * Renders a magnifying-glass (search) SVG icon.
+ *
+ * @returns The SVG element for a search icon.
+ */
 
 function SearchIcon({ className }: { className?: string }) {
   return (
@@ -1024,6 +1112,12 @@ function SearchIcon({ className }: { className?: string }) {
   )
 }
 
+/**
+ * SVG icon representing a package (box).
+ *
+ * @param className - Optional CSS class applied to the root SVG element to control sizing or styling.
+ * @returns The SVG element for a package icon.
+ */
 function PackageIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">

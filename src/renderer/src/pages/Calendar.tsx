@@ -66,6 +66,16 @@ function getInitialMonth(): Date {
   return new Date()
 }
 
+/**
+ * Render an interactive month calendar with day details, event listings, and an activity log UI.
+ *
+ * The component displays a full monthly calendar grid, allows navigating months and selecting a date,
+ * and shows sessions, activities, field trips, and external "busy" calendar events for the selected date.
+ * It loads data for the visible month scoped to the currently selected student (if any), persists the selected
+ * date to localStorage, and provides controls to add and delete activities.
+ *
+ * @returns The calendar user interface as a JSX element.
+ */
 export default function Calendar(): JSX.Element {
   const { students, subjects, selectedStudentId, getStudentById, getSubjectById } = useStore()
   const [currentMonth, setCurrentMonth] = useState(getInitialMonth)

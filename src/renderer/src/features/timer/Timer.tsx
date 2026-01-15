@@ -16,6 +16,15 @@ interface TimerProps {
   onSessionSaved?: (activityId: string) => void
 }
 
+/**
+ * Render a session timer UI that lets the user start, pause, resume, stop, and save timed learning sessions.
+ *
+ * The component displays elapsed time, session metadata (student, subject, optional title), controls for timer
+ * actions, and modal dialogs to start a session or save/discard a completed session.
+ *
+ * @param onSessionSaved - Optional callback invoked after a timed session is successfully saved; receives the created activity's `id`.
+ * @returns The Session Timer React element.
+ */
 export function Timer({ onSessionSaved }: TimerProps) {
   const { activeSession, isPaused, startTimer, stopTimer, pauseTimer, resumeTimer, clearTimer, getElapsedTime } =
     useTimerStore()

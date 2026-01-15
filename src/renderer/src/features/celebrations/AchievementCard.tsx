@@ -20,6 +20,15 @@ interface AchievementCardProps {
   studentName: string
 }
 
+/**
+ * Render an achievement card that displays a student's aggregate stats, recent unlocked achievements, and a modal to view all achievements.
+ *
+ * Loads activity and book stats for the given student on mount or when `studentId` changes, updates achievement checks based on those totals, and shows a transient unlock notification when a new achievement appears.
+ *
+ * @param studentId - Identifier of the student whose achievements and stats should be loaded
+ * @param studentName - Display name used in the achievements modal and shareable card
+ * @returns A JSX element containing the achievements overview (stats grid, recent badges), an unlock notification/confetti when applicable, and the full Achievement modal viewer
+ */
 export function AchievementCard({ studentId, studentName }: AchievementCardProps): JSX.Element {
   const [showModal, setShowModal] = useState(false)
   const [stats, setStats] = useState<{ totalHours: number; totalActivities: number; booksFinished: number }>({
@@ -155,6 +164,21 @@ interface AchievementModalProps {
   stats: { totalHours: number; totalActivities: number; booksFinished: number }
 }
 
+/**
+ * Render a modal dialog showing a student's achievements grouped by category.
+ *
+ * The modal lists all achievement definitions by category (Learning Hours, Activities, Books Read),
+ * indicates which achievements are unlocked, shows progress toward locked achievements with a progress bar,
+ * and displays unlocked timestamps where available. Includes a header with the student's name and unlocked count,
+ * and a Close action that calls `onClose`.
+ *
+ * @param open - Whether the modal is visible
+ * @param onClose - Callback invoked to close the modal
+ * @param studentName - Display name included in the modal header
+ * @param unlocked - Array of unlocked achievements for the student (used to mark items as unlocked and show unlock dates)
+ * @param stats - Current aggregated stats: `totalHours`, `totalActivities`, and `booksFinished` used to compute progress
+ * @returns The JSX element for the achievements modal
+ */
 function AchievementModal({
   open,
   onClose,

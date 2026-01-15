@@ -17,6 +17,13 @@ const sourceTypeInfo: Record<ExternalSourceType, { label: string; icon: string; 
   manual: { label: 'Manual Entry', icon: 'pen', description: 'Manually add events as you find them' }
 }
 
+/**
+ * Render the External Sources management UI for viewing, adding, deleting, and importing external event sources and their events.
+ *
+ * The component fetches sources and events, shows loading state, displays per-source event lists, and exposes modals to add sources, add events (for manual sources), and import events into field trips for selected students.
+ *
+ * @returns The rendered React element tree for the ExternalSources interface.
+ */
 export function ExternalSources() {
   const { students } = useStore()
   const [sources, setSources] = useState<ExternalEventSource[]>([])

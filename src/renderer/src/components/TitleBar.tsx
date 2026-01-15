@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react'
 
+/**
+ * Render a platform-aware draggable title bar with window control buttons.
+ *
+ * On mount the component queries the host platform and current maximized state,
+ * polls the maximized state periodically, and exposes handlers that call `window.api`
+ * to minimize, maximize/restore, and close the window. The layout adapts for macOS
+ * (left-side traffic-light area) versus Windows/Linux (right-side control buttons).
+ *
+ * @returns The JSX element for the title bar.
+ */
 export function TitleBar(): JSX.Element {
   const [platform, setPlatform] = useState<string>('darwin')
   const [isMaximized, setIsMaximized] = useState(false)

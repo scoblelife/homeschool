@@ -29,6 +29,12 @@ interface SyncRow {
   synced_at: string
 }
 
+/**
+ * Convert a database `SyncRow` (snake_case) into a `CalendarSyncRecord` (camelCase).
+ *
+ * @param row - The database row containing calendar sync fields in snake_case
+ * @returns A `CalendarSyncRecord` with fields mapped to camelCase (`studentId` may be `null`)
+ */
 function rowToSyncRecord(row: SyncRow): CalendarSyncRecord {
   return {
     id: row.id,
@@ -42,7 +48,10 @@ function rowToSyncRecord(row: SyncRow): CalendarSyncRecord {
 }
 
 /**
- * Get sync record for a milestone in a specific week for a student
+ * Retrieve the calendar sync record for a given milestone and week, optionally scoped to a student.
+ *
+ * @param studentId - If provided, limits the lookup to the specified student's record
+ * @returns A CalendarSyncRecord for the matching milestone and week, or `null` if none exists
  */
 export async function getSyncRecord(
   milestoneId: string,
@@ -66,7 +75,13 @@ export async function getSyncRecord(
 }
 
 /**
- * Get all sync records for a week, optionally filtered by student
+ * Retrieve calendar sync records for a given week.
+ *
+ * If `studentId` is provided, only records for that student are returned.
+ *
+ * @param weekStart - The week start value used to match `week_start` in the database
+ * @param studentId - Optional student identifier to scope the query; when omitted, records for all students are returned
+ * @returns An array of `CalendarSyncRecord` objects matching the specified week (and student when provided)
  */
 export async function getSyncRecordsForWeek(
   weekStart: string,
@@ -87,7 +102,12 @@ export async function getSyncRecordsForWeek(
 }
 
 /**
- * Create or update sync record
+ * Create or update a calendar synchronization record for a milestone and week.
+ *
+ * If a record exists (matching `milestoneId`, `weekStart`, and `studentId` when provided), updates its event, calendar, and `syncedAt`; otherwise inserts a new record.
+ *
+ * @param studentId - Optional student identifier; when omitted the record's `studentId` is stored as `null` and matching/upsert is not scoped to a particular student.
+ * @returns The calendar sync record reflecting the stored fields, with `syncedAt` set to the current timestamp.
  */
 export async function upsertSyncRecord(
   milestoneId: string,
@@ -141,7 +161,11 @@ export async function upsertSyncRecord(
 }
 
 /**
- * Delete sync record
+ * Delete the calendar_sync entry for a specific milestone and week.
+ *
+ * @param milestoneId - Identifier of the milestone to delete the sync for
+ * @param weekStart - Week start value used to locate the sync entry
+ * @param studentId - Optional student identifier; if provided, only the record for that student will be deleted
  */
 export async function deleteSyncRecord(
   milestoneId: string,

@@ -14,8 +14,12 @@ export interface SharedContent {
 const APP_GROUP = 'group.com.scoblelife.homeschool';
 
 /**
- * Check if there is pending shared content from the share extension
- * Call this when the app launches or becomes active
+ * Detects any pending content delivered to the app by a share extension.
+ *
+ * If found, the function reads platform-specific pending share data (iOS/Android)
+ * and may clear that pending data so it won't be returned again.
+ *
+ * @returns `SharedContent` if pending shared content was found, `null` otherwise.
  */
 export async function checkForSharedContent(): Promise<SharedContent | null> {
   try {
@@ -31,6 +35,13 @@ export async function checkForSharedContent(): Promise<SharedContent | null> {
   }
 }
 
+/**
+ * Checks the iOS app group shared storage for pending shared content and clears it if present.
+ *
+ * Only text content is returned; image data is not handled by this function. Returns `null` when no shared content is available or if an error occurs.
+ *
+ * @returns A `SharedContent` object with an optional `text` property and a `timestamp` expressed in milliseconds since the epoch if content was present; `null` otherwise.
+ */
 async function checkForSharedContentIOS(): Promise<SharedContent | null> {
   try {
     const SharedGroupPreferences = NativeModules.SharedGroupPreferences;
@@ -64,6 +75,13 @@ async function checkForSharedContentIOS(): Promise<SharedContent | null> {
   }
 }
 
+/**
+ * Reads and returns any pending shared content provided by the Android native ShareModule.
+ *
+ * This will clear the pending shared content on the native side after successfully reading it.
+ *
+ * @returns A `SharedContent` object containing `text`, `imageUri`, and `timestamp` when pending content is found; `null` if no pending content exists or an error occurs.
+ */
 async function checkForSharedContentAndroid(): Promise<SharedContent | null> {
   try {
     // On Android, we use AsyncStorage since SharedPreferences with a specific name
@@ -117,8 +135,10 @@ export async function clearSharedContent(): Promise<void> {
 }
 
 /**
- * Handle deep link from share extension
- * Returns true if this was a share deep link
+ * Determine whether an incoming deep link was issued by the share extension.
+ *
+ * @param url - The incoming deep link URL to inspect.
+ * @returns `true` if the URL indicates the app was opened by the share extension (a share deep link), `false` otherwise.
  */
 export async function handleShareDeepLink(url: string): Promise<boolean> {
   if (url.includes('homeschool://share')) {
@@ -130,7 +150,12 @@ export async function handleShareDeepLink(url: string): Promise<boolean> {
 }
 
 /**
- * Set up listener for share deep links
+ * Register a listener that invokes a callback when the app is opened via the share deep link.
+ *
+ * Also checks the initial launch URL so pending shared content is handled when the app starts.
+ *
+ * @param onShareReceived - Callback invoked with the detected `SharedContent` when a share deep link is handled
+ * @returns A cleanup function that removes the URL event listener
  */
 export function setupShareListener(
   onShareReceived: (content: SharedContent) => void

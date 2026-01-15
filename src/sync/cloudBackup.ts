@@ -56,21 +56,33 @@ const AUTH_TAG_LENGTH = 16
 const SALT_LENGTH = 32
 
 /**
- * Generate a secure encryption key
+ * Creates a new random 256-bit encryption key encoded as a 64-character hexadecimal string.
+ *
+ * @returns The generated encryption key as a 64-character hex string (32 bytes / 256 bits)
  */
 export function generateEncryptionKey(): string {
   return crypto.randomBytes(KEY_LENGTH).toString('hex')
 }
 
 /**
- * Derive encryption key from password using PBKDF2
+ * Derives a 256-bit encryption key from a password and salt using PBKDF2 with SHA-256.
+ *
+ * @param password - The passphrase to derive the key from.
+ * @param salt - A Buffer used as the PBKDF2 salt.
+ * @returns A 32-byte Buffer containing the derived 256-bit key.
  */
 export function deriveKeyFromPassword(password: string, salt: Buffer): Buffer {
   return crypto.pbkdf2Sync(password, salt, 100000, KEY_LENGTH, 'sha256')
 }
 
 /**
- * Encrypt data using AES-256-GCM
+ * Encrypts a binary payload using AES-256-GCM and packages it with metadata.
+ *
+ * The returned buffer layout is: 1 byte version, 16 byte IV, 16 byte authentication tag, then ciphertext.
+ *
+ * @param data - Plaintext data to encrypt
+ * @param keyHex - 32-byte encryption key encoded as 64 hex characters
+ * @returns A buffer containing the version, IV, auth tag, and ciphertext in that order
  */
 export function encryptData(data: Buffer, keyHex: string): Buffer {
   const key = Buffer.from(keyHex, 'hex')
@@ -90,7 +102,14 @@ export function encryptData(data: Buffer, keyHex: string): Buffer {
 }
 
 /**
- * Decrypt data using AES-256-GCM
+ * Decrypts an encrypted payload encoded with the module's AES-256-GCM format.
+ *
+ * The encrypted payload must be structured as: [version (1 byte)][IV][authTag][ciphertext].
+ *
+ * @param encryptedData - Buffer containing the version byte, IV, authentication tag, and ciphertext in that order
+ * @param keyHex - Hex-encoded 32-byte (64 hex characters) AES-256 key
+ * @returns The decrypted plaintext as a Buffer
+ * @throws Error if the payload's version byte is not supported
  */
 export function decryptData(encryptedData: Buffer, keyHex: string): Buffer {
   const version = encryptedData[0]
@@ -551,7 +570,9 @@ class CloudBackupService {
 }
 
 /**
- * Get the singleton backup service instance
+ * Retrieve the module's singleton CloudBackupService instance.
+ *
+ * @returns The singleton CloudBackupService used for cloud backups
  */
 export function getCloudBackupService(): CloudBackupService {
   return CloudBackupService.getInstance()

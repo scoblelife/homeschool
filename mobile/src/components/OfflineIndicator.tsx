@@ -19,6 +19,13 @@ import { useIsOnline } from '../hooks/useNetworkStatus'
 import { useColors } from '../theme'
 import { getOfflineQueue, type OfflineStatus } from '../sync'
 
+/**
+ * Displays a top banner indicating offline status or pending queued writes.
+ *
+ * The banner updates its visibility and content based on network connectivity and the offline queue state, animates in and out, and exposes a retry action when a previous sync has failed while online.
+ *
+ * @returns A React element rendering the offline indicator banner.
+ */
 export function OfflineIndicator() {
   const isOnline = useIsOnline()
   const insets = useSafeAreaInsets()

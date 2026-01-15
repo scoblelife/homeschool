@@ -51,6 +51,16 @@ const navItems: NavItem[] = [
   { path: '/annual-report', label: 'Annual Report', icon: '📆' }
 ]
 
+/**
+ * Renders a navigation item that may be a collapsible section with child links.
+ *
+ * Renders either a single NavLink for a leaf item or a button that toggles an expandable list containing an "Overview" link and child NavLinks for items with children. The rendered links reflect the current route as active and apply corresponding styling.
+ *
+ * @param item - The navigation item to render; may include `children` for a collapsible section.
+ * @param expandedSections - Set of parent paths that are currently expanded.
+ * @param toggleSection - Callback to toggle expansion for a parent path.
+ * @returns The JSX element for the navigation item (a NavLink or a collapsible section with nested NavLinks).
+ */
 function NavItemComponent({ item, expandedSections, toggleSection }: {
   item: NavItem
   expandedSections: Set<string>
@@ -140,6 +150,14 @@ function NavItemComponent({ item, expandedSections, toggleSection }: {
   )
 }
 
+/**
+ * Application shell that renders the title bar, sidebar navigation with student selector, and main content outlet.
+ *
+ * Initializes which navigation sections are expanded based on the current route, exposes controls to toggle section expansion,
+ * shows a centered loading state while store data is loading, and synchronizes the selected student with the global store.
+ *
+ * @returns The root JSX layout element containing the TitleBar, a sidebar with navigation and student selector, and an Outlet for route content.
+ */
 export default function MainLayout(): JSX.Element {
   const { students, selectedStudentId, setSelectedStudentId, isLoading } = useStore()
   const navigate = useNavigate()

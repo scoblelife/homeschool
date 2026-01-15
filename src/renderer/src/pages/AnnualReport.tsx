@@ -25,6 +25,13 @@ interface YearlyStats {
   monthlyData: MonthlyData[]
 }
 
+/**
+ * Renders the Annual Report page showing year-over-year progress, monthly activity, subject breakdown, and comparisons for the currently selected student.
+ *
+ * The component loads and aggregates activity and daily-summary data for the current and previous year, provides year navigation controls, visual comparisons (monthly chart, per-subject breakdown, and a year-over-year table), and an export action to download the report as JSON.
+ *
+ * @returns The Annual Report React element for the selected student.
+ */
 export default function AnnualReport(): JSX.Element {
   const { students, subjects, selectedStudentId, getStudentById } = useStore()
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
@@ -388,6 +395,15 @@ interface StatCardProps {
   formatValue: (v: number) => string
 }
 
+/**
+ * Render a statistic card displaying a title, a formatted primary value, and an optional year-over-year change indicator.
+ *
+ * @param title - Short label shown above the value
+ * @param value - Current value to display and compare
+ * @param previousValue - Prior period value used to compute percent change; when greater than zero, a percent change indicator is shown
+ * @param formatValue - Function to format `value` for display
+ * @returns A JSX element containing the title, the formatted value, and (when applicable) a colored percent change indicator versus the previous value
+ */
 function StatCard({ title, value, previousValue, formatValue }: StatCardProps): JSX.Element {
   const change = previousValue > 0
     ? Math.round(((value - previousValue) / previousValue) * 100)
@@ -414,6 +430,16 @@ interface ComparisonRowProps {
   format: (v: number) => string
 }
 
+/**
+ * Render a table row that compares a metric between the current and previous year,
+ * displaying the label, formatted previous and current values, and the percent change with color-coded styling.
+ *
+ * @param label - Human-readable name of the metric shown in the first column
+ * @param current - Current-period numeric value to display in the third column
+ * @param previous - Previous-period numeric value to display in the second column (used to compute percent change)
+ * @param format - Formatter function that converts numeric values into display strings
+ * @returns A JSX table row element containing the label, formatted previous value, formatted current value, and the percent change (positive changes shown in green, negative in red)
+ */
 function ComparisonRow({ label, current, previous, format }: ComparisonRowProps): JSX.Element {
   const change = previous > 0
     ? Math.round(((current - previous) / previous) * 100)

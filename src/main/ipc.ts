@@ -177,6 +177,11 @@ async function fetchICalFeed(url: string): Promise<string> {
   })
 }
 
+/**
+ * Registers all IPC handlers used by the main process to expose repositories, features, and utilities to renderer processes.
+ *
+ * This function wires ipcMain.handle channels for database repositories (students, subjects, sessions, activities, milestones, books, field trips, attachments, etc.), Google integration, calendar sync, coop/umbrella features, portfolio generation, email summary, scanner integration, curriculum mapping, rewards, attendance, recurring activities, external event sources, and other application services.
+ */
 export function registerIpcHandlers(): void {
   // Students
   ipcMain.handle('db:students:getAll', async () => {

@@ -408,14 +408,18 @@ class AuthService {
 }
 
 /**
- * Get the singleton auth service instance
+ * Get the singleton AuthService instance.
+ *
+ * @returns The shared AuthService instance used by the application.
  */
 export function getAuthService(): AuthService {
   return AuthService.getInstance()
 }
 
 /**
- * Hook-friendly check for authentication
+ * Checks whether the client is currently authenticated with the cloud service.
+ *
+ * @returns `true` if the client is authenticated with the cloud service, `false` otherwise.
  */
 export function isCloudAuthenticated(): boolean {
   return AuthService.getInstance().isAuthenticated()

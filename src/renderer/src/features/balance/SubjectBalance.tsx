@@ -22,6 +22,17 @@ interface SubjectBalanceProps {
   subjects: Subject[]
 }
 
+/**
+ * Render the weekly subject balance UI for a student.
+ *
+ * Displays per-subject weekly targets versus actual activity, highlights subjects that are behind target,
+ * and provides access to a modal for viewing and editing weekly targets.
+ *
+ * @param studentId - The identifier of the student whose activity and targets are shown
+ * @param studentName - The student's display name used in the settings modal
+ * @param subjects - The list of subjects to display and manage targets for
+ * @returns A JSX element containing the weekly subject balance interface
+ */
 export function SubjectBalance({
   studentId,
   studentName,
@@ -143,6 +154,15 @@ interface BalanceBarProps {
   data: BalanceData
 }
 
+/**
+ * Render a single subject's weekly balance as a labeled progress bar and summary.
+ *
+ * Displays the subject name, actual vs target minutes, a colored progress bar (visual width capped for display),
+ * the percent of target achieved, and, when under target, the remaining time to reach the weekly target.
+ *
+ * @param data - Balance data for the subject, including `subjectName`, `targetMinutes`, `actualMinutes`, `percentageOfTarget`, and `status`
+ * @returns A JSX element showing the subject balance row with progress bar and textual summary
+ */
 function BalanceBar({ data }: BalanceBarProps): JSX.Element {
   const percentage = Math.min(data.percentageOfTarget, 150) // Cap at 150% for display
   const barColor =
@@ -188,6 +208,20 @@ interface TargetSettingsModalProps {
   subjects: Subject[]
 }
 
+/**
+ * Modal dialog for viewing and editing a student's per-subject weekly hour targets.
+ *
+ * Loads the student's existing targets when opened, allows editing each subject's target hours
+ * (0–40 hrs/week, step 0.5), and persists changes by setting or removing per-subject weekly
+ * targets in the balance store when saved. Calls `onClose` after saving or cancelling.
+ *
+ * @param open - Whether the modal is visible
+ * @param onClose - Callback invoked when the modal should be closed
+ * @param studentId - Identifier of the student whose targets are being edited
+ * @param studentName - Display name of the student shown in the modal description
+ * @param subjects - List of subjects available for editing targets
+ * @returns The rendered modal component as a JSX element
+ */
 function TargetSettingsModal({
   open,
   onClose,
@@ -290,7 +324,15 @@ function TargetSettingsModal({
   )
 }
 
-// Compact alert component for dashboard
+/**
+ * Render a compact dashboard alert when one or more subjects are behind their weekly targets.
+ *
+ * Fetches the current week's activity summary and compares each subject's actual minutes to the configured weekly target; if any subjects are under target, displays a small amber alert listing their names.
+ *
+ * @param studentId - The student identifier used to load targets and activity data
+ * @param subjects - The subjects to evaluate for weekly target compliance
+ * @returns A JSX element containing a compact under-target alert listing subject names, or `null` when no subjects are behind
+ */
 export function SubjectBalanceAlert({
   studentId,
   subjects,

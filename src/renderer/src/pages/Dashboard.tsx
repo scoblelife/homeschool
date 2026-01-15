@@ -22,6 +22,13 @@ import { useStore } from '../stores/useStore'
 import { useMilestones } from '../hooks/useDatabase'
 import type { Activity, Session, Milestone, FieldTrip } from '../../../shared/types'
 
+/**
+ * Render the application's dashboard, showing today's schedule, recent activities, milestones/progress, streaks, subject balance, achievements, AI insights, compliance deadlines, upcoming field trips, student overview, and quick-add/chat/voice actions for the selected student or the overall view when no student is selected.
+ *
+ * The component loads and refreshes dashboard data (sessions, activities, field trips, and suggested milestones when a student is selected), updates streaks for today's activities, and conditionally renders widgets based on available data and selection state.
+ *
+ * @returns The rendered dashboard as a JSX element.
+ */
 export default function Dashboard(): JSX.Element {
   const { students, subjects, selectedStudentId, getStudentById, getSubjectById } = useStore()
   const { milestones } = useMilestones(selectedStudentId ?? undefined)

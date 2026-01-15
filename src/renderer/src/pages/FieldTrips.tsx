@@ -76,6 +76,46 @@ const expenseCategoryLabels: Record<ExpenseCategory, { label: string; icon: stri
   other: { label: 'Other', icon: '📝' }
 }
 
+/**
+ * Render a card for a single field trip including metadata and interactive sections for tasks, contacts, RSVPs, expenses, and linked activities.
+ *
+ * Displays trip details (title, date/time, location, cost, description, students, subjects, website, notes, learning outcomes),
+ * a status selector, edit/duplicate/share/delete controls, a task progress toggle and list grouped by phase, forms and lists for contacts, RSVPs (for group activities), and expenses, and a LinkedActivities section.
+ *
+ * @param trip - The field trip activity to render.
+ * @param students - All students available for display; used to resolve the trip's studentIds to names.
+ * @param subjects - All subjects available for display; used to resolve the trip's subjectIds to names.
+ * @param onEdit - Called when the Edit action is triggered.
+ * @param onDelete - Called when the Delete action is triggered.
+ * @param onDuplicate - Called when the Duplicate action is triggered.
+ * @param onStatusChange - Called with a new FieldTripStatus when the status selector changes.
+ * @param isExpanded - Whether the card's expandable details (tasks, contacts, RSVPs, expenses) are shown.
+ * @param onToggleExpand - Toggle visibility of the expandable details.
+ * @param tasks - Tasks associated with this activity, used to render progress and per-phase lists.
+ * @param newTaskTitle - Controlled input value for the "add task" title.
+ * @param newTaskPhase - Controlled input value for the "add task" phase.
+ * @param onNewTaskTitleChange - Update handler for the new task title input.
+ * @param onNewTaskPhaseChange - Update handler for the new task phase input.
+ * @param onAddTask - Trigger to add a new task using the current newTaskTitle and newTaskPhase.
+ * @param onToggleTask - Toggle completion for a task by id.
+ * @param onDeleteTask - Delete a task by id.
+ * @param contacts - Contacts for this activity.
+ * @param onAddContact - Create a new contact for this activity (omit activityId).
+ * @param onUpdateContact - Update fields for a contact by id.
+ * @param onDeleteContact - Delete a contact by id.
+ * @param rsvps - RSVP entries for this activity (shown for group activity types).
+ * @param onAddRSVP - Create a new RSVP for this activity (omit activityId).
+ * @param onUpdateRSVP - Update an RSVP's status by id.
+ * @param onDeleteRSVP - Delete an RSVP by id.
+ * @param expenses - Expense entries for this activity.
+ * @param onAddExpense - Create a new expense for this activity (omit activityId).
+ * @param onUpdateExpense - Update fields for an expense by id.
+ * @param onDeleteExpense - Delete an expense by id.
+ * @param onLinkActivity - Link another activity to this field trip; returns a Promise that resolves when linking completes.
+ * @param onUnlinkActivity - Unlink an activity from this field trip; returns a Promise that resolves when unlinking completes.
+ *
+ * @returns The rendered JSX element for the field trip card.
+ */
 function FieldTripCard({
   trip,
   students,
@@ -807,6 +847,15 @@ function FieldTripCard({
   )
 }
 
+/**
+ * Render the Activities management interface for viewing, creating, editing, duplicating, and organizing field-trip–style activities.
+ *
+ * The component displays activity statistics, filter controls, and a list of activity cards. Each activity card can expand to manage tasks, contacts, RSVPs, and expenses, and supports linking/unlinking related activities. It also provides modals for planning/editing activities and duplicating an existing activity.
+ *
+ * The component loads activity data and related entities from the app API (via `window.api`), maintains local UI state, and responds to store changes such as the selected student.
+ *
+ * @returns The Field Trips / Activities management UI as a `JSX.Element`.
+ */
 export default function FieldTrips(): JSX.Element {
   const { students, subjects, selectedStudentId } = useStore()
   const [trips, setTrips] = useState<FieldTrip[]>([])

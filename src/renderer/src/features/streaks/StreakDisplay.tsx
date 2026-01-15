@@ -25,6 +25,17 @@ interface StreakDisplayProps {
   compact?: boolean
 }
 
+/**
+ * Render a student's streak UI showing current and best streaks, a flame indicator, badge summaries, and a modal to view earned/available badges.
+ *
+ * The component reads streak data from the streak store, derives active/at-risk state to adjust visuals, and conditionally renders either a compact button or the full streak panel. Clicking the compact button or "View Badges" opens the badges modal.
+ *
+ * @param studentId - The unique identifier for the student whose streak is displayed
+ * @param studentName - The student's display name shown in the UI and modal title
+ * @param studentColor - Optional accent color name used for student-specific styling; defaults to `'fuchsia'`
+ * @param compact - If `true`, render the compact header-style button instead of the full streak card
+ * @returns A JSX element containing the streak display (compact or full) and the badges modal
+ */
 export function StreakDisplay({
   studentId,
   studentName,
@@ -141,6 +152,18 @@ interface BadgesModalProps {
   streakData: StreakData
 }
 
+/**
+ * Render a modal listing available badges and which badges the student has earned.
+ *
+ * Displays the student's current and best streak, each badge's name, description, earned date when applicable,
+ * and the number of days remaining to reach unearned badge thresholds.
+ *
+ * @param open - Whether the modal is visible
+ * @param onClose - Callback invoked to close the modal
+ * @param studentName - Student's display name shown in the modal title
+ * @param streakData - Streak data used to determine earned badges and streak counts
+ * @returns A JSX element containing the badges modal UI
+ */
 function BadgesModal({ open, onClose, studentName, streakData }: BadgesModalProps): JSX.Element {
   const allBadges = [
     { id: '7-day', name: 'Week Warrior', description: '7-day streak', icon: '🏅', threshold: 7 },
