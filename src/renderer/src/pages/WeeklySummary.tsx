@@ -169,9 +169,9 @@ export default function WeeklySummary(): JSX.Element {
   };
 
   const getChangeColor = (change: number): string => {
-    if (change > 0) return "text-green-600";
-    if (change < 0) return "text-red-600";
-    return "text-gray-500";
+    if (change > 0) return "text-status-success";
+    if (change < 0) return "text-status-error";
+    return "text-neutral-textSecondary";
   };
 
   // Get days of the week for the heatmap
@@ -180,38 +180,34 @@ export default function WeeklySummary(): JSX.Element {
   );
 
   return (
-    <div className="p-8">
-      {/* Header with Week Navigation */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Weekly Summary</h1>
-          <p className="text-gray-500 mt-1">
-            {format(currentWeekStart, "MMMM d")} -{" "}
-            {format(currentWeekEnd, "MMMM d, yyyy")}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => setWeekOffset(weekOffset + 1)}
-          >
-            Previous Week
-          </Button>
-          {weekOffset > 0 && (
+    <PageContainer>
+      <PageHeader
+        title="Weekly Summary"
+        subtitle={`${format(currentWeekStart, "MMMM d")} - ${format(currentWeekEnd, "MMMM d, yyyy")}`}
+        action={
+          <div className="flex items-center gap-2">
             <Button
               variant="secondary"
-              onClick={() => setWeekOffset(weekOffset - 1)}
+              onClick={() => setWeekOffset(weekOffset + 1)}
             >
-              Next Week
+              Previous Week
             </Button>
-          )}
-          {weekOffset > 0 && (
-            <Button variant="primary" onClick={() => setWeekOffset(0)}>
-              Current Week
-            </Button>
-          )}
-        </div>
-      </div>
+            {weekOffset > 0 && (
+              <Button
+                variant="secondary"
+                onClick={() => setWeekOffset(weekOffset - 1)}
+              >
+                Next Week
+              </Button>
+            )}
+            {weekOffset > 0 && (
+              <Button variant="primary" onClick={() => setWeekOffset(0)}>
+                Current Week
+              </Button>
+            )}
+          </div>
+        }
+      />
       {isLoading ? (
         <div className="text-center py-12 text-gray-500">
           Loading weekly summary...
@@ -226,7 +222,7 @@ export default function WeeklySummary(): JSX.Element {
       ) : (
         <>
           {/* Family Overview */}
-          <Card className="mb-8 bg-gradient-to-r from-fuchsia-50 to-purple-50 border-fuchsia-100">
+          <Card className="mb-8 bg-gradient-to-r from-brand-primaryLight to-student-purple-50 border-brand-primaryLight">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Family Overview
             </h2>
@@ -235,7 +231,7 @@ export default function WeeklySummary(): JSX.Element {
                 <div className="text-sm font-medium text-gray-500">
                   Total Activities
                 </div>
-                <div className="text-3xl font-bold text-fuchsia-600 mt-1">
+                <div className="text-3xl font-bold text-brand-primary mt-1">
                   {totals.currentActivities}
                 </div>
                 <div
@@ -251,7 +247,7 @@ export default function WeeklySummary(): JSX.Element {
                 <div className="text-sm font-medium text-gray-500">
                   Total Hours
                 </div>
-                <div className="text-3xl font-bold text-fuchsia-600 mt-1">
+                <div className="text-3xl font-bold text-brand-primary mt-1">
                   {Math.round((totals.currentMinutes / 60) * 10) / 10}
                 </div>
                 <div
@@ -270,7 +266,7 @@ export default function WeeklySummary(): JSX.Element {
                 <div className="text-sm font-medium text-gray-500">
                   Students Active
                 </div>
-                <div className="text-3xl font-bold text-fuchsia-600 mt-1">
+                <div className="text-3xl font-bold text-brand-primary mt-1">
                   {
                     studentData.filter((s) => s.current.totalActivities > 0)
                       .length
@@ -282,7 +278,7 @@ export default function WeeklySummary(): JSX.Element {
                 <div className="text-sm font-medium text-gray-500">
                   Avg Per Day
                 </div>
-                <div className="text-3xl font-bold text-fuchsia-600 mt-1">
+                <div className="text-3xl font-bold text-brand-primary mt-1">
                   {Math.round(totals.currentActivities / 7)} activities
                 </div>
               </div>
@@ -296,7 +292,7 @@ export default function WeeklySummary(): JSX.Element {
               return (
                 <div
                   key={student.id}
-                  className={`card border-l-4 ${colors.border}`}
+                  className={`bg-white rounded-xl border border-neutral-border shadow-sm p-6 border-l-4 ${colors.border}`}
                 >
                   {/* Student Header */}
                   <div className="flex items-center gap-3 mb-4">
@@ -371,9 +367,9 @@ export default function WeeklySummary(): JSX.Element {
                           count === 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : 3;
                         const intensityColors = [
                           "bg-gray-100",
-                          "bg-green-200",
-                          "bg-green-400",
-                          "bg-green-600",
+                          "bg-status-successLight",
+                          "bg-status-success",
+                          "bg-status-successDark",
                         ];
                         return (
                           <div
@@ -525,7 +521,7 @@ export default function WeeklySummary(): JSX.Element {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-fuchsia-500 h-2 rounded-full transition-all"
+                            className="bg-brand-primary h-2 rounded-full transition-all"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
@@ -538,6 +534,6 @@ export default function WeeklySummary(): JSX.Element {
           </Card>
         </>
       )}
-    </div>
+    </PageContainer>
   );
 }
