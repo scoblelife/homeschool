@@ -95,14 +95,20 @@ npm run tokens:build
 
 Located in `src/renderer/src/components/ui/`
 
-| Component  | Variants                                         | Usage              |
-| ---------- | ------------------------------------------------ | ------------------ |
-| **Button** | primary, secondary, outline, ghost, danger       | Actions            |
-| **Card**   | default                                          | Content containers |
-| **Badge**  | default, primary, success, warning, danger, info | Status labels      |
-| **Input**  | default, error                                   | Text input         |
-| **Modal**  | default                                          | Dialogs, overlays  |
-| **Alert**  | success, warning, danger, info                   | Notifications      |
+| Component    | Variants                                         | Usage                  |
+| ------------ | ------------------------------------------------ | ---------------------- |
+| **Button**   | primary, secondary, outline, ghost, danger       | Actions                |
+| **Card**     | default                                          | Content containers     |
+| **Badge**    | default, primary, success, warning, danger, info | Status labels          |
+| **Input**    | default, error                                   | Text input             |
+| **Modal**    | default                                          | Dialogs, overlays      |
+| **Alert**    | success, warning, danger, info                   | Notifications          |
+| **Select**   | default, error                                   | Dropdown selection     |
+| **Dropdown** | default                                          | Action menus           |
+| **Tabs**     | default, pills                                   | Tabbed interfaces      |
+| **Checkbox** | default, error                                   | Multiple selection     |
+| **Radio**    | default, error                                   | Single selection       |
+| **Toggle**   | sm, md, lg                                       | Binary on/off switches |
 
 **Example:**
 
@@ -546,6 +552,7 @@ npm run lint --fix
 
 - ✅ Design token system with Style Dictionary
 - ✅ Core UI components (Button, Card, Badge, Input, Modal, Alert)
+- ✅ Form components (Select, Dropdown, Tabs, Checkbox, Radio, Toggle)
 - ✅ Layout components (PageHeader, PageGrid, etc.)
 - ✅ Mobile theme system with light/dark mode
 - ✅ ESLint enforcement rules (upgraded to 'error' severity)
@@ -553,6 +560,7 @@ npm run lint --fix
 - ✅ Page migration to design system (all 20 pages migrated)
 - ✅ Elimination of legacy CSS classes (zero remaining)
 - ✅ Mobile component migration (all components use theme tokens)
+- ✅ Component library expansion (14 UI components + 5 layout components)
 
 ### In Progress
 
