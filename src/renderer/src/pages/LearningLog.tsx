@@ -175,7 +175,7 @@ export default function Activities(): JSX.Element {
           onClick={() => setFilterType("")}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             filterType === ""
-              ? "bg-fuchsia-100 text-fuchsia-700"
+              ? "bg-brand-primaryLight text-brand-primaryDark"
               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
@@ -187,7 +187,7 @@ export default function Activities(): JSX.Element {
             onClick={() => setFilterType(type.value)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               filterType === type.value
-                ? "bg-fuchsia-100 text-fuchsia-700"
+                ? "bg-brand-primaryLight text-brand-primaryDark"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
@@ -217,7 +217,7 @@ export default function Activities(): JSX.Element {
             return (
               <div
                 key={activity.id}
-                className={`card flex items-start gap-4 border-l-4 ${
+                className={`bg-white rounded-xl border border-neutral-border shadow-sm p-6 flex items-start gap-4 border-l-4 ${
                   getStudentColor(student?.color || "fuchsia").border
                 }`}
               >
@@ -258,7 +258,7 @@ export default function Activities(): JSX.Element {
                 <div className="flex flex-col gap-2">
                   <button
                     onClick={() => openEditModal(activity)}
-                    className="text-fuchsia-500 hover:text-fuchsia-700 text-sm"
+                    className="text-brand-primary hover:text-brand-primaryDark text-sm"
                   >
                     Edit
                   </button>
@@ -283,7 +283,9 @@ export default function Activities(): JSX.Element {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="label">Activity Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Activity Type
+            </label>
             <div className="grid grid-cols-4 gap-2">
               {activityTypes.map((type) => (
                 <button
@@ -294,7 +296,7 @@ export default function Activities(): JSX.Element {
                   }
                   className={`p-2 rounded-lg text-center transition-colors ${
                     formData.activityType === type.value
-                      ? "bg-fuchsia-100 ring-2 ring-fuchsia-500"
+                      ? "bg-brand-primaryLight ring-2 ring-brand-primary"
                       : "bg-gray-50 hover:bg-gray-100"
                   }`}
                 >
@@ -307,14 +309,18 @@ export default function Activities(): JSX.Element {
 
           {editingActivity ? (
             <div>
-              <label className="label">Student</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Student
+              </label>
               <div className="px-3 py-1.5 bg-gray-100 rounded-lg text-sm font-medium text-gray-700">
                 {getStudentById(editingActivity.studentId)?.name}
               </div>
             </div>
           ) : (
             <div>
-              <label className="label">Students *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Students *
+              </label>
               <div className="flex flex-wrap gap-2">
                 {students.map((s) => (
                   <button
@@ -336,7 +342,7 @@ export default function Activities(): JSX.Element {
                     }}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       selectedStudentIds.includes(s.id)
-                        ? "bg-purple-100 text-purple-700 ring-2 ring-purple-500"
+                        ? "bg-student-purple-100 text-student-purple-700 ring-2 ring-student-purple-500"
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -353,13 +359,15 @@ export default function Activities(): JSX.Element {
           )}
 
           <div>
-            <label className="label">Subject</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Subject
+            </label>
             <select
               value={formData.subjectId}
               onChange={(e) =>
                 setFormData({ ...formData, subjectId: e.target.value })
               }
-              className="input"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
               required
             >
               <option value="">Select subject...</option>
@@ -372,7 +380,9 @@ export default function Activities(): JSX.Element {
           </div>
 
           <div>
-            <label className="label">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Title
+            </label>
             <Input
               type="text"
               value={formData.title}
@@ -386,7 +396,9 @@ export default function Activities(): JSX.Element {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date
+              </label>
               <Input
                 type="date"
                 value={formData.dateCompleted}
@@ -397,7 +409,9 @@ export default function Activities(): JSX.Element {
               />
             </div>
             <div>
-              <label className="label">Duration (min)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Duration (min)
+              </label>
               <Input
                 type="number"
                 value={formData.durationMinutes || ""}
@@ -417,7 +431,9 @@ export default function Activities(): JSX.Element {
           {showReadingFields && (
             <>
               <div>
-                <label className="label">Book Title</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Book Title
+                </label>
                 <Input
                   type="text"
                   value={formData.bookTitle}
@@ -428,7 +444,9 @@ export default function Activities(): JSX.Element {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label">Pages Read</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Pages Read
+                  </label>
                   <Input
                     type="number"
                     value={formData.pagesRead || ""}
@@ -444,7 +462,9 @@ export default function Activities(): JSX.Element {
                   />
                 </div>
                 <div>
-                  <label className="label">Total Pages</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Total Pages
+                  </label>
                   <Input
                     type="number"
                     value={formData.totalPages || ""}
@@ -466,7 +486,9 @@ export default function Activities(): JSX.Element {
           {showGradeFields && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="label">Score</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Score
+                </label>
                 <Input
                   type="number"
                   value={formData.grade || ""}
@@ -481,7 +503,9 @@ export default function Activities(): JSX.Element {
                 />
               </div>
               <div>
-                <label className="label">Max Score</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max Score
+                </label>
                 <Input
                   type="number"
                   value={formData.maxGrade || ""}
@@ -502,7 +526,7 @@ export default function Activities(): JSX.Element {
 
           {selectedStudentIds.length > 0 && (
             <div className="space-y-3">
-              <label className="label">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Notes {selectedStudentIds.length > 1 && "(per student)"}
               </label>
               {selectedStudentIds.map((studentId) => {
@@ -526,7 +550,7 @@ export default function Activities(): JSX.Element {
                           [studentId]: e.target.value,
                         }))
                       }
-                      className="input"
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
                       rows={2}
                       placeholder={
                         selectedStudentIds.length > 1
