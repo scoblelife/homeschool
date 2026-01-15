@@ -264,7 +264,7 @@ export default function Activities(): JSX.Element {
                   </button>
                   <button
                     onClick={() => deleteActivity(activity.id)}
-                    className="text-red-500 hover:text-red-700 text-sm"
+                    className="text-status-error hover:text-status-errorDark text-sm"
                   >
                     Delete
                   </button>

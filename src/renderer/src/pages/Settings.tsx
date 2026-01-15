@@ -593,12 +593,12 @@ export default function Settings(): JSX.Element {
               <span
                 className={`text-xs px-2 py-1 rounded-full ${
                   stateInfo.regulationLevel === "minimal"
-                    ? "bg-green-100 text-green-800"
+                    ? "bg-status-successLight text-status-successDark"
                     : stateInfo.regulationLevel === "low"
-                      ? "bg-blue-100 text-blue-800"
+                      ? "bg-student-blue-100 text-student-blue-800"
                       : stateInfo.regulationLevel === "moderate"
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-red-100 text-red-800"
+                        ? "bg-status-warningLight text-status-warningDark"
+                        : "bg-status-errorLight text-status-errorDark"
                 }`}
               >
                 {stateInfo.regulationLevel.charAt(0).toUpperCase() +
@@ -687,8 +687,8 @@ export default function Settings(): JSX.Element {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">
+            <div className="bg-status-successLight border border-status-success rounded-lg p-4 flex items-center gap-3">
+              <div className="w-8 h-8 bg-status-success rounded-full flex items-center justify-center text-white">
                 <svg
                   className="w-5 h-5"
                   fill="currentColor"
@@ -862,8 +862,8 @@ export default function Settings(): JSX.Element {
             <div
               className={`p-3 rounded-lg text-sm ${
                 emailStatus.success
-                  ? "bg-green-50 text-green-800 border border-green-200"
-                  : "bg-red-50 text-red-800 border border-red-200"
+                  ? "bg-status-successLight text-status-successDark border border-status-success"
+                  : "bg-status-errorLight text-status-errorDark border border-status-error"
               }`}
             >
               {emailStatus.message}
