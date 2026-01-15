@@ -5,24 +5,19 @@
  * Appears at the top of the screen with a subtle animation.
  */
 
-import { useEffect, useRef } from 'react'
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-} from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useIsOnline } from '../hooks/useNetworkStatus'
-import { useColors } from '../theme'
+import { useEffect, useRef } from "react";
+import { View, Text, StyleSheet, Animated } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useIsOnline } from "../hooks/useNetworkStatus";
+import { useColors } from "../theme/createStyles";
 
 export function OfflineIndicator() {
-  const isOnline = useIsOnline()
-  const insets = useSafeAreaInsets()
-  const colors = useColors()
+  const isOnline = useIsOnline();
+  const insets = useSafeAreaInsets();
+  const colors = useColors();
 
-  const slideAnim = useRef(new Animated.Value(-50)).current
-  const opacityAnim = useRef(new Animated.Value(0)).current
+  const slideAnim = useRef(new Animated.Value(-50)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!isOnline) {
@@ -38,7 +33,7 @@ export function OfflineIndicator() {
           duration: 300,
           useNativeDriver: true,
         }),
-      ]).start()
+      ]).start();
     } else {
       // Slide out
       Animated.parallel([
@@ -52,9 +47,9 @@ export function OfflineIndicator() {
           duration: 200,
           useNativeDriver: true,
         }),
-      ]).start()
+      ]).start();
     }
-  }, [isOnline, slideAnim, opacityAnim])
+  }, [isOnline, slideAnim, opacityAnim]);
 
   // Always render but invisible when online (for animation)
   return (
@@ -68,7 +63,7 @@ export function OfflineIndicator() {
           opacity: opacityAnim,
         },
       ]}
-      pointerEvents={isOnline ? 'none' : 'auto'}
+      pointerEvents={isOnline ? "none" : "auto"}
     >
       <View style={styles.content}>
         <Text style={[styles.icon]}>📡</Text>
@@ -82,12 +77,12 @@ export function OfflineIndicator() {
         </View>
       </View>
     </Animated.View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -96,8 +91,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   content: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   icon: {
     fontSize: 20,
@@ -108,11 +103,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   subtitle: {
     fontSize: 12,
     opacity: 0.9,
     marginTop: 2,
   },
-})
+});

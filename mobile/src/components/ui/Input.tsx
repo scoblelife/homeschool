@@ -1,32 +1,40 @@
-import { TextInput, View, Text, TextInputProps, ViewStyle } from 'react-native'
+import { TextInput, View, Text, TextInputProps, ViewStyle } from "react-native";
+import { useColors } from "../../theme/createStyles";
 
-interface InputProps extends Omit<TextInputProps, 'style'> {
-  label?: string
-  error?: string
-  containerStyle?: ViewStyle
+interface InputProps extends Omit<TextInputProps, "style"> {
+  label?: string;
+  error?: string;
+  containerStyle?: ViewStyle;
 }
 
 export function Input({ label, error, containerStyle, ...props }: InputProps) {
+  const colors = useColors();
+
   return (
     <View style={{ marginBottom: 16, ...containerStyle }} accessible={false}>
       {label && (
         <Text
-          style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}
+          style={{
+            fontSize: 14,
+            fontWeight: "500",
+            color: colors.text,
+            marginBottom: 4,
+          }}
           accessibilityRole="text"
         >
           {label}
         </Text>
       )}
       <TextInput
-        placeholderTextColor="#9ca3af"
+        placeholderTextColor={colors.textTertiary}
         style={{
-          backgroundColor: '#f9fafb',
+          backgroundColor: colors.surface,
           borderRadius: 8,
           padding: 12,
           fontSize: 16,
-          color: '#1f2937',
+          color: colors.text,
           borderWidth: error ? 1 : 0,
-          borderColor: error ? '#ef4444' : 'transparent',
+          borderColor: error ? colors.error : "transparent",
         }}
         accessibilityLabel={label}
         accessibilityHint={error ? `Error: ${error}` : undefined}
@@ -35,7 +43,7 @@ export function Input({ label, error, containerStyle, ...props }: InputProps) {
       />
       {error && (
         <Text
-          style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}
+          style={{ fontSize: 12, color: colors.error, marginTop: 4 }}
           accessibilityRole="alert"
           accessibilityLiveRegion="polite"
         >
@@ -43,41 +51,54 @@ export function Input({ label, error, containerStyle, ...props }: InputProps) {
         </Text>
       )}
     </View>
-  )
+  );
 }
 
-interface TextAreaProps extends Omit<TextInputProps, 'style'> {
-  label?: string
-  error?: string
-  rows?: number
-  containerStyle?: ViewStyle
+interface TextAreaProps extends Omit<TextInputProps, "style"> {
+  label?: string;
+  error?: string;
+  rows?: number;
+  containerStyle?: ViewStyle;
 }
 
-export function TextArea({ label, error, rows = 3, containerStyle, ...props }: TextAreaProps) {
+export function TextArea({
+  label,
+  error,
+  rows = 3,
+  containerStyle,
+  ...props
+}: TextAreaProps) {
+  const colors = useColors();
+
   return (
     <View style={{ marginBottom: 16, ...containerStyle }} accessible={false}>
       {label && (
         <Text
-          style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}
+          style={{
+            fontSize: 14,
+            fontWeight: "500",
+            color: colors.text,
+            marginBottom: 4,
+          }}
           accessibilityRole="text"
         >
           {label}
         </Text>
       )}
       <TextInput
-        placeholderTextColor="#9ca3af"
+        placeholderTextColor={colors.textTertiary}
         multiline
         numberOfLines={rows}
         textAlignVertical="top"
         style={{
-          backgroundColor: '#f9fafb',
+          backgroundColor: colors.surface,
           borderRadius: 8,
           padding: 12,
           fontSize: 16,
-          color: '#1f2937',
+          color: colors.text,
           minHeight: rows * 24 + 24,
           borderWidth: error ? 1 : 0,
-          borderColor: error ? '#ef4444' : 'transparent',
+          borderColor: error ? colors.error : "transparent",
         }}
         accessibilityLabel={label}
         accessibilityHint={error ? `Error: ${error}` : undefined}
@@ -86,7 +107,7 @@ export function TextArea({ label, error, rows = 3, containerStyle, ...props }: T
       />
       {error && (
         <Text
-          style={{ fontSize: 12, color: '#ef4444', marginTop: 4 }}
+          style={{ fontSize: 12, color: colors.error, marginTop: 4 }}
           accessibilityRole="alert"
           accessibilityLiveRegion="polite"
         >
@@ -94,5 +115,5 @@ export function TextArea({ label, error, rows = 3, containerStyle, ...props }: T
         </Text>
       )}
     </View>
-  )
+  );
 }

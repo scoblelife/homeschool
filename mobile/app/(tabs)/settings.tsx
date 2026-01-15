@@ -7,6 +7,7 @@ import { getStudents, createStudent, updateStudent, deleteStudent } from '../../
 import type { Student, CreateStudent, GradeLevel } from '../../src/types'
 import { Card, Button, Modal, Input, EmptyState, Badge } from '../../src/components/ui'
 import { FeedbackModal, FeedbackButton } from '../../src/components/Feedback'
+import { useTheme, useColors } from '../../src/theme/ThemeContext'
 
 const gradeLevels: { value: GradeLevel; label: string }[] = [
   { value: 'pre-k', label: 'Pre-K' },
@@ -35,6 +36,8 @@ const colorOptions = [
 ]
 
 export default function SettingsScreen() {
+  const colors = useColors()
+  const { themeMode, setThemeMode, isDark } = useTheme()
   const { students, setStudents, selectedStudentId, setSelectedStudentId } = useStore()
   const [refreshing, setRefreshing] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
@@ -166,17 +169,63 @@ export default function SettingsScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#d946ef" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
       >
         <View style={{ padding: 16 }}>
+          {/* Theme Section */}
+          <View style={{ marginBottom: 24 }}>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: 12 }}>Appearance</Text>
+            <Card>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 12 }}>Theme</Text>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {[
+                  { value: 'system', label: 'System', icon: 'phone-portrait' },
+                  { value: 'light', label: 'Light', icon: 'sunny' },
+                  { value: 'dark', label: 'Moon', icon: 'moon' },
+                ].map((option) => (
+                  <TouchableOpacity
+                    key={option.value}
+                    onPress={() => setThemeMode(option.value as any)}
+                    style={{
+                      flex: 1,
+                      paddingVertical: 12,
+                      paddingHorizontal: 16,
+                      borderRadius: 8,
+                      backgroundColor: themeMode === option.value ? colors.primary : colors.surfaceSecondary,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Ionicons
+                      name={option.icon as any}
+                      size={20}
+                      color={themeMode === option.value ? colors.textInverse : colors.textSecondary}
+                    />
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        marginTop: 4,
+                        color: themeMode === option.value ? colors.textInverse : colors.textSecondary,
+                      }}
+                    >
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text style={{ fontSize: 12, color: colors.textTertiary, marginTop: 8 }}>
+                Current: {isDark ? 'Dark' : 'Light'} mode
+              </Text>
+            </Card>
+          </View>
+
           {/* Students Section */}
           <View style={{ marginBottom: 24 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 18, fontWeight: '600', color: '#1f2937' }}>Students</Text>
+              <Text style={{ fontSize: 18, fontWeight: '600', color: colors.text }}>Students</Text>
               <TouchableOpacity onPress={openCreateModal}>
-                <Ionicons name="add-circle" size={28} color="#d946ef" />
+                <Ionicons name="add-circle" size={28} color={colors.primary} />
               </TouchableOpacity>
             </View>
 

@@ -1,20 +1,28 @@
-import { useState } from 'react'
-import { HourReport, PrintableHourReport } from '../features/hourTracking'
-import { useStore } from '../stores/useStore'
+import { useState } from "react";
+import { HourReport, PrintableHourReport } from "../features/hourTracking";
+import { useStore } from "../stores/useStore";
+
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Card } from "../components/ui/Card";
 
 export default function HourTracking() {
-  const { students, selectedStudentId } = useStore()
-  const [showPrintable, setShowPrintable] = useState(false)
-  const [printStudentId, setPrintStudentId] = useState('')
-  const [printSchoolYear, setPrintSchoolYear] = useState('')
-  const [printState, setPrintState] = useState('NV')
+  const { students, selectedStudentId } = useStore();
+  const [showPrintable, setShowPrintable] = useState(false);
+  const [printStudentId, setPrintStudentId] = useState("");
+  const [printSchoolYear, setPrintSchoolYear] = useState("");
+  const [printState, setPrintState] = useState("NV");
 
-  const handleGenerateReport = (studentId: string, schoolYear: string, state: string) => {
-    setPrintStudentId(studentId)
-    setPrintSchoolYear(schoolYear)
-    setPrintState(state)
-    setShowPrintable(true)
-  }
+  const handleGenerateReport = (
+    studentId: string,
+    schoolYear: string,
+    state: string,
+  ) => {
+    setPrintStudentId(studentId);
+    setPrintSchoolYear(schoolYear);
+    setPrintState(state);
+    setShowPrintable(true);
+  };
 
   return (
     <div className="p-6">
@@ -66,47 +74,47 @@ export default function HourTracking() {
         </>
       )}
     </div>
-  )
+  );
 }
 
 interface GenerateReportFormProps {
-  students: Array<{ id: string; name: string; gradeLevel: string }>
-  onGenerate: (studentId: string, schoolYear: string, state: string) => void
+  students: Array<{ id: string; name: string; gradeLevel: string }>;
+  onGenerate: (studentId: string, schoolYear: string, state: string) => void;
 }
 
 function GenerateReportForm({ students, onGenerate }: GenerateReportFormProps) {
-  const [studentId, setStudentId] = useState(students[0]?.id || '')
-  const [schoolYear, setSchoolYear] = useState('')
-  const [state, setState] = useState('NV')
+  const [studentId, setStudentId] = useState(students[0]?.id || "");
+  const [schoolYear, setSchoolYear] = useState("");
+  const [state, setState] = useState("NV");
 
   // Get school year options
   const yearOptions = (() => {
-    const years: string[] = []
-    const now = new Date()
-    const currentYear = now.getFullYear()
-    const month = now.getMonth()
+    const years: string[] = [];
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const month = now.getMonth();
 
     for (let i = 0; i < 3; i++) {
-      const startYear = month < 7 ? currentYear - 1 - i : currentYear - i
-      years.push(`${startYear}/${startYear + 1}`)
+      const startYear = month < 7 ? currentYear - 1 - i : currentYear - i;
+      years.push(`${startYear}/${startYear + 1}`);
     }
 
-    return years
-  })()
+    return years;
+  })();
 
   // Set default school year on mount
   useState(() => {
     if (!schoolYear && yearOptions.length > 0) {
-      setSchoolYear(yearOptions[0])
+      setSchoolYear(yearOptions[0]);
     }
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (studentId && schoolYear) {
-      onGenerate(studentId, schoolYear, state)
+      onGenerate(studentId, schoolYear, state);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 items-end">
@@ -120,14 +128,13 @@ function GenerateReportForm({ students, onGenerate }: GenerateReportFormProps) {
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         >
-          {students.map(student => (
+          {students.map((student) => (
             <option key={student.id} value={student.id}>
               {student.name} ({student.gradeLevel})
             </option>
           ))}
         </select>
       </div>
-
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           School Year
@@ -138,14 +145,13 @@ function GenerateReportForm({ students, onGenerate }: GenerateReportFormProps) {
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         >
-          {yearOptions.map(year => (
+          {yearOptions.map((year) => (
             <option key={year} value={year}>
               {year}
             </option>
           ))}
         </select>
       </div>
-
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           State
@@ -163,30 +169,50 @@ function GenerateReportForm({ students, onGenerate }: GenerateReportFormProps) {
           <option value="PA">Pennsylvania</option>
         </select>
       </div>
-
-      <button
+      <Button
+        variant="primary"
         type="submit"
-        className="btn btn-primary flex items-center gap-2"
+        className="flex items-center gap-2"
       >
         <DocumentIcon />
         Generate Official Report
-      </button>
+      </Button>
     </form>
-  )
+  );
 }
 
 function BackIcon() {
   return (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+      />
     </svg>
-  )
+  );
 }
 
 function DocumentIcon() {
   return (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    <svg
+      className="w-5 h-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+      />
     </svg>
-  )
+  );
 }

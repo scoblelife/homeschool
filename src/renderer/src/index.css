@@ -1,3 +1,6 @@
+/* Import design tokens as CSS custom properties */
+@import './design/theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

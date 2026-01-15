@@ -5,7 +5,7 @@
  * without leaving the app.
  */
 
-import { useState } from 'react'
+import { useState } from "react";
 import {
   View,
   Text,
@@ -17,81 +17,90 @@ import {
   Linking,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useColors } from "../theme/createStyles";
 
-type FeedbackCategory = 'bug' | 'feature' | 'question' | 'other'
+type FeedbackCategory = "bug" | "feature" | "question" | "other";
 
 interface FeedbackFormData {
-  category: FeedbackCategory
-  description: string
-  email: string
+  category: FeedbackCategory;
+  description: string;
+  email: string;
 }
 
-const CATEGORIES: { value: FeedbackCategory; label: string; emoji: string }[] = [
-  { value: 'bug', label: 'Bug Report', emoji: '🐛' },
-  { value: 'feature', label: 'Feature Request', emoji: '💡' },
-  { value: 'question', label: 'Question', emoji: '❓' },
-  { value: 'other', label: 'Other', emoji: '💬' },
-]
+const CATEGORIES: { value: FeedbackCategory; label: string; emoji: string }[] =
+  [
+    { value: "bug", label: "Bug Report", emoji: "🐛" },
+    { value: "feature", label: "Feature Request", emoji: "💡" },
+    { value: "question", label: "Question", emoji: "❓" },
+    { value: "other", label: "Other", emoji: "💬" },
+  ];
 
 interface FeedbackModalProps {
-  visible: boolean
-  onClose: () => void
+  visible: boolean;
+  onClose: () => void;
 }
 
 export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
-  const insets = useSafeAreaInsets()
+  const insets = useSafeAreaInsets();
+  const colors = useColors();
   const [formData, setFormData] = useState<FeedbackFormData>({
-    category: 'bug',
-    description: '',
-    email: '',
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+    category: "bug",
+    description: "",
+    email: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
 
   const handleSubmit = async () => {
-    if (!formData.description.trim()) return
+    if (!formData.description.trim()) return;
 
-    setIsSubmitting(true)
-    setSubmitStatus('idle')
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
 
     try {
-      const categoryLabel = CATEGORIES.find((c) => c.value === formData.category)?.label
-      const subject = encodeURIComponent(`[Homeschool Feedback] ${categoryLabel}`)
+      const categoryLabel = CATEGORIES.find(
+        (c) => c.value === formData.category,
+      )?.label;
+      const subject = encodeURIComponent(
+        `[Homeschool Feedback] ${categoryLabel}`,
+      );
       const body = encodeURIComponent(
-        `Category: ${formData.category}\n\n${formData.description}\n\n${formData.email ? `Reply to: ${formData.email}` : ''}`
-      )
+        `Category: ${formData.category}\n\n${formData.description}\n\n${formData.email ? `Reply to: ${formData.email}` : ""}`,
+      );
 
-      const mailtoUrl = `mailto:support@scoble.life?subject=${subject}&body=${body}`
+      const mailtoUrl = `mailto:support@scoble.life?subject=${subject}&body=${body}`;
 
-      const canOpen = await Linking.canOpenURL(mailtoUrl)
+      const canOpen = await Linking.canOpenURL(mailtoUrl);
       if (canOpen) {
-        await Linking.openURL(mailtoUrl)
+        await Linking.openURL(mailtoUrl);
       }
 
-      setSubmitStatus('success')
-      setFormData({ category: 'bug', description: '', email: '' })
+      setSubmitStatus("success");
+      setFormData({ category: "bug", description: "", email: "" });
 
       // Close after a delay
       setTimeout(() => {
-        onClose()
-        setSubmitStatus('idle')
-      }, 2000)
+        onClose();
+        setSubmitStatus("idle");
+      }, 2000);
     } catch (err) {
-      console.error('Failed to submit feedback:', err)
-      setSubmitStatus('error')
+      console.error("Failed to submit feedback:", err);
+      setSubmitStatus("error");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleClose = () => {
     if (!isSubmitting) {
-      onClose()
-      setSubmitStatus('idle')
+      onClose();
+      setSubmitStatus("idle");
     }
-  }
+  };
 
   return (
     <Modal
@@ -102,7 +111,7 @@ export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
     >
       <KeyboardAvoidingView
         style={styles.overlay}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <TouchableOpacity
           style={styles.backdrop}
@@ -110,39 +119,118 @@ export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
           onPress={handleClose}
         />
 
-        <View style={[styles.modal, { paddingBottom: insets.bottom + 20 }]}>
-          <View style={styles.handle} />
+        <View
+          style={[
+            {
+              backgroundColor: colors.card,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              paddingHorizontal: 20,
+              paddingTop: 12,
+              maxHeight: "85%",
+            },
+            { paddingBottom: insets.bottom + 20 },
+          ]}
+        >
+          <View
+            style={{
+              width: 40,
+              height: 4,
+              backgroundColor: colors.border,
+              borderRadius: 2,
+              alignSelf: "center",
+              marginBottom: 16,
+            }}
+          />
 
-          <Text style={styles.title}>Send Feedback</Text>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "600",
+              color: colors.text,
+              marginBottom: 20,
+            }}
+          >
+            Send Feedback
+          </Text>
 
-          {submitStatus === 'success' ? (
-            <View style={styles.successContainer}>
-              <Text style={styles.successEmoji}>✓</Text>
-              <Text style={styles.successText}>Thanks for your feedback!</Text>
+          {submitStatus === "success" ? (
+            <View style={{ alignItems: "center", paddingVertical: 60 }}>
+              <Text
+                style={{
+                  fontSize: 48,
+                  color: colors.success,
+                  marginBottom: 16,
+                }}
+              >
+                ✓
+              </Text>
+              <Text style={{ fontSize: 16, color: colors.textSecondary }}>
+                Thanks for your feedback!
+              </Text>
             </View>
           ) : (
             <ScrollView
-              style={styles.form}
+              style={{ flex: 1 }}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
             >
-              <Text style={styles.label}>Category</Text>
-              <View style={styles.categoryGrid}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  color: colors.text,
+                  marginBottom: 8,
+                }}
+              >
+                Category
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: 8,
+                  marginBottom: 20,
+                }}
+              >
                 {CATEGORIES.map((category) => (
                   <TouchableOpacity
                     key={category.value}
-                    style={[
-                      styles.categoryButton,
-                      formData.category === category.value && styles.categoryButtonActive,
-                    ]}
-                    onPress={() => setFormData({ ...formData, category: category.value })}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      paddingHorizontal: 14,
+                      paddingVertical: 10,
+                      borderRadius: 10,
+                      borderWidth: 1,
+                      borderColor:
+                        formData.category === category.value
+                          ? colors.primary
+                          : colors.border,
+                      backgroundColor:
+                        formData.category === category.value
+                          ? colors.primaryLight
+                          : colors.card,
+                    }}
+                    onPress={() =>
+                      setFormData({ ...formData, category: category.value })
+                    }
                   >
-                    <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+                    <Text style={{ fontSize: 16, marginRight: 6 }}>
+                      {category.emoji}
+                    </Text>
                     <Text
-                      style={[
-                        styles.categoryLabel,
-                        formData.category === category.value && styles.categoryLabelActive,
-                      ]}
+                      style={{
+                        fontSize: 14,
+                        color:
+                          formData.category === category.value
+                            ? colors.primary
+                            : colors.text,
+                        fontWeight:
+                          formData.category === category.value
+                            ? "500"
+                            : "normal",
+                      }}
                     >
                       {category.label}
                     </Text>
@@ -150,53 +238,130 @@ export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
                 ))}
               </View>
 
-              <Text style={styles.label}>Description</Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  color: colors.text,
+                  marginBottom: 8,
+                }}
+              >
+                Description
+              </Text>
               <TextInput
-                style={styles.textArea}
+                style={{
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  borderRadius: 10,
+                  paddingHorizontal: 14,
+                  paddingVertical: 12,
+                  fontSize: 16,
+                  minHeight: 100,
+                  marginBottom: 20,
+                  color: colors.text,
+                }}
                 placeholder="Tell us what's on your mind..."
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textTertiary}
                 value={formData.description}
-                onChangeText={(text) => setFormData({ ...formData, description: text })}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, description: text })
+                }
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
               />
 
-              <Text style={styles.label}>Email (optional)</Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "500",
+                  color: colors.text,
+                  marginBottom: 8,
+                }}
+              >
+                Email (optional)
+              </Text>
               <TextInput
-                style={styles.input}
+                style={{
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  borderRadius: 10,
+                  paddingHorizontal: 14,
+                  paddingVertical: 12,
+                  fontSize: 16,
+                  marginBottom: 4,
+                  color: colors.text,
+                }}
                 placeholder="your@email.com"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textTertiary}
                 value={formData.email}
-                onChangeText={(text) => setFormData({ ...formData, email: text })}
+                onChangeText={(text) =>
+                  setFormData({ ...formData, email: text })
+                }
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
-              <Text style={styles.hint}>We'll only use this to follow up if needed</Text>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: colors.textTertiary,
+                  marginBottom: 20,
+                }}
+              >
+                We'll only use this to follow up if needed
+              </Text>
 
-              {submitStatus === 'error' && (
-                <Text style={styles.error}>Something went wrong. Please try again.</Text>
+              {submitStatus === "error" && (
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: colors.error,
+                    marginBottom: 16,
+                  }}
+                >
+                  Something went wrong. Please try again.
+                </Text>
               )}
 
-              <View style={styles.buttonRow}>
+              <View style={{ flexDirection: "row", gap: 12, marginBottom: 20 }}>
                 <TouchableOpacity
-                  style={styles.cancelButton}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    alignItems: "center",
+                  }}
                   onPress={handleClose}
                   disabled={isSubmitting}
                 >
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                  <Text style={{ fontSize: 16, color: colors.text }}>
+                    Cancel
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  style={[
-                    styles.submitButton,
-                    (!formData.description.trim() || isSubmitting) && styles.submitButtonDisabled,
-                  ]}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 14,
+                    borderRadius: 10,
+                    backgroundColor: colors.primary,
+                    alignItems: "center",
+                    opacity:
+                      !formData.description.trim() || isSubmitting ? 0.5 : 1,
+                  }}
                   onPress={handleSubmit}
                   disabled={!formData.description.trim() || isSubmitting}
                 >
-                  <Text style={styles.submitButtonText}>
-                    {isSubmitting ? 'Sending...' : 'Send Feedback'}
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "600",
+                      color: colors.textInverse,
+                    }}
+                  >
+                    {isSubmitting ? "Sending..." : "Send Feedback"}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -205,190 +370,44 @@ export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
         </View>
       </KeyboardAvoidingView>
     </Modal>
-  )
+  );
 }
 
 interface FeedbackButtonProps {
-  onPress: () => void
+  onPress: () => void;
 }
 
 export function FeedbackButton({ onPress }: FeedbackButtonProps) {
+  const colors = useColors();
+
   return (
-    <TouchableOpacity style={styles.feedbackButton} onPress={onPress}>
-      <Text style={styles.feedbackButtonEmoji}>💬</Text>
-      <Text style={styles.feedbackButtonText}>Send Feedback</Text>
-      <Text style={styles.chevron}>›</Text>
+    <TouchableOpacity
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        backgroundColor: colors.surface,
+        borderRadius: 10,
+      }}
+      onPress={onPress}
+    >
+      <Text style={{ fontSize: 20, marginRight: 12 }}>💬</Text>
+      <Text style={{ flex: 1, fontSize: 16, color: colors.text }}>
+        Send Feedback
+      </Text>
+      <Text style={{ fontSize: 20, color: colors.textTertiary }}>›</Text>
     </TouchableOpacity>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
-  modal: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    maxHeight: '85%',
-  },
-  handle: {
-    width: 40,
-    height: 4,
-    backgroundColor: '#e5e7eb',
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 20,
-  },
-  form: {
-    flex: 1,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 20,
-  },
-  categoryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    backgroundColor: '#fff',
-  },
-  categoryButtonActive: {
-    borderColor: '#d946ef',
-    backgroundColor: '#fdf4ff',
-  },
-  categoryEmoji: {
-    fontSize: 16,
-    marginRight: 6,
-  },
-  categoryLabel: {
-    fontSize: 14,
-    color: '#374151',
-  },
-  categoryLabelActive: {
-    color: '#d946ef',
-    fontWeight: '500',
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
-    minHeight: 100,
-    marginBottom: 20,
-    color: '#1f2937',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
-    marginBottom: 4,
-    color: '#1f2937',
-  },
-  hint: {
-    fontSize: 12,
-    color: '#9ca3af',
-    marginBottom: 20,
-  },
-  error: {
-    fontSize: 14,
-    color: '#ef4444',
-    marginBottom: 16,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 20,
-  },
-  cancelButton: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    color: '#374151',
-  },
-  submitButton: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 10,
-    backgroundColor: '#d946ef',
-    alignItems: 'center',
-  },
-  submitButtonDisabled: {
-    opacity: 0.5,
-  },
-  submitButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  successContainer: {
-    alignItems: 'center',
-    paddingVertical: 60,
-  },
-  successEmoji: {
-    fontSize: 48,
-    color: '#22c55e',
-    marginBottom: 16,
-  },
-  successText: {
-    fontSize: 16,
-    color: '#6b7280',
-  },
-  feedbackButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    backgroundColor: '#f9fafb',
-    borderRadius: 10,
-  },
-  feedbackButtonEmoji: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  feedbackButtonText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#1f2937',
-  },
-  chevron: {
-    fontSize: 20,
-    color: '#9ca3af',
-  },
-})
+});

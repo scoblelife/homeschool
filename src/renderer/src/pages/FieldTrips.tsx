@@ -1,14 +1,27 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { Dialog } from '@headlessui/react'
-import { format, parseISO, isPast, isFuture, isToday, addDays } from 'date-fns'
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { format, parseISO, isPast, isFuture, isToday, addDays } from "date-fns";
+
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Card } from "../components/ui/Card";
+import { Badge } from "../components/ui/Badge";
+import { Modal } from "../components/ui/Modal";
+import { PageHeader } from "../components/layout/PageHeader";
+import { PageContainer } from "../components/layout/PageContainer";
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
-  if (date instanceof Date) return date
-  return parseISO(date)
-}
-import { useStore } from '../stores/useStore'
-import { MapLink, MapButton, ShareButton, LinkedActivities, LinkedCountBadge } from '../features/fieldTrips'
+  if (date instanceof Date) return date;
+  return parseISO(date);
+};
+import { useStore } from "../stores/useStore";
+import {
+  MapLink,
+  MapButton,
+  ShareButton,
+  LinkedActivities,
+  LinkedCountBadge,
+} from "../features/fieldTrips";
 import type {
   FieldTrip,
   CreateFieldTrip,
@@ -25,56 +38,110 @@ import type {
   RSVPStatus,
   ActivityExpense,
   CreateActivityExpense,
-  ExpenseCategory
-} from '../../../shared/types'
+  ExpenseCategory,
+} from "../../../shared/types";
 
-type StatusFilter = 'all' | 'planned' | 'completed' | 'cancelled'
+type StatusFilter = "all" | "planned" | "completed" | "cancelled";
 
-const statusLabels: Record<FieldTripStatus, { label: string; color: string; bg: string }> = {
-  planned: { label: 'Planned', color: 'text-blue-600', bg: 'bg-blue-100' },
-  completed: { label: 'Completed', color: 'text-green-600', bg: 'bg-green-100' },
-  cancelled: { label: 'Cancelled', color: 'text-gray-600', bg: 'bg-gray-100' }
-}
+const statusLabels: Record<
+  FieldTripStatus,
+  { label: string; color: string; bg: string }
+> = {
+  planned: { label: "Planned", color: "text-blue-600", bg: "bg-blue-100" },
+  completed: {
+    label: "Completed",
+    color: "text-green-600",
+    bg: "bg-green-100",
+  },
+  cancelled: { label: "Cancelled", color: "text-gray-600", bg: "bg-gray-100" },
+};
 
-const activityTypeConfig: Record<EventActivityType, { icon: string; label: string; color: string; bg: string }> = {
-  field_trip: { icon: '🚌', label: 'Field Trip', color: 'text-amber-700', bg: 'bg-amber-100' },
-  park_day: { icon: '🌳', label: 'Park Day', color: 'text-green-700', bg: 'bg-green-100' },
-  game_night: { icon: '🎲', label: 'Game Night', color: 'text-purple-700', bg: 'bg-purple-100' },
-  playdate: { icon: '👋', label: 'Playdate', color: 'text-pink-700', bg: 'bg-pink-100' },
-  coop_class: { icon: '📚', label: 'Co-op Class', color: 'text-blue-700', bg: 'bg-blue-100' },
-  custom: { icon: '📅', label: 'Other', color: 'text-gray-700', bg: 'bg-gray-100' }
-}
+const activityTypeConfig: Record<
+  EventActivityType,
+  { icon: string; label: string; color: string; bg: string }
+> = {
+  field_trip: {
+    icon: "🚌",
+    label: "Field Trip",
+    color: "text-amber-700",
+    bg: "bg-amber-100",
+  },
+  park_day: {
+    icon: "🌳",
+    label: "Park Day",
+    color: "text-green-700",
+    bg: "bg-green-100",
+  },
+  game_night: {
+    icon: "🎲",
+    label: "Game Night",
+    color: "text-purple-700",
+    bg: "bg-purple-100",
+  },
+  playdate: {
+    icon: "👋",
+    label: "Playdate",
+    color: "text-pink-700",
+    bg: "bg-pink-100",
+  },
+  coop_class: {
+    icon: "📚",
+    label: "Co-op Class",
+    color: "text-blue-700",
+    bg: "bg-blue-100",
+  },
+  custom: {
+    icon: "📅",
+    label: "Other",
+    color: "text-gray-700",
+    bg: "bg-gray-100",
+  },
+};
 
 const phaseLabels: Record<TaskPhase, { label: string; icon: string }> = {
-  pre: { label: 'Before', icon: '📋' },
-  day_of: { label: 'Day Of', icon: '📍' },
-  post: { label: 'After', icon: '✨' }
-}
+  pre: { label: "Before", icon: "📋" },
+  day_of: { label: "Day Of", icon: "📍" },
+  post: { label: "After", icon: "✨" },
+};
 
 const contactRoleLabels: Record<ContactRole, string> = {
-  venue: 'Venue',
-  organizer: 'Organizer',
-  emergency: 'Emergency',
-  other: 'Other'
-}
+  venue: "Venue",
+  organizer: "Organizer",
+  emergency: "Emergency",
+  other: "Other",
+};
 
-const rsvpStatusLabels: Record<RSVPStatus, { label: string; color: string; bg: string }> = {
-  invited: { label: 'Invited', color: 'text-gray-600', bg: 'bg-gray-100' },
-  confirmed: { label: 'Confirmed', color: 'text-green-600', bg: 'bg-green-100' },
-  declined: { label: 'Declined', color: 'text-red-600', bg: 'bg-red-100' },
-  maybe: { label: 'Maybe', color: 'text-amber-600', bg: 'bg-amber-100' }
-}
+const rsvpStatusLabels: Record<
+  RSVPStatus,
+  { label: string; color: string; bg: string }
+> = {
+  invited: { label: "Invited", color: "text-gray-600", bg: "bg-gray-100" },
+  confirmed: {
+    label: "Confirmed",
+    color: "text-green-600",
+    bg: "bg-green-100",
+  },
+  declined: { label: "Declined", color: "text-red-600", bg: "bg-red-100" },
+  maybe: { label: "Maybe", color: "text-amber-600", bg: "bg-amber-100" },
+};
 
 // Activity types that show RSVP section (group events)
-const groupActivityTypes: EventActivityType[] = ['park_day', 'game_night', 'coop_class']
+const groupActivityTypes: EventActivityType[] = [
+  "park_day",
+  "game_night",
+  "coop_class",
+];
 
-const expenseCategoryLabels: Record<ExpenseCategory, { label: string; icon: string }> = {
-  admission: { label: 'Admission', icon: '🎟️' },
-  food: { label: 'Food', icon: '🍕' },
-  supplies: { label: 'Supplies', icon: '📦' },
-  transportation: { label: 'Transportation', icon: '🚗' },
-  other: { label: 'Other', icon: '📝' }
-}
+const expenseCategoryLabels: Record<
+  ExpenseCategory,
+  { label: string; icon: string }
+> = {
+  admission: { label: "Admission", icon: "🎟️" },
+  food: { label: "Food", icon: "🍕" },
+  supplies: { label: "Supplies", icon: "📦" },
+  transportation: { label: "Transportation", icon: "🚗" },
+  other: { label: "Other", icon: "📝" },
+};
 
 function FieldTripCard({
   trip,
@@ -107,141 +174,156 @@ function FieldTripCard({
   onUpdateExpense,
   onDeleteExpense,
   onLinkActivity,
-  onUnlinkActivity
+  onUnlinkActivity,
 }: {
-  trip: FieldTrip
-  students: { id: string; name: string }[]
-  subjects: { id: string; name: string }[]
-  onEdit: () => void
-  onDelete: () => void
-  onDuplicate: () => void
-  onStatusChange: (status: FieldTripStatus) => void
-  isExpanded: boolean
-  onToggleExpand: () => void
-  tasks: ActivityTask[]
-  newTaskTitle: string
-  newTaskPhase: TaskPhase
-  onNewTaskTitleChange: (title: string) => void
-  onNewTaskPhaseChange: (phase: TaskPhase) => void
-  onAddTask: () => void
-  onToggleTask: (taskId: string) => void
-  onDeleteTask: (taskId: string) => void
-  contacts: ActivityContact[]
-  onAddContact: (contact: Omit<CreateActivityContact, 'activityId'>) => void
-  onUpdateContact: (id: string, data: Partial<Omit<CreateActivityContact, 'activityId'>>) => void
-  onDeleteContact: (id: string) => void
-  rsvps: ActivityRSVP[]
-  onAddRSVP: (rsvp: Omit<CreateActivityRSVP, 'activityId'>) => void
-  onUpdateRSVP: (id: string, status: RSVPStatus) => void
-  onDeleteRSVP: (id: string) => void
-  expenses: ActivityExpense[]
-  onAddExpense: (expense: Omit<CreateActivityExpense, 'activityId'>) => void
-  onUpdateExpense: (id: string, data: Partial<Omit<CreateActivityExpense, 'activityId'>>) => void
-  onDeleteExpense: (id: string) => void
-  onLinkActivity: (activityId: string) => Promise<void>
-  onUnlinkActivity: (activityId: string) => Promise<void>
+  trip: FieldTrip;
+  students: { id: string; name: string }[];
+  subjects: { id: string; name: string }[];
+  onEdit: () => void;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onStatusChange: (status: FieldTripStatus) => void;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+  tasks: ActivityTask[];
+  newTaskTitle: string;
+  newTaskPhase: TaskPhase;
+  onNewTaskTitleChange: (title: string) => void;
+  onNewTaskPhaseChange: (phase: TaskPhase) => void;
+  onAddTask: () => void;
+  onToggleTask: (taskId: string) => void;
+  onDeleteTask: (taskId: string) => void;
+  contacts: ActivityContact[];
+  onAddContact: (contact: Omit<CreateActivityContact, "activityId">) => void;
+  onUpdateContact: (
+    id: string,
+    data: Partial<Omit<CreateActivityContact, "activityId">>,
+  ) => void;
+  onDeleteContact: (id: string) => void;
+  rsvps: ActivityRSVP[];
+  onAddRSVP: (rsvp: Omit<CreateActivityRSVP, "activityId">) => void;
+  onUpdateRSVP: (id: string, status: RSVPStatus) => void;
+  onDeleteRSVP: (id: string) => void;
+  expenses: ActivityExpense[];
+  onAddExpense: (expense: Omit<CreateActivityExpense, "activityId">) => void;
+  onUpdateExpense: (
+    id: string,
+    data: Partial<Omit<CreateActivityExpense, "activityId">>,
+  ) => void;
+  onDeleteExpense: (id: string) => void;
+  onLinkActivity: (activityId: string) => Promise<void>;
+  onUnlinkActivity: (activityId: string) => Promise<void>;
 }) {
-  const statusInfo = statusLabels[trip.status]
-  const activityConfig = activityTypeConfig[trip.activityType] || activityTypeConfig.field_trip
-  const tripDate = toDate(trip.date)
-  const isUpcoming = isFuture(tripDate) || isToday(tripDate)
-  const isPastTrip = isPast(tripDate) && !isToday(tripDate)
-  const showRSVP = groupActivityTypes.includes(trip.activityType)
+  const statusInfo = statusLabels[trip.status];
+  const activityConfig =
+    activityTypeConfig[trip.activityType] || activityTypeConfig.field_trip;
+  const tripDate = toDate(trip.date);
+  const isUpcoming = isFuture(tripDate) || isToday(tripDate);
+  const isPastTrip = isPast(tripDate) && !isToday(tripDate);
+  const showRSVP = groupActivityTypes.includes(trip.activityType);
 
-  const tripStudents = students.filter((s) => trip.studentIds.includes(s.id))
-  const tripSubjects = subjects.filter((s) => trip.subjectIds.includes(s.id))
+  const tripStudents = students.filter((s) => trip.studentIds.includes(s.id));
+  const tripSubjects = subjects.filter((s) => trip.subjectIds.includes(s.id));
 
   // Local state for contact form
-  const [showContactForm, setShowContactForm] = useState(false)
-  const [newContactName, setNewContactName] = useState('')
-  const [newContactRole, setNewContactRole] = useState<ContactRole>('venue')
-  const [newContactPhone, setNewContactPhone] = useState('')
-  const [newContactEmail, setNewContactEmail] = useState('')
-  const [newContactNotes, setNewContactNotes] = useState('')
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [newContactName, setNewContactName] = useState("");
+  const [newContactRole, setNewContactRole] = useState<ContactRole>("venue");
+  const [newContactPhone, setNewContactPhone] = useState("");
+  const [newContactEmail, setNewContactEmail] = useState("");
+  const [newContactNotes, setNewContactNotes] = useState("");
 
   // Local state for RSVP form
-  const [showRSVPForm, setShowRSVPForm] = useState(false)
-  const [newRSVPName, setNewRSVPName] = useState('')
-  const [newRSVPCount, setNewRSVPCount] = useState(1)
+  const [showRSVPForm, setShowRSVPForm] = useState(false);
+  const [newRSVPName, setNewRSVPName] = useState("");
+  const [newRSVPCount, setNewRSVPCount] = useState(1);
 
   const handleAddContact = () => {
-    if (!newContactName.trim()) return
+    if (!newContactName.trim()) return;
     onAddContact({
       name: newContactName.trim(),
       role: newContactRole,
       phone: newContactPhone.trim() || undefined,
       email: newContactEmail.trim() || undefined,
-      notes: newContactNotes.trim() || undefined
-    })
-    setNewContactName('')
-    setNewContactPhone('')
-    setNewContactEmail('')
-    setNewContactNotes('')
-    setShowContactForm(false)
-  }
+      notes: newContactNotes.trim() || undefined,
+    });
+    setNewContactName("");
+    setNewContactPhone("");
+    setNewContactEmail("");
+    setNewContactNotes("");
+    setShowContactForm(false);
+  };
 
   const handleAddRSVP = () => {
-    if (!newRSVPName.trim()) return
+    if (!newRSVPName.trim()) return;
     onAddRSVP({
       familyName: newRSVPName.trim(),
       attendingCount: newRSVPCount,
-      status: 'invited'
-    })
-    setNewRSVPName('')
-    setNewRSVPCount(1)
-    setShowRSVPForm(false)
-  }
+      status: "invited",
+    });
+    setNewRSVPName("");
+    setNewRSVPCount(1);
+    setShowRSVPForm(false);
+  };
 
   // Calculate RSVP summary
   const rsvpSummary = useMemo(() => {
-    const confirmed = rsvps.filter((r) => r.status === 'confirmed')
-    const totalAttending = confirmed.reduce((sum, r) => sum + r.attendingCount, 0)
-    return { confirmed: confirmed.length, totalAttending }
-  }, [rsvps])
+    const confirmed = rsvps.filter((r) => r.status === "confirmed");
+    const totalAttending = confirmed.reduce(
+      (sum, r) => sum + r.attendingCount,
+      0,
+    );
+    return { confirmed: confirmed.length, totalAttending };
+  }, [rsvps]);
 
   // Local state for expense form
-  const [showExpenseForm, setShowExpenseForm] = useState(false)
-  const [newExpenseDesc, setNewExpenseDesc] = useState('')
-  const [newExpenseAmount, setNewExpenseAmount] = useState('')
-  const [newExpenseCategory, setNewExpenseCategory] = useState<ExpenseCategory>('other')
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [newExpenseDesc, setNewExpenseDesc] = useState("");
+  const [newExpenseAmount, setNewExpenseAmount] = useState("");
+  const [newExpenseCategory, setNewExpenseCategory] =
+    useState<ExpenseCategory>("other");
 
   const handleAddExpense = () => {
-    if (!newExpenseDesc.trim() || !newExpenseAmount) return
+    if (!newExpenseDesc.trim() || !newExpenseAmount) return;
     onAddExpense({
       description: newExpenseDesc.trim(),
       amount: parseFloat(newExpenseAmount),
-      category: newExpenseCategory
-    })
-    setNewExpenseDesc('')
-    setNewExpenseAmount('')
-    setShowExpenseForm(false)
-  }
+      category: newExpenseCategory,
+    });
+    setNewExpenseDesc("");
+    setNewExpenseAmount("");
+    setShowExpenseForm(false);
+  };
 
   // Calculate expense summary
   const expenseTotal = useMemo(() => {
-    return expenses.reduce((sum, e) => sum + e.amount, 0)
-  }, [expenses])
+    return expenses.reduce((sum, e) => sum + e.amount, 0);
+  }, [expenses]);
 
   return (
     <div
       className={`p-4 rounded-lg border-l-4 ${
-        trip.status === 'completed'
-          ? 'bg-green-50 border-l-green-500'
-          : trip.status === 'cancelled'
-            ? 'bg-gray-50 border-l-gray-300'
+        trip.status === "completed"
+          ? "bg-green-50 border-l-green-500"
+          : trip.status === "cancelled"
+            ? "bg-gray-50 border-l-gray-300"
             : isUpcoming
-              ? 'bg-blue-50 border-l-blue-500'
-              : 'bg-amber-50 border-l-amber-500'
+              ? "bg-blue-50 border-l-blue-500"
+              : "bg-amber-50 border-l-amber-500"
       }`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`text-sm px-2 py-0.5 rounded-full ${activityConfig.bg} ${activityConfig.color}`}>
+            <span
+              className={`text-sm px-2 py-0.5 rounded-full ${activityConfig.bg} ${activityConfig.color}`}
+            >
               {activityConfig.icon} {activityConfig.label}
             </span>
             <h3 className="font-medium text-gray-900">{trip.title}</h3>
-            <span className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.bg} ${statusInfo.color}`}>
+            <span
+              className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.bg} ${statusInfo.color}`}
+            >
               {statusInfo.label}
             </span>
           </div>
@@ -249,11 +331,14 @@ function FieldTripCard({
           <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 flex-wrap">
             <MapLink location={trip.location} />
             <span>•</span>
-            <span>📅 {format(tripDate, 'EEEE, MMMM d, yyyy')}</span>
+            <span>📅 {format(tripDate, "EEEE, MMMM d, yyyy")}</span>
             {(trip.startTime || trip.endTime) && (
               <>
                 <span>•</span>
-                <span>🕐 {trip.startTime || '?'}{trip.endTime ? ` - ${trip.endTime}` : ''}</span>
+                <span>
+                  🕐 {trip.startTime || "?"}
+                  {trip.endTime ? ` - ${trip.endTime}` : ""}
+                </span>
               </>
             )}
             {trip.cost && (
@@ -315,13 +400,16 @@ function FieldTripCard({
 
           {/* Notes */}
           {trip.notes && (
-            <p className="text-sm text-gray-500 mt-2 italic">Notes: {trip.notes}</p>
+            <p className="text-sm text-gray-500 mt-2 italic">
+              Notes: {trip.notes}
+            </p>
           )}
 
           {/* Alert for past unfinished activities */}
-          {isPastTrip && trip.status === 'planned' && (
+          {isPastTrip && trip.status === "planned" && (
             <p className="text-sm text-amber-600 mt-2">
-              ⚠️ This activity date has passed. Update the status to completed or cancelled.
+              ⚠️ This activity date has passed. Update the status to completed
+              or cancelled.
             </p>
           )}
 
@@ -330,7 +418,7 @@ function FieldTripCard({
             onClick={onToggleExpand}
             className="mt-3 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
           >
-            <span>{isExpanded ? '▼' : '▶'}</span>
+            <span>{isExpanded ? "▼" : "▶"}</span>
             <span>
               Tasks: {tasks.filter((t) => t.completedAt).length}/{tasks.length}
             </span>
@@ -339,7 +427,7 @@ function FieldTripCard({
                 <div
                   className="h-full bg-green-500 transition-all"
                   style={{
-                    width: `${tasks.length > 0 ? (tasks.filter((t) => t.completedAt).length / tasks.length) * 100 : 0}%`
+                    width: `${tasks.length > 0 ? (tasks.filter((t) => t.completedAt).length / tasks.length) * 100 : 0}%`,
                   }}
                 />
               </div>
@@ -357,19 +445,27 @@ function FieldTripCard({
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
-          <button onClick={onEdit} className="text-fuchsia-600 hover:text-fuchsia-700 text-sm">
+          <button
+            onClick={onEdit}
+            className="text-fuchsia-600 hover:text-fuchsia-700 text-sm"
+          >
             Edit
           </button>
-          <button onClick={onDuplicate} className="text-gray-600 hover:text-gray-800 text-sm">
+          <button
+            onClick={onDuplicate}
+            className="text-gray-600 hover:text-gray-800 text-sm"
+          >
             Duplicate
           </button>
           <ShareButton trip={trip} students={students} subjects={subjects} />
-          <button onClick={onDelete} className="text-red-500 hover:text-red-700 text-sm">
+          <button
+            onClick={onDelete}
+            className="text-red-500 hover:text-red-700 text-sm"
+          >
             Delete
           </button>
         </div>
       </div>
-
       {/* Expandable Tasks Section */}
       {isExpanded && (
         <div className="mt-4 pt-4 border-t border-gray-200">
@@ -377,16 +473,21 @@ function FieldTripCard({
           <div className="flex gap-2 mb-4">
             <select
               value={newTaskPhase}
-              onChange={(e) => onNewTaskPhaseChange(e.target.value as TaskPhase)}
+              onChange={(e) =>
+                onNewTaskPhaseChange(e.target.value as TaskPhase)
+              }
               className="text-sm border border-gray-300 rounded-lg px-2 py-1.5"
             >
-              {(Object.entries(phaseLabels) as [TaskPhase, typeof phaseLabels.pre][]).map(
-                ([phase, config]) => (
-                  <option key={phase} value={phase}>
-                    {config.icon} {config.label}
-                  </option>
-                )
-              )}
+              {(
+                Object.entries(phaseLabels) as [
+                  TaskPhase,
+                  typeof phaseLabels.pre,
+                ][]
+              ).map(([phase, config]) => (
+                <option key={phase} value={phase}>
+                  {config.icon} {config.label}
+                </option>
+              ))}
             </select>
             <input
               type="text"
@@ -394,23 +495,24 @@ function FieldTripCard({
               onChange={(e) => onNewTaskTitleChange(e.target.value)}
               placeholder="Add a task..."
               className="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-1.5"
-              onKeyDown={(e) => e.key === 'Enter' && onAddTask()}
+              onKeyDown={(e) => e.key === "Enter" && onAddTask()}
             />
-            <button
+            <Button
+              variant="primary"
               onClick={onAddTask}
               disabled={!newTaskTitle.trim()}
-              className="btn btn-primary text-sm py-1.5 disabled:opacity-50"
+              className="text-sm py-1.5 disabled:opacity-50"
             >
               Add
-            </button>
+            </Button>
           </div>
 
           {/* Tasks by Phase */}
-          {(['pre', 'day_of', 'post'] as TaskPhase[]).map((phase) => {
-            const phaseTasks = tasks.filter((t) => t.phase === phase)
-            if (phaseTasks.length === 0) return null
+          {(["pre", "day_of", "post"] as TaskPhase[]).map((phase) => {
+            const phaseTasks = tasks.filter((t) => t.phase === phase);
+            if (phaseTasks.length === 0) return null;
 
-            const phaseConfig = phaseLabels[phase]
+            const phaseConfig = phaseLabels[phase];
             return (
               <div key={phase} className="mb-3">
                 <div className="text-xs font-medium text-gray-500 mb-1">
@@ -429,7 +531,7 @@ function FieldTripCard({
                         className="w-4 h-4 rounded border-gray-300"
                       />
                       <span
-                        className={`flex-1 text-sm ${task.completedAt ? 'line-through text-gray-400' : 'text-gray-700'}`}
+                        className={`flex-1 text-sm ${task.completedAt ? "line-through text-gray-400" : "text-gray-700"}`}
                       >
                         {task.title}
                       </span>
@@ -443,7 +545,7 @@ function FieldTripCard({
                   ))}
                 </div>
               </div>
-            )
+            );
           })}
 
           {tasks.length === 0 && (
@@ -455,12 +557,14 @@ function FieldTripCard({
           {/* Contacts Section */}
           <div className="mt-4 pt-4 border-t border-gray-200">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm font-medium text-gray-700">📞 Contacts</div>
+              <div className="text-sm font-medium text-gray-700">
+                📞 Contacts
+              </div>
               <button
                 onClick={() => setShowContactForm(!showContactForm)}
                 className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
               >
-                {showContactForm ? 'Cancel' : '+ Add'}
+                {showContactForm ? "Cancel" : "+ Add"}
               </button>
             </div>
 
@@ -476,16 +580,21 @@ function FieldTripCard({
                 <div className="grid grid-cols-2 gap-2">
                   <select
                     value={newContactRole}
-                    onChange={(e) => setNewContactRole(e.target.value as ContactRole)}
+                    onChange={(e) =>
+                      setNewContactRole(e.target.value as ContactRole)
+                    }
                     className="text-sm border border-gray-300 rounded px-2 py-1"
                   >
-                    {(Object.entries(contactRoleLabels) as [ContactRole, string][]).map(
-                      ([role, label]) => (
-                        <option key={role} value={role}>
-                          {label}
-                        </option>
-                      )
-                    )}
+                    {(
+                      Object.entries(contactRoleLabels) as [
+                        ContactRole,
+                        string,
+                      ][]
+                    ).map(([role, label]) => (
+                      <option key={role} value={role}>
+                        {label}
+                      </option>
+                    ))}
                   </select>
                   <input
                     type="tel"
@@ -509,25 +618,25 @@ function FieldTripCard({
                   placeholder="Website URL or notes"
                   className="w-full text-sm border border-gray-300 rounded px-2 py-1"
                 />
-                <button
+                <Button
+                  variant="primary"
                   onClick={handleAddContact}
                   disabled={!newContactName.trim()}
-                  className="btn btn-primary w-full text-sm py-1.5 disabled:opacity-50"
+                  className="w-full text-sm py-1.5 disabled:opacity-50"
                 >
                   Add Contact
-                </button>
+                </Button>
               </div>
             )}
 
             {contacts.length > 0 ? (
               <div className="space-y-2">
                 {contacts.map((contact) => (
-                  <div
-                    key={contact.id}
-                    className="p-2 bg-white/50 rounded"
-                  >
+                  <div key={contact.id} className="p-2 bg-white/50 rounded">
                     <div className="flex items-center justify-between">
-                      <div className="text-sm font-medium text-gray-700">{contact.name}</div>
+                      <div className="text-sm font-medium text-gray-700">
+                        {contact.name}
+                      </div>
                       <button
                         onClick={() => onDeleteContact(contact.id)}
                         className="text-gray-400 hover:text-red-500 text-xs"
@@ -537,28 +646,63 @@ function FieldTripCard({
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <select
-                        value={contact.role || 'other'}
-                        onChange={(e) => onUpdateContact(contact.id, { role: e.target.value as ContactRole })}
+                        value={contact.role || "other"}
+                        onChange={(e) =>
+                          onUpdateContact(contact.id, {
+                            role: e.target.value as ContactRole,
+                          })
+                        }
                         className="text-xs border border-gray-200 rounded px-1.5 py-0.5 bg-white"
                       >
-                        {(Object.entries(contactRoleLabels) as [ContactRole, string][]).map(
-                          ([role, label]) => (
-                            <option key={role} value={role}>{label}</option>
-                          )
-                        )}
+                        {(
+                          Object.entries(contactRoleLabels) as [
+                            ContactRole,
+                            string,
+                          ][]
+                        ).map(([role, label]) => (
+                          <option key={role} value={role}>
+                            {label}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div className="text-xs text-gray-500 mt-1 space-y-0.5">
                       {contact.phone && (
-                        <div>📞 <a href={`tel:${contact.phone}`} className="hover:text-fuchsia-600">{contact.phone}</a></div>
+                        <div>
+                          📞{" "}
+                          <a
+                            href={`tel:${contact.phone}`}
+                            className="hover:text-fuchsia-600"
+                          >
+                            {contact.phone}
+                          </a>
+                        </div>
                       )}
                       {contact.email && (
-                        <div>✉️ <a href={`mailto:${contact.email}`} className="hover:text-fuchsia-600">{contact.email}</a></div>
+                        <div>
+                          ✉️{" "}
+                          <a
+                            href={`mailto:${contact.email}`}
+                            className="hover:text-fuchsia-600"
+                          >
+                            {contact.email}
+                          </a>
+                        </div>
                       )}
                       {contact.notes && (
                         <div>
-                          {contact.notes.startsWith('http') ? (
-                            <>🔗 <a href={contact.notes} target="_blank" rel="noopener noreferrer" className="hover:text-fuchsia-600">{contact.notes}</a></>
+                          {contact.notes.startsWith("http") ? (
+                            <>
+                              🔗{" "}
+                              <a
+                                href={contact.notes}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-fuchsia-600"
+                              >
+                                {contact.notes}
+                              </a>
+                            </>
                           ) : (
                             <>📝 {contact.notes}</>
                           )}
@@ -585,7 +729,8 @@ function FieldTripCard({
                   📝 RSVPs
                   {rsvps.length > 0 && (
                     <span className="ml-2 text-xs text-gray-500">
-                      ({rsvpSummary.confirmed} confirmed, {rsvpSummary.totalAttending} attending)
+                      ({rsvpSummary.confirmed} confirmed,{" "}
+                      {rsvpSummary.totalAttending} attending)
                     </span>
                   )}
                 </div>
@@ -593,7 +738,7 @@ function FieldTripCard({
                   onClick={() => setShowRSVPForm(!showRSVPForm)}
                   className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
                 >
-                  {showRSVPForm ? 'Cancel' : '+ Add'}
+                  {showRSVPForm ? "Cancel" : "+ Add"}
                 </button>
               </div>
 
@@ -611,25 +756,28 @@ function FieldTripCard({
                     <input
                       type="number"
                       value={newRSVPCount}
-                      onChange={(e) => setNewRSVPCount(parseInt(e.target.value) || 1)}
+                      onChange={(e) =>
+                        setNewRSVPCount(parseInt(e.target.value) || 1)
+                      }
                       min="1"
                       className="w-16 text-sm border border-gray-300 rounded px-2 py-1"
                     />
                   </div>
-                  <button
+                  <Button
+                    variant="primary"
                     onClick={handleAddRSVP}
                     disabled={!newRSVPName.trim()}
-                    className="btn btn-primary w-full text-sm py-1.5 disabled:opacity-50"
+                    className="w-full text-sm py-1.5 disabled:opacity-50"
                   >
                     Add RSVP
-                  </button>
+                  </Button>
                 </div>
               )}
 
               {rsvps.length > 0 ? (
                 <div className="space-y-2">
                   {rsvps.map((rsvp) => {
-                    const statusInfo = rsvpStatusLabels[rsvp.status]
+                    const statusInfo = rsvpStatusLabels[rsvp.status];
                     return (
                       <div
                         key={rsvp.id}
@@ -641,23 +789,32 @@ function FieldTripCard({
                               {rsvp.familyName}
                             </div>
                             <div className="text-xs text-gray-500">
-                              {rsvp.attendingCount} {rsvp.attendingCount === 1 ? 'person' : 'people'}
+                              {rsvp.attendingCount}{" "}
+                              {rsvp.attendingCount === 1 ? "person" : "people"}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <select
                             value={rsvp.status}
-                            onChange={(e) => onUpdateRSVP(rsvp.id, e.target.value as RSVPStatus)}
+                            onChange={(e) =>
+                              onUpdateRSVP(
+                                rsvp.id,
+                                e.target.value as RSVPStatus,
+                              )
+                            }
                             className={`text-xs rounded px-2 py-1 border-0 ${statusInfo.bg} ${statusInfo.color}`}
                           >
-                            {(Object.entries(rsvpStatusLabels) as [RSVPStatus, typeof statusInfo][]).map(
-                              ([status, info]) => (
-                                <option key={status} value={status}>
-                                  {info.label}
-                                </option>
-                              )
-                            )}
+                            {(
+                              Object.entries(rsvpStatusLabels) as [
+                                RSVPStatus,
+                                typeof statusInfo,
+                              ][]
+                            ).map(([status, info]) => (
+                              <option key={status} value={status}>
+                                {info.label}
+                              </option>
+                            ))}
                           </select>
                           <button
                             onClick={() => onDeleteRSVP(rsvp.id)}
@@ -667,7 +824,7 @@ function FieldTripCard({
                           </button>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               ) : (
@@ -695,7 +852,7 @@ function FieldTripCard({
                 onClick={() => setShowExpenseForm(!showExpenseForm)}
                 className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
               >
-                {showExpenseForm ? 'Cancel' : '+ Add'}
+                {showExpenseForm ? "Cancel" : "+ Add"}
               </button>
             </div>
 
@@ -720,25 +877,31 @@ function FieldTripCard({
                   />
                   <select
                     value={newExpenseCategory}
-                    onChange={(e) => setNewExpenseCategory(e.target.value as ExpenseCategory)}
+                    onChange={(e) =>
+                      setNewExpenseCategory(e.target.value as ExpenseCategory)
+                    }
                     className="text-sm border border-gray-300 rounded px-2 py-1"
                   >
-                    {(Object.entries(expenseCategoryLabels) as [ExpenseCategory, { label: string; icon: string }][]).map(
-                      ([cat, config]) => (
-                        <option key={cat} value={cat}>
-                          {config.icon} {config.label}
-                        </option>
-                      )
-                    )}
+                    {(
+                      Object.entries(expenseCategoryLabels) as [
+                        ExpenseCategory,
+                        { label: string; icon: string },
+                      ][]
+                    ).map(([cat, config]) => (
+                      <option key={cat} value={cat}>
+                        {config.icon} {config.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
-                <button
+                <Button
+                  variant="primary"
                   onClick={handleAddExpense}
                   disabled={!newExpenseDesc.trim() || !newExpenseAmount}
-                  className="btn btn-primary w-full text-sm py-1.5 disabled:opacity-50"
+                  className="w-full text-sm py-1.5 disabled:opacity-50"
                 >
                   Add Expense
-                </button>
+                </Button>
               </div>
             )}
 
@@ -747,12 +910,9 @@ function FieldTripCard({
                 {expenses.map((expense) => {
                   const catConfig = expense.category
                     ? expenseCategoryLabels[expense.category]
-                    : expenseCategoryLabels.other
+                    : expenseCategoryLabels.other;
                   return (
-                    <div
-                      key={expense.id}
-                      className="p-2 bg-white/50 rounded"
-                    >
+                    <div key={expense.id} className="p-2 bg-white/50 rounded">
                       <div className="flex items-center justify-between">
                         <div className="text-sm font-medium text-gray-700">
                           {expense.description}
@@ -771,19 +931,28 @@ function FieldTripCard({
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <select
-                          value={expense.category || 'other'}
-                          onChange={(e) => onUpdateExpense(expense.id, { category: e.target.value as ExpenseCategory })}
+                          value={expense.category || "other"}
+                          onChange={(e) =>
+                            onUpdateExpense(expense.id, {
+                              category: e.target.value as ExpenseCategory,
+                            })
+                          }
                           className="text-xs border border-gray-200 rounded px-1.5 py-0.5 bg-white"
                         >
-                          {(Object.entries(expenseCategoryLabels) as [ExpenseCategory, { label: string; icon: string }][]).map(
-                            ([cat, config]) => (
-                              <option key={cat} value={cat}>{config.icon} {config.label}</option>
-                            )
-                          )}
+                          {(
+                            Object.entries(expenseCategoryLabels) as [
+                              ExpenseCategory,
+                              { label: string; icon: string },
+                            ][]
+                          ).map(([cat, config]) => (
+                            <option key={cat} value={cat}>
+                              {config.icon} {config.label}
+                            </option>
+                          ))}
                         </select>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             ) : (
@@ -804,408 +973,442 @@ function FieldTripCard({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default function FieldTrips(): JSX.Element {
-  const { students, subjects, selectedStudentId } = useStore()
-  const [trips, setTrips] = useState<FieldTrip[]>([])
-  const [filterStatus, setFilterStatus] = useState<StatusFilter>('all')
-  const [showAddTrip, setShowAddTrip] = useState(false)
-  const [editingTrip, setEditingTrip] = useState<FieldTrip | null>(null)
-  const [expandedTripId, setExpandedTripId] = useState<string | null>(null)
-  const [tasks, setTasks] = useState<Record<string, ActivityTask[]>>({})
-  const [newTaskTitle, setNewTaskTitle] = useState('')
-  const [newTaskPhase, setNewTaskPhase] = useState<TaskPhase>('pre')
-  const [contacts, setContacts] = useState<Record<string, ActivityContact[]>>({})
-  const [rsvps, setRSVPs] = useState<Record<string, ActivityRSVP[]>>({})
-  const [expenses, setExpenses] = useState<Record<string, ActivityExpense[]>>({})
+  const { students, subjects, selectedStudentId } = useStore();
+  const [trips, setTrips] = useState<FieldTrip[]>([]);
+  const [filterStatus, setFilterStatus] = useState<StatusFilter>("all");
+  const [showAddTrip, setShowAddTrip] = useState(false);
+  const [editingTrip, setEditingTrip] = useState<FieldTrip | null>(null);
+  const [expandedTripId, setExpandedTripId] = useState<string | null>(null);
+  const [tasks, setTasks] = useState<Record<string, ActivityTask[]>>({});
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskPhase, setNewTaskPhase] = useState<TaskPhase>("pre");
+  const [contacts, setContacts] = useState<Record<string, ActivityContact[]>>(
+    {},
+  );
+  const [rsvps, setRSVPs] = useState<Record<string, ActivityRSVP[]>>({});
+  const [expenses, setExpenses] = useState<Record<string, ActivityExpense[]>>(
+    {},
+  );
 
   // Duplicate modal state
-  const [duplicatingTrip, setDuplicatingTrip] = useState<FieldTrip | null>(null)
-  const [duplicateDate, setDuplicateDate] = useState('')
-  const [duplicateCopyTasks, setDuplicateCopyTasks] = useState(true)
-  const [duplicateCopyContacts, setDuplicateCopyContacts] = useState(true)
+  const [duplicatingTrip, setDuplicatingTrip] = useState<FieldTrip | null>(
+    null,
+  );
+  const [duplicateDate, setDuplicateDate] = useState("");
+  const [duplicateCopyTasks, setDuplicateCopyTasks] = useState(true);
+  const [duplicateCopyContacts, setDuplicateCopyContacts] = useState(true);
 
   const [formData, setFormData] = useState<CreateFieldTrip>({
-    title: '',
-    activityType: 'field_trip',
-    location: '',
-    description: '',
-    date: format(new Date(), 'yyyy-MM-dd'),
-    startTime: '',
-    endTime: '',
-    status: 'planned',
+    title: "",
+    activityType: "field_trip",
+    location: "",
+    description: "",
+    date: format(new Date(), "yyyy-MM-dd"),
+    startTime: "",
+    endTime: "",
+    status: "planned",
     studentIds: [],
     subjectIds: [],
     cost: undefined,
-    websiteUrl: '',
-    notes: '',
-    learningOutcomes: ''
-  })
+    websiteUrl: "",
+    notes: "",
+    learningOutcomes: "",
+  });
 
   const loadTrips = async () => {
     const data = await window.api.getFieldTrips(
-      selectedStudentId ? { studentId: selectedStudentId } : undefined
-    )
-    setTrips(data)
+      selectedStudentId ? { studentId: selectedStudentId } : undefined,
+    );
+    setTrips(data);
     // Load task counts for all activities
     const taskPromises = data.map(async (trip) => {
-      const activityTasks = await window.api.getActivityTasks(trip.id)
-      return { id: trip.id, tasks: activityTasks }
-    })
-    const allTasks = await Promise.all(taskPromises)
-    const tasksMap: Record<string, ActivityTask[]> = {}
+      const activityTasks = await window.api.getActivityTasks(trip.id);
+      return { id: trip.id, tasks: activityTasks };
+    });
+    const allTasks = await Promise.all(taskPromises);
+    const tasksMap: Record<string, ActivityTask[]> = {};
     allTasks.forEach(({ id, tasks: t }) => {
-      tasksMap[id] = t
-    })
-    setTasks(tasksMap)
-  }
+      tasksMap[id] = t;
+    });
+    setTasks(tasksMap);
+  };
 
   useEffect(() => {
-    loadTrips()
-  }, [selectedStudentId])
+    loadTrips();
+  }, [selectedStudentId]);
 
   const filteredTrips = useMemo(() => {
-    let filtered = trips
+    let filtered = trips;
 
-    if (filterStatus !== 'all') {
-      filtered = filtered.filter((t) => t.status === filterStatus)
+    if (filterStatus !== "all") {
+      filtered = filtered.filter((t) => t.status === filterStatus);
     }
 
     // Sort by date, upcoming first, then past
     return filtered.sort((a, b) => {
-      const dateA = toDate(a.date)
-      const dateB = toDate(b.date)
-      const nowDate = new Date()
+      const dateA = toDate(a.date);
+      const dateB = toDate(b.date);
+      const nowDate = new Date();
 
       // Upcoming trips first
-      const aIsUpcoming = dateA >= nowDate
-      const bIsUpcoming = dateB >= nowDate
+      const aIsUpcoming = dateA >= nowDate;
+      const bIsUpcoming = dateB >= nowDate;
 
-      if (aIsUpcoming && !bIsUpcoming) return -1
-      if (!aIsUpcoming && bIsUpcoming) return 1
+      if (aIsUpcoming && !bIsUpcoming) return -1;
+      if (!aIsUpcoming && bIsUpcoming) return 1;
 
       // Within same category, sort by date
       if (aIsUpcoming && bIsUpcoming) {
-        return dateA.getTime() - dateB.getTime() // Nearest first
+        return dateA.getTime() - dateB.getTime(); // Nearest first
       }
-      return dateB.getTime() - dateA.getTime() // Most recent first
-    })
-  }, [trips, filterStatus])
+      return dateB.getTime() - dateA.getTime(); // Most recent first
+    });
+  }, [trips, filterStatus]);
 
   const stats = useMemo(() => {
-    const total = trips.length
-    const planned = trips.filter((t) => t.status === 'planned').length
-    const completed = trips.filter((t) => t.status === 'completed').length
+    const total = trips.length;
+    const planned = trips.filter((t) => t.status === "planned").length;
+    const completed = trips.filter((t) => t.status === "completed").length;
     const upcoming = trips.filter(
-      (t) => t.status === 'planned' && (isFuture(toDate(t.date)) || isToday(toDate(t.date)))
-    ).length
-    return { total, planned, completed, upcoming }
-  }, [trips])
+      (t) =>
+        t.status === "planned" &&
+        (isFuture(toDate(t.date)) || isToday(toDate(t.date))),
+    ).length;
+    return { total, planned, completed, upcoming };
+  }, [trips]);
 
   const openAddModal = () => {
     setFormData({
-      title: '',
-      activityType: 'field_trip',
-      location: '',
-      description: '',
-      date: format(new Date(), 'yyyy-MM-dd'),
-      startTime: '',
-      endTime: '',
-      status: 'planned',
+      title: "",
+      activityType: "field_trip",
+      location: "",
+      description: "",
+      date: format(new Date(), "yyyy-MM-dd"),
+      startTime: "",
+      endTime: "",
+      status: "planned",
       studentIds: selectedStudentId ? [selectedStudentId] : [],
       subjectIds: [],
       cost: undefined,
-      websiteUrl: '',
-      notes: '',
-      learningOutcomes: ''
-    })
-    setShowAddTrip(true)
-  }
+      websiteUrl: "",
+      notes: "",
+      learningOutcomes: "",
+    });
+    setShowAddTrip(true);
+  };
 
   const openEditModal = (trip: FieldTrip) => {
-    setEditingTrip(trip)
+    setEditingTrip(trip);
     setFormData({
       title: trip.title,
       activityType: trip.activityType,
       location: trip.location,
-      description: trip.description || '',
+      description: trip.description || "",
       date: trip.date,
-      startTime: trip.startTime || '',
-      endTime: trip.endTime || '',
+      startTime: trip.startTime || "",
+      endTime: trip.endTime || "",
       status: trip.status,
       studentIds: trip.studentIds,
       subjectIds: trip.subjectIds,
       cost: trip.cost,
-      websiteUrl: trip.websiteUrl || '',
-      notes: trip.notes || '',
-      learningOutcomes: trip.learningOutcomes || ''
-    })
-  }
+      websiteUrl: trip.websiteUrl || "",
+      notes: trip.notes || "",
+      learningOutcomes: trip.learningOutcomes || "",
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.title || !formData.location || !formData.date) return
+    e.preventDefault();
+    if (!formData.title || !formData.location || !formData.date) return;
     if (formData.studentIds.length === 0) {
-      alert('Please select at least one student')
-      return
+      alert("Please select at least one student");
+      return;
     }
 
     const tripData: CreateFieldTrip = {
       ...formData,
-      cost: formData.cost || undefined
-    }
+      cost: formData.cost || undefined,
+    };
 
     if (editingTrip) {
-      await window.api.updateFieldTrip(editingTrip.id, tripData)
-      setEditingTrip(null)
+      await window.api.updateFieldTrip(editingTrip.id, tripData);
+      setEditingTrip(null);
     } else {
-      await window.api.createFieldTrip(tripData)
-      setShowAddTrip(false)
+      await window.api.createFieldTrip(tripData);
+      setShowAddTrip(false);
     }
 
-    loadTrips()
-  }
+    loadTrips();
+  };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this activity?')) {
-      await window.api.deleteFieldTrip(id)
-      loadTrips()
+    if (confirm("Are you sure you want to delete this activity?")) {
+      await window.api.deleteFieldTrip(id);
+      loadTrips();
     }
-  }
+  };
 
   const handleStatusChange = async (id: string, status: FieldTripStatus) => {
-    await window.api.updateFieldTrip(id, { status })
-    loadTrips()
-  }
+    await window.api.updateFieldTrip(id, { status });
+    loadTrips();
+  };
 
   const openDuplicateModal = (trip: FieldTrip) => {
-    setDuplicatingTrip(trip)
-    setDuplicateDate(format(addDays(toDate(trip.date), 7), 'yyyy-MM-dd')) // Default to 1 week later
-    setDuplicateCopyTasks(true)
-    setDuplicateCopyContacts(true)
-  }
+    setDuplicatingTrip(trip);
+    setDuplicateDate(format(addDays(toDate(trip.date), 7), "yyyy-MM-dd")); // Default to 1 week later
+    setDuplicateCopyTasks(true);
+    setDuplicateCopyContacts(true);
+  };
 
   const handleDuplicate = async () => {
-    if (!duplicatingTrip || !duplicateDate) return
+    if (!duplicatingTrip || !duplicateDate) return;
     await window.api.duplicateActivity(duplicatingTrip.id, {
       newDate: duplicateDate,
       copyTasks: duplicateCopyTasks,
-      copyContacts: duplicateCopyContacts
-    })
-    setDuplicatingTrip(null)
-    loadTrips()
-  }
+      copyContacts: duplicateCopyContacts,
+    });
+    setDuplicatingTrip(null);
+    loadTrips();
+  };
 
   const loadTasks = async (activityId: string) => {
-    const activityTasks = await window.api.getActivityTasks(activityId)
-    setTasks((prev) => ({ ...prev, [activityId]: activityTasks }))
-  }
+    const activityTasks = await window.api.getActivityTasks(activityId);
+    setTasks((prev) => ({ ...prev, [activityId]: activityTasks }));
+  };
 
   const toggleExpanded = async (tripId: string) => {
     if (expandedTripId === tripId) {
-      setExpandedTripId(null)
+      setExpandedTripId(null);
     } else {
-      setExpandedTripId(tripId)
+      setExpandedTripId(tripId);
       // Load all data for the expanded card
       if (!tasks[tripId]) {
-        await loadTasks(tripId)
+        await loadTasks(tripId);
       }
       if (!contacts[tripId]) {
-        await loadContacts(tripId)
+        await loadContacts(tripId);
       }
       if (!rsvps[tripId]) {
-        await loadRSVPs(tripId)
+        await loadRSVPs(tripId);
       }
       if (!expenses[tripId]) {
-        await loadExpenses(tripId)
+        await loadExpenses(tripId);
       }
     }
-  }
+  };
 
   const handleAddTask = async (activityId: string) => {
-    if (!newTaskTitle.trim()) return
+    if (!newTaskTitle.trim()) return;
     await window.api.createActivityTask({
       activityId,
       title: newTaskTitle.trim(),
       phase: newTaskPhase,
-      sortOrder: 0
-    })
-    setNewTaskTitle('')
-    await loadTasks(activityId)
-  }
+      sortOrder: 0,
+    });
+    setNewTaskTitle("");
+    await loadTasks(activityId);
+  };
 
   const handleToggleTask = async (taskId: string, activityId: string) => {
-    await window.api.toggleActivityTask(taskId)
-    await loadTasks(activityId)
-  }
+    await window.api.toggleActivityTask(taskId);
+    await loadTasks(activityId);
+  };
 
   const handleDeleteTask = async (taskId: string, activityId: string) => {
-    await window.api.deleteActivityTask(taskId)
-    await loadTasks(activityId)
-  }
+    await window.api.deleteActivityTask(taskId);
+    await loadTasks(activityId);
+  };
 
   // Contacts handlers
   const loadContacts = async (activityId: string) => {
-    const activityContacts = await window.api.getActivityContacts(activityId)
-    setContacts((prev) => ({ ...prev, [activityId]: activityContacts }))
-  }
+    const activityContacts = await window.api.getActivityContacts(activityId);
+    setContacts((prev) => ({ ...prev, [activityId]: activityContacts }));
+  };
 
-  const handleAddContact = async (activityId: string, data: Omit<CreateActivityContact, 'activityId'>) => {
-    await window.api.createActivityContact({ ...data, activityId })
-    await loadContacts(activityId)
-  }
+  const handleAddContact = async (
+    activityId: string,
+    data: Omit<CreateActivityContact, "activityId">,
+  ) => {
+    await window.api.createActivityContact({ ...data, activityId });
+    await loadContacts(activityId);
+  };
 
   const handleDeleteContact = async (contactId: string, activityId: string) => {
-    await window.api.deleteActivityContact(contactId)
-    await loadContacts(activityId)
-  }
+    await window.api.deleteActivityContact(contactId);
+    await loadContacts(activityId);
+  };
 
   const handleUpdateContact = async (
     contactId: string,
-    data: Partial<Omit<CreateActivityContact, 'activityId'>>,
-    activityId: string
+    data: Partial<Omit<CreateActivityContact, "activityId">>,
+    activityId: string,
   ) => {
-    await window.api.updateActivityContact(contactId, data)
-    await loadContacts(activityId)
-  }
+    await window.api.updateActivityContact(contactId, data);
+    await loadContacts(activityId);
+  };
 
   // RSVP handlers
   const loadRSVPs = async (activityId: string) => {
-    const activityRSVPs = await window.api.getActivityRSVPs(activityId)
-    setRSVPs((prev) => ({ ...prev, [activityId]: activityRSVPs }))
-  }
+    const activityRSVPs = await window.api.getActivityRSVPs(activityId);
+    setRSVPs((prev) => ({ ...prev, [activityId]: activityRSVPs }));
+  };
 
-  const handleAddRSVP = async (activityId: string, data: Omit<CreateActivityRSVP, 'activityId'>) => {
-    await window.api.createActivityRSVP({ ...data, activityId })
-    await loadRSVPs(activityId)
-  }
+  const handleAddRSVP = async (
+    activityId: string,
+    data: Omit<CreateActivityRSVP, "activityId">,
+  ) => {
+    await window.api.createActivityRSVP({ ...data, activityId });
+    await loadRSVPs(activityId);
+  };
 
-  const handleUpdateRSVP = async (rsvpId: string, status: RSVPStatus, activityId: string) => {
-    await window.api.updateActivityRSVP(rsvpId, { status })
-    await loadRSVPs(activityId)
-  }
+  const handleUpdateRSVP = async (
+    rsvpId: string,
+    status: RSVPStatus,
+    activityId: string,
+  ) => {
+    await window.api.updateActivityRSVP(rsvpId, { status });
+    await loadRSVPs(activityId);
+  };
 
   const handleDeleteRSVP = async (rsvpId: string, activityId: string) => {
-    await window.api.deleteActivityRSVP(rsvpId)
-    await loadRSVPs(activityId)
-  }
+    await window.api.deleteActivityRSVP(rsvpId);
+    await loadRSVPs(activityId);
+  };
 
   // Expense handlers
   const loadExpenses = async (activityId: string) => {
-    const activityExpenses = await window.api.getActivityExpenses(activityId)
-    setExpenses((prev) => ({ ...prev, [activityId]: activityExpenses }))
-  }
+    const activityExpenses = await window.api.getActivityExpenses(activityId);
+    setExpenses((prev) => ({ ...prev, [activityId]: activityExpenses }));
+  };
 
-  const handleAddExpense = async (activityId: string, data: Omit<CreateActivityExpense, 'activityId'>) => {
-    await window.api.createActivityExpense({ ...data, activityId })
-    await loadExpenses(activityId)
-  }
+  const handleAddExpense = async (
+    activityId: string,
+    data: Omit<CreateActivityExpense, "activityId">,
+  ) => {
+    await window.api.createActivityExpense({ ...data, activityId });
+    await loadExpenses(activityId);
+  };
 
   const handleDeleteExpense = async (expenseId: string, activityId: string) => {
-    await window.api.deleteActivityExpense(expenseId)
-    await loadExpenses(activityId)
-  }
+    await window.api.deleteActivityExpense(expenseId);
+    await loadExpenses(activityId);
+  };
 
   const handleUpdateExpense = async (
     expenseId: string,
-    data: Partial<Omit<CreateActivityExpense, 'activityId'>>,
-    activityId: string
+    data: Partial<Omit<CreateActivityExpense, "activityId">>,
+    activityId: string,
   ) => {
-    await window.api.updateActivityExpense(expenseId, data)
-    await loadExpenses(activityId)
-  }
+    await window.api.updateActivityExpense(expenseId, data);
+    await loadExpenses(activityId);
+  };
 
   // Activity linking handlers
-  const handleLinkActivity = async (fieldTripId: string, activityId: string) => {
-    await window.api.linkActivityToFieldTrip({ fieldTripId, activityId })
-  }
+  const handleLinkActivity = async (
+    fieldTripId: string,
+    activityId: string,
+  ) => {
+    await window.api.linkActivityToFieldTrip({ fieldTripId, activityId });
+  };
 
-  const handleUnlinkActivity = async (fieldTripId: string, activityId: string) => {
-    await window.api.unlinkActivityFromFieldTrip(fieldTripId, activityId)
-  }
+  const handleUnlinkActivity = async (
+    fieldTripId: string,
+    activityId: string,
+  ) => {
+    await window.api.unlinkActivityFromFieldTrip(fieldTripId, activityId);
+  };
 
   const toggleStudentSelection = (studentId: string) => {
     setFormData((prev) => ({
       ...prev,
       studentIds: prev.studentIds.includes(studentId)
         ? prev.studentIds.filter((id) => id !== studentId)
-        : [...prev.studentIds, studentId]
-    }))
-  }
+        : [...prev.studentIds, studentId],
+    }));
+  };
 
   const toggleSubjectSelection = (subjectId: string) => {
     setFormData((prev) => ({
       ...prev,
       subjectIds: prev.subjectIds.includes(subjectId)
         ? prev.subjectIds.filter((id) => id !== subjectId)
-        : [...prev.subjectIds, subjectId]
-    }))
-  }
+        : [...prev.subjectIds, subjectId],
+    }));
+  };
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Activities</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Plan field trips, park days, playdates, and social events
-          </p>
-        </div>
-        <button onClick={openAddModal} className="btn btn-primary">
-          + Plan Activity
-        </button>
-      </div>
-
+    <PageContainer>
+      <PageHeader
+        title="Activities"
+        subtitle="Plan field trips, park days, playdates, and social events"
+        action={
+          <Button variant="primary" onClick={openAddModal}>
+            + Plan Activity
+          </Button>
+        }
+      />
       {/* Stats */}
-      <div className="card mb-6">
+      <Card className="mb-6">
         <div className="grid grid-cols-4 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {stats.total}
+            </div>
             <div className="text-sm text-gray-500">Total Activities</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-blue-600">{stats.upcoming}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {stats.upcoming}
+            </div>
             <div className="text-sm text-gray-500">Upcoming</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {stats.completed}
+            </div>
             <div className="text-sm text-gray-500">Completed</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-amber-600">{stats.planned}</div>
+            <div className="text-2xl font-bold text-amber-600">
+              {stats.planned}
+            </div>
             <div className="text-sm text-gray-500">Planned</div>
           </div>
         </div>
-      </div>
-
+      </Card>
       {/* Filters */}
       <div className="flex gap-1 mb-6">
-        {(['all', 'planned', 'completed', 'cancelled'] as StatusFilter[]).map((status) => (
-          <button
-            key={status}
-            onClick={() => setFilterStatus(status)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filterStatus === status
-                ? 'bg-fuchsia-100 text-fuchsia-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
-          </button>
-        ))}
+        {(["all", "planned", "completed", "cancelled"] as StatusFilter[]).map(
+          (status) => (
+            <button
+              key={status}
+              onClick={() => setFilterStatus(status)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                filterStatus === status
+                  ? "bg-fuchsia-100 text-fuchsia-700"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {status === "all"
+                ? "All"
+                : status.charAt(0).toUpperCase() + status.slice(1)}
+            </button>
+          ),
+        )}
       </div>
-
       {/* Activities List */}
       {filteredTrips.length === 0 ? (
-        <div className="card text-center py-12">
+        <Card className="text-center py-12">
           <p className="text-gray-500">
             {trips.length === 0
-              ? 'No activities planned yet. Start by planning your first activity!'
-              : 'No activities match your filter.'}
+              ? "No activities planned yet. Start by planning your first activity!"
+              : "No activities match your filter."}
           </p>
-        </div>
+        </Card>
       ) : (
         <div className="space-y-4">
           {filteredTrips.map((trip) => (
@@ -1221,7 +1424,7 @@ export default function FieldTrips(): JSX.Element {
               isExpanded={expandedTripId === trip.id}
               onToggleExpand={() => toggleExpanded(trip.id)}
               tasks={tasks[trip.id] || []}
-              newTaskTitle={expandedTripId === trip.id ? newTaskTitle : ''}
+              newTaskTitle={expandedTripId === trip.id ? newTaskTitle : ""}
               newTaskPhase={newTaskPhase}
               onNewTaskTitleChange={setNewTaskTitle}
               onNewTaskPhaseChange={setNewTaskPhase}
@@ -1230,323 +1433,337 @@ export default function FieldTrips(): JSX.Element {
               onDeleteTask={(taskId) => handleDeleteTask(taskId, trip.id)}
               contacts={contacts[trip.id] || []}
               onAddContact={(data) => handleAddContact(trip.id, data)}
-              onUpdateContact={(contactId, data) => handleUpdateContact(contactId, data, trip.id)}
-              onDeleteContact={(contactId) => handleDeleteContact(contactId, trip.id)}
+              onUpdateContact={(contactId, data) =>
+                handleUpdateContact(contactId, data, trip.id)
+              }
+              onDeleteContact={(contactId) =>
+                handleDeleteContact(contactId, trip.id)
+              }
               rsvps={rsvps[trip.id] || []}
               onAddRSVP={(data) => handleAddRSVP(trip.id, data)}
-              onUpdateRSVP={(rsvpId, status) => handleUpdateRSVP(rsvpId, status, trip.id)}
+              onUpdateRSVP={(rsvpId, status) =>
+                handleUpdateRSVP(rsvpId, status, trip.id)
+              }
               onDeleteRSVP={(rsvpId) => handleDeleteRSVP(rsvpId, trip.id)}
               expenses={expenses[trip.id] || []}
               onAddExpense={(data) => handleAddExpense(trip.id, data)}
-              onUpdateExpense={(expenseId, data) => handleUpdateExpense(expenseId, data, trip.id)}
-              onDeleteExpense={(expenseId) => handleDeleteExpense(expenseId, trip.id)}
-              onLinkActivity={(activityId) => handleLinkActivity(trip.id, activityId)}
-              onUnlinkActivity={(activityId) => handleUnlinkActivity(trip.id, activityId)}
+              onUpdateExpense={(expenseId, data) =>
+                handleUpdateExpense(expenseId, data, trip.id)
+              }
+              onDeleteExpense={(expenseId) =>
+                handleDeleteExpense(expenseId, trip.id)
+              }
+              onLinkActivity={(activityId) =>
+                handleLinkActivity(trip.id, activityId)
+              }
+              onUnlinkActivity={(activityId) =>
+                handleUnlinkActivity(trip.id, activityId)
+              }
             />
           ))}
         </div>
       )}
-
       {/* Add/Edit Modal */}
-      <Dialog
+      <Modal
         open={showAddTrip || !!editingTrip}
         onClose={() => {
-          setShowAddTrip(false)
-          setEditingTrip(null)
+          setShowAddTrip(false);
+          setEditingTrip(null);
         }}
-        className="relative z-50"
+        title={editingTrip ? "Edit Activity" : "Plan Activity"}
+        size="lg"
       >
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 my-8">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
-              {editingTrip ? 'Edit Activity' : 'Plan Activity'}
-            </Dialog.Title>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Activity Type Selector */}
-              <div>
-                <label className="label">Activity Type</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(Object.entries(activityTypeConfig) as [EventActivityType, typeof activityTypeConfig.field_trip][]).map(
-                    ([type, config]) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setFormData({ ...formData, activityType: type })}
-                        className={`p-2 rounded-lg text-center transition-all ${
-                          formData.activityType === type
-                            ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
-                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                        }`}
-                      >
-                        <div className="text-xl">{config.icon}</div>
-                        <div className="text-xs mt-1">{config.label}</div>
-                      </button>
-                    )
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="label">Title *</label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="input"
-                  placeholder="e.g., Science Museum Visit"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="label">Location *</label>
-                <input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="input"
-                  placeholder="e.g., Natural History Museum, 123 Main St"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="label">Date *</label>
-                  <input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="input"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="label">Estimated Cost</label>
-                  <input
-                    type="number"
-                    value={formData.cost || ''}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        cost: e.target.value ? parseFloat(e.target.value) : undefined
-                      })
-                    }
-                    className="input"
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="label">Start Time</label>
-                  <input
-                    type="time"
-                    value={formData.startTime || ''}
-                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                    className="input"
-                  />
-                </div>
-                <div>
-                  <label className="label">End Time</label>
-                  <input
-                    type="time"
-                    value={formData.endTime || ''}
-                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                    className="input"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="label">Students *</label>
-                <div className="flex flex-wrap gap-2">
-                  {students.map((student) => (
-                    <button
-                      key={student.id}
-                      type="button"
-                      onClick={() => toggleStudentSelection(student.id)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                        formData.studentIds.includes(student.id)
-                          ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-500'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {student.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="label">Related Subjects</label>
-                <div className="flex flex-wrap gap-2">
-                  {subjects.map((subject) => (
-                    <button
-                      key={subject.id}
-                      type="button"
-                      onClick={() => toggleSubjectSelection(subject.id)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                        formData.subjectIds.includes(subject.id)
-                          ? 'bg-fuchsia-100 text-fuchsia-700 ring-2 ring-fuchsia-500'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {subject.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="label">Website URL</label>
-                <input
-                  type="url"
-                  value={formData.websiteUrl}
-                  onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
-                  className="input"
-                  placeholder="https://..."
-                />
-              </div>
-
-              <div>
-                <label className="label">Description</label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="input"
-                  rows={2}
-                  placeholder="What will you see/do?"
-                />
-              </div>
-
-              {editingTrip && (
-                <div>
-                  <label className="label">Learning Outcomes</label>
-                  <textarea
-                    value={formData.learningOutcomes}
-                    onChange={(e) => setFormData({ ...formData, learningOutcomes: e.target.value })}
-                    className="input"
-                    rows={2}
-                    placeholder="What did the students learn?"
-                  />
-                </div>
-              )}
-
-              <div>
-                <label className="label">Notes</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="input"
-                  rows={2}
-                  placeholder="Parking info, what to bring, etc."
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Activity Type Selector */}
+          <div>
+            <label className="label">Activity Type</label>
+            <div className="grid grid-cols-3 gap-2">
+              {(
+                Object.entries(activityTypeConfig) as [
+                  EventActivityType,
+                  typeof activityTypeConfig.field_trip,
+                ][]
+              ).map(([type, config]) => (
                 <button
+                  key={type}
                   type="button"
-                  onClick={() => {
-                    setShowAddTrip(false)
-                    setEditingTrip(null)
-                  }}
-                  className="btn btn-secondary"
+                  onClick={() =>
+                    setFormData({ ...formData, activityType: type })
+                  }
+                  className={`p-2 rounded-lg text-center transition-all ${
+                    formData.activityType === type
+                      ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
+                      : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                  }`}
                 >
-                  Cancel
+                  <div className="text-xl">{config.icon}</div>
+                  <div className="text-xs mt-1">{config.label}</div>
                 </button>
-                <button type="submit" className="btn btn-primary">
-                  {editingTrip ? 'Save Changes' : 'Create Activity'}
-                </button>
-              </div>
-            </form>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
+              ))}
+            </div>
+          </div>
 
+          <div>
+            <label className="label">Title *</label>
+            <Input
+              type="text"
+              value={formData.title}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
+              placeholder="e.g., Science Museum Visit"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="label">Location *</label>
+            <Input
+              type="text"
+              value={formData.location}
+              onChange={(e) =>
+                setFormData({ ...formData, location: e.target.value })
+              }
+              placeholder="e.g., Natural History Museum, 123 Main St"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="label">Date *</label>
+              <Input
+                type="date"
+                value={formData.date}
+                onChange={(e) =>
+                  setFormData({ ...formData, date: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div>
+              <label className="label">Estimated Cost</label>
+              <Input
+                type="number"
+                value={formData.cost || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    cost: e.target.value
+                      ? parseFloat(e.target.value)
+                      : undefined,
+                  })
+                }
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="label">Start Time</label>
+              <Input
+                type="time"
+                value={formData.startTime || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, startTime: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <label className="label">End Time</label>
+              <Input
+                type="time"
+                value={formData.endTime || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, endTime: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="label">Students *</label>
+            <div className="flex flex-wrap gap-2">
+              {students.map((student) => (
+                <button
+                  key={student.id}
+                  type="button"
+                  onClick={() => toggleStudentSelection(student.id)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    formData.studentIds.includes(student.id)
+                      ? "bg-purple-100 text-purple-700 ring-2 ring-purple-500"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {student.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="label">Related Subjects</label>
+            <div className="flex flex-wrap gap-2">
+              {subjects.map((subject) => (
+                <button
+                  key={subject.id}
+                  type="button"
+                  onClick={() => toggleSubjectSelection(subject.id)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    formData.subjectIds.includes(subject.id)
+                      ? "bg-fuchsia-100 text-fuchsia-700 ring-2 ring-fuchsia-500"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
+                >
+                  {subject.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="label">Website URL</label>
+            <Input
+              type="url"
+              value={formData.websiteUrl}
+              onChange={(e) =>
+                setFormData({ ...formData, websiteUrl: e.target.value })
+              }
+              placeholder="https://..."
+            />
+          </div>
+
+          <div>
+            <label className="label">Description</label>
+            <textarea
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              className="input"
+              rows={2}
+              placeholder="What will you see/do?"
+            />
+          </div>
+
+          {editingTrip && (
+            <div>
+              <label className="label">Learning Outcomes</label>
+              <textarea
+                value={formData.learningOutcomes}
+                onChange={(e) =>
+                  setFormData({ ...formData, learningOutcomes: e.target.value })
+                }
+                className="input"
+                rows={2}
+                placeholder="What did the students learn?"
+              />
+            </div>
+          )}
+
+          <div>
+            <label className="label">Notes</label>
+            <textarea
+              value={formData.notes}
+              onChange={(e) =>
+                setFormData({ ...formData, notes: e.target.value })
+              }
+              className="input"
+              rows={2}
+              placeholder="Parking info, what to bring, etc."
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() => {
+                setShowAddTrip(false);
+                setEditingTrip(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit">
+              {editingTrip ? "Save Changes" : "Create Activity"}
+            </Button>
+          </div>
+        </form>
+      </Modal>
       {/* Duplicate Modal */}
-      <Dialog
+      <Modal
         open={!!duplicatingTrip}
         onClose={() => setDuplicatingTrip(null)}
-        className="relative z-50"
+        title="Duplicate Activity"
+        size="md"
       >
-        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
-              Duplicate Activity
-            </Dialog.Title>
+        {duplicatingTrip && (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Create a copy of{" "}
+              <span className="font-medium">{duplicatingTrip.title}</span>
+            </p>
 
-            {duplicatingTrip && (
-              <div className="space-y-4">
-                <p className="text-sm text-gray-600">
-                  Create a copy of <span className="font-medium">{duplicatingTrip.title}</span>
-                </p>
+            <div>
+              <label className="label">New Date *</label>
+              <Input
+                type="date"
+                value={duplicateDate}
+                onChange={(e) => setDuplicateDate(e.target.value)}
+                required
+              />
+            </div>
 
-                <div>
-                  <label className="label">New Date *</label>
-                  <input
-                    type="date"
-                    value={duplicateDate}
-                    onChange={(e) => setDuplicateDate(e.target.value)}
-                    className="input"
-                    required
-                  />
-                </div>
+            <div className="space-y-2">
+              <label className="label">Copy Options</label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={duplicateCopyTasks}
+                  onChange={(e) => setDuplicateCopyTasks(e.target.checked)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span>Copy tasks (will be reset to incomplete)</span>
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={duplicateCopyContacts}
+                  onChange={(e) => setDuplicateCopyContacts(e.target.checked)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span>Copy contacts</span>
+              </label>
+              <p className="text-xs text-gray-500 mt-1">
+                RSVPs, expenses, and payments are not copied.
+              </p>
+            </div>
 
-                <div className="space-y-2">
-                  <label className="label">Copy Options</label>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={duplicateCopyTasks}
-                      onChange={(e) => setDuplicateCopyTasks(e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span>Copy tasks (will be reset to incomplete)</span>
-                  </label>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={duplicateCopyContacts}
-                      onChange={(e) => setDuplicateCopyContacts(e.target.checked)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span>Copy contacts</span>
-                  </label>
-                  <p className="text-xs text-gray-500 mt-1">
-                    RSVPs, expenses, and payments are not copied.
-                  </p>
-                </div>
-
-                <div className="flex justify-end gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setDuplicatingTrip(null)}
-                    className="btn btn-secondary"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDuplicate}
-                    disabled={!duplicateDate}
-                    className="btn btn-primary"
-                  >
-                    Duplicate
-                  </button>
-                </div>
-              </div>
-            )}
-          </Dialog.Panel>
-        </div>
-      </Dialog>
-    </div>
-  )
+            <div className="flex justify-end gap-3 pt-4">
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => setDuplicatingTrip(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                type="button"
+                onClick={handleDuplicate}
+                disabled={!duplicateDate}
+              >
+                Duplicate
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </PageContainer>
+  );
 }

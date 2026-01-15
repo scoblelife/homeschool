@@ -6,7 +6,12 @@
  */
 
 // Button
-export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './Button'
+export {
+  Button,
+  type ButtonProps,
+  type ButtonVariant,
+  type ButtonSize,
+} from "./Button";
 
 // Card
 export {
@@ -18,7 +23,7 @@ export {
   CardFooter,
   type CardProps,
   type CardPadding,
-} from './Card'
+} from "./Card";
 
 // Badge
 export {
@@ -29,7 +34,7 @@ export {
   type BadgeSize,
   type StudentBadgeProps,
   type StudentColor,
-} from './Badge'
+} from "./Badge";
 
 // Input
 export {
@@ -42,7 +47,7 @@ export {
   type LabelProps,
   type FormFieldProps,
   type InputSize,
-} from './Input'
+} from "./Input";
 
 // Empty State
 export {
@@ -51,7 +56,7 @@ export {
   NoActivitiesEmpty,
   NoResultsEmpty,
   type EmptyStateProps,
-} from './EmptyState'
+} from "./EmptyState";
 
 // Progress
 export {
@@ -61,4 +66,23 @@ export {
   type CircularProgressProps,
   type ProgressVariant,
   type ProgressSize,
-} from './ProgressBar'
+} from "./ProgressBar";
+
+// Modal
+export {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalActions,
+  type ModalProps,
+  type ModalSize,
+} from "./Modal";
+
+// Alert
+export {
+  Alert,
+  type AlertProps,
+  type AlertVariant,
+  type AlertStyle,
+} from "./Alert";

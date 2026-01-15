@@ -2,145 +2,154 @@
  * QR Code Display Component - shows QR code for family invite
  */
 
-import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Share, Alert } from 'react-native'
-import QRCode from 'react-native-qrcode-svg'
-import * as Clipboard from 'expo-clipboard'
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Share,
+  Alert,
+} from "react-native";
+import QRCode from "react-native-qrcode-svg";
+import * as Clipboard from "expo-clipboard";
+import { useColors } from "../../theme/createStyles";
 
 interface QRCodeDisplayProps {
-  inviteCode: string
-  inviteMessage: string
-  onClose: () => void
+  inviteCode: string;
+  inviteMessage: string;
+  onClose: () => void;
 }
 
-export function QRCodeDisplay({ inviteCode, inviteMessage, onClose }: QRCodeDisplayProps) {
+export function QRCodeDisplay({
+  inviteCode,
+  inviteMessage,
+  onClose,
+}: QRCodeDisplayProps) {
+  const colors = useColors();
   const handleShare = async () => {
     try {
       await Share.share({
         message: inviteMessage,
-      })
+      });
     } catch (error) {
-      console.error('Error sharing:', error)
+      console.error("Error sharing:", error);
     }
-  }
+  };
 
   const handleCopyCode = async () => {
     try {
-      await Clipboard.setStringAsync(inviteCode)
-      Alert.alert('Copied', 'Invite code copied to clipboard')
+      await Clipboard.setStringAsync(inviteCode);
+      Alert.alert("Copied", "Invite code copied to clipboard");
     } catch (error) {
-      console.error('Error copying:', error)
+      console.error("Error copying:", error);
     }
-  }
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Family Invite</Text>
-      <Text style={styles.subtitle}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 20,
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          color: colors.text,
+          marginBottom: 8,
+        }}
+      >
+        Family Invite
+      </Text>
+      <Text
+        style={{
+          fontSize: 14,
+          color: colors.textSecondary,
+          textAlign: "center",
+          marginBottom: 32,
+          paddingHorizontal: 20,
+        }}
+      >
         Share this QR code with family members to let them join
       </Text>
 
-      <View style={styles.qrContainer}>
+      <View
+        style={{
+          backgroundColor: colors.card,
+          padding: 20,
+          borderRadius: 16,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
+          marginBottom: 24,
+        }}
+      >
         <QRCode
           value={inviteCode}
           size={200}
-          backgroundColor="#fff"
-          color="#000"
+          backgroundColor={colors.card}
+          color={colors.text}
         />
       </View>
 
-      <Text style={styles.instructions}>
+      <Text
+        style={{
+          fontSize: 14,
+          color: colors.textSecondary,
+          textAlign: "center",
+          marginBottom: 32,
+          paddingHorizontal: 40,
+        }}
+      >
         Scan this code with the Homeschool app or share the invite
       </Text>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-          <Text style={styles.shareButtonText}>Share Invite</Text>
+      <View style={{ flexDirection: "row", gap: 12, marginBottom: 16 }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: colors.primary,
+            paddingVertical: 14,
+            paddingHorizontal: 24,
+            borderRadius: 8,
+          }}
+          onPress={handleShare}
+        >
+          <Text
+            style={{
+              color: colors.textInverse,
+              fontSize: 16,
+              fontWeight: "600",
+            }}
+          >
+            Share Invite
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.copyButton} onPress={handleCopyCode}>
-          <Text style={styles.copyButtonText}>Copy Code</Text>
+        <TouchableOpacity
+          style={{
+            backgroundColor: colors.surfaceSecondary,
+            paddingVertical: 14,
+            paddingHorizontal: 24,
+            borderRadius: 8,
+          }}
+          onPress={handleCopyCode}
+        >
+          <Text style={{ color: colors.text, fontSize: 16, fontWeight: "600" }}>
+            Copy Code
+          </Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-        <Text style={styles.closeButtonText}>Close</Text>
+      <TouchableOpacity style={{ padding: 16 }} onPress={onClose}>
+        <Text style={{ color: colors.textSecondary, fontSize: 14 }}>Close</Text>
       </TouchableOpacity>
     </View>
-  )
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-    textAlign: 'center',
-    marginBottom: 32,
-    paddingHorizontal: 20,
-  },
-  qrContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-    marginBottom: 24,
-  },
-  instructions: {
-    fontSize: 14,
-    color: '#6b7280',
-    textAlign: 'center',
-    marginBottom: 32,
-    paddingHorizontal: 40,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
-  },
-  shareButton: {
-    backgroundColor: '#d946ef',
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  shareButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  copyButton: {
-    backgroundColor: '#f3f4f6',
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  copyButtonText: {
-    color: '#374151',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  closeButton: {
-    padding: 16,
-  },
-  closeButtonText: {
-    color: '#6b7280',
-    fontSize: 14,
-  },
-})

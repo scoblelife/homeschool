@@ -1,48 +1,53 @@
-import { View, Text, ViewStyle } from 'react-native'
+import { View, Text, ViewStyle } from "react-native";
+import { useColors } from "../../theme/createStyles";
 
 interface ProgressBarProps {
-  progress: number // 0-100
-  color?: string
-  height?: number
-  showLabel?: boolean
-  label?: string
-  style?: ViewStyle
+  progress: number; // 0-100
+  color?: string;
+  height?: number;
+  showLabel?: boolean;
+  label?: string;
+  style?: ViewStyle;
 }
 
 export function ProgressBar({
   progress,
-  color = '#22c55e',
+  color,
   height = 8,
   showLabel = false,
   label,
   style,
 }: ProgressBarProps) {
-  const clampedProgress = Math.min(Math.max(progress, 0), 100)
+  const colors = useColors();
+  const progressColor = color || colors.success;
+  const clampedProgress = Math.min(Math.max(progress, 0), 100);
 
   return (
     <View style={style}>
       <View
         style={{
           height,
-          backgroundColor: '#e5e7eb',
+          backgroundColor: colors.border,
           borderRadius: height / 2,
-          overflow: 'hidden',
+          overflow: "hidden",
         }}
       >
         <View
           style={{
-            height: '100%',
-            backgroundColor: color,
+            height: "100%",
+            backgroundColor: progressColor,
             borderRadius: height / 2,
             width: `${clampedProgress}%`,
           }}
         />
       </View>
       {showLabel && (
-        <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+        <Text
+          style={{ fontSize: 12, color: colors.textSecondary, marginTop: 4 }}
+        >
           {label || `${Math.round(clampedProgress)}%`}
         </Text>
       )}
     </View>
-  )
+  );
 }

@@ -1,22 +1,26 @@
-import { TouchableOpacity, Text, ViewStyle } from 'react-native'
+import { TouchableOpacity, Text, ViewStyle } from "react-native";
+import { useColors } from "../../theme/createStyles";
 
 interface ChipProps {
-  label: string
-  selected?: boolean
-  onPress?: () => void
-  color?: string
-  disabled?: boolean
-  style?: ViewStyle
+  label: string;
+  selected?: boolean;
+  onPress?: () => void;
+  color?: string;
+  disabled?: boolean;
+  style?: ViewStyle;
 }
 
 export function Chip({
   label,
   selected = false,
   onPress,
-  color = '#d946ef',
+  color,
   disabled = false,
   style,
 }: ChipProps) {
+  const colors = useColors();
+  const chipColor = color || colors.primary;
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -26,9 +30,9 @@ export function Chip({
         paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 20,
-        backgroundColor: selected ? color : '#f3f4f6',
+        backgroundColor: selected ? chipColor : colors.surfaceSecondary,
         borderWidth: selected ? 0 : 1,
-        borderColor: '#e5e7eb',
+        borderColor: colors.border,
         opacity: disabled ? 0.5 : 1,
         ...style,
       }}
@@ -36,19 +40,19 @@ export function Chip({
       <Text
         style={{
           fontSize: 14,
-          fontWeight: '500',
-          color: selected ? '#fff' : '#6b7280',
+          fontWeight: "500",
+          color: selected ? colors.textInverse : colors.textSecondary,
         }}
       >
         {label}
       </Text>
     </TouchableOpacity>
-  )
+  );
 }
 
 interface ChipGroupProps {
-  children: React.ReactNode
-  style?: ViewStyle
+  children: React.ReactNode;
+  style?: ViewStyle;
 }
 
 export function ChipGroup({ children, style }: ChipGroupProps) {
@@ -56,13 +60,13 @@ export function ChipGroup({ children, style }: ChipGroupProps) {
     <TouchableOpacity
       activeOpacity={1}
       style={{
-        flexDirection: 'row',
-        flexWrap: 'wrap',
+        flexDirection: "row",
+        flexWrap: "wrap",
         gap: 8,
         ...style,
       }}
     >
       {children}
     </TouchableOpacity>
-  )
+  );
 }

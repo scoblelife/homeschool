@@ -1,374 +1,460 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, parseISO, eachDayOfInterval, isToday, addHours, addDays } from 'date-fns'
-import { Dialog, Tab } from '@headlessui/react'
-import { useStore } from '../stores/useStore'
-import { useMilestones } from '../hooks/useDatabase'
-import type { Milestone, MilestoneResource, CreateResource, CalendarSyncRecord } from '../../../shared/types'
+import { useState, useEffect, useMemo, useCallback } from "react";
+import {
+  format,
+  startOfWeek,
+  endOfWeek,
+  addWeeks,
+  subWeeks,
+  parseISO,
+  eachDayOfInterval,
+  isToday,
+  addHours,
+  addDays,
+} from "date-fns";
+import { Dialog, Tab } from "@headlessui/react";
+import { useStore } from "../stores/useStore";
+import { useMilestones } from "../hooks/useDatabase";
+import type {
+  Milestone,
+  MilestoneResource,
+  CreateResource,
+  CalendarSyncRecord,
+} from "../../../shared/types";
+
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Card } from "../components/ui/Card";
+import { Modal } from "../components/ui/Modal";
+import { PageHeader } from "../components/layout/PageHeader";
+import { PageContainer } from "../components/layout/PageContainer";
 
 // Map student colors to Google Calendar color IDs
 // See: https://developers.google.com/calendar/api/v3/reference/colors
 const GOOGLE_CALENDAR_COLORS: Record<string, string> = {
-  fuchsia: '4',  // Flamingo (pink)
-  child1: '4',   // Legacy
-  teal: '7',     // Peacock (teal)
-  child2: '7',   // Legacy
-  blue: '9',     // Blueberry
-  orange: '6',   // Tangerine
-  purple: '3',   // Grape
-  green: '10',   // Basil
-}
+  fuchsia: "4", // Flamingo (pink)
+  child1: "4", // Legacy
+  teal: "7", // Peacock (teal)
+  child2: "7", // Legacy
+  blue: "9", // Blueberry
+  orange: "6", // Tangerine
+  purple: "3", // Grape
+  green: "10", // Basil
+};
 
 // Helper to get current week start (Monday)
 function getCurrentWeekStart(): Date {
-  return startOfWeek(new Date(), { weekStartsOn: 1 })
+  return startOfWeek(new Date(), { weekStartsOn: 1 });
 }
 
 export default function WeeklyPlanner(): JSX.Element {
-  const { selectedStudentId, getSelectedStudent, getSubjectById } = useStore()
-  const { milestones, isLoading: milestonesLoading } = useMilestones(selectedStudentId ?? undefined)
-  const selectedStudent = getSelectedStudent()
+  const { selectedStudentId, getSelectedStudent, getSubjectById } = useStore();
+  const { milestones, isLoading: milestonesLoading } = useMilestones(
+    selectedStudentId ?? undefined,
+  );
+  const selectedStudent = getSelectedStudent();
 
   const [currentWeekStart, setCurrentWeekStart] = useState(() =>
-    format(getCurrentWeekStart(), 'yyyy-MM-dd')
-  )
-  const [selectedMilestoneIds, setSelectedMilestoneIds] = useState<string[]>([])
-  const [allResources, setAllResources] = useState<Record<string, MilestoneResource[]>>({})
-  const [showAddMilestone, setShowAddMilestone] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+    format(getCurrentWeekStart(), "yyyy-MM-dd"),
+  );
+  const [selectedMilestoneIds, setSelectedMilestoneIds] = useState<string[]>(
+    [],
+  );
+  const [allResources, setAllResources] = useState<
+    Record<string, MilestoneResource[]>
+  >({});
+  const [showAddMilestone, setShowAddMilestone] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Resource management state
-  const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null)
-  const [showAddResource, setShowAddResource] = useState(false)
-  const [resourceMilestoneId, setResourceMilestoneId] = useState<string | null>(null)
-  const [urlForm, setUrlForm] = useState({ title: '', url: '' })
-  const [fileTitle, setFileTitle] = useState('')
+  const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(
+    null,
+  );
+  const [showAddResource, setShowAddResource] = useState(false);
+  const [resourceMilestoneId, setResourceMilestoneId] = useState<string | null>(
+    null,
+  );
+  const [urlForm, setUrlForm] = useState({ title: "", url: "" });
+  const [fileTitle, setFileTitle] = useState("");
 
   // Calendar sync state
-  const [calendarId, setCalendarId] = useState<string | null>(null)
-  const [isSyncing, setIsSyncing] = useState(false)
-  const [syncRecords, setSyncRecords] = useState<CalendarSyncRecord[]>([])
-  const [showSyncOptions, setShowSyncOptions] = useState(false)
-  const [syncAllDay, setSyncAllDay] = useState(true)
+  const [calendarId, setCalendarId] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncRecords, setSyncRecords] = useState<CalendarSyncRecord[]>([]);
+  const [showSyncOptions, setShowSyncOptions] = useState(false);
+  const [syncAllDay, setSyncAllDay] = useState(true);
 
   // Parse the stored date string properly using parseISO
-  const weekStartDate = parseISO(currentWeekStart)
-  const weekEndDate = endOfWeek(weekStartDate, { weekStartsOn: 1 })
+  const weekStartDate = parseISO(currentWeekStart);
+  const weekEndDate = endOfWeek(weekStartDate, { weekStartsOn: 1 });
 
   // Get all days of the week for display
-  const weekDays = eachDayOfInterval({ start: weekStartDate, end: weekEndDate })
+  const weekDays = eachDayOfInterval({
+    start: weekStartDate,
+    end: weekEndDate,
+  });
 
-  const weekEnd = format(weekEndDate, 'MMM d, yyyy')
-  const weekStartFormatted = format(weekStartDate, 'MMM d')
+  const weekEnd = format(weekEndDate, "MMM d, yyyy");
+  const weekStartFormatted = format(weekStartDate, "MMM d");
 
   // Load weekly plan when student or week changes
   useEffect(() => {
     if (selectedStudentId) {
-      loadWeeklyPlan()
+      loadWeeklyPlan();
     }
-  }, [selectedStudentId, currentWeekStart])
+  }, [selectedStudentId, currentWeekStart]);
 
   // Load resources for selected milestones
   useEffect(() => {
-    loadAllResources()
-  }, [selectedMilestoneIds])
+    loadAllResources();
+  }, [selectedMilestoneIds]);
 
   const loadWeeklyPlan = async () => {
-    if (!selectedStudentId) return
-    const plan = await window.api.getWeeklyPlan(selectedStudentId, currentWeekStart)
+    if (!selectedStudentId) return;
+    const plan = await window.api.getWeeklyPlan(
+      selectedStudentId,
+      currentWeekStart,
+    );
     if (plan) {
-      setSelectedMilestoneIds(plan.milestoneIds)
+      setSelectedMilestoneIds(plan.milestoneIds);
     } else {
-      setSelectedMilestoneIds([])
+      setSelectedMilestoneIds([]);
     }
-  }
+  };
 
   const loadAllResources = async () => {
-    const resourceMap: Record<string, MilestoneResource[]> = {}
+    const resourceMap: Record<string, MilestoneResource[]> = {};
     for (const id of selectedMilestoneIds) {
-      const resources = await window.api.getResources(id)
-      resourceMap[id] = resources
+      const resources = await window.api.getResources(id);
+      resourceMap[id] = resources;
     }
-    setAllResources(resourceMap)
-  }
+    setAllResources(resourceMap);
+  };
 
   // Load calendar settings and sync records
   useEffect(() => {
-    loadCalendarSettings()
-  }, [])
+    loadCalendarSettings();
+  }, []);
 
   useEffect(() => {
     if (calendarId) {
-      loadSyncRecords()
+      loadSyncRecords();
     }
-  }, [currentWeekStart, calendarId])
+  }, [currentWeekStart, calendarId]);
 
   const loadCalendarSettings = async () => {
-    const savedCalendarId = await window.api.getSetting('google_calendar_id')
-    setCalendarId(savedCalendarId)
+    const savedCalendarId = await window.api.getSetting("google_calendar_id");
+    setCalendarId(savedCalendarId);
 
-    const savedAllDay = await window.api.getSetting('sync_all_day_events')
-    setSyncAllDay(savedAllDay !== 'false')
-  }
+    const savedAllDay = await window.api.getSetting("sync_all_day_events");
+    setSyncAllDay(savedAllDay !== "false");
+  };
 
   const loadSyncRecords = async () => {
-    const records = await window.api.getCalendarSyncRecordsForWeek(currentWeekStart)
-    setSyncRecords(records)
-  }
+    const records =
+      await window.api.getCalendarSyncRecordsForWeek(currentWeekStart);
+    setSyncRecords(records);
+  };
 
   // Sync milestones to Google Calendar
   const syncToCalendar = useCallback(async () => {
-    if (!calendarId || !selectedStudentId || !selectedStudent) return
+    if (!calendarId || !selectedStudentId || !selectedStudent) return;
 
-    setIsSyncing(true)
+    setIsSyncing(true);
     try {
-      const currentRecords = await window.api.getCalendarSyncRecordsForWeek(currentWeekStart)
-      const currentRecordMap = new Map(currentRecords.map(r => [r.milestoneId, r]))
+      const currentRecords =
+        await window.api.getCalendarSyncRecordsForWeek(currentWeekStart);
+      const currentRecordMap = new Map(
+        currentRecords.map((r) => [r.milestoneId, r]),
+      );
 
       // Get subjects for milestone titles
-      const subjectNames: Record<string, string> = {}
+      const subjectNames: Record<string, string> = {};
 
       // Map student color to Google Calendar colorId
-      const colorId = GOOGLE_CALENDAR_COLORS[selectedStudent.color] || '4'
+      const colorId = GOOGLE_CALENDAR_COLORS[selectedStudent.color] || "4";
 
       // Process each selected milestone
       for (const milestoneId of selectedMilestoneIds) {
-        const milestone = milestones.find(m => m.id === milestoneId)
-        if (!milestone) continue
+        const milestone = milestones.find((m) => m.id === milestoneId);
+        if (!milestone) continue;
 
         // Get subject name
         if (!subjectNames[milestone.subjectId]) {
-          const subject = getSubjectById(milestone.subjectId)
-          subjectNames[milestone.subjectId] = subject?.name || 'Unknown'
+          const subject = getSubjectById(milestone.subjectId);
+          subjectNames[milestone.subjectId] = subject?.name || "Unknown";
         }
 
         // Build event with student name
-        const isCompleted = milestone.status === 'completed'
+        const isCompleted = milestone.status === "completed";
         const eventTitle = isCompleted
           ? `✓ ${selectedStudent.name}: [${subjectNames[milestone.subjectId]}] ${milestone.title}`
-          : `${selectedStudent.name}: [${subjectNames[milestone.subjectId]}] ${milestone.title}`
+          : `${selectedStudent.name}: [${subjectNames[milestone.subjectId]}] ${milestone.title}`;
 
         const description = [
           `Student: ${selectedStudent.name}`,
           `Subject: ${subjectNames[milestone.subjectId]}`,
           `Status: ${milestone.status}`,
-          '',
-          milestone.description || ''
-        ].join('\n')
+          "",
+          milestone.description || "",
+        ].join("\n");
 
         // Use milestone's targetDate if set, otherwise distribute across weekdays
-        let eventDate: string
+        let eventDate: string;
         if (milestone.targetDate) {
-          eventDate = milestone.targetDate
+          eventDate = milestone.targetDate;
         } else {
           // Distribute milestones across Mon-Fri based on their index
-          const milestoneIndex = selectedMilestoneIds.indexOf(milestoneId)
-          const dayOffset = milestoneIndex % 5 // 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri
-          const weekStart = parseISO(currentWeekStart)
-          eventDate = format(addDays(weekStart, dayOffset), 'yyyy-MM-dd')
+          const milestoneIndex = selectedMilestoneIds.indexOf(milestoneId);
+          const dayOffset = milestoneIndex % 5; // 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri
+          const weekStart = parseISO(currentWeekStart);
+          eventDate = format(addDays(weekStart, dayOffset), "yyyy-MM-dd");
         }
-        let start: string, end: string
+        let start: string, end: string;
 
         if (syncAllDay) {
-          start = eventDate
-          end = eventDate
+          start = eventDate;
+          end = eventDate;
         } else {
           // Create timed event (9am-10am)
-          const startDate = parseISO(eventDate)
-          start = addHours(startDate, 9).toISOString()
-          end = addHours(startDate, 10).toISOString()
+          const startDate = parseISO(eventDate);
+          start = addHours(startDate, 9).toISOString();
+          end = addHours(startDate, 10).toISOString();
         }
 
-        const existingRecord = currentRecordMap.get(milestoneId)
+        const existingRecord = currentRecordMap.get(milestoneId);
 
         if (existingRecord) {
           // Update existing event
-          await window.api.updateGoogleCalendarEvent(calendarId, existingRecord.googleEventId, {
-            summary: eventTitle,
-            description,
-            start,
-            end,
-            allDay: syncAllDay,
-            colorId
-          })
+          await window.api.updateGoogleCalendarEvent(
+            calendarId,
+            existingRecord.googleEventId,
+            {
+              summary: eventTitle,
+              description,
+              start,
+              end,
+              allDay: syncAllDay,
+              colorId,
+            },
+          );
         } else {
           // Create new event
-          const eventId = await window.api.createGoogleCalendarEvent(calendarId, {
-            summary: eventTitle,
-            description,
-            start,
-            end,
-            allDay: syncAllDay,
-            colorId
-          })
-          await window.api.upsertCalendarSyncRecord(milestoneId, currentWeekStart, eventId, calendarId)
+          const eventId = await window.api.createGoogleCalendarEvent(
+            calendarId,
+            {
+              summary: eventTitle,
+              description,
+              start,
+              end,
+              allDay: syncAllDay,
+              colorId,
+            },
+          );
+          await window.api.upsertCalendarSyncRecord(
+            milestoneId,
+            currentWeekStart,
+            eventId,
+            calendarId,
+          );
         }
 
-        currentRecordMap.delete(milestoneId)
+        currentRecordMap.delete(milestoneId);
       }
 
       // Delete events for milestones no longer in the plan (only for current student)
-      const remainingRecords = Array.from(currentRecordMap.values())
+      const remainingRecords = Array.from(currentRecordMap.values());
       for (const record of remainingRecords) {
         // Only delete if this milestone belongs to the current student
-        const milestone = milestones.find(m => m.id === record.milestoneId)
+        const milestone = milestones.find((m) => m.id === record.milestoneId);
         if (milestone) {
-          await window.api.deleteGoogleCalendarEvent(calendarId, record.googleEventId)
-          await window.api.deleteCalendarSyncRecord(record.milestoneId, currentWeekStart)
+          await window.api.deleteGoogleCalendarEvent(
+            calendarId,
+            record.googleEventId,
+          );
+          await window.api.deleteCalendarSyncRecord(
+            record.milestoneId,
+            currentWeekStart,
+          );
         }
         // If milestone not found in current student's milestones, leave it alone (belongs to another student)
       }
 
-      await loadSyncRecords()
+      await loadSyncRecords();
     } catch (error) {
-      console.error('Sync failed:', error)
-      alert('Failed to sync to calendar. Please check your connection and try again.')
+      console.error("Sync failed:", error);
+      alert(
+        "Failed to sync to calendar. Please check your connection and try again.",
+      );
     } finally {
-      setIsSyncing(false)
+      setIsSyncing(false);
     }
-  }, [calendarId, selectedStudentId, selectedMilestoneIds, currentWeekStart, milestones, syncAllDay, getSubjectById])
+  }, [
+    calendarId,
+    selectedStudentId,
+    selectedMilestoneIds,
+    currentWeekStart,
+    milestones,
+    syncAllDay,
+    getSubjectById,
+  ]);
 
   const saveWeeklyPlan = async (ids: string[]) => {
-    if (!selectedStudentId) return
-    await window.api.saveWeeklyPlan(selectedStudentId, currentWeekStart, ids)
-    setSelectedMilestoneIds(ids)
-  }
+    if (!selectedStudentId) return;
+    await window.api.saveWeeklyPlan(selectedStudentId, currentWeekStart, ids);
+    setSelectedMilestoneIds(ids);
+  };
 
   const handleAutoSuggest = async () => {
-    if (!selectedStudentId) return
-    setIsLoading(true)
+    if (!selectedStudentId) return;
+    setIsLoading(true);
     try {
       // Suggest ~3 milestones per day for a 5-day week, distributed across subjects
-      const suggested = await window.api.getSuggestedMilestones(selectedStudentId, 15)
-      const ids = suggested.map((m) => m.id)
-      await saveWeeklyPlan(ids)
+      const suggested = await window.api.getSuggestedMilestones(
+        selectedStudentId,
+        15,
+      );
+      const ids = suggested.map((m) => m.id);
+      await saveWeeklyPlan(ids);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleRemoveMilestone = async (id: string) => {
-    const newIds = selectedMilestoneIds.filter((mid) => mid !== id)
-    await saveWeeklyPlan(newIds)
-  }
+    const newIds = selectedMilestoneIds.filter((mid) => mid !== id);
+    await saveWeeklyPlan(newIds);
+  };
 
   const handleAddMilestone = async (id: string) => {
-    if (selectedMilestoneIds.includes(id)) return
-    const newIds = [...selectedMilestoneIds, id]
-    await saveWeeklyPlan(newIds)
-    setShowAddMilestone(false)
-  }
+    if (selectedMilestoneIds.includes(id)) return;
+    const newIds = [...selectedMilestoneIds, id];
+    await saveWeeklyPlan(newIds);
+    setShowAddMilestone(false);
+  };
 
   const handleToggleComplete = async (milestone: Milestone) => {
-    const newStatus = milestone.status === 'completed' ? 'in_progress' : 'completed'
-    await window.api.updateMilestone(milestone.id, { status: newStatus })
-  }
+    const newStatus =
+      milestone.status === "completed" ? "in_progress" : "completed";
+    await window.api.updateMilestone(milestone.id, { status: newStatus });
+  };
 
   const handleOpenResource = async (resource: MilestoneResource) => {
-    await window.api.openResource(resource)
-  }
+    await window.api.openResource(resource);
+  };
 
   const handleOpenAllResources = async () => {
     for (const id of selectedMilestoneIds) {
-      const resources = allResources[id] || []
+      const resources = allResources[id] || [];
       for (const resource of resources) {
-        await window.api.openResource(resource)
+        await window.api.openResource(resource);
       }
     }
-  }
+  };
 
   const handlePrint = () => {
-    window.print()
-  }
+    window.print();
+  };
 
-  const navigateWeek = (direction: 'prev' | 'next') => {
-    const current = parseISO(currentWeekStart)
-    const newDate = direction === 'prev' ? subWeeks(current, 1) : addWeeks(current, 1)
-    setCurrentWeekStart(format(newDate, 'yyyy-MM-dd'))
-  }
+  const navigateWeek = (direction: "prev" | "next") => {
+    const current = parseISO(currentWeekStart);
+    const newDate =
+      direction === "prev" ? subWeeks(current, 1) : addWeeks(current, 1);
+    setCurrentWeekStart(format(newDate, "yyyy-MM-dd"));
+  };
 
   const goToCurrentWeek = () => {
-    setCurrentWeekStart(format(getCurrentWeekStart(), 'yyyy-MM-dd'))
-  }
+    setCurrentWeekStart(format(getCurrentWeekStart(), "yyyy-MM-dd"));
+  };
 
   const handleClearWeek = async () => {
-    await saveWeeklyPlan([])
-  }
+    await saveWeeklyPlan([]);
+  };
 
   // Resource management functions
   const openAddResource = (milestoneId: string) => {
-    setResourceMilestoneId(milestoneId)
-    setShowAddResource(true)
-    setUrlForm({ title: '', url: '' })
-    setFileTitle('')
-  }
+    setResourceMilestoneId(milestoneId);
+    setShowAddResource(true);
+    setUrlForm({ title: "", url: "" });
+    setFileTitle("");
+  };
 
   const handleAddUrl = async () => {
-    if (!resourceMilestoneId || !urlForm.title || !urlForm.url) return
+    if (!resourceMilestoneId || !urlForm.title || !urlForm.url) return;
     const data: CreateResource = {
       milestoneId: resourceMilestoneId,
-      type: 'url',
+      type: "url",
       title: urlForm.title,
-      url: urlForm.url
-    }
-    await window.api.createResource(data)
-    setShowAddResource(false)
-    setUrlForm({ title: '', url: '' })
-    loadAllResources()
-  }
+      url: urlForm.url,
+    };
+    await window.api.createResource(data);
+    setShowAddResource(false);
+    setUrlForm({ title: "", url: "" });
+    loadAllResources();
+  };
 
   const handleUploadFile = async () => {
-    if (!resourceMilestoneId) return
-    const resource = await window.api.uploadResourceFile(resourceMilestoneId, fileTitle)
+    if (!resourceMilestoneId) return;
+    const resource = await window.api.uploadResourceFile(
+      resourceMilestoneId,
+      fileTitle,
+    );
     if (resource) {
-      setFileTitle('')
-      setShowAddResource(false)
-      loadAllResources()
+      setFileTitle("");
+      setShowAddResource(false);
+      loadAllResources();
     }
-  }
+  };
 
   const handleDeleteResource = async (id: string) => {
-    await window.api.deleteResource(id)
-    loadAllResources()
-  }
+    await window.api.deleteResource(id);
+    loadAllResources();
+  };
 
   // Get selected milestones from store
   const selectedMilestones = useMemo(() => {
-    return milestones.filter((m) => selectedMilestoneIds.includes(m.id))
-  }, [milestones, selectedMilestoneIds])
+    return milestones.filter((m) => selectedMilestoneIds.includes(m.id));
+  }, [milestones, selectedMilestoneIds]);
 
   // Group by subject for display
   const groupedMilestones = useMemo(() => {
-    const grouped: Record<string, Milestone[]> = {}
+    const grouped: Record<string, Milestone[]> = {};
     for (const milestone of selectedMilestones) {
       if (!grouped[milestone.subjectId]) {
-        grouped[milestone.subjectId] = []
+        grouped[milestone.subjectId] = [];
       }
-      grouped[milestone.subjectId].push(milestone)
+      grouped[milestone.subjectId].push(milestone);
     }
-    return grouped
-  }, [selectedMilestones])
+    return grouped;
+  }, [selectedMilestones]);
 
   // Available milestones (not completed and not already selected)
   const availableMilestones = useMemo(() => {
     return milestones.filter(
-      (m) => m.status !== 'completed' && !selectedMilestoneIds.includes(m.id)
-    )
-  }, [milestones, selectedMilestoneIds])
+      (m) => m.status !== "completed" && !selectedMilestoneIds.includes(m.id),
+    );
+  }, [milestones, selectedMilestoneIds]);
 
   // Count total resources
   const totalResources = useMemo(() => {
-    return Object.values(allResources).reduce((sum, resources) => sum + resources.length, 0)
-  }, [allResources])
+    return Object.values(allResources).reduce(
+      (sum, resources) => sum + resources.length,
+      0,
+    );
+  }, [allResources]);
 
   if (!selectedStudent) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Weekly Planner</h1>
-        <div className="card text-center py-12">
-          <p className="text-gray-500">Please select a student or add one in Settings.</p>
-        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Weekly Planner
+        </h1>
+        <Card className="text-center py-12">
+          <p className="text-gray-500">
+            Please select a student or add one in Settings.
+          </p>
+        </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -381,21 +467,26 @@ export default function WeeklyPlanner(): JSX.Element {
         </div>
         <div className="flex items-center gap-3">
           {selectedMilestones.length > 0 && (
-            <button
+            <Button
+              variant="secondary"
               onClick={handleClearWeek}
-              className="btn btn-secondary text-red-600 hover:text-red-700 hover:border-red-300"
+              className="text-red-600 hover:text-red-700 hover:border-red-300"
             >
               Clear Week
-            </button>
+            </Button>
           )}
           {calendarId && (
             <div className="relative">
               <button
                 onClick={() => setShowSyncOptions(!showSyncOptions)}
                 disabled={isSyncing}
-                className={`btn ${syncRecords.length > 0 ? 'btn-secondary text-green-600' : 'btn-secondary'}`}
+                className={`btn ${syncRecords.length > 0 ? "btn-secondary text-green-600" : "btn-secondary"}`}
               >
-                {isSyncing ? 'Syncing...' : syncRecords.length > 0 ? 'Synced' : 'Sync to Calendar'}
+                {isSyncing
+                  ? "Syncing..."
+                  : syncRecords.length > 0
+                    ? "Synced"
+                    : "Sync to Calendar"}
               </button>
               {showSyncOptions && (
                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-4 z-10">
@@ -405,25 +496,30 @@ export default function WeeklyPlanner(): JSX.Element {
                         type="checkbox"
                         checked={syncAllDay}
                         onChange={async (e) => {
-                          setSyncAllDay(e.target.checked)
-                          await window.api.setSetting('sync_all_day_events', String(e.target.checked))
+                          setSyncAllDay(e.target.checked);
+                          await window.api.setSetting(
+                            "sync_all_day_events",
+                            String(e.target.checked),
+                          );
                         }}
                         className="rounded border-gray-300 text-blue-600"
                       />
                       <span>All-day events</span>
                     </label>
-                    <button
+                    <Button
+                      variant="primary"
                       onClick={() => {
-                        syncToCalendar()
-                        setShowSyncOptions(false)
+                        syncToCalendar();
+                        setShowSyncOptions(false);
                       }}
-                      className="btn btn-primary w-full"
+                      className="w-full"
                     >
                       Sync Now
-                    </button>
+                    </Button>
                     {syncRecords.length > 0 && (
                       <p className="text-xs text-gray-500 text-center">
-                        {syncRecords.length} milestone{syncRecords.length !== 1 ? 's' : ''} synced
+                        {syncRecords.length} milestone
+                        {syncRecords.length !== 1 ? "s" : ""} synced
                       </p>
                     )}
                   </div>
@@ -431,24 +527,23 @@ export default function WeeklyPlanner(): JSX.Element {
               )}
             </div>
           )}
-          <button
+          <Button
+            variant="secondary"
             onClick={handleAutoSuggest}
             disabled={isLoading}
-            className="btn btn-secondary"
           >
-            {isLoading ? 'Loading...' : 'Auto-Suggest'}
-          </button>
-          <button onClick={() => setShowAddMilestone(true)} className="btn btn-primary">
+            {isLoading ? "Loading..." : "Auto-Suggest"}
+          </Button>
+          <Button variant="primary" onClick={() => setShowAddMilestone(true)}>
             + Add Milestone
-          </button>
+          </Button>
         </div>
       </div>
-
       {/* Week Navigation - hide on print */}
-      <div className="no-print card mb-6">
+      <Card className="no-print mb-6">
         <div className="flex items-center justify-between mb-4">
           <button
-            onClick={() => navigateWeek('prev')}
+            onClick={() => navigateWeek("prev")}
             className="text-fuchsia-600 hover:text-fuchsia-700 font-medium"
           >
             &larr; Previous Week
@@ -465,7 +560,7 @@ export default function WeeklyPlanner(): JSX.Element {
             </button>
           </div>
           <button
-            onClick={() => navigateWeek('next')}
+            onClick={() => navigateWeek("next")}
             className="text-fuchsia-600 hover:text-fuchsia-700 font-medium"
           >
             Next Week &rarr;
@@ -478,17 +573,16 @@ export default function WeeklyPlanner(): JSX.Element {
               key={day.toISOString()}
               className={`py-2 rounded-lg ${
                 isToday(day)
-                  ? 'bg-fuchsia-100 text-fuchsia-700 font-semibold'
-                  : 'bg-gray-50 text-gray-600'
+                  ? "bg-fuchsia-100 text-fuchsia-700 font-semibold"
+                  : "bg-gray-50 text-gray-600"
               }`}
             >
-              <div className="text-xs uppercase">{format(day, 'EEE')}</div>
-              <div className="text-lg font-medium">{format(day, 'd')}</div>
+              <div className="text-xs uppercase">{format(day, "EEE")}</div>
+              <div className="text-lg font-medium">{format(day, "d")}</div>
             </div>
           ))}
         </div>
-      </div>
-
+      </Card>
       {/* Print Header - only show on print */}
       <div className="print-only hidden mb-6">
         <h1 className="text-2xl font-bold">Weekly Learning Plan</h1>
@@ -496,137 +590,163 @@ export default function WeeklyPlanner(): JSX.Element {
           {selectedStudent.name} - {weekStartFormatted} to {weekEnd}
         </p>
       </div>
-
       {/* Stats */}
-      <div className="card mb-6">
+      <Card className="mb-6">
         <div className="grid grid-cols-3 gap-4 text-center text-sm">
           <div>
-            <div className="text-2xl font-bold text-fuchsia-600">{selectedMilestones.length}</div>
+            <div className="text-2xl font-bold text-fuchsia-600">
+              {selectedMilestones.length}
+            </div>
             <div className="text-gray-500">Milestones This Week</div>
           </div>
           <div>
             <div className="text-2xl font-bold text-green-600">
-              {selectedMilestones.filter((m) => m.status === 'completed').length}
+              {
+                selectedMilestones.filter((m) => m.status === "completed")
+                  .length
+              }
             </div>
             <div className="text-gray-500">Completed</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-blue-600">{totalResources}</div>
+            <div className="text-2xl font-bold text-blue-600">
+              {totalResources}
+            </div>
             <div className="text-gray-500">Resources</div>
           </div>
         </div>
-      </div>
-
+      </Card>
       {/* Milestones List */}
       {milestonesLoading ? (
-        <div className="card text-center py-12">
+        <Card className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-fuchsia-600 mb-4"></div>
           <p className="text-gray-500">Loading milestones...</p>
-        </div>
+        </Card>
       ) : selectedMilestones.length === 0 ? (
-        <div className="card text-center py-12">
+        <Card className="text-center py-12">
           <p className="text-gray-500 mb-4">
             {milestones.length === 0
-              ? 'No milestones yet. Add some in the Milestones page first, or auto-suggest based on grade level.'
-              : 'No milestones planned for this week.'}
+              ? "No milestones yet. Add some in the Milestones page first, or auto-suggest based on grade level."
+              : "No milestones planned for this week."}
           </p>
           <div className="flex justify-center gap-3">
-            <button onClick={handleAutoSuggest} className="btn btn-primary" disabled={milestones.length === 0}>
+            <Button
+              variant="primary"
+              onClick={handleAutoSuggest}
+              disabled={milestones.length === 0}
+            >
               Auto-Suggest Milestones
-            </button>
-            <button onClick={() => setShowAddMilestone(true)} className="btn btn-secondary" disabled={milestones.length === 0}>
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setShowAddMilestone(true)}
+              disabled={milestones.length === 0}
+            >
               Add Manually
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       ) : (
         <div className="space-y-6">
-          {Object.entries(groupedMilestones).map(([subjectId, subjectMilestones]) => {
-            const subject = getSubjectById(subjectId)
-            return (
-              <div key={subjectId} className="card">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">{subject?.name}</h2>
-                <div className="space-y-3">
-                  {subjectMilestones.map((milestone) => {
-                    const resources = allResources[milestone.id] || []
-                    return (
-                      <div
-                        key={milestone.id}
-                        className={`p-4 rounded-lg border-l-4 ${
-                          milestone.status === 'completed'
-                            ? 'bg-green-50 border-l-green-500'
-                            : 'bg-gray-50 border-l-gray-300'
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <input
-                            type="checkbox"
-                            checked={milestone.status === 'completed'}
-                            onChange={() => handleToggleComplete(milestone)}
-                            className="mt-1 h-5 w-5 rounded border-gray-300 text-fuchsia-600 focus:ring-fuchsia-500"
-                          />
-                          <div className="flex-1">
-                            <h3
-                              className={`font-medium ${
-                                milestone.status === 'completed'
-                                  ? 'text-gray-400 line-through'
-                                  : 'text-gray-900'
-                              }`}
-                            >
-                              {milestone.title}
-                            </h3>
-                            <p className="text-sm text-gray-500">{milestone.description}</p>
-
-                            {/* Resources */}
-                            <div className="mt-3 space-y-1">
-                              {resources.map((resource) => (
-                                <div
-                                  key={resource.id}
-                                  className="flex items-center gap-2 text-sm bg-white p-2 rounded border"
-                                >
-                                  <span>{resource.type === 'url' ? '🔗' : '📄'}</span>
-                                  <button
-                                    onClick={() => handleOpenResource(resource)}
-                                    className="text-blue-600 hover:underline flex-1 text-left truncate"
-                                  >
-                                    {resource.title}
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteResource(resource.id)}
-                                    className="no-print text-red-400 hover:text-red-600 text-xs"
-                                  >
-                                    ×
-                                  </button>
-                                </div>
-                              ))}
-                              <button
-                                onClick={() => openAddResource(milestone.id)}
-                                className="no-print text-xs text-fuchsia-600 hover:text-fuchsia-700 mt-1"
+          {Object.entries(groupedMilestones).map(
+            ([subjectId, subjectMilestones]) => {
+              const subject = getSubjectById(subjectId);
+              return (
+                <Card key={subjectId}>
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                    {subject?.name}
+                  </h2>
+                  <div className="space-y-3">
+                    {subjectMilestones.map((milestone) => {
+                      const resources = allResources[milestone.id] || [];
+                      return (
+                        <div
+                          key={milestone.id}
+                          className={`p-4 rounded-lg border-l-4 ${
+                            milestone.status === "completed"
+                              ? "bg-green-50 border-l-green-500"
+                              : "bg-gray-50 border-l-gray-300"
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              checked={milestone.status === "completed"}
+                              onChange={() => handleToggleComplete(milestone)}
+                              className="mt-1 h-5 w-5 rounded border-gray-300 text-fuchsia-600 focus:ring-fuchsia-500"
+                            />
+                            <div className="flex-1">
+                              <h3
+                                className={`font-medium ${
+                                  milestone.status === "completed"
+                                    ? "text-gray-400 line-through"
+                                    : "text-gray-900"
+                                }`}
                               >
-                                + Add Resource
-                              </button>
+                                {milestone.title}
+                              </h3>
+                              <p className="text-sm text-gray-500">
+                                {milestone.description}
+                              </p>
+
+                              {/* Resources */}
+                              <div className="mt-3 space-y-1">
+                                {resources.map((resource) => (
+                                  <div
+                                    key={resource.id}
+                                    className="flex items-center gap-2 text-sm bg-white p-2 rounded border"
+                                  >
+                                    <span>
+                                      {resource.type === "url" ? "🔗" : "📄"}
+                                    </span>
+                                    <button
+                                      onClick={() =>
+                                        handleOpenResource(resource)
+                                      }
+                                      className="text-blue-600 hover:underline flex-1 text-left truncate"
+                                    >
+                                      {resource.title}
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteResource(resource.id)
+                                      }
+                                      className="no-print text-red-400 hover:text-red-600 text-xs"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                ))}
+                                <button
+                                  onClick={() => openAddResource(milestone.id)}
+                                  className="no-print text-xs text-fuchsia-600 hover:text-fuchsia-700 mt-1"
+                                >
+                                  + Add Resource
+                                </button>
+                              </div>
                             </div>
+                            <button
+                              onClick={() =>
+                                handleRemoveMilestone(milestone.id)
+                              }
+                              className="no-print text-red-500 hover:text-red-700 text-sm"
+                            >
+                              Remove
+                            </button>
                           </div>
-                          <button
-                            onClick={() => handleRemoveMilestone(milestone.id)}
-                            className="no-print text-red-500 hover:text-red-700 text-sm"
-                          >
-                            Remove
-                          </button>
                         </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )
-          })}
+                      );
+                    })}
+                  </div>
+                </Card>
+              );
+            },
+          )}
         </div>
       )}
-
       {/* Print Actions - hide on print */}
       {selectedMilestones.length > 0 && (
-        <div className="no-print card mt-6">
+        <Card className="no-print mt-6">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium text-gray-900">Ready to go?</h3>
@@ -636,18 +756,17 @@ export default function WeeklyPlanner(): JSX.Element {
             </div>
             <div className="flex gap-3">
               {totalResources > 0 && (
-                <button onClick={handleOpenAllResources} className="btn btn-secondary">
+                <Button variant="secondary" onClick={handleOpenAllResources}>
                   Open All Resources ({totalResources})
-                </button>
+                </Button>
               )}
-              <button onClick={handlePrint} className="btn btn-primary">
+              <Button variant="primary" onClick={handlePrint}>
                 Print Weekly Plan
-              </button>
+              </Button>
             </div>
           </div>
-        </div>
+        </Card>
       )}
-
       {/* Add Milestone Modal */}
       <Dialog
         open={showAddMilestone}
@@ -668,7 +787,7 @@ export default function WeeklyPlanner(): JSX.Element {
             ) : (
               <div className="space-y-2">
                 {availableMilestones.map((milestone) => {
-                  const subject = getSubjectById(milestone.subjectId)
+                  const subject = getSubjectById(milestone.subjectId);
                   return (
                     <button
                       key={milestone.id}
@@ -681,30 +800,36 @@ export default function WeeklyPlanner(): JSX.Element {
                         </span>
                         <span
                           className={`text-xs px-2 py-0.5 rounded-full ${
-                            milestone.status === 'in_progress'
-                              ? 'bg-amber-100 text-amber-600'
-                              : 'bg-gray-100 text-gray-600'
+                            milestone.status === "in_progress"
+                              ? "bg-amber-100 text-amber-600"
+                              : "bg-gray-100 text-gray-600"
                           }`}
                         >
-                          {milestone.status === 'in_progress' ? 'In Progress' : 'Not Started'}
+                          {milestone.status === "in_progress"
+                            ? "In Progress"
+                            : "Not Started"}
                         </span>
                       </div>
-                      <h3 className="font-medium text-gray-900 mt-1">{milestone.title}</h3>
+                      <h3 className="font-medium text-gray-900 mt-1">
+                        {milestone.title}
+                      </h3>
                     </button>
-                  )
+                  );
                 })}
               </div>
             )}
 
             <div className="flex justify-end pt-4">
-              <button onClick={() => setShowAddMilestone(false)} className="btn btn-secondary">
+              <Button
+                variant="secondary"
+                onClick={() => setShowAddMilestone(false)}
+              >
                 Close
-              </button>
+              </Button>
             </div>
           </Dialog.Panel>
         </div>
       </Dialog>
-
       {/* Add Resource Modal */}
       <Dialog
         open={showAddResource}
@@ -723,7 +848,9 @@ export default function WeeklyPlanner(): JSX.Element {
                 <Tab
                   className={({ selected }) =>
                     `px-4 py-2 rounded-lg text-sm font-medium ${
-                      selected ? 'bg-fuchsia-100 text-fuchsia-700' : 'bg-gray-100 text-gray-600'
+                      selected
+                        ? "bg-fuchsia-100 text-fuchsia-700"
+                        : "bg-gray-100 text-gray-600"
                     }`
                   }
                 >
@@ -732,7 +859,9 @@ export default function WeeklyPlanner(): JSX.Element {
                 <Tab
                   className={({ selected }) =>
                     `px-4 py-2 rounded-lg text-sm font-medium ${
-                      selected ? 'bg-fuchsia-100 text-fuchsia-700' : 'bg-gray-100 text-gray-600'
+                      selected
+                        ? "bg-fuchsia-100 text-fuchsia-700"
+                        : "bg-gray-100 text-gray-600"
                     }`
                   }
                 >
@@ -743,59 +872,60 @@ export default function WeeklyPlanner(): JSX.Element {
                 <Tab.Panel className="space-y-4">
                   <div>
                     <label className="label">Title</label>
-                    <input
+                    <Input
                       type="text"
                       value={urlForm.title}
-                      onChange={(e) => setUrlForm({ ...urlForm, title: e.target.value })}
-                      className="input"
+                      onChange={(e) =>
+                        setUrlForm({ ...urlForm, title: e.target.value })
+                      }
                       placeholder="e.g., ABC Mouse - Counting Games"
                     />
                   </div>
                   <div>
                     <label className="label">URL</label>
-                    <input
+                    <Input
                       type="url"
                       value={urlForm.url}
-                      onChange={(e) => setUrlForm({ ...urlForm, url: e.target.value })}
-                      className="input"
+                      onChange={(e) =>
+                        setUrlForm({ ...urlForm, url: e.target.value })
+                      }
                       placeholder="https://..."
                     />
                   </div>
                   <div className="flex justify-end gap-3 pt-4">
-                    <button
+                    <Button
+                      variant="secondary"
                       type="button"
                       onClick={() => setShowAddResource(false)}
-                      className="btn btn-secondary"
                     >
                       Cancel
-                    </button>
-                    <button onClick={handleAddUrl} className="btn btn-primary">
+                    </Button>
+                    <Button variant="primary" onClick={handleAddUrl}>
                       Add URL
-                    </button>
+                    </Button>
                   </div>
                 </Tab.Panel>
                 <Tab.Panel className="space-y-4">
                   <div>
                     <label className="label">Title (optional)</label>
-                    <input
+                    <Input
                       type="text"
                       value={fileTitle}
                       onChange={(e) => setFileTitle(e.target.value)}
-                      className="input"
                       placeholder="Leave blank to use filename"
                     />
                   </div>
                   <div className="flex justify-end gap-3 pt-4">
-                    <button
+                    <Button
+                      variant="secondary"
                       type="button"
                       onClick={() => setShowAddResource(false)}
-                      className="btn btn-secondary"
                     >
                       Cancel
-                    </button>
-                    <button onClick={handleUploadFile} className="btn btn-primary">
+                    </Button>
+                    <Button variant="primary" onClick={handleUploadFile}>
                       Choose File...
-                    </button>
+                    </Button>
                   </div>
                 </Tab.Panel>
               </Tab.Panels>
@@ -804,5 +934,5 @@ export default function WeeklyPlanner(): JSX.Element {
         </div>
       </Dialog>
     </div>
-  )
+  );
 }

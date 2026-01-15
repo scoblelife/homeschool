@@ -1,35 +1,57 @@
-import { Modal as RNModal, View, Text, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
-import { ReactNode } from 'react'
+import {
+  Modal as RNModal,
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
+import { ReactNode } from "react";
+import { useColors } from "../../theme/createStyles";
 
 interface ModalProps {
-  visible: boolean
-  onClose: () => void
-  title: string
-  children: ReactNode
-  footer?: ReactNode
+  visible: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+  footer?: ReactNode;
 }
 
-export function Modal({ visible, onClose, title, children, footer }: ModalProps) {
+export function Modal({
+  visible,
+  onClose,
+  title,
+  children,
+  footer,
+}: ModalProps) {
+  const colors = useColors();
+
   return (
-    <RNModal visible={visible} animationType="slide" presentationStyle="pageSheet">
+    <RNModal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+    >
       <SafeAreaView
-        style={{ flex: 1, backgroundColor: '#fff' }}
+        style={{ flex: 1, backgroundColor: colors.background }}
         accessibilityViewIsModal
         accessibilityLabel={`${title} dialog`}
       >
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
           {/* Header */}
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
               padding: 16,
               borderBottomWidth: 1,
-              borderBottomColor: '#e5e7eb',
+              borderBottomColor: colors.border,
             }}
           >
             <TouchableOpacity
@@ -38,10 +60,12 @@ export function Modal({ visible, onClose, title, children, footer }: ModalProps)
               accessibilityLabel="Cancel"
               accessibilityHint="Closes this dialog"
             >
-              <Text style={{ color: '#6b7280', fontSize: 16 }}>Cancel</Text>
+              <Text style={{ color: colors.textSecondary, fontSize: 16 }}>
+                Cancel
+              </Text>
             </TouchableOpacity>
             <Text
-              style={{ fontSize: 18, fontWeight: '600', color: '#1f2937' }}
+              style={{ fontSize: 18, fontWeight: "600", color: colors.text }}
               accessibilityRole="header"
             >
               {title}
@@ -64,7 +88,7 @@ export function Modal({ visible, onClose, title, children, footer }: ModalProps)
               style={{
                 padding: 16,
                 borderTopWidth: 1,
-                borderTopColor: '#e5e7eb',
+                borderTopColor: colors.border,
               }}
             >
               {footer}
@@ -73,25 +97,27 @@ export function Modal({ visible, onClose, title, children, footer }: ModalProps)
         </KeyboardAvoidingView>
       </SafeAreaView>
     </RNModal>
-  )
+  );
 }
 
 interface ModalHeaderProps {
-  title: string
-  onClose: () => void
-  rightAction?: ReactNode
+  title: string;
+  onClose: () => void;
+  rightAction?: ReactNode;
 }
 
 export function ModalHeader({ title, onClose, rightAction }: ModalHeaderProps) {
+  const colors = useColors();
+
   return (
     <View
       style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
         padding: 16,
         borderBottomWidth: 1,
-        borderBottomColor: '#e5e7eb',
+        borderBottomColor: colors.border,
       }}
     >
       <TouchableOpacity
@@ -100,15 +126,17 @@ export function ModalHeader({ title, onClose, rightAction }: ModalHeaderProps) {
         accessibilityLabel="Cancel"
         accessibilityHint="Closes this dialog"
       >
-        <Text style={{ color: '#6b7280', fontSize: 16 }}>Cancel</Text>
+        <Text style={{ color: colors.textSecondary, fontSize: 16 }}>
+          Cancel
+        </Text>
       </TouchableOpacity>
       <Text
-        style={{ fontSize: 18, fontWeight: '600', color: '#1f2937' }}
+        style={{ fontSize: 18, fontWeight: "600", color: colors.text }}
         accessibilityRole="header"
       >
         {title}
       </Text>
       {rightAction || <View style={{ width: 50 }} />}
     </View>
-  )
+  );
 }
