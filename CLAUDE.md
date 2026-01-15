@@ -71,6 +71,7 @@ DuckDB database stored in `~/.homeschool/homeschool.db`. Parquet exports go to `
 ## IPC Communication
 
 Renderer communicates with main process via `window.api`:
+
 - `window.api.getStudents()`, `createStudent()`, etc.
 - `window.api.getSessions()`, `createSession()`, etc.
 - `window.api.getActivities()`, `createActivity()`, etc.
@@ -85,6 +86,7 @@ npm run build:mac
 ```
 
 Creates DMG installers in `dist/`:
+
 - `Homeschool-{version}-x64.dmg` - Intel Macs
 - `Homeschool-{version}-arm64.dmg` - Apple Silicon Macs
 
@@ -99,9 +101,11 @@ npm run build:win
 ```
 
 Creates NSIS installer in `dist/`:
+
 - `Homeschool-{version}-Setup.exe`
 
 **Requirements**:
+
 - Windows 10/11 with Node.js 18+
 - Run `npm install` first to get Windows-native DuckDB bindings
 
@@ -116,6 +120,7 @@ Creates AppImage and .deb in `dist/`.
 ### Cross-Platform Builds
 
 You cannot build Windows from Mac or vice versa due to native DuckDB bindings. Options:
+
 1. Build on each target platform
 2. Use GitHub Actions CI for automated builds (see below)
 3. Use a Windows VM for Windows builds
@@ -125,12 +130,14 @@ You cannot build Windows from Mac or vice versa due to native DuckDB bindings. O
 The `.github/workflows/build.yml` workflow automatically builds for all platforms:
 
 **Triggers:**
+
 - Push to `main` branch
 - Pull requests to `main`
 - Git tags starting with `v` (e.g., `v1.0.0`)
 - Manual trigger via GitHub UI
 
 **To create a release:**
+
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
@@ -139,6 +146,7 @@ git push origin v1.0.0
 This builds Mac, Windows, and Linux versions and creates a draft GitHub Release with all installers attached.
 
 **Artifacts** (available on every build):
+
 - `Homeschool-mac` - DMG files for Intel and Apple Silicon
 - `Homeschool-windows` - Setup.exe installer
 - `Homeschool-linux` - AppImage and .deb
@@ -149,11 +157,96 @@ This builds Mac, Windows, and Linux versions and creates a draft GitHub Release 
 - Preload script must be CJS format (outputs as `.cjs`) due to "type": "module" in package.json
 - Nevada has minimal homeschool reporting requirements but app generates portfolio-ready documentation
 
+## Design System
+
+The application uses a **token-based design system** with a single source of truth (`design-tokens.json`) that generates platform-specific code for both desktop and mobile.
+
+### Key Principles
+
+1. **Use design system components** - Don't create custom styled components
+2. **Use design tokens** - Don't hardcode colors, spacing, or typography values
+3. **Follow naming conventions** - Use semantic names (brand-primary, not fuchsia-500)
+4. **Cross-platform consistency** - Desktop and mobile share identical design values
+
+### Component Usage (Desktop)
+
+Always use components from the UI library:
+
+```tsx
+import { Button, Card, Badge, Input, Modal, Alert } from '@/components/ui'
+import { PageHeader, PageContainer, PageGrid } from '@/components/layout'
+
+// ✅ Good - uses design system
+<Button variant="primary">Save</Button>
+<Card><p>Content</p></Card>
+
+// ❌ Bad - custom styling
+<button className="bg-fuchsia-500 px-4 py-2 rounded-lg">Save</button>
+```
+
+### Color Tokens (Desktop/Tailwind)
+
+```tsx
+// ✅ Use design system tokens
+<div className="bg-brand-primary text-neutral-text">
+<button className="bg-status-success hover:bg-status-successDark">
+<span className="text-student-fuchsia-500">
+
+// ❌ Don't use hardcoded colors
+<div className="bg-fuchsia-500 text-gray-900">
+<div className="bg-[#d946ef]">
+```
+
+### Theme System (Mobile)
+
+```tsx
+import { useColors } from "@/theme/ThemeContext";
+
+function MyComponent() {
+  const colors = useColors();
+  return (
+    <View style={{ backgroundColor: colors.primary }}>
+      <Text style={{ color: colors.text }}>Hello</Text>
+    </View>
+  );
+}
+```
+
+### Design Token Generation
+
+Design tokens are automatically generated from `design-tokens.json`:
+
+```bash
+# Tokens are generated during build
+npm run build
+
+# Desktop: design-tokens.json → src/renderer/src/design/tokens/
+# Mobile: design-tokens.json → mobile/src/theme/tokens.ts
+```
+
+### ESLint Rules
+
+The codebase enforces design system usage with custom ESLint rules:
+
+- `design-system/no-hardcoded-colors` - Prevents hardcoded color classes
+- `design-system/require-design-system-components` - Warns against custom styled elements
+- `design-system/no-legacy-classes` - Flags deprecated CSS classes
+- `design-system/pages-use-components-only` - Prevents complex inline styling in pages
+
+### Deprecated Patterns
+
+**Legacy CSS classes are deprecated:**
+
+- `.btn-*`, `.card`, `.badge-*`, `.input`, `.label` - Use UI components instead
+
+See `src/renderer/src/components/ui/DesignSystem.mdx` for full documentation.
+
 ## Mobile App (iOS & Android)
 
 The `mobile/` directory contains a React Native Expo app for iOS and Android.
 
 ### Mobile Tech Stack
+
 - **Framework**: React Native with Expo
 - **Navigation**: Expo Router (file-based)
 - **Database**: expo-sqlite (SQLite)
@@ -205,6 +298,7 @@ mobile/
 ```
 
 ### Mobile Features
+
 - Dashboard with today's activities, stars, and upcoming events
 - Quick activity logging with subject selection
 - Milestone tracking with star rewards

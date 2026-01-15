@@ -1,6 +1,6 @@
 # Homeschool Design System
 
-A consistent, accessible design language for the Homeschool app across desktop and mobile platforms.
+A consistent, accessible design language for the Homeschool app across desktop and mobile platforms, powered by design tokens and a unified component library.
 
 ## Design Philosophy
 
@@ -13,29 +13,71 @@ The Homeschool app uses a **warm, approachable, and educational** design languag
 3. **Encouraging Tone** - Success states use warm, positive colors
 4. **Accessible** - WCAG AA compliant contrast ratios
 5. **Consistent** - Same patterns on desktop and mobile
+6. **Token-Based** - Single source of truth for design values
+
+## Getting Started
+
+### For New Components
+
+Always use components from the design system library:
+
+```tsx
+import { Button, Card, Badge, Input, Modal, Alert } from '@/components/ui'
+
+// ✅ Good
+<Button variant="primary">Save Changes</Button>
+<Card><p>Content here</p></Card>
+
+// ❌ Bad - Don't create custom styled buttons
+<button className="bg-fuchsia-500 text-white px-4 py-2 rounded-lg">Save</button>
+```
+
+### Design Tokens
+
+All design values (colors, spacing, typography) are defined in `design-tokens.json` and automatically generated for both desktop (Tailwind) and mobile (React Native).
+
+**Using tokens in Tailwind:**
+```tsx
+// ✅ Use design system tokens
+<div className="bg-brand-primary text-neutral-text">
+<button className="bg-status-success hover:bg-status-success-dark">
+
+// ❌ Don't use arbitrary color values
+<div className="bg-[#d946ef]">
+```
+
+**Using tokens in mobile:**
+```tsx
+import { useColors } from '@/theme/ThemeContext'
+
+function MyComponent() {
+  const colors = useColors()
+  return <View style={{ backgroundColor: colors.primary }} />
+}
+```
 
 ## Colors
 
 ### Brand Colors
 
-| Name | Hex | Usage |
-|------|-----|-------|
-| Primary (Fuchsia) | `#d946ef` | Primary actions, brand identity |
-| Primary Light | `#fdf4ff` | Primary backgrounds |
-| Primary Dark | `#a21caf` | Primary hover states |
+| Name | Hex | Tailwind Class | Token |
+|------|-----|----------------|-------|
+| Primary (Fuchsia) | `#d946ef` | `bg-brand-primary` | `colors.brand.primary` |
+| Primary Light | `#fdf4ff` | `bg-brand-primaryLight` | `colors.brand.primaryLight` |
+| Primary Dark | `#a21caf` | `bg-brand-primaryDark` | `colors.brand.primaryDark` |
 
 ### Student Colors
 
 Each student is assigned a distinct color for easy visual identification:
 
-| Color | Hex | Tailwind |
-|-------|-----|----------|
-| Fuchsia | `#d946ef` | `fuchsia-500` |
-| Teal | `#14b8a6` | `teal-500` |
-| Blue | `#3b82f6` | `blue-500` |
-| Orange | `#f97316` | `orange-500` |
-| Purple | `#8b5cf6` | `purple-500` |
-| Green | `#22c55e` | `green-500` |
+| Color | Hex | Tailwind Class | Mobile Token |
+|-------|-----|----------------|--------------|
+| Fuchsia | `#d946ef` | `bg-student-fuchsia-500` | `colors.studentFuchsia` |
+| Teal | `#14b8a6` | `bg-student-teal-500` | `colors.studentTeal` |
+| Blue | `#3b82f6` | `bg-student-blue-500` | `colors.studentBlue` |
+| Orange | `#f97316` | `bg-student-orange-500` | `colors.studentOrange` |
+| Purple | `#a855f7` | `bg-student-purple-500` | `colors.studentPurple` |
+| Green | `#22c55e` | `bg-student-green-500` | `colors.studentGreen` |
 
 ### Status Colors
 
@@ -156,3 +198,75 @@ Badges indicate status or categorization:
 - Use `duration-300` for larger state changes
 - Prefer `ease-out` for entering, `ease-in` for leaving
 - Respect `prefers-reduced-motion`
+
+## Available Components
+
+The design system provides these reusable components:
+
+### Core Components
+- **Button** - Primary, secondary, outline, ghost, danger variants
+- **Card** - Container for grouped content
+- **Badge** - Status and category indicators
+- **Input** - Text input fields
+- **Modal** - Dialog overlays
+- **Alert** - Inline notifications
+
+### Layout Components
+- **PageContainer** - Max-width content wrapper
+- **PageHeader** - Standard page header with title/subtitle
+- **PageSection** - Section wrapper with optional title
+- **PageGrid** - Responsive grid layout
+- **StatCard** - Dashboard metric display
+
+See individual component stories in Storybook for detailed usage examples.
+
+## Deprecated Patterns
+
+### ⚠️ Legacy CSS Classes (Deprecated)
+
+The following CSS classes are **deprecated** and will be removed in a future version:
+
+- `.btn`, `.btn-primary`, `.btn-secondary`, etc. → Use `<Button />` component
+- `.card`, `.card-hover`, `.card-interactive` → Use `<Card />` component
+- `.badge`, `.badge-*` → Use `<Badge />` component
+- `.input`, `.label` → Use `<Input />` component or Tailwind utilities
+
+**Migration Example:**
+
+```tsx
+// ❌ Deprecated
+<button className="btn btn-primary">Save</button>
+<div className="card">Content</div>
+<input className="input" />
+
+// ✅ Current
+<Button variant="primary">Save</Button>
+<Card>Content</Card>
+<Input />
+```
+
+### ⚠️ Hardcoded Colors (Deprecated)
+
+Don't use hardcoded Tailwind color classes:
+
+```tsx
+// ❌ Deprecated - hardcoded colors
+<div className="bg-fuchsia-500">
+<span className="text-blue-600">
+
+// ✅ Current - design system tokens
+<div className="bg-brand-primary">
+<span className="text-student-blue-500">
+```
+
+## Contributing
+
+When adding new components or patterns:
+
+1. **Check the token system** - Use existing design tokens from `design-tokens.json`
+2. **Follow naming conventions** - Use semantic names, not visual descriptions
+3. **Document in Storybook** - Add stories showing all variants and states
+4. **Test accessibility** - Verify keyboard navigation and screen readers
+5. **Cross-platform** - Ensure mobile parity when applicable
+
+See `DESIGN_SYSTEM.md` for comprehensive migration and contribution guidelines.

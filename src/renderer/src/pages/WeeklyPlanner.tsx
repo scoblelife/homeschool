@@ -480,7 +480,7 @@ export default function WeeklyPlanner(): JSX.Element {
               <button
                 onClick={() => setShowSyncOptions(!showSyncOptions)}
                 disabled={isSyncing}
-                className={`btn ${syncRecords.length > 0 ? "btn-secondary text-green-600" : "btn-secondary"}`}
+                className={`inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-100 hover:bg-gray-200 focus:ring-brand-primary active:scale-[0.98] ${syncRecords.length > 0 ? "text-green-600" : "text-gray-700"}`}
               >
                 {isSyncing
                   ? "Syncing..."

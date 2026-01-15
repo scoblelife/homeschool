@@ -62,7 +62,10 @@ module.exports = [
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
 
-      // Design System Rules (warnings for now)
+      // Design System Rules
+      // NOTE: Set to 'warn' during gradual migration. Upgrade to 'error' once
+      // all pages are migrated from legacy patterns (est. ~380 violations remaining).
+      // See DESIGN_SYSTEM.md for migration guide.
       'design-system/no-hardcoded-colors': 'warn',
       'design-system/require-design-system-components': 'warn',
       'design-system/no-legacy-classes': 'warn',
