@@ -171,6 +171,16 @@ function MyScreen() {
 }
 ```
 
+#### Platform-Specific Colors (React Native)
+
+Some colors in React Native are platform-specific and acceptable as hardcoded values:
+
+- **Shadow colors**: `shadowColor: "#000"` - Required by React Native for shadow rendering
+- **Camera backgrounds**: `backgroundColor: "#000"` - Standard for camera/QR scanner interfaces
+- **Transparent overlays**: Use `colors.overlay` token instead of hardcoded rgba values
+
+All other colors should use the theme system via `useColors()` hook.
+
 ## Color System
 
 ### Desktop (Tailwind)
@@ -542,6 +552,7 @@ npm run lint --fix
 - ✅ Cross-platform color parity
 - ✅ Page migration to design system (all 20 pages migrated)
 - ✅ Elimination of legacy CSS classes (zero remaining)
+- ✅ Mobile component migration (all components use theme tokens)
 
 ### In Progress
 

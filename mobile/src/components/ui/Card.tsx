@@ -51,9 +51,10 @@ interface CardTitleProps {
 }
 
 export function CardTitle({ children }: CardTitleProps) {
+  const colors = useColors();
   return (
     <Text
-      style={{ fontSize: 16, fontWeight: "600", color: "#1f2937" }}
+      style={{ fontSize: 16, fontWeight: "600", color: colors.text }}
       accessibilityRole="header"
     >
       {children}

@@ -114,7 +114,10 @@ export function FeedbackModal({ visible, onClose }: FeedbackModalProps) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <TouchableOpacity
-          style={styles.backdrop}
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: colors.overlay,
+          }}
           activeOpacity={1}
           onPress={handleClose}
         />
@@ -405,9 +408,5 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: "flex-end",
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
 });

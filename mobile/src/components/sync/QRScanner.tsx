@@ -219,7 +219,14 @@ export function QRScanner({ onScan, onCancel }: QRScannerProps) {
         }}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
       >
-        <View style={styles.overlay}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: colors.overlay,
+          }}
+        >
           <View style={styles.scanArea}>
             <View style={[styles.corner, styles.topLeft]} />
             <View style={[styles.corner, styles.topRight]} />
@@ -299,12 +306,6 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
-  },
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
   },
   scanArea: {
     width: 250,

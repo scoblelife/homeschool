@@ -275,7 +275,7 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
         <Pressable
           style={{
             flex: 1,
-            backgroundColor: "rgba(0,0,0,0.4)",
+            backgroundColor: colors.overlay,
             justifyContent: "flex-end",
           }}
           onPress={handleClose}
@@ -326,7 +326,8 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
                 <Text
                   style={{
                     fontSize: 14,
-                    color: "rgba(255,255,255,0.8)",
+                    color: colors.textInverse,
+                    opacity: 0.8,
                     marginTop: 4,
                   }}
                 >
