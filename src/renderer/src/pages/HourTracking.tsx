@@ -5,6 +5,8 @@ import { useStore } from "../stores/useStore";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
+import { PageContainer } from "../components/layout/PageContainer";
+import { PageHeader } from "../components/layout/PageHeader";
 
 export default function HourTracking() {
   const { students, selectedStudentId } = useStore();
@@ -25,28 +27,22 @@ export default function HourTracking() {
   };
 
   return (
-    <div className="p-6">
+    <PageContainer>
       {!showPrintable ? (
         <>
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Hour Tracking
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Track instructional hours and generate official reports
-              </p>
-            </div>
-          </div>
+          <PageHeader
+            title="Hour Tracking"
+            subtitle="Track instructional hours and generate official reports"
+          />
 
           <HourReport studentId={selectedStudentId || undefined} />
 
           {/* Generate Official Report Section */}
-          <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="mt-8 bg-neutral-surface rounded-lg shadow p-6">
+            <h2 className="text-lg font-semibold text-neutral-text mb-4">
               Generate Official Hour Report
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-sm text-neutral-textSecondary mb-4">
               Create a printable official report for compliance documentation.
             </p>
             <GenerateReportForm
@@ -60,7 +56,7 @@ export default function HourTracking() {
           <div className="mb-4 print:hidden">
             <button
               onClick={() => setShowPrintable(false)}
-              className="text-fuchsia-600 hover:text-fuchsia-700 flex items-center gap-2"
+              className="text-brand-primary hover:text-brand-primaryDark flex items-center gap-2"
             >
               <BackIcon />
               Back to Hour Tracking
@@ -73,7 +69,7 @@ export default function HourTracking() {
           />
         </>
       )}
-    </div>
+    </PageContainer>
   );
 }
 
@@ -119,14 +115,14 @@ function GenerateReportForm({ students, onGenerate }: GenerateReportFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 items-end">
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           Student
         </label>
         <select
           value={studentId}
           onChange={(e) => setStudentId(e.target.value)}
-          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          className="px-3 py-2 border border-neutral-border rounded-lg
+            bg-white text-neutral-text"
         >
           {students.map((student) => (
             <option key={student.id} value={student.id}>
@@ -136,14 +132,14 @@ function GenerateReportForm({ students, onGenerate }: GenerateReportFormProps) {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           School Year
         </label>
         <select
           value={schoolYear}
           onChange={(e) => setSchoolYear(e.target.value)}
-          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          className="px-3 py-2 border border-neutral-border rounded-lg
+            bg-white text-neutral-text"
         >
           {yearOptions.map((year) => (
             <option key={year} value={year}>
@@ -153,14 +149,14 @@ function GenerateReportForm({ students, onGenerate }: GenerateReportFormProps) {
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           State
         </label>
         <select
           value={state}
           onChange={(e) => setState(e.target.value)}
-          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          className="px-3 py-2 border border-neutral-border rounded-lg
+            bg-white text-neutral-text"
         >
           <option value="NV">Nevada</option>
           <option value="CA">California</option>
