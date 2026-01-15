@@ -25,62 +25,63 @@ import type {
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
+import { PageContainer, PageHeader } from "../components/layout";
 
-// Student color palette
+// Student color palette - using design system tokens
 const STUDENT_COLORS = [
   {
     id: "fuchsia",
     name: "Fuchsia",
-    bg: "bg-fuchsia-500",
-    ring: "ring-fuchsia-500",
-    bgLight: "bg-fuchsia-50",
-    border: "border-l-fuchsia-500",
-    text: "text-fuchsia-600",
+    bg: "bg-student-fuchsia-500",
+    ring: "ring-student-fuchsia-500",
+    bgLight: "bg-student-fuchsia-50",
+    border: "border-l-student-fuchsia-500",
+    text: "text-student-fuchsia-600",
   },
   {
     id: "teal",
     name: "Teal",
-    bg: "bg-teal-500",
-    ring: "ring-teal-500",
-    bgLight: "bg-teal-50",
-    border: "border-l-teal-500",
-    text: "text-teal-600",
+    bg: "bg-student-teal-500",
+    ring: "ring-student-teal-500",
+    bgLight: "bg-student-teal-50",
+    border: "border-l-student-teal-500",
+    text: "text-student-teal-600",
   },
   {
     id: "blue",
     name: "Blue",
-    bg: "bg-blue-500",
-    ring: "ring-blue-500",
-    bgLight: "bg-blue-50",
-    border: "border-l-blue-500",
-    text: "text-blue-600",
+    bg: "bg-student-blue-500",
+    ring: "ring-student-blue-500",
+    bgLight: "bg-student-blue-50",
+    border: "border-l-student-blue-500",
+    text: "text-student-blue-600",
   },
   {
     id: "orange",
     name: "Orange",
-    bg: "bg-orange-500",
-    ring: "ring-orange-500",
-    bgLight: "bg-orange-50",
-    border: "border-l-orange-500",
-    text: "text-orange-600",
+    bg: "bg-student-orange-500",
+    ring: "ring-student-orange-500",
+    bgLight: "bg-student-orange-50",
+    border: "border-l-student-orange-500",
+    text: "text-student-orange-600",
   },
   {
     id: "purple",
     name: "Purple",
-    bg: "bg-purple-500",
-    ring: "ring-purple-500",
-    bgLight: "bg-purple-50",
-    border: "border-l-purple-500",
-    text: "text-purple-600",
+    bg: "bg-student-purple-500",
+    ring: "ring-student-purple-500",
+    bgLight: "bg-student-purple-50",
+    border: "border-l-student-purple-500",
+    text: "text-student-purple-600",
   },
   {
     id: "green",
     name: "Green",
-    bg: "bg-green-500",
-    ring: "ring-green-500",
-    bgLight: "bg-green-50",
-    border: "border-l-green-500",
-    text: "text-green-600",
+    bg: "bg-student-green-500",
+    ring: "ring-student-green-500",
+    bgLight: "bg-student-green-50",
+    border: "border-l-student-green-500",
+    text: "text-student-green-600",
   },
 ] as const;
 
@@ -462,8 +463,11 @@ export default function Settings(): JSX.Element {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Settings</h1>
+    <PageContainer>
+      <PageHeader
+        title="Settings"
+        subtitle="Manage students, integrations, and application preferences"
+      />
       {/* Students Section */}
       <Card className="mb-8">
         <div className="flex items-center justify-between mb-4">
@@ -563,11 +567,13 @@ export default function Settings(): JSX.Element {
         </p>
 
         <div className="mb-4">
-          <label className="label">Your State</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Your State
+          </label>
           <select
             value={selectedStateCode || ""}
             onChange={(e) => handleStateChange(e.target.value)}
-            className="input"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
           >
             <option value="">Select your state...</option>
             {availableStates.map((state) => (
@@ -604,7 +610,7 @@ export default function Settings(): JSX.Element {
             <ul className="space-y-2 text-sm text-gray-600 mb-4">
               {formatRequirements(stateInfo).map((req, i) => (
                 <li key={i} className="flex items-start gap-2">
-                  <span className="text-fuchsia-500 mt-0.5">
+                  <span className="text-brand-primary mt-0.5">
                     <svg
                       className="w-4 h-4"
                       fill="currentColor"
@@ -639,7 +645,7 @@ export default function Settings(): JSX.Element {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-fuchsia-600 hover:text-fuchsia-700 block truncate"
+                    className="text-sm text-brand-primary hover:text-brand-primaryDark block truncate"
                   >
                     {url}
                   </a>
@@ -706,11 +712,13 @@ export default function Settings(): JSX.Element {
             </div>
 
             <div>
-              <label className="label">Sync to Calendar</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Sync to Calendar
+              </label>
               <select
                 value={selectedCalendarId || ""}
                 onChange={(e) => handleSelectCalendar(e.target.value)}
-                className="input"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
               >
                 <option value="">Select a calendar...</option>
                 {calendars.map((cal) => (
@@ -754,7 +762,7 @@ export default function Settings(): JSX.Element {
               onChange={(e) =>
                 saveEmailConfig({ ...emailConfig, enabled: e.target.checked })
               }
-              className="w-4 h-4 text-fuchsia-600 rounded focus:ring-fuchsia-500"
+              className="w-4 h-4 text-brand-primary rounded focus:ring-brand-primary"
             />
             <label
               htmlFor="email-enabled"
@@ -765,7 +773,9 @@ export default function Settings(): JSX.Element {
           </div>
 
           <div>
-            <label className="label">Recipient Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Recipient Email
+            </label>
             <Input
               type="email"
               value={emailConfig.recipientEmail}
@@ -781,7 +791,9 @@ export default function Settings(): JSX.Element {
           </div>
 
           <div>
-            <label className="label">Send Method</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Send Method
+            </label>
             <select
               value={emailConfig.method}
               onChange={(e) =>
@@ -790,7 +802,7 @@ export default function Settings(): JSX.Element {
                   method: e.target.value as "mailto" | "resend",
                 })
               }
-              className="input"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
             >
               <option value="mailto">Open in Email Client (mailto)</option>
               <option value="resend">Send via Resend API</option>
@@ -804,7 +816,9 @@ export default function Settings(): JSX.Element {
 
           {emailConfig.method === "resend" && (
             <div>
-              <label className="label">Resend API Key</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Resend API Key
+              </label>
               <Input
                 type="password"
                 value={emailConfig.resendApiKey || ""}
@@ -823,7 +837,7 @@ export default function Settings(): JSX.Element {
                   href="https://resend.com/api-keys"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-fuchsia-600 hover:text-fuchsia-700"
+                  className="text-brand-primary hover:text-brand-primaryDark"
                 >
                   resend.com/api-keys
                 </a>
@@ -946,7 +960,7 @@ export default function Settings(): JSX.Element {
                       })
                     }
                     onBlur={() => handleSaveMapping(subject.id)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-fuchsia-500 focus:border-fuchsia-500"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand-primary focus:border-brand-primary"
                     placeholder="Skylight chore name..."
                   />
                   <span className="text-yellow-500">⭐</span>
@@ -965,7 +979,7 @@ export default function Settings(): JSX.Element {
                       })
                     }
                     onBlur={() => handleSaveMapping(subject.id)}
-                    className="w-16 px-2 py-2 border border-gray-300 rounded-lg text-center focus:ring-fuchsia-500 focus:border-fuchsia-500"
+                    className="w-16 px-2 py-2 border border-gray-300 rounded-lg text-center focus:ring-brand-primary focus:border-brand-primary"
                   />
                   {hasMapping && (
                     <span className="text-green-500 text-sm">✓</span>
@@ -1019,7 +1033,9 @@ export default function Settings(): JSX.Element {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="label">Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name
+                </label>
                 <Input
                   type="text"
                   value={formData.name}
@@ -1032,7 +1048,9 @@ export default function Settings(): JSX.Element {
               </div>
 
               <div>
-                <label className="label">Date of Birth</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Date of Birth
+                </label>
                 <Input
                   type="date"
                   value={formData.dateOfBirth}
@@ -1044,7 +1062,9 @@ export default function Settings(): JSX.Element {
               </div>
 
               <div>
-                <label className="label">Grade Level</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Grade Level
+                </label>
                 <select
                   value={formData.gradeLevel}
                   onChange={(e) =>
@@ -1053,7 +1073,7 @@ export default function Settings(): JSX.Element {
                       gradeLevel: e.target.value as GradeLevel,
                     })
                   }
-                  className="input"
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
                 >
                   <option value="pre-k">Pre-K (4 years old)</option>
                   <option value="1st">1st Grade (6 years old)</option>
@@ -1062,7 +1082,9 @@ export default function Settings(): JSX.Element {
               </div>
 
               <div>
-                <label className="label">Color</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Color
+                </label>
                 <div className="grid grid-cols-3 gap-2">
                   {STUDENT_COLORS.map((color) => {
                     const isSelected =
@@ -1091,7 +1113,7 @@ export default function Settings(): JSX.Element {
               </div>
 
               <div>
-                <label className="label">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Google Calendar Feed URL (optional)
                 </label>
                 <Input
@@ -1135,6 +1157,6 @@ export default function Settings(): JSX.Element {
           onClose={() => setCertificateStudent(null)}
         />
       )}
-    </div>
+    </PageContainer>
   );
 }
