@@ -62,17 +62,13 @@ export default function Curriculum(): JSX.Element {
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Curriculum Mapping
-        </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
-          Map activities to learning standards and track coverage
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Curriculum Mapping"
+        subtitle="Map activities to learning standards and track coverage"
+      />
       {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
+      <div className="border-b border-neutral-border mb-6">
         <nav className="-mb-px flex gap-6">
           {tabs.map((tab) => (
             <button
@@ -80,8 +76,8 @@ export default function Curriculum(): JSX.Element {
               onClick={() => setActiveTab(tab.id)}
               className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === tab.id
-                  ? "border-fuchsia-500 text-fuchsia-600 dark:text-fuchsia-400"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
+                  ? "border-brand-primary text-brand-primary"
+                  : "border-transparent text-neutral-textSecondary hover:text-neutral-text hover:border-neutral-border"
               }`}
             >
               {tab.label}
@@ -91,7 +87,7 @@ export default function Curriculum(): JSX.Element {
       </div>
       {/* Tab Content */}
       {activeTab === "packages" && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-neutral-surface rounded-lg shadow p-6">
           <CurriculumPackages />
         </div>
       )}
@@ -111,7 +107,7 @@ export default function Curriculum(): JSX.Element {
           )}
 
           {activeTab === "standards" && selectedStudent && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-neutral-surface rounded-lg shadow p-6">
               <StandardsList
                 gradeLevel={selectedStudent.gradeLevel as GradeLevel}
               />
@@ -121,8 +117,8 @@ export default function Curriculum(): JSX.Element {
           {activeTab === "custom" && selectedStudent && (
             <div className="space-y-6">
               {/* Instructions */}
-              <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <p className="text-sm text-blue-700 dark:text-blue-300">
+              <div className="bg-student-blue-50 border border-student-blue-200 rounded-lg p-4">
+                <p className="text-sm text-student-blue-700">
                   Select an activity from the list below to map it to learning
                   standards. This helps track which standards are being covered
                   by your curriculum.
@@ -130,17 +126,17 @@ export default function Curriculum(): JSX.Element {
               </div>
 
               {/* Recent Activities */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <div className="bg-neutral-surface rounded-lg shadow">
+                <div className="px-6 py-4 border-b border-neutral-border">
+                  <h3 className="text-lg font-semibold text-neutral-text">
                     Recent Activities
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-neutral-textSecondary">
                     Last 30 days - click to map standards
                   </p>
                 </div>
 
-                <div className="divide-y divide-gray-100 dark:divide-gray-700 max-h-96 overflow-y-auto">
+                <div className="divide-y divide-neutral-border max-h-96 overflow-y-auto">
                   {recentActivities.length === 0 ? (
                     <div className="px-6 py-8 text-center text-gray-500">
                       No recent activities found.
@@ -172,7 +168,7 @@ export default function Curriculum(): JSX.Element {
           }}
         />
       )}
-    </div>
+    </PageContainer>
   );
 }
 
@@ -195,29 +191,29 @@ function ActivityRow({
   return (
     <button
       onClick={onClick}
-      className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
+      className="w-full px-6 py-4 flex items-center justify-between hover:bg-neutral-backgroundDeep transition-colors text-left"
     >
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-900 dark:text-white">
+          <span className="font-medium text-neutral-text">
             {activity.title}
           </span>
-          <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
+          <span className="px-2 py-0.5 text-xs bg-neutral-backgroundDeep text-neutral-textSecondary rounded">
             {activity.activityType.replace("_", " ")}
           </span>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-neutral-textSecondary mt-1">
           {new Date(activity.dateCompleted).toLocaleDateString()}
           {activity.durationMinutes && ` - ${activity.durationMinutes} min`}
         </p>
       </div>
       <div className="flex items-center gap-3">
         {standardCount > 0 ? (
-          <span className="px-2 py-1 text-sm bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full">
+          <span className="px-2 py-1 text-sm bg-status-successLight text-status-successDark rounded-full">
             {standardCount} standards
           </span>
         ) : (
-          <span className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full">
+          <span className="px-2 py-1 text-sm bg-neutral-backgroundDeep text-neutral-textSecondary rounded-full">
             No standards
           </span>
         )}
