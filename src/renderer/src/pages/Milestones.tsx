@@ -31,13 +31,13 @@ const statusLabels: Record<
   },
   in_progress: {
     label: "In Progress",
-    color: "text-amber-600",
-    bg: "bg-amber-100",
+    color: "text-status-warning",
+    bg: "bg-status-warningLight",
   },
   completed: {
     label: "Completed",
-    color: "text-green-600",
-    bg: "bg-green-100",
+    color: "text-status-success",
+    bg: "bg-status-successLight",
   },
 };
 
@@ -108,9 +108,9 @@ function MilestoneCard({
     <div
       className={`p-4 rounded-lg border-l-4 ${
         milestone.status === "completed"
-          ? "bg-green-50 border-l-green-500"
+          ? "bg-status-successLight border-l-status-success"
           : milestone.status === "in_progress"
-            ? "bg-amber-50 border-l-amber-500"
+            ? "bg-status-warningLight border-l-status-warning"
             : "bg-gray-50 border-l-gray-300"
       }`}
     >
@@ -124,12 +124,12 @@ function MilestoneCard({
               {statusInfo.label}
             </span>
             {milestone.category && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-50 text-fuchsia-600">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-brand-primaryLight text-brand-primary">
                 {milestone.category}
               </span>
             )}
             {resources.length > 0 && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+              <span className="text-xs px-2 py-0.5 rounded-full bg-student-blue-50 text-student-blue-600">
                 {resources.length} resource{resources.length > 1 ? "s" : ""}
               </span>
             )}
@@ -150,7 +150,7 @@ function MilestoneCard({
           <div className="mt-3">
             <button
               onClick={() => setShowResources(!showResources)}
-              className="text-xs text-fuchsia-600 hover:text-fuchsia-700"
+              className="text-xs text-brand-primary hover:text-brand-primaryDark"
             >
               {showResources ? "Hide Resources" : "Show Resources"}
             </button>
@@ -170,7 +170,7 @@ function MilestoneCard({
                       </span>
                       <button
                         onClick={() => handleOpenResource(resource)}
-                        className="text-blue-600 hover:underline flex-1 text-left truncate"
+                        className="text-student-blue-600 hover:underline flex-1 text-left truncate"
                       >
                         {resource.title}
                       </button>
@@ -185,7 +185,7 @@ function MilestoneCard({
                 )}
                 <button
                   onClick={() => setShowAddResource(true)}
-                  className="text-xs bg-fuchsia-100 text-fuchsia-700 px-2 py-1 rounded hover:bg-fuchsia-200"
+                  className="text-xs bg-brand-primaryLight text-brand-primaryDark px-2 py-1 rounded hover:bg-brand-primaryLight"
                 >
                   + Add Resource
                 </button>
@@ -208,14 +208,14 @@ function MilestoneCard({
           </select>
           <button
             onClick={onEdit}
-            className="text-fuchsia-600 hover:text-fuchsia-700 text-sm"
+            className="text-brand-primary hover:text-brand-primaryDark text-sm"
           >
             Edit
           </button>
           {milestone.status === "completed" && (
             <button
               onClick={onPrintCertificate}
-              className="text-green-600 hover:text-green-700 text-sm flex items-center gap-1"
+              className="text-status-success hover:text-status-successDark text-sm flex items-center gap-1"
             >
               <svg
                 className="w-4 h-4"
@@ -248,7 +248,7 @@ function MilestoneCard({
               className={({ selected }) =>
                 `px-4 py-2 rounded-lg text-sm font-medium ${
                   selected
-                    ? "bg-fuchsia-100 text-fuchsia-700"
+                    ? "bg-brand-primaryLight text-brand-primaryDark"
                     : "bg-gray-100 text-gray-600"
                 }`
               }
@@ -259,7 +259,7 @@ function MilestoneCard({
               className={({ selected }) =>
                 `px-4 py-2 rounded-lg text-sm font-medium ${
                   selected
-                    ? "bg-fuchsia-100 text-fuchsia-700"
+                    ? "bg-brand-primaryLight text-brand-primaryDark"
                     : "bg-gray-100 text-gray-600"
                 }`
               }
@@ -270,7 +270,9 @@ function MilestoneCard({
           <Tab.Panels>
             <Tab.Panel className="space-y-4">
               <div>
-                <label className="label">Title</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title
+                </label>
                 <Input
                   type="text"
                   value={urlForm.title}
@@ -281,7 +283,9 @@ function MilestoneCard({
                 />
               </div>
               <div>
-                <label className="label">URL</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  URL
+                </label>
                 <Input
                   type="url"
                   value={urlForm.url}
@@ -306,7 +310,9 @@ function MilestoneCard({
             </Tab.Panel>
             <Tab.Panel className="space-y-4">
               <div>
-                <label className="label">Title (optional)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title (optional)
+                </label>
                 <Input
                   type="text"
                   value={fileTitle}
@@ -429,21 +435,21 @@ export default function Milestones(): JSX.Element {
 
   if (!selectedStudent) {
     return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Milestones</h1>
+      <PageContainer>
+        <PageHeader title="Milestones" />
         <Card className="text-center py-12">
           <p className="text-gray-500">
             Please select a student or add one in Settings.
           </p>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 
   if (milestones.length === 0) {
     return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Milestones</h1>
+      <PageContainer>
+        <PageHeader title="Milestones" />
         <Card className="text-center py-12">
           <p className="text-gray-500 mb-4">
             No milestones set up for {selectedStudent.name} yet.
@@ -460,7 +466,7 @@ export default function Milestones(): JSX.Element {
             {isInitializing ? "Initializing..." : "Initialize Milestones"}
           </Button>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 
@@ -476,25 +482,25 @@ export default function Milestones(): JSX.Element {
           <span className="text-sm font-medium text-gray-700">
             Overall Progress
           </span>
-          <span className="text-sm font-semibold text-fuchsia-600">
+          <span className="text-sm font-semibold text-brand-primary">
             {stats.percentage}%
           </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
           <div
-            className="bg-gradient-to-r from-fuchsia-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-brand-primary to-student-purple-500 h-3 rounded-full transition-all duration-500"
             style={{ width: `${stats.percentage}%` }}
           />
         </div>
         <div className="grid grid-cols-3 gap-4 text-center text-sm">
           <div>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-status-success">
               {stats.completed}
             </div>
             <div className="text-gray-500">Completed</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-amber-600">
+            <div className="text-2xl font-bold text-status-warning">
               {stats.inProgress}
             </div>
             <div className="text-gray-500">In Progress</div>
@@ -510,11 +516,13 @@ export default function Milestones(): JSX.Element {
       {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-6">
         <div>
-          <label className="label text-xs">Subject</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Subject
+          </label>
           <select
             value={filterSubject}
             onChange={(e) => setFilterSubject(e.target.value)}
-            className="input py-1.5 text-sm"
+            className="block w-full px-3 py-1.5 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
           >
             <option value="">All Subjects</option>
             {subjects.map((s) => (
@@ -526,7 +534,9 @@ export default function Milestones(): JSX.Element {
         </div>
 
         <div>
-          <label className="label text-xs">Status</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Status
+          </label>
           <div className="flex gap-1">
             {(
               [
@@ -541,7 +551,7 @@ export default function Milestones(): JSX.Element {
                 onClick={() => setFilterStatus(status)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   filterStatus === status
-                    ? "bg-fuchsia-100 text-fuchsia-700"
+                    ? "bg-brand-primaryLight text-brand-primaryDark"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -612,7 +622,9 @@ export default function Milestones(): JSX.Element {
         {editingMilestone && (
           <form onSubmit={handleEditSubmit} className="space-y-4">
             <div>
-              <label className="label">Milestone</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Milestone
+              </label>
               <p className="text-gray-700 font-medium">
                 {editingMilestone.title}
               </p>
@@ -622,7 +634,9 @@ export default function Milestones(): JSX.Element {
             </div>
 
             <div>
-              <label className="label">Target Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Target Date
+              </label>
               <Input
                 type="date"
                 value={editForm.targetDate || ""}
@@ -633,13 +647,15 @@ export default function Milestones(): JSX.Element {
             </div>
 
             <div>
-              <label className="label">Evidence / Notes</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Evidence / Notes
+              </label>
               <textarea
                 value={editForm.evidenceNotes || ""}
                 onChange={(e) =>
                   setEditForm({ ...editForm, evidenceNotes: e.target.value })
                 }
-                className="input"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
                 rows={3}
                 placeholder="Document evidence of mastery, resources used, etc."
               />
