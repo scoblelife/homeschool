@@ -71,10 +71,8 @@ export default function Reports(): JSX.Element {
   ];
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
-      </div>
+    <PageContainer>
+      <PageHeader title="Reports" />
       {!selectedStudentId ? (
         <Card className="text-center py-12">
           <p className="text-gray-500">
@@ -209,7 +207,7 @@ export default function Reports(): JSX.Element {
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
-                              className="bg-fuchsia-500 h-2 rounded-full transition-all"
+                              className="bg-brand-primary h-2 rounded-full transition-all"
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
@@ -267,7 +265,7 @@ export default function Reports(): JSX.Element {
                           }).map((_, i) => (
                             <div
                               key={i}
-                              className="w-2 h-2 rounded-full bg-fuchsia-500"
+                              className="w-2 h-2 rounded-full bg-brand-primary"
                             />
                           ))}
                         </div>
@@ -285,6 +283,6 @@ export default function Reports(): JSX.Element {
           )}
         </>
       )}
-    </div>
+    </PageContainer>
   );
 }
