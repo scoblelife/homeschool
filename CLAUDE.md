@@ -15,6 +15,31 @@ Homeschool management desktop application for tracking two children's education 
 - **State Management**: Zustand
 - **Dev Environment**: Flox (Nix-based)
 
+## Design System
+
+The app uses a comprehensive design system with:
+
+- **Design Tokens**: Semantic colors, spacing, typography generated from `design-tokens.json`
+- **Component Library**: 13 UI components + 5 layout components in `src/renderer/src/components/`
+- **ESLint Enforcement**: Custom rules prevent design system violations (set to 'error' severity)
+- **Cross-Platform**: Shared tokens for desktop (Tailwind) and mobile (React Native)
+- **Documentation**: See `DESIGN_SYSTEM.md` for full guide
+
+### Quick Reference
+
+```tsx
+// ✅ Always use design system components
+import { Button, Card, Input } from "@/components/ui";
+import { PageContainer, PageHeader } from "@/components/layout";
+
+// ✅ Use semantic design tokens
+className = "bg-brand-primary text-status-success border-neutral-border";
+
+// ❌ Never hardcode colors or use legacy classes
+className = "bg-red-500"; // ❌ Use bg-status-error instead
+className = "input label"; // ❌ Legacy classes removed
+```
+
 ## Commands
 
 ```bash

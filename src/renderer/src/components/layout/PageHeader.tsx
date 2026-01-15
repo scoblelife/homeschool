@@ -12,7 +12,7 @@ export interface PageHeaderProps {
   /** Page title */
   title: string;
   /** Optional subtitle or description */
-  subtitle?: string;
+  subtitle?: ReactNode;
   /** Optional action button or component */
   action?: ReactNode;
   /** Additional CSS classes */
