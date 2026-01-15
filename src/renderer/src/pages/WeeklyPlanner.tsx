@@ -444,107 +444,110 @@ export default function WeeklyPlanner(): JSX.Element {
 
   if (!selectedStudent) {
     return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">
-          Weekly Planner
-        </h1>
+      <PageContainer>
+        <PageHeader title="Weekly Planner" />
         <Card className="text-center py-12">
           <p className="text-gray-500">
             Please select a student or add one in Settings.
           </p>
         </Card>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-8">
+    <PageContainer>
       {/* Header - hide on print */}
-      <div className="no-print flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Weekly Planner</h1>
-          <p className="text-sm text-gray-500 mt-1">{selectedStudent.name}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          {selectedMilestones.length > 0 && (
-            <Button
-              variant="secondary"
-              onClick={handleClearWeek}
-              className="text-red-600 hover:text-red-700 hover:border-red-300"
-            >
-              Clear Week
-            </Button>
-          )}
-          {calendarId && (
-            <div className="relative">
-              <button
-                onClick={() => setShowSyncOptions(!showSyncOptions)}
-                disabled={isSyncing}
-                className={`inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-100 hover:bg-gray-200 focus:ring-brand-primary active:scale-[0.98] ${syncRecords.length > 0 ? "text-green-600" : "text-gray-700"}`}
-              >
-                {isSyncing
-                  ? "Syncing..."
-                  : syncRecords.length > 0
-                    ? "Synced"
-                    : "Sync to Calendar"}
-              </button>
-              {showSyncOptions && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-4 z-10">
-                  <div className="space-y-3">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={syncAllDay}
-                        onChange={async (e) => {
-                          setSyncAllDay(e.target.checked);
-                          await window.api.setSetting(
-                            "sync_all_day_events",
-                            String(e.target.checked),
-                          );
-                        }}
-                        className="rounded border-gray-300 text-blue-600"
-                      />
-                      <span>All-day events</span>
-                    </label>
-                    <Button
-                      variant="primary"
-                      onClick={() => {
-                        syncToCalendar();
-                        setShowSyncOptions(false);
-                      }}
-                      className="w-full"
-                    >
-                      Sync Now
-                    </Button>
-                    {syncRecords.length > 0 && (
-                      <p className="text-xs text-gray-500 text-center">
-                        {syncRecords.length} milestone
-                        {syncRecords.length !== 1 ? "s" : ""} synced
-                      </p>
-                    )}
-                  </div>
+      <div className="no-print">
+        <PageHeader
+          title="Weekly Planner"
+          subtitle={selectedStudent.name}
+          action={
+            <div className="flex items-center gap-3">
+              {selectedMilestones.length > 0 && (
+                <Button
+                  variant="secondary"
+                  onClick={handleClearWeek}
+                  className="text-red-600 hover:text-status-errorDark hover:border-status-error"
+                >
+                  Clear Week
+                </Button>
+              )}
+              {calendarId && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowSyncOptions(!showSyncOptions)}
+                    disabled={isSyncing}
+                    className={`inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-100 hover:bg-gray-200 focus:ring-brand-primary active:scale-[0.98] ${syncRecords.length > 0 ? "text-status-success" : "text-gray-700"}`}
+                  >
+                    {isSyncing
+                      ? "Syncing..."
+                      : syncRecords.length > 0
+                        ? "Synced"
+                        : "Sync to Calendar"}
+                  </button>
+                  {showSyncOptions && (
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-4 z-10">
+                      <div className="space-y-3">
+                        <label className="flex items-center gap-2 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={syncAllDay}
+                            onChange={async (e) => {
+                              setSyncAllDay(e.target.checked);
+                              await window.api.setSetting(
+                                "sync_all_day_events",
+                                String(e.target.checked),
+                              );
+                            }}
+                            className="rounded border-gray-300 text-student-blue-600"
+                          />
+                          <span>All-day events</span>
+                        </label>
+                        <Button
+                          variant="primary"
+                          onClick={() => {
+                            syncToCalendar();
+                            setShowSyncOptions(false);
+                          }}
+                          className="w-full"
+                        >
+                          Sync Now
+                        </Button>
+                        {syncRecords.length > 0 && (
+                          <p className="text-xs text-gray-500 text-center">
+                            {syncRecords.length} milestone
+                            {syncRecords.length !== 1 ? "s" : ""} synced
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
+              <Button
+                variant="secondary"
+                onClick={handleAutoSuggest}
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading..." : "Auto-Suggest"}
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => setShowAddMilestone(true)}
+              >
+                + Add Milestone
+              </Button>
             </div>
-          )}
-          <Button
-            variant="secondary"
-            onClick={handleAutoSuggest}
-            disabled={isLoading}
-          >
-            {isLoading ? "Loading..." : "Auto-Suggest"}
-          </Button>
-          <Button variant="primary" onClick={() => setShowAddMilestone(true)}>
-            + Add Milestone
-          </Button>
-        </div>
+          }
+        />
       </div>
       {/* Week Navigation - hide on print */}
       <Card className="no-print mb-6">
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => navigateWeek("prev")}
-            className="text-fuchsia-600 hover:text-fuchsia-700 font-medium"
+            className="text-brand-primary hover:text-brand-primaryDark font-medium"
           >
             &larr; Previous Week
           </button>
@@ -554,14 +557,14 @@ export default function WeeklyPlanner(): JSX.Element {
             </div>
             <button
               onClick={goToCurrentWeek}
-              className="text-sm text-fuchsia-600 hover:underline"
+              className="text-sm text-brand-primary hover:underline"
             >
               Go to Current Week
             </button>
           </div>
           <button
             onClick={() => navigateWeek("next")}
-            className="text-fuchsia-600 hover:text-fuchsia-700 font-medium"
+            className="text-brand-primary hover:text-brand-primaryDark font-medium"
           >
             Next Week &rarr;
           </button>
@@ -573,7 +576,7 @@ export default function WeeklyPlanner(): JSX.Element {
               key={day.toISOString()}
               className={`py-2 rounded-lg ${
                 isToday(day)
-                  ? "bg-fuchsia-100 text-fuchsia-700 font-semibold"
+                  ? "bg-brand-primaryLight text-brand-primaryDark font-semibold"
                   : "bg-gray-50 text-gray-600"
               }`}
             >
@@ -594,13 +597,13 @@ export default function WeeklyPlanner(): JSX.Element {
       <Card className="mb-6">
         <div className="grid grid-cols-3 gap-4 text-center text-sm">
           <div>
-            <div className="text-2xl font-bold text-fuchsia-600">
+            <div className="text-2xl font-bold text-brand-primary">
               {selectedMilestones.length}
             </div>
             <div className="text-gray-500">Milestones This Week</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-status-success">
               {
                 selectedMilestones.filter((m) => m.status === "completed")
                   .length
@@ -609,7 +612,7 @@ export default function WeeklyPlanner(): JSX.Element {
             <div className="text-gray-500">Completed</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-bold text-student-blue-600">
               {totalResources}
             </div>
             <div className="text-gray-500">Resources</div>
@@ -619,7 +622,7 @@ export default function WeeklyPlanner(): JSX.Element {
       {/* Milestones List */}
       {milestonesLoading ? (
         <Card className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-fuchsia-600 mb-4"></div>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary mb-4"></div>
           <p className="text-gray-500">Loading milestones...</p>
         </Card>
       ) : selectedMilestones.length === 0 ? (
@@ -664,7 +667,7 @@ export default function WeeklyPlanner(): JSX.Element {
                           key={milestone.id}
                           className={`p-4 rounded-lg border-l-4 ${
                             milestone.status === "completed"
-                              ? "bg-green-50 border-l-green-500"
+                              ? "bg-status-successLight border-l-status-success"
                               : "bg-gray-50 border-l-gray-300"
                           }`}
                         >
@@ -673,7 +676,7 @@ export default function WeeklyPlanner(): JSX.Element {
                               type="checkbox"
                               checked={milestone.status === "completed"}
                               onChange={() => handleToggleComplete(milestone)}
-                              className="mt-1 h-5 w-5 rounded border-gray-300 text-fuchsia-600 focus:ring-fuchsia-500"
+                              className="mt-1 h-5 w-5 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
                             />
                             <div className="flex-1">
                               <h3
@@ -703,7 +706,7 @@ export default function WeeklyPlanner(): JSX.Element {
                                       onClick={() =>
                                         handleOpenResource(resource)
                                       }
-                                      className="text-blue-600 hover:underline flex-1 text-left truncate"
+                                      className="text-student-blue-600 hover:underline flex-1 text-left truncate"
                                     >
                                       {resource.title}
                                     </button>
@@ -711,7 +714,7 @@ export default function WeeklyPlanner(): JSX.Element {
                                       onClick={() =>
                                         handleDeleteResource(resource.id)
                                       }
-                                      className="no-print text-red-400 hover:text-red-600 text-xs"
+                                      className="no-print text-status-error hover:text-status-error text-xs"
                                     >
                                       ×
                                     </button>
@@ -719,7 +722,7 @@ export default function WeeklyPlanner(): JSX.Element {
                                 ))}
                                 <button
                                   onClick={() => openAddResource(milestone.id)}
-                                  className="no-print text-xs text-fuchsia-600 hover:text-fuchsia-700 mt-1"
+                                  className="no-print text-xs text-brand-primary hover:text-brand-primaryDark mt-1"
                                 >
                                   + Add Resource
                                 </button>
@@ -729,7 +732,7 @@ export default function WeeklyPlanner(): JSX.Element {
                               onClick={() =>
                                 handleRemoveMilestone(milestone.id)
                               }
-                              className="no-print text-red-500 hover:text-red-700 text-sm"
+                              className="no-print text-status-error hover:text-status-errorDark text-sm"
                             >
                               Remove
                             </button>
@@ -795,13 +798,13 @@ export default function WeeklyPlanner(): JSX.Element {
                       className="w-full text-left p-3 rounded-lg border hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-xs px-2 py-0.5 bg-fuchsia-50 text-fuchsia-600 rounded-full">
+                        <span className="text-xs px-2 py-0.5 bg-brand-primaryLight text-brand-primary rounded-full">
                           {subject?.name}
                         </span>
                         <span
                           className={`text-xs px-2 py-0.5 rounded-full ${
                             milestone.status === "in_progress"
-                              ? "bg-amber-100 text-amber-600"
+                              ? "bg-status-warningLight text-status-warning"
                               : "bg-gray-100 text-gray-600"
                           }`}
                         >
@@ -849,7 +852,7 @@ export default function WeeklyPlanner(): JSX.Element {
                   className={({ selected }) =>
                     `px-4 py-2 rounded-lg text-sm font-medium ${
                       selected
-                        ? "bg-fuchsia-100 text-fuchsia-700"
+                        ? "bg-brand-primaryLight text-brand-primaryDark"
                         : "bg-gray-100 text-gray-600"
                     }`
                   }
@@ -860,7 +863,7 @@ export default function WeeklyPlanner(): JSX.Element {
                   className={({ selected }) =>
                     `px-4 py-2 rounded-lg text-sm font-medium ${
                       selected
-                        ? "bg-fuchsia-100 text-fuchsia-700"
+                        ? "bg-brand-primaryLight text-brand-primaryDark"
                         : "bg-gray-100 text-gray-600"
                     }`
                   }
@@ -871,7 +874,9 @@ export default function WeeklyPlanner(): JSX.Element {
               <Tab.Panels>
                 <Tab.Panel className="space-y-4">
                   <div>
-                    <label className="label">Title</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Title
+                    </label>
                     <Input
                       type="text"
                       value={urlForm.title}
@@ -882,7 +887,9 @@ export default function WeeklyPlanner(): JSX.Element {
                     />
                   </div>
                   <div>
-                    <label className="label">URL</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      URL
+                    </label>
                     <Input
                       type="url"
                       value={urlForm.url}
@@ -907,7 +914,9 @@ export default function WeeklyPlanner(): JSX.Element {
                 </Tab.Panel>
                 <Tab.Panel className="space-y-4">
                   <div>
-                    <label className="label">Title (optional)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Title (optional)
+                    </label>
                     <Input
                       type="text"
                       value={fileTitle}
@@ -933,6 +942,6 @@ export default function WeeklyPlanner(): JSX.Element {
           </Dialog.Panel>
         </div>
       </Dialog>
-    </div>
+    </PageContainer>
   );
 }
