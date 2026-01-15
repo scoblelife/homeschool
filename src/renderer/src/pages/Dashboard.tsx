@@ -165,7 +165,7 @@ export default function Dashboard(): JSX.Element {
       </div>
       {/* Milestone Progress (when student selected) */}
       {selectedStudent && milestones.length > 0 && (
-        <Card className="mb-6 bg-gradient-to-r from-fuchsia-50 to-purple-50 border-fuchsia-100">
+        <Card className="mb-6 bg-gradient-to-r from-brand-primaryLight to-student-purple-50 border-brand-primaryLight">
           <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
@@ -177,26 +177,26 @@ export default function Dashboard(): JSX.Element {
               </p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-fuchsia-600">
+              <div className="text-3xl font-bold text-brand-primary">
                 {milestoneStats.percentage}%
               </div>
             </div>
           </div>
           <div className="w-full bg-white/50 rounded-full h-3 mb-4">
             <div
-              className="bg-gradient-to-r from-fuchsia-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+              className="bg-gradient-to-r from-brand-primary to-student-purple-500 h-3 rounded-full transition-all duration-500"
               style={{ width: `${milestoneStats.percentage}%` }}
             />
           </div>
           <div className="grid grid-cols-3 gap-4 text-center text-sm">
             <div className="bg-white/60 rounded-lg p-2">
-              <div className="text-xl font-bold text-green-600">
+              <div className="text-xl font-bold text-status-success">
                 {milestoneStats.completed}
               </div>
               <div className="text-gray-500 text-xs">Completed</div>
             </div>
             <div className="bg-white/60 rounded-lg p-2">
-              <div className="text-xl font-bold text-amber-600">
+              <div className="text-xl font-bold text-status-warning">
                 {milestoneStats.inProgress}
               </div>
               <div className="text-gray-500 text-xs">In Progress</div>
@@ -293,7 +293,7 @@ export default function Dashboard(): JSX.Element {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card className="hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-full bg-student-blue-100 flex items-center justify-center text-xl">
               📚
             </div>
             <div>
@@ -308,7 +308,7 @@ export default function Dashboard(): JSX.Element {
         </Card>
         <Card className="hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-full bg-status-successLight flex items-center justify-center text-xl">
               ✏️
             </div>
             <div>
@@ -323,7 +323,7 @@ export default function Dashboard(): JSX.Element {
         </Card>
         <Card className="hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-full bg-student-purple-100 flex items-center justify-center text-xl">
               🎯
             </div>
             <div>
@@ -337,14 +337,14 @@ export default function Dashboard(): JSX.Element {
       </div>
       {/* Upcoming Field Trips */}
       {upcomingFieldTrips.length > 0 && (
-        <Card className="mb-8 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-100">
+        <Card className="mb-8 bg-gradient-to-r from-status-warningLight to-student-orange-50 border-status-warningLight">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
               <span>🚌</span> Upcoming Field Trips
             </h2>
             <Link
               to="/field-trips"
-              className="text-sm text-amber-600 hover:text-amber-800"
+              className="text-sm text-status-warning hover:text-status-warningDark"
             >
               View All →
             </Link>
@@ -361,7 +361,7 @@ export default function Dashboard(): JSX.Element {
                   key={trip.id}
                   className={`p-4 rounded-lg ${
                     isTripToday
-                      ? "bg-amber-100 ring-2 ring-amber-400"
+                      ? "bg-status-warningLight ring-2 ring-status-warning"
                       : "bg-white/60"
                   }`}
                 >
@@ -373,7 +373,7 @@ export default function Dashboard(): JSX.Element {
                       <div className="text-sm text-gray-600 mt-1">
                         📍 {trip.location}
                       </div>
-                      <div className="text-sm text-amber-700 mt-1 font-medium">
+                      <div className="text-sm text-status-warning mt-1 font-medium">
                         📅{" "}
                         {isTripToday
                           ? "Today!"
@@ -383,7 +383,7 @@ export default function Dashboard(): JSX.Element {
                         {tripStudents.map((s) => (
                           <span
                             key={s.id}
-                            className="text-xs px-1.5 py-0.5 rounded bg-purple-100 text-purple-700"
+                            className="text-xs px-1.5 py-0.5 rounded bg-student-purple-100 text-student-purple-700"
                           >
                             {s.name}
                           </span>
@@ -488,7 +488,7 @@ export default function Dashboard(): JSX.Element {
             </h2>
             <Link
               to="/weekly-planner"
-              className="text-sm text-fuchsia-600 hover:text-fuchsia-700"
+              className="text-sm text-brand-primary hover:text-brand-primaryDark"
             >
               View Full Plan →
             </Link>
@@ -501,16 +501,16 @@ export default function Dashboard(): JSX.Element {
                   key={milestone.id}
                   className={`p-4 rounded-lg border-l-4 ${
                     milestone.status === "in_progress"
-                      ? "bg-amber-50 border-l-amber-500"
+                      ? "bg-status-warningLight border-l-status-warning"
                       : "bg-white border-l-gray-300 border border-gray-200"
                   }`}
                 >
                   <div className="flex items-start gap-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-fuchsia-50 text-fuchsia-600">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-brand-primaryLight text-brand-primary">
                       {subject?.name}
                     </span>
                     {milestone.status === "in_progress" && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-600">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-status-warningLight text-status-warning">
                         In Progress
                       </span>
                     )}
@@ -541,7 +541,7 @@ export default function Dashboard(): JSX.Element {
               return (
                 <div
                   key={student.id}
-                  className={`card border-l-4 hover:shadow-md transition-shadow ${
+                  className={`bg-white rounded-xl border border-neutral-border shadow-sm p-6 border-l-4 hover:shadow-md transition-shadow ${
                     getStudentColor(student.color).border
                   }`}
                 >
