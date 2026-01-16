@@ -19,8 +19,8 @@ import type {
   UpdateStudentBook,
   CreateFieldTrip,
   UpdateFieldTrip,
-  FieldTripStatus,
-  EventActivityType,
+  UniversalStatus,
+  EventCategory,
   CreateActivityTask,
   UpdateActivityTask,
   CreateActivityContact,
@@ -190,7 +190,7 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
     ipcRenderer.invoke('db:books:logReading', studentId, bookId, pagesRead, notes),
 
   // Field Trips / Activities
-  getFieldTrips: (filters?: { studentId?: string; status?: FieldTripStatus; activityType?: EventActivityType }) =>
+  getFieldTrips: (filters?: { studentId?: string; status?: UniversalStatus; eventCategory?: EventCategory }) =>
     ipcRenderer.invoke('db:fieldTrips:getAll', filters),
   getFieldTrip: (id: string) => ipcRenderer.invoke('db:fieldTrips:get', id),
   createFieldTrip: (data: CreateFieldTrip) => ipcRenderer.invoke('db:fieldTrips:create', data),

@@ -87,7 +87,14 @@ src/
 
 - **Session**: A teaching/learning event with start/end time
 - **Activity**: Individual completed item (worksheet, video, reading, writing practice, etc.)
-- **Activity Types**: worksheet, video, reading, writing_print, writing_cursive, hands_on, game, assessment
+- **Activity Types** (6 types - reduced from 9 for better UX):
+  - Core types: `worksheet`, `video`, `reading`, `writing`, `hands_on`, `interactive`
+  - **writing** consolidates print/cursive (stored in optional `activitySubType` field)
+  - **interactive** consolidates games/assessments/events (stored in optional `activitySubType` field)
+- **Universal Status**: Unified status system across all entities
+  - Values: `not_started`, `in_progress`, `completed`, `cancelled`
+  - Used by: Milestones, Field Trips, Assessments, Reading progress
+- **Event Categories** (field trips): `educational`, `social`, `coop`
 
 ## Data Storage
 

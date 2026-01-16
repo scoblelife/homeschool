@@ -44,12 +44,9 @@ export async function getActivitySummary(
           worksheet: 0,
           video: 0,
           reading: 0,
-          writing_print: 0,
-          writing_cursive: 0,
+          writing: 0,          // MERGED: was writing_print + writing_cursive
           hands_on: 0,
-          game: 0,
-          assessment: 0,
-          field_trip: 0
+          interactive: 0       // MERGED: was game + assessment + field_trip
         }
       })
     }

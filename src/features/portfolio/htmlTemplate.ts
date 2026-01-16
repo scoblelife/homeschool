@@ -99,7 +99,7 @@ export function generateAttendancePage(data: PortfolioData): string {
   const monthRows = Object.entries(byMonth)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([month, recs]) => {
-      const schoolDays = recs.filter(r => r.status === 'school').length
+      const schoolDays = recs.filter(r => r.status === 'present').length
       const [year, monthNum] = month.split('-')
       const monthName = new Date(parseInt(year), parseInt(monthNum) - 1, 1)
         .toLocaleDateString('en-US', { month: 'long', year: 'numeric' })

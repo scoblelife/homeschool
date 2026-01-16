@@ -1,14 +1,17 @@
-// Activity types supported by the system
+// Universal status for all trackable entities (milestones, field trips, reading, assessments)
+export type UniversalStatus = 'not_started' | 'in_progress' | 'completed' | 'cancelled'
+
+// Activity types supported by the system (consolidated from 9 to 6)
 export type ActivityType =
   | 'worksheet'
   | 'video'
   | 'reading'
-  | 'writing_print'
-  | 'writing_cursive'
+  | 'writing'        // MERGED: was writing_print + writing_cursive
   | 'hands_on'
-  | 'game'
-  | 'assessment'
-  | 'field_trip'
+  | 'interactive'    // MERGED: was game + assessment + field_trip
+
+// Event category for field trips (replaces EventActivityType)
+export type EventCategory = 'educational' | 'social' | 'coop'
 
 export type GradeLevel = 'pre-k' | 'k' | '1st' | '2nd' | '3rd' | '4th' | '5th' | '6th' | '7th' | '8th' | '9th' | '10th' | '11th' | '12th'
 
@@ -56,6 +59,7 @@ export interface Activity {
   studentId: string
   subjectId: string
   activityType: ActivityType
+  activitySubType?: string  // Optional sub-type: 'print'|'cursive' for writing, 'game'|'test'|'event' for interactive
   title: string
   description: string
   dateCompleted: string
@@ -91,7 +95,7 @@ export interface Milestone {
   category: string
   targetDate: string | null
   completedDate: string | null
-  status: 'not_started' | 'in_progress' | 'completed'
+  status: UniversalStatus  // Using unified status system
   evidenceNotes: string
   starValue: number
   createdAt: string
@@ -103,7 +107,7 @@ export type UpdateMilestone = Partial<Omit<CreateMilestone, 'studentId' | 'templ
 
 // Assessments (standardized tests, evaluations)
 export type AssessmentType = 'standardized_test' | 'evaluation' | 'portfolio_review' | 'progress_assessment' | 'other'
-export type AssessmentStatus = 'scheduled' | 'completed' | 'cancelled' | 'in_progress'
+// Note: Assessments use UniversalStatus ('scheduled' mapped to 'not_started' during migration)
 
 export interface Assessment {
   id: string
@@ -114,7 +118,7 @@ export interface Assessment {
   date: string
   scheduledTime: string | null
   location: string | null
-  status: AssessmentStatus
+  status: UniversalStatus  // Using unified status system
   score: string | null
   percentile: number | null
   gradeEquivalent: string | null
@@ -274,7 +278,8 @@ export interface WeeklyPlan {
 }
 
 // Library / Book tracking
-export type ReadingStatus = 'not_started' | 'reading' | 'finished'
+// Reading status (subset of UniversalStatus - 'reading' mapped to 'in_progress', 'finished' to 'completed')
+export type ReadingStatus = 'not_started' | 'in_progress' | 'completed'
 
 export interface Book {
   id: string
@@ -315,27 +320,20 @@ export type CreateStudentBook = Omit<StudentBook, 'id' | 'createdAt' | 'updatedA
 export type UpdateStudentBook = Partial<Omit<CreateStudentBook, 'studentId' | 'bookId'>>
 
 // Field Trips / Activities
-export type FieldTripStatus = 'planned' | 'completed' | 'cancelled'
-
-// Event activity types (distinct from learning ActivityType above)
-export type EventActivityType =
-  | 'field_trip'   // Educational outing
-  | 'park_day'     // Casual social meetup
-  | 'game_night'   // Board games, social
-  | 'playdate'     // 1-on-1 or small group
-  | 'coop_class'   // Recurring educational
-  | 'custom'       // User-defined
+// Note: FieldTrips now use UniversalStatus ('planned' mapped to 'not_started' during migration)
+// Note: EventActivityType eliminated - replaced with eventCategory field on FieldTrip interface
 
 export interface FieldTrip {
   id: string
   title: string
-  activityType: EventActivityType
+  activityType: ActivityType  // Always 'interactive' for field trips
+  eventCategory: EventCategory  // NEW: Educational, social, or co-op
   location: string
   description?: string
   date: string
   startTime?: string
   endTime?: string
-  status: FieldTripStatus
+  status: UniversalStatus  // Using unified status system
   studentIds: string[]
   subjectIds: string[]
   cost?: number
@@ -491,7 +489,7 @@ export interface MentorRequest {
 export type CreateMentorRequest = Omit<MentorRequest, 'id' | 'status' | 'responseMessage' | 'createdAt' | 'updatedAt'>
 
 // Activity Tasks (todos for field trips/activities)
-export type TaskPhase = 'pre' | 'day_of' | 'post'
+export type TaskPhase = 'before' | 'during' | 'after'  // Renamed for clarity (was pre | day_of | post)
 
 export interface ActivityTask {
   id: string
@@ -511,7 +509,7 @@ export type CreateActivityTask = Omit<ActivityTask, 'id' | 'createdAt' | 'update
 export type UpdateActivityTask = Partial<Omit<CreateActivityTask, 'activityId'>>
 
 // Activity Contacts (venue contacts, organizers, etc.)
-export type ContactRole = 'venue' | 'organizer' | 'emergency' | 'other'
+export type ContactRole = 'venue' | 'coordinator' | 'emergency'  // Reduced from 4 to 3 (organizer + other → coordinator)
 
 export interface ActivityContact {
   id: string
@@ -528,7 +526,7 @@ export type CreateActivityContact = Omit<ActivityContact, 'id' | 'createdAt'>
 export type UpdateActivityContact = Partial<Omit<CreateActivityContact, 'activityId'>>
 
 // Activity RSVPs (for group events)
-export type RSVPStatus = 'invited' | 'confirmed' | 'declined' | 'maybe'
+export type RSVPStatus = 'yes' | 'no' | 'maybe'  // Reduced from 4 to 3 ('invited' is implicit, 'confirmed' → 'yes', 'declined' → 'no')
 
 export interface ActivityRSVP {
   id: string
@@ -545,7 +543,7 @@ export type CreateActivityRSVP = Omit<ActivityRSVP, 'id' | 'createdAt' | 'update
 export type UpdateActivityRSVP = Partial<Omit<CreateActivityRSVP, 'activityId'>>
 
 // Activity Expenses
-export type ExpenseCategory = 'admission' | 'food' | 'supplies' | 'transportation' | 'other'
+export type ExpenseCategory = 'admission' | 'food' | 'materials' | 'travel'  // Reduced from 5 to 4 (supplies → materials, transportation → travel, removed 'other')
 
 export interface ActivityExpense {
   id: string
@@ -580,7 +578,7 @@ export type CreateActivityPayment = Omit<ActivityPayment, 'id' | 'createdAt' | '
 export type UpdateActivityPayment = Partial<Omit<CreateActivityPayment, 'activityId'>>
 
 // Attendance Types
-export type AttendanceStatus = 'school' | 'holiday' | 'sick' | 'vacation' | 'other'
+export type AttendanceStatus = 'present' | 'absent' | 'holiday'  // Reduced from 5 to 3 (school → present, sick/vacation/other → absent)
 
 export interface AttendanceRecord {
   id: string
@@ -806,7 +804,7 @@ export interface DatabaseAPI {
   logReading: (studentId: string, bookId: string, pagesRead: number, notes?: string) => Promise<StudentBook>
 
   // Field Trips / Activities
-  getFieldTrips: (filters?: { studentId?: string; status?: FieldTripStatus; activityType?: EventActivityType }) => Promise<FieldTrip[]>
+  getFieldTrips: (filters?: { studentId?: string; status?: UniversalStatus; eventCategory?: EventCategory }) => Promise<FieldTrip[]>
   getFieldTrip: (id: string) => Promise<FieldTrip | null>
   createFieldTrip: (data: CreateFieldTrip) => Promise<FieldTrip>
   updateFieldTrip: (id: string, data: UpdateFieldTrip) => Promise<FieldTrip>

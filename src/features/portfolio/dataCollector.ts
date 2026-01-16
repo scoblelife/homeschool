@@ -91,10 +91,10 @@ export async function collectPortfolioData(config: PortfolioConfig): Promise<Por
   // Get books
   const booksWithProgress = await booksRepo.getBooksWithProgress(studentId)
   const completedBooks = booksWithProgress.filter(
-    b => b.studentProgress?.status === 'finished'
+    b => b.studentProgress?.status === 'completed'
   )
   const readingBooks = booksWithProgress.filter(
-    b => b.studentProgress?.status === 'reading'
+    b => b.studentProgress?.status === 'in_progress'
   )
 
   const bookItems = booksWithProgress

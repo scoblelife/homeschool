@@ -4,8 +4,9 @@ import type {
   FieldTrip,
   CreateFieldTrip,
   UpdateFieldTrip,
-  FieldTripStatus,
-  EventActivityType,
+  UniversalStatus,
+  EventCategory,
+  ActivityType,
   ActivityTask,
   CreateActivityTask,
   UpdateActivityTask,
@@ -34,13 +35,14 @@ function rowToFieldTrip(row: Record<string, unknown>): FieldTrip {
   return {
     id: row.id as string,
     title: row.title as string,
-    activityType: (row.activity_type as EventActivityType) || 'field_trip',
+    activityType: (row.activity_type as ActivityType) || 'interactive',
+    eventCategory: (row.event_category as EventCategory) || 'educational',
     location: row.location as string,
     description: row.description as string | undefined,
     date: row.date as string,
     startTime: row.start_time as string | undefined,
     endTime: row.end_time as string | undefined,
-    status: row.status as FieldTripStatus,
+    status: row.status as UniversalStatus,
     studentIds: JSON.parse((row.student_ids as string) || '[]'),
     subjectIds: JSON.parse((row.subject_ids as string) || '[]'),
     cost: row.cost as number | undefined,
@@ -70,8 +72,8 @@ function rowToActivityTask(row: Record<string, unknown>): ActivityTask {
 
 export async function getFieldTrips(filters?: {
   studentId?: string
-  status?: FieldTripStatus
-  activityType?: EventActivityType
+  status?: UniversalStatus
+  eventCategory?: EventCategory
 }): Promise<FieldTrip[]> {
   const db = await getDatabase()
 
@@ -84,9 +86,9 @@ export async function getFieldTrips(filters?: {
     params.push(filters.status)
   }
 
-  if (filters?.activityType) {
-    conditions.push('activity_type = ?')
-    params.push(filters.activityType)
+  if (filters?.eventCategory) {
+    conditions.push('event_category = ?')
+    params.push(filters.eventCategory)
   }
 
   if (conditions.length > 0) {
@@ -618,12 +620,13 @@ export async function duplicateActivity(
   const newActivity = await createFieldTrip({
     title: existing.title,
     activityType: existing.activityType,
+    eventCategory: existing.eventCategory,
     location: existing.location,
     description: existing.description,
     date: options.newDate,
     startTime: existing.startTime,
     endTime: existing.endTime,
-    status: 'planned', // Reset status to planned
+    status: 'not_started', // Reset status to not_started (was: planned)
     studentIds: existing.studentIds,
     subjectIds: existing.subjectIds,
     cost: existing.cost,

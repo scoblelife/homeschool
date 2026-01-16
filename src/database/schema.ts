@@ -196,6 +196,98 @@ async function runMigrations(): Promise<void> {
       UNIQUE (mentor_id, requester_id)
     )
   `)
+
+  // Category Consolidation Migration (v0.1.6)
+  // Reduces category systems from 13 to 7 for better UX
+  await runCategoryConsolidationMigration()
+}
+
+async function runCategoryConsolidationMigration(): Promise<void> {
+  const db = await getDatabase()
+
+  try {
+    // Check if migration already ran by checking for activity_sub_type column
+    const activityColumns = await db.all(`PRAGMA table_info(activities)`)
+    const activityColumnNames = activityColumns.map((c: Record<string, unknown>) => c.name as string)
+
+    if (activityColumnNames.includes('activity_sub_type')) {
+      // Migration already ran
+      return
+    }
+
+    console.log('Running category consolidation migration...')
+
+    // 1. Add new columns
+    await db.run(`ALTER TABLE activities ADD COLUMN activity_sub_type VARCHAR`)
+    console.log('✓ Added activity_sub_type column to activities')
+
+    // Check if event_category column already exists in field_trips
+    const fieldTripColumns = await db.all(`PRAGMA table_info(field_trips)`)
+    const fieldTripColumnNames = fieldTripColumns.map((c: Record<string, unknown>) => c.name as string)
+
+    if (!fieldTripColumnNames.includes('event_category')) {
+      await db.run(`ALTER TABLE field_trips ADD COLUMN event_category VARCHAR DEFAULT 'educational'`)
+      console.log('✓ Added event_category column to field_trips')
+    }
+
+    // 2. Migrate Activity Types
+    // Writing types
+    await db.run(`UPDATE activities SET activity_sub_type = 'print' WHERE activity_type = 'writing_print'`)
+    await db.run(`UPDATE activities SET activity_sub_type = 'cursive' WHERE activity_type = 'writing_cursive'`)
+    await db.run(`UPDATE activities SET activity_type = 'writing' WHERE activity_type IN ('writing_print', 'writing_cursive')`)
+    console.log('✓ Migrated writing activity types')
+
+    // Interactive types
+    await db.run(`UPDATE activities SET activity_sub_type = activity_type WHERE activity_type IN ('game', 'assessment', 'field_trip')`)
+    await db.run(`UPDATE activities SET activity_type = 'interactive' WHERE activity_type IN ('game', 'assessment', 'field_trip')`)
+    console.log('✓ Migrated interactive activity types')
+
+    // 3. Migrate Field Trip Statuses
+    await db.run(`UPDATE field_trips SET status = 'not_started' WHERE status = 'planned'`)
+    console.log('✓ Migrated field trip statuses')
+
+    // 4. Migrate Event Categories (if activity_type column exists and has old values)
+    if (fieldTripColumnNames.includes('activity_type')) {
+      await db.run(`UPDATE field_trips SET event_category = 'educational' WHERE activity_type IN ('field_trip', 'coop_class')`)
+      await db.run(`UPDATE field_trips SET event_category = 'social' WHERE activity_type IN ('park_day', 'game_night', 'playdate')`)
+      await db.run(`UPDATE field_trips SET event_category = 'coop' WHERE activity_type = 'coop_class'`)
+      await db.run(`UPDATE field_trips SET activity_type = 'interactive' WHERE activity_type IN ('field_trip', 'park_day', 'game_night', 'playdate', 'coop_class', 'custom')`)
+      console.log('✓ Migrated event categories')
+    }
+
+    // 5. Migrate Reading Status
+    await db.run(`UPDATE student_books SET status = 'in_progress' WHERE status = 'reading'`)
+    await db.run(`UPDATE student_books SET status = 'completed' WHERE status = 'finished'`)
+    console.log('✓ Migrated reading statuses')
+
+    // 6. Migrate Assessment Status
+    await db.run(`UPDATE assessments SET status = 'not_started' WHERE status = 'scheduled'`)
+    console.log('✓ Migrated assessment statuses')
+
+    // 7. Migrate RSVP Status
+    await db.run(`UPDATE activity_rsvps SET status = 'yes' WHERE status = 'confirmed'`)
+    await db.run(`UPDATE activity_rsvps SET status = 'no' WHERE status = 'declined'`)
+    console.log('✓ Migrated RSVP statuses')
+
+    // 8. Migrate Contact Roles
+    await db.run(`UPDATE activity_contacts SET role = 'coordinator' WHERE role IN ('organizer', 'other')`)
+    console.log('✓ Migrated contact roles')
+
+    // 9. Migrate Expense Categories
+    await db.run(`UPDATE activity_expenses SET category = 'materials' WHERE category = 'supplies'`)
+    await db.run(`UPDATE activity_expenses SET category = 'travel' WHERE category = 'transportation'`)
+    console.log('✓ Migrated expense categories')
+
+    // 10. Migrate Attendance Status
+    await db.run(`UPDATE attendance SET status = 'present' WHERE status = 'school'`)
+    await db.run(`UPDATE attendance SET status = 'absent' WHERE status IN ('sick', 'vacation', 'other')`)
+    console.log('✓ Migrated attendance statuses')
+
+    console.log('Category consolidation migration completed successfully!')
+  } catch (error) {
+    console.error('Error running category consolidation migration:', error)
+    // Don't throw - allow app to continue running even if migration fails
+  }
 }
 
 export async function initializeSchema(): Promise<void> {

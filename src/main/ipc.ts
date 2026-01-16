@@ -49,8 +49,8 @@ import type {
   UpdateStudentBook,
   CreateFieldTrip,
   UpdateFieldTrip,
-  FieldTripStatus,
-  EventActivityType,
+  UniversalStatus,
+  EventCategory,
   CreateActivityTask,
   UpdateActivityTask,
   CreateActivityContact,
@@ -442,7 +442,7 @@ export function registerIpcHandlers(): void {
   // Field Trips
   ipcMain.handle(
     'db:fieldTrips:getAll',
-    async (_, filters?: { studentId?: string; status?: FieldTripStatus; activityType?: EventActivityType }) => {
+    async (_, filters?: { studentId?: string; status?: UniversalStatus; eventCategory?: EventCategory }) => {
       return fieldTripsRepo.getFieldTrips(filters)
     }
   )

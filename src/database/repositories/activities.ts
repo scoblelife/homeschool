@@ -9,6 +9,7 @@ function rowToActivity(row: Record<string, unknown>): Activity {
     studentId: row.student_id as string,
     subjectId: row.subject_id as string,
     activityType: row.activity_type as ActivityType,
+    activitySubType: row.activity_sub_type as string | undefined,
     title: row.title as string,
     description: row.description as string,
     dateCompleted: row.date_completed as string,
@@ -75,15 +76,16 @@ export async function createActivity(data: CreateActivity): Promise<Activity> {
 
   await db.run(
     `INSERT INTO activities (
-      id, session_id, student_id, subject_id, activity_type, title, description,
+      id, session_id, student_id, subject_id, activity_type, activity_sub_type, title, description,
       date_completed, duration_minutes, grade, max_grade, notes,
       book_title, pages_read, total_pages, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     id,
     data.sessionId,
     data.studentId,
     data.subjectId,
     data.activityType,
+    data.activitySubType ?? null,
     data.title,
     data.description,
     data.dateCompleted,
@@ -110,7 +112,7 @@ export async function updateActivity(id: string, data: UpdateActivity): Promise<
 
   await db.run(
     `UPDATE activities SET
-      session_id = ?, student_id = ?, subject_id = ?, activity_type = ?, title = ?,
+      session_id = ?, student_id = ?, subject_id = ?, activity_type = ?, activity_sub_type = ?, title = ?,
       description = ?, date_completed = ?, duration_minutes = ?, grade = ?, max_grade = ?,
       notes = ?, book_title = ?, pages_read = ?, total_pages = ?, updated_at = ?
      WHERE id = ?`,
@@ -118,6 +120,7 @@ export async function updateActivity(id: string, data: UpdateActivity): Promise<
     updated.studentId,
     updated.subjectId,
     updated.activityType,
+    updated.activitySubType ?? null,
     updated.title,
     updated.description,
     updated.dateCompleted,

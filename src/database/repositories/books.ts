@@ -193,10 +193,10 @@ export async function updateStudentBook(
   const updated = { ...existing, ...data, updatedAt: now }
 
   // Auto-set dates based on status
-  if (data.status === 'reading' && !updated.startedDate) {
+  if (data.status === 'in_progress' && !updated.startedDate) {
     updated.startedDate = now.split('T')[0]
   }
-  if (data.status === 'finished' && !updated.finishedDate) {
+  if (data.status === 'completed' && !updated.finishedDate) {
     updated.finishedDate = now.split('T')[0]
   }
 
@@ -232,11 +232,11 @@ export async function logReading(
   const newPage = existing.currentPage + pagesRead
 
   // Determine status based on progress
-  let status: ReadingStatus = 'reading'
+  let status: ReadingStatus = 'in_progress'
   let finishedDate = existing.finishedDate
 
   if (book?.totalPages && newPage >= book.totalPages) {
-    status = 'finished'
+    status = 'completed'
     finishedDate = new Date().toISOString().split('T')[0]
   }
 

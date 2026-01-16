@@ -13,10 +13,10 @@ A desktop application for managing homeschool education for two children: a 4-ye
 
 ## Users
 
-| Child | Age | Grade Level | Focus Areas |
-|-------|-----|-------------|-------------|
-| Child 1 | 4 | Pre-K | Pre-reading, motor skills, number recognition, social skills |
-| Child 2 | 6 | 1st Grade | Reading fluency, basic math, handwriting (print + cursive intro) |
+| Child   | Age | Grade Level | Focus Areas                                                      |
+| ------- | --- | ----------- | ---------------------------------------------------------------- |
+| Child 1 | 4   | Pre-K       | Pre-reading, motor skills, number recognition, social skills     |
+| Child 2 | 6   | 1st Grade   | Reading fluency, basic math, handwriting (print + cursive intro) |
 
 ## Core Subjects
 
@@ -29,59 +29,79 @@ A desktop application for managing homeschool education for two children: a 4-ye
 ## Data Model
 
 ### Students
+
 - id, name, date_of_birth, grade_level, start_date
 
 ### Subjects
+
 - id, name, grade_level, description
 
 ### Sessions
+
 A session is a single teaching/learning event.
+
 - id, student_id, subject_id, date, start_time, end_time, type (lesson/practice/assessment), notes, location
 
 ### Activities
+
 Individual items completed within or outside sessions.
+
 - id, session_id (nullable), student_id, subject_id, activity_type, title, description, date_completed, duration_minutes, grade (nullable), notes
 
-#### Activity Types
+#### Activity Types (Consolidated v0.1.6+)
+
+Core 6 types (reduced from 9 for better UX):
+
 - `worksheet` - printed or digital worksheet
 - `video` - educational video watched
 - `reading` - book or passage read
-- `writing_print` - print handwriting practice
-- `writing_cursive` - cursive handwriting practice
+- `writing` - handwriting practice (print/cursive stored in optional `activity_sub_type`)
 - `hands_on` - manipulatives, experiments, crafts
-- `game` - educational games
-- `assessment` - quiz or test
-- `outing` - field trip or educational outing
+- `interactive` - games, assessments, events (type stored in optional `activity_sub_type`)
+
+The consolidation reduces cognitive load while maintaining full functionality through optional sub-types.
 
 ### Milestones
+
 Learning objectives and developmental markers.
+
 - id, student_id, subject_id, title, description, target_date (nullable), completed_date (nullable), status (not_started/in_progress/completed), evidence_notes
 
 ### Outings
+
 Field trips and educational excursions.
+
 - id, title, location, date, students (array), subjects_covered (array), description, learning_objectives, photos_path (nullable)
 
 ### Resources
+
 Reusable learning materials.
+
 - id, title, type (book/video/worksheet/website/app), subject_id, grade_levels (array), url (nullable), file_path (nullable), notes
 
 ### Grades
+
 Assessment records for reporting.
+
 - id, student_id, subject_id, activity_id, score, max_score, percentage, grade_letter (nullable), date, notes
 
 ### Schedule Templates
+
 Recurring weekly schedule patterns.
+
 - id, student_id, day_of_week, start_time, end_time, subject_id, activity_type, notes
 
 ## Features
 
 ### 1. Dashboard
+
 - Today's schedule for each child
 - Recent activity summary
 - Upcoming milestones
 - Quick-add buttons for common actions
 
 ### 2. Calendar View
+
 - Monthly, weekly, and daily views
 - Color-coded by subject and child
 - Drag-and-drop session scheduling
@@ -89,12 +109,14 @@ Recurring weekly schedule patterns.
 - Outing planning
 
 ### 3. Session Management
+
 - Log completed sessions with activities
 - Timer for tracking duration
 - Quick templates for common session types
 - Attach resources to sessions
 
 ### 4. Activity Tracking
+
 - Log worksheets completed (with optional grade)
 - Track videos watched with timestamps
 - Reading log with book tracking (title, pages, comprehension notes)
@@ -102,18 +124,21 @@ Recurring weekly schedule patterns.
 - Photo capture for physical work samples
 
 ### 5. Milestone Tracking
+
 - Pre-defined milestones by grade level (Pre-K, 1st Grade)
 - Custom milestone creation
 - Progress indicators
 - Link activities as evidence of milestone completion
 
 ### 6. Resource Library
+
 - Catalog of books, videos, worksheets, websites
 - Organize by subject and grade level
 - Track which resources have been used with which child
 - Favorites and ratings
 
 ### 7. Outing Management
+
 - Plan field trips with learning objectives
 - Log completed outings with photos and notes
 - Map subjects covered to outings
@@ -122,6 +147,7 @@ Recurring weekly schedule patterns.
 ### 8. Reporting
 
 #### Personal Reports
+
 - Progress by subject over time
 - Activity breakdown (time spent per subject)
 - Milestone completion status
@@ -129,18 +155,22 @@ Recurring weekly schedule patterns.
 - Writing samples collection
 
 #### Nevada State Compliance
+
 Nevada homeschool requirements:
+
 - File Notice of Intent to Homeschool (one-time, handled outside app)
 - No mandatory testing or reporting to state
 - Maintain records for your own documentation
 
 The app will generate:
+
 - Annual summary report (hours per subject, activities completed)
 - Portfolio-ready documentation
 - Attendance record
 - Grade report by subject and quarter/semester
 
 ### 9. Data Management
+
 - Export to Parquet files for backup
 - Import historical data
 - Data validation and integrity checks
@@ -169,6 +199,7 @@ The app will generate:
 ## Grade-Level Specifics
 
 ### Pre-K (4-year-old) Focus
+
 - **Math**: Counting 1-20, shapes, colors, patterns, sorting
 - **Reading**: Letter recognition, phonemic awareness, sight words intro
 - **Writing**: Pencil grip, tracing, letter formation (print only)
@@ -176,6 +207,7 @@ The app will generate:
 - **Social Studies**: Family, community helpers, basic geography
 
 ### 1st Grade (6-year-old) Focus
+
 - **Math**: Addition/subtraction to 20, place value, time, measurement
 - **Reading**: Decoding, fluency, comprehension, chapter books intro
 - **Writing**: Sentences, capitalization, punctuation, print mastery, cursive intro

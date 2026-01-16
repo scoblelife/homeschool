@@ -6,7 +6,7 @@
 
 import { v4 as uuidv4 } from 'uuid'
 import { getDatabase } from '../connection'
-import type { Assessment, CreateAssessment, UpdateAssessment, AssessmentType, AssessmentStatus } from '../../shared/types'
+import type { Assessment, CreateAssessment, UpdateAssessment, AssessmentType, UniversalStatus } from '../../shared/types'
 
 function rowToAssessment(row: Record<string, unknown>): Assessment {
   return {
@@ -18,7 +18,7 @@ function rowToAssessment(row: Record<string, unknown>): Assessment {
     date: row.date as string,
     scheduledTime: row.scheduled_time as string | null,
     location: row.location as string | null,
-    status: row.status as AssessmentStatus,
+    status: row.status as UniversalStatus,
     score: row.score as string | null,
     percentile: row.percentile as number | null,
     gradeEquivalent: row.grade_equivalent as string | null,
@@ -234,13 +234,13 @@ export async function getAssessmentStats(
 
   for (const row of rows) {
     const type = row.type as AssessmentType
-    const status = row.status as AssessmentStatus
+    const status = row.status as UniversalStatus
 
     byType[type]++
 
     if (status === 'completed') {
       completed++
-    } else if (status === 'scheduled') {
+    } else if (status === 'not_started') {
       scheduled++
     }
   }
