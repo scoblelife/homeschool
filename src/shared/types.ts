@@ -1340,8 +1340,118 @@ export interface UmbrellaSchoolAPI {
   ) => Promise<{ success: boolean; content?: string; filePath?: string; error?: string }>
 }
 
+// ============================================
+// Sponsorship Types (Privacy-First)
+// ============================================
+
+export type SponsorTier = 'basic' | 'premium' | 'enterprise'
+export type SponsoredLocation = 'resources_page' | 'dashboard' | 'curriculum_page' | 'learning_log'
+
+export interface Sponsor {
+  id: string
+  name: string
+  tier: SponsorTier
+  logoUrl?: string
+  websiteUrl?: string
+  description?: string
+  monthlyFee: number
+  contactName?: string
+  contactEmail: string
+  githubUsername?: string // For Enterprise PR access
+  isActive: boolean
+  contractSignedDate?: string
+  billingStartDate?: string
+  notes?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SponsoredResource {
+  id: string
+  sponsorId: string
+  tier: SponsorTier
+  name: string
+  description: string
+  icon?: string
+  url: string
+  subjects: string[]
+  gradeLevels: string[]
+  category?: string
+  pricingInfo?: string
+  displayPriority: number
+  isActive: boolean
+  contractStartDate: string
+  contractEndDate: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface SponsoredClick {
+  id: string
+  sponsoredResourceId: string
+  location: SponsoredLocation
+  clickedAt: string
+}
+
+// Analytics aggregates (no PII)
+export interface SponsorAnalytics {
+  sponsorId: string
+  sponsorName: string
+  tier: SponsorTier
+  monthlyFee: number
+  totalClicks: number
+  clicksByLocation: Record<SponsoredLocation, number>
+  clicksByResource: Array<{
+    resourceId: string
+    resourceName: string
+    clicks: number
+  }>
+}
+
+export type CreateSponsor = Omit<Sponsor, 'id' | 'createdAt' | 'updatedAt'>
+export type UpdateSponsor = Partial<Omit<CreateSponsor, 'tier'>>
+
+export type CreateSponsoredResource = Omit<SponsoredResource, 'id' | 'createdAt' | 'updatedAt'>
+export type UpdateSponsoredResource = Partial<Omit<CreateSponsoredResource, 'sponsorId'>>
+
+export interface SponsorshipAPI {
+  // Sponsors
+  getSponsors: (activeOnly?: boolean) => Promise<Sponsor[]>
+  getSponsor: (id: string) => Promise<Sponsor | null>
+  createSponsor: (data: CreateSponsor) => Promise<Sponsor>
+  updateSponsor: (id: string, data: UpdateSponsor) => Promise<Sponsor | null>
+  deleteSponsor: (id: string) => Promise<void>
+
+  // Sponsored Resources
+  getSponsoredResources: (filters?: {
+    tier?: SponsorTier
+    subjects?: string[]
+    gradeLevels?: string[]
+    location?: SponsoredLocation
+    activeOnly?: boolean
+    limit?: number
+  }) => Promise<SponsoredResource[]>
+  getSponsoredResource: (id: string) => Promise<SponsoredResource | null>
+  createSponsoredResource: (data: CreateSponsoredResource) => Promise<SponsoredResource>
+  updateSponsoredResource: (id: string, data: UpdateSponsoredResource) => Promise<SponsoredResource | null>
+  deleteSponsoredResource: (id: string) => Promise<void>
+
+  // Anonymous Click Tracking (NO PII)
+  trackSponsoredClick: (data: {
+    sponsoredResourceId: string
+    location: SponsoredLocation
+  }) => Promise<void>
+
+  // Analytics (Admin only)
+  getSponsorAnalytics: (filters?: {
+    sponsorId?: string
+    startDate?: string
+    endDate?: string
+  }) => Promise<SponsorAnalytics[]>
+}
+
 declare global {
   interface Window {
-    api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI
+    api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI & SponsorshipAPI
   }
 }

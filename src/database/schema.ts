@@ -689,6 +689,61 @@ export async function initializeSchema(): Promise<void> {
     )
   `)
 
+  // Create sponsors table for sponsorship management
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS sponsors (
+      id VARCHAR PRIMARY KEY,
+      name VARCHAR NOT NULL,
+      tier VARCHAR NOT NULL,
+      logo_url VARCHAR,
+      website_url VARCHAR,
+      description TEXT,
+      monthly_fee DECIMAL(10,2) NOT NULL,
+      contact_name VARCHAR,
+      contact_email VARCHAR NOT NULL,
+      github_username VARCHAR,
+      is_active BOOLEAN DEFAULT TRUE,
+      contract_signed_date DATE,
+      billing_start_date DATE,
+      notes TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Create sponsored_resources table for sponsored content
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS sponsored_resources (
+      id VARCHAR PRIMARY KEY,
+      sponsor_id VARCHAR NOT NULL REFERENCES sponsors(id),
+      tier VARCHAR NOT NULL,
+      name VARCHAR NOT NULL,
+      description TEXT NOT NULL,
+      icon VARCHAR,
+      url VARCHAR NOT NULL,
+      subjects JSON,
+      grade_levels JSON,
+      category VARCHAR,
+      pricing_info VARCHAR,
+      display_priority INTEGER DEFAULT 0,
+      is_active BOOLEAN DEFAULT TRUE,
+      contract_start_date DATE NOT NULL,
+      contract_end_date DATE NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
+  // Create sponsored_clicks table for anonymous click tracking
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS sponsored_clicks (
+      id VARCHAR PRIMARY KEY,
+      sponsored_resource_id VARCHAR NOT NULL REFERENCES sponsored_resources(id),
+      location VARCHAR NOT NULL,
+      clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `)
+
   // Run migrations for existing databases
   await runMigrations()
 }

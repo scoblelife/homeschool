@@ -23,8 +23,12 @@ import { ComplianceDeadlines } from "../components/ComplianceDeadlines";
 
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
+import { Badge } from "../components/ui/Badge";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
+import { RecommendedResourcesCard } from "../features/sponsored/RecommendedResourcesCard";
+import { IconBadge } from "../components/dashboard/IconBadge";
+import { ProgressBar } from "../components/dashboard/ProgressBar";
 
 // Helper to handle dates that might be Date objects or strings from DuckDB
 const toDate = (date: string | Date): Date => {
@@ -182,11 +186,8 @@ export default function Dashboard(): JSX.Element {
               </div>
             </div>
           </div>
-          <div className="w-full bg-white/50 rounded-full h-3 mb-4">
-            <div
-              className="bg-gradient-to-r from-brand-primary to-student-purple-500 h-3 rounded-full transition-all duration-500"
-              style={{ width: `${milestoneStats.percentage}%` }}
-            />
+          <div className="mb-4">
+            <ProgressBar percentage={milestoneStats.percentage} />
           </div>
           <div className="grid grid-cols-3 gap-4 text-center text-sm">
             <div className="bg-white/60 rounded-lg p-2">
@@ -232,6 +233,18 @@ export default function Dashboard(): JSX.Element {
               studentId={selectedStudent.id}
               studentName={selectedStudent.name}
               subjects={subjects}
+            />
+          </ErrorBoundary>
+        </div>
+      )}
+      {/* Recommended Resources (when student selected) */}
+      {selectedStudent && (
+        <div className="mb-6">
+          <ErrorBoundary fallback={<WidgetErrorFallback />}>
+            <RecommendedResourcesCard
+              studentId={selectedStudent.id}
+              studentName={selectedStudent.name}
+              gradeLevel={selectedStudent.gradeLevel}
             />
           </ErrorBoundary>
         </div>
@@ -293,9 +306,7 @@ export default function Dashboard(): JSX.Element {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card className="hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-student-blue-100 flex items-center justify-center text-xl">
-              📚
-            </div>
+            <IconBadge icon="📚" variant="blue" />
             <div>
               <div className="text-sm font-medium text-gray-500">
                 Today's Sessions
@@ -308,9 +319,7 @@ export default function Dashboard(): JSX.Element {
         </Card>
         <Card className="hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-status-successLight flex items-center justify-center text-xl">
-              ✏️
-            </div>
+            <IconBadge icon="✏️" variant="success" />
             <div>
               <div className="text-sm font-medium text-gray-500">
                 Recent Activities
@@ -323,9 +332,7 @@ export default function Dashboard(): JSX.Element {
         </Card>
         <Card className="hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-student-purple-100 flex items-center justify-center text-xl">
-              🎯
-            </div>
+            <IconBadge icon="🎯" variant="purple" />
             <div>
               <div className="text-sm font-medium text-gray-500">Subjects</div>
               <div className="text-2xl font-bold text-gray-900">
@@ -381,12 +388,13 @@ export default function Dashboard(): JSX.Element {
                       </div>
                       <div className="mt-2 flex flex-wrap gap-1">
                         {tripStudents.map((s) => (
-                          <span
+                          <Badge
                             key={s.id}
-                            className="text-xs px-1.5 py-0.5 rounded bg-student-purple-100 text-student-purple-700"
+                            size="sm"
+                            className="bg-student-purple-100 text-student-purple-700"
                           >
                             {s.name}
-                          </span>
+                          </Badge>
                         ))}
                       </div>
                     </div>
@@ -506,13 +514,20 @@ export default function Dashboard(): JSX.Element {
                   }`}
                 >
                   <div className="flex items-start gap-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-brand-primaryLight text-brand-primary">
+                    <Badge
+                      size="sm"
+                      className="rounded-full bg-brand-primaryLight text-brand-primary"
+                    >
                       {subject?.name}
-                    </span>
+                    </Badge>
                     {milestone.status === "in_progress" && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-status-warningLight text-status-warning">
+                      <Badge
+                        size="sm"
+                        variant="warning"
+                        className="rounded-full"
+                      >
                         In Progress
-                      </span>
+                      </Badge>
                     )}
                   </div>
                   <h3 className="font-medium text-gray-900 mt-2 text-sm">

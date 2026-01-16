@@ -15,7 +15,6 @@ import {
   type StateRequirements,
 } from "../../../data/stateRequirementsTypes";
 import type {
-  CreateStudent,
   GradeLevel,
   GoogleCalendarInfo,
   Subject,
@@ -149,6 +148,10 @@ export default function Settings(): JSX.Element {
   const [selectedStateCode, setSelectedStateCode] = useState<string | null>(
     null,
   );
+
+  // Sponsored Content Settings
+  const [showSponsoredContent, setShowSponsoredContent] = useState(true);
+  const [, setHasSeenSponsoredDisclosure] = useState(false);
   const [stateInfo, setStateInfo] = useState<StateRequirements | null>(null);
   const availableStates = getAllStates();
 
@@ -175,6 +178,21 @@ export default function Settings(): JSX.Element {
   // Load state requirements on mount
   useEffect(() => {
     loadStateSelection();
+  }, []);
+
+  // Load sponsored content settings on mount
+  useEffect(() => {
+    const savedShowSponsored = localStorage.getItem("showSponsoredContent");
+    const savedHasSeenDisclosure = localStorage.getItem(
+      "hasSeenSponsoredDisclosure",
+    );
+
+    if (savedShowSponsored !== null) {
+      setShowSponsoredContent(savedShowSponsored === "true");
+    }
+    if (savedHasSeenDisclosure !== null) {
+      setHasSeenSponsoredDisclosure(savedHasSeenDisclosure === "true");
+    }
   }, []);
 
   const loadStateSelection = async (): Promise<void> => {
@@ -453,6 +471,11 @@ export default function Settings(): JSX.Element {
     }
 
     setIsModalOpen(false);
+  };
+
+  const handleToggleSponsoredContent = (enabled: boolean): void => {
+    setShowSponsoredContent(enabled);
+    localStorage.setItem("showSponsoredContent", enabled.toString());
   };
 
   const handleDelete = async (id: string): Promise<void> => {
@@ -997,6 +1020,60 @@ export default function Settings(): JSX.Element {
           These mappings are used when generating the daily Skylight checklist
           for completed milestones.
         </p>
+      </Card>
+      {/* Privacy & Sponsored Content Section */}
+      <Card className="mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          Privacy & Sponsored Content
+        </h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex-1 mr-4">
+              <h3 className="font-medium text-gray-900">
+                Show recommendations from educational partners
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">
+                We partner with trusted educational companies to show you
+                relevant resources. We never share your children's personal
+                information with partners.
+              </p>
+            </div>
+            <button
+              onClick={() =>
+                handleToggleSponsoredContent(!showSponsoredContent)
+              }
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                showSponsoredContent ? "bg-brand-primary" : "bg-gray-200"
+              }`}
+              aria-label="Toggle sponsored content"
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  showSponsoredContent ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+          </div>
+
+          <div className="pt-4 border-t border-gray-200 text-sm text-gray-600">
+            <h4 className="font-medium text-gray-900 mb-2">
+              Your Privacy is Protected
+            </h4>
+            <ul className="space-y-1 list-disc list-inside">
+              <li>
+                We only track anonymous clicks (no student names, no personal
+                information)
+              </li>
+              <li>Sponsors never receive your data</li>
+              <li>All tracking is local to your device</li>
+              <li>No cookies, no pixels, no third-party analytics</li>
+            </ul>
+            <p className="mt-3 text-xs text-gray-500">
+              These partnerships help fund ongoing development of this app while
+              protecting your family's privacy.
+            </p>
+          </div>
+        </div>
       </Card>
       {/* Support Section */}
       <Card className="mb-8">

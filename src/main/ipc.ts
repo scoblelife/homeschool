@@ -24,7 +24,8 @@ import {
   coopRepo,
   packagesRepo,
   assessmentsRepo,
-  umbrellaRepo
+  umbrellaRepo,
+  sponsoredRepo
 } from '../database'
 import * as googleAuth from './google-auth'
 import * as googleCalendar from './google-calendar'
@@ -1415,6 +1416,69 @@ async function generateThumbnail(attachmentId: string, sourcePath: string): Prom
     console.error('Failed to generate thumbnail:', err)
   }
 }
+
+// ==========================================
+// Sponsorship Handlers (Privacy-First)
+// ==========================================
+
+// Sponsors
+ipcMain.handle('getSponsors', async (_, activeOnly?: boolean) => {
+  return sponsoredRepo.getSponsors(activeOnly)
+})
+
+ipcMain.handle('getSponsor', async (_, id: string) => {
+  return sponsoredRepo.getSponsor(id)
+})
+
+ipcMain.handle('createSponsor', async (_, data) => {
+  return sponsoredRepo.createSponsor(data)
+})
+
+ipcMain.handle('updateSponsor', async (_, id: string, data) => {
+  return sponsoredRepo.updateSponsor(id, data)
+})
+
+ipcMain.handle('deleteSponsor', async (_, id: string) => {
+  return sponsoredRepo.deleteSponsor(id)
+})
+
+// Sponsored Resources
+ipcMain.handle('getSponsoredResources', async (_, filters?) => {
+  return sponsoredRepo.getSponsoredResources(filters)
+})
+
+ipcMain.handle('getSponsoredResource', async (_, id: string) => {
+  return sponsoredRepo.getSponsoredResource(id)
+})
+
+ipcMain.handle('createSponsoredResource', async (_, data) => {
+  return sponsoredRepo.createSponsoredResource(data)
+})
+
+ipcMain.handle('updateSponsoredResource', async (_, id: string, data) => {
+  return sponsoredRepo.updateSponsoredResource(id, data)
+})
+
+ipcMain.handle('deleteSponsoredResource', async (_, id: string) => {
+  return sponsoredRepo.deleteSponsoredResource(id)
+})
+
+// Anonymous Click Tracking (NO PII)
+ipcMain.handle('trackSponsoredClick', async (_, data: { sponsoredResourceId: string; location: string }) => {
+  return sponsoredRepo.trackSponsoredClick(
+    data.sponsoredResourceId,
+    data.location as any
+  )
+})
+
+// Analytics (Admin only)
+ipcMain.handle('getSponsorAnalytics', async (_, filters?) => {
+  return sponsoredRepo.getSponsorAnalytics(filters)
+})
+
+// ==========================================
+// Helper Functions
+// ==========================================
 
 // Helper to fetch image as buffer
 async function fetchImageAsBuffer(url: string): Promise<Buffer | null> {

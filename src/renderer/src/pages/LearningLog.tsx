@@ -1,19 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format, parseISO } from "date-fns";
-import Markdown from "react-markdown";
 import { useStore } from "../stores/useStore";
 import { useActivities } from "../hooks/useDatabase";
 import { getStudentColor } from "./Settings";
+import { SponsoredResourceCard } from "../features/sponsored/SponsoredResourceCard";
 import type {
   Activity,
   CreateActivity,
   ActivityType,
+  SponsoredResource,
 } from "../../../shared/types";
 
 import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
+import { Input, Textarea } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
+import { Badge } from "../components/ui/Badge";
 import { Modal } from "../components/ui/Modal";
+import { MarkdownContent } from "../components/ui/MarkdownContent";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
 
@@ -48,6 +51,9 @@ export default function Activities(): JSX.Element {
     selectedStudentId ? [selectedStudentId] : [],
   );
   const [studentNotes, setStudentNotes] = useState<Record<string, string>>({});
+  const [relatedResources, setRelatedResources] = useState<SponsoredResource[]>(
+    [],
+  );
   const [formData, setFormData] = useState<
     Omit<Partial<CreateActivity>, "studentId" | "notes">
   >({
@@ -67,6 +73,41 @@ export default function Activities(): JSX.Element {
   const filteredActivities = filterType
     ? activities.filter((a) => a.activityType === filterType)
     : activities;
+
+  // Load related resources based on recent activities
+  useEffect(() => {
+    loadRelatedResources();
+  }, [activities]);
+
+  const loadRelatedResources = async () => {
+    if (filteredActivities.length === 0) {
+      setRelatedResources([]);
+      return;
+    }
+
+    try {
+      // Get subject IDs from recent activities (first 10)
+      const recentSubjectIds = [
+        ...new Set(filteredActivities.slice(0, 10).map((a) => a.subjectId)),
+      ];
+
+      // Get subject names for filtering
+      const subjectNames = recentSubjectIds
+        .map((id) => getSubjectById(id)?.name)
+        .filter(Boolean) as string[];
+
+      // Get sponsored resources matching those subjects
+      const related = await window.api.getSponsoredResources({
+        subjects: subjectNames,
+        location: "learning_log",
+        limit: 3,
+      });
+
+      setRelatedResources(related);
+    } catch (error) {
+      console.error("Failed to load related resources:", error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -227,9 +268,9 @@ export default function Activities(): JSX.Element {
                     <span className="font-semibold text-gray-900">
                       {activity.title}
                     </span>
-                    <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">
+                    <Badge size="sm" variant="default" className="rounded-full">
                       {typeInfo?.label}
-                    </span>
+                    </Badge>
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
                     {subject?.name} • {student?.name} •{" "}
@@ -250,30 +291,65 @@ export default function Activities(): JSX.Element {
                     </div>
                   )}
                   {activity.notes && (
-                    <div className="text-sm text-gray-600 mt-2 prose prose-sm max-w-none">
-                      <Markdown>{activity.notes}</Markdown>
-                    </div>
+                    <MarkdownContent className="mt-2">
+                      {activity.notes}
+                    </MarkdownContent>
                   )}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <button
+                  <Button
                     onClick={() => openEditModal(activity)}
-                    className="text-brand-primary hover:text-brand-primaryDark text-sm"
+                    variant="ghost"
+                    size="sm"
                   >
                     Edit
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => deleteActivity(activity.id)}
-                    className="text-status-error hover:text-status-errorDark text-sm"
+                    variant="ghost"
+                    size="sm"
+                    className="text-status-error hover:text-status-errorDark"
                   >
                     Delete
-                  </button>
+                  </Button>
                 </div>
               </div>
             );
           })}
         </div>
       )}
+
+      {/* Related Resources */}
+      {filteredActivities.length > 0 && relatedResources.length > 0 && (
+        <div className="mt-8">
+          <Card className="bg-student-blue-50 border-student-blue-200">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-medium text-student-blue-700 flex items-center gap-2">
+                  <LightBulbIcon className="w-5 h-5" />
+                  Resources Based on Your Activities
+                </h3>
+                <p className="text-sm text-student-blue-600">
+                  Tools and materials that match what you're learning
+                </p>
+              </div>
+              <span className="text-xs text-gray-500">Sponsored</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {relatedResources.map((resource) => (
+                <SponsoredResourceCard
+                  key={resource.id}
+                  resource={resource}
+                  location="learning_log"
+                  compact
+                />
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* Add Activity Modal */}
       <Modal
         open={isModalOpen}
@@ -312,9 +388,9 @@ export default function Activities(): JSX.Element {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Student
               </label>
-              <div className="px-3 py-1.5 bg-gray-100 rounded-lg text-sm font-medium text-gray-700">
+              <Badge size="md" className="px-3 py-1.5">
                 {getStudentById(editingActivity.studentId)?.name}
-              </div>
+              </Badge>
             </div>
           ) : (
             <div>
@@ -351,7 +427,7 @@ export default function Activities(): JSX.Element {
                 ))}
               </div>
               {selectedStudentIds.length === 0 && (
-                <p className="text-sm text-red-500 mt-1">
+                <p className="text-sm text-status-error mt-1">
                   Select at least one student
                 </p>
               )}
@@ -542,7 +618,7 @@ export default function Activities(): JSX.Element {
                         {student?.name}
                       </label>
                     )}
-                    <textarea
+                    <Textarea
                       value={studentNotes[studentId] || ""}
                       onChange={(e) =>
                         setStudentNotes((prev) => ({
@@ -550,7 +626,6 @@ export default function Activities(): JSX.Element {
                           [studentId]: e.target.value,
                         }))
                       }
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
                       rows={2}
                       placeholder={
                         selectedStudentIds.length > 1
@@ -582,5 +657,23 @@ export default function Activities(): JSX.Element {
         </form>
       </Modal>
     </PageContainer>
+  );
+}
+
+function LightBulbIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+      />
+    </svg>
   );
 }
