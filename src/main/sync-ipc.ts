@@ -149,18 +149,26 @@ async function initializeWebRTC(config: { deviceId: string; deviceName: string; 
     }
   })
 
-  // Handle sync requests
+  // Handle sync requests from peers
   webrtcTransport.on('sync:request', async (fromPeer: string, afterTimestamp: string | null) => {
-    if (!eventLog) return
+    console.log('[Sync] Sync request from', fromPeer.slice(0, 8))
+    if (!eventLog) {
+      console.log('[Sync] No event log, ignoring sync request')
+      return
+    }
 
     updateSyncState('syncing')
 
-    // Get events after the timestamp and send back
-    const events = afterTimestamp
-      ? await eventLog.getAfterTimestamp(afterTimestamp)
-      : await eventLog.getAll()
+    try {
+      // Get events after the timestamp and send back
+      const events = afterTimestamp
+        ? await eventLog.getAfterTimestamp(afterTimestamp)
+        : await eventLog.getAll()
 
-    await webrtcTransport!.sendSyncResponse(events, false)
+      await webrtcTransport!.sendSyncResponse(events, false)
+    } catch (error) {
+      console.error('[Sync] Error handling sync request:', error)
+    }
   })
 
   webrtcTransport.on('sync:completed', (peerId: string, eventsReceived: number) => {

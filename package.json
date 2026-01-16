@@ -40,6 +40,7 @@
   "dependencies": {
     "@electron-toolkit/utils": "^3.0.0",
     "@headlessui/react": "^2.2.4",
+    "@roamhq/wrtc": "^0.9.1",
     "@tailwindcss/typography": "^0.5.19",
     "@types/ws": "^8.18.1",
     "b4a": "^1.7.3",

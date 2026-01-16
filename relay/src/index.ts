@@ -34,6 +34,16 @@ interface Room {
 const rooms = new Map<string, Room>()
 let messageIdCounter = 0
 
+// Presence state: familyId -> Map<deviceId, { pubKey, ts }>
+interface PresenceEntry {
+  pubKey: string
+  ts: number
+}
+const presence = new Map<string, Map<string, PresenceEntry>>()
+
+// Signal queues: topic:peerId -> SignalingMessage[]
+const signalQueues = new Map<string, SignalingMessage[]>()
+
 // ============= Helpers =============
 
 function parseBody(req: HttpIncomingMessage): Promise<any> {
@@ -83,6 +93,24 @@ function cleanupRooms() {
   }
 }
 setInterval(cleanupRooms, 5 * 60 * 1000) // Every 5 minutes
+
+// Clean up stale presence (older than 2 minutes)
+function cleanupPresence() {
+  const now = Date.now()
+  const maxAge = 2 * 60 * 1000 // 2 minutes
+  for (const [familyId, devices] of presence) {
+    for (const [deviceId, entry] of devices) {
+      if (now - entry.ts > maxAge) {
+        devices.delete(deviceId)
+        console.log(`Cleaned up stale presence: ${deviceId.substring(0, 8)}... from family ${familyId.substring(0, 8)}...`)
+      }
+    }
+    if (devices.size === 0) {
+      presence.delete(familyId)
+    }
+  }
+}
+setInterval(cleanupPresence, 60 * 1000) // Every minute
 
 // ============= HTTP Routes =============
 
@@ -179,7 +207,7 @@ async function handleHttpRequest(req: HttpIncomingMessage, res: ServerResponse) 
       return
     }
 
-    // Send a signaling message
+    // Send a signaling message (legacy room-based)
     if (path === '/signal' && method === 'POST') {
       const body = await parseBody(req)
       const { room: roomId, type, from, to, payload } = body
@@ -212,6 +240,113 @@ async function handleHttpRequest(req: HttpIncomingMessage, res: ServerResponse) 
       return
     }
 
+    // ============= Presence API =============
+
+    // POST /presence/{familyId}/{deviceId} - heartbeat
+    const presenceMatch = path.match(/^\/presence\/([^/]+)\/([^/]+)$/)
+    if (presenceMatch && method === 'POST') {
+      const familyId = decodeURIComponent(presenceMatch[1])
+      const deviceId = decodeURIComponent(presenceMatch[2])
+      const body = await parseBody(req)
+      const { pubKey } = body
+
+      if (!presence.has(familyId)) {
+        presence.set(familyId, new Map())
+      }
+      presence.get(familyId)!.set(deviceId, { pubKey: pubKey || '', ts: Date.now() })
+
+      console.log(`[Presence] Heartbeat from ${deviceId.substring(0, 8)}... in family ${familyId.substring(0, 8)}...`)
+      sendJson(res, { success: true })
+      return
+    }
+
+    // DELETE /presence/{familyId}/{deviceId} - remove presence
+    if (presenceMatch && method === 'DELETE') {
+      const familyId = decodeURIComponent(presenceMatch[1])
+      const deviceId = decodeURIComponent(presenceMatch[2])
+
+      const familyPresence = presence.get(familyId)
+      if (familyPresence) {
+        familyPresence.delete(deviceId)
+        if (familyPresence.size === 0) {
+          presence.delete(familyId)
+        }
+      }
+
+      console.log(`[Presence] Removed ${deviceId.substring(0, 8)}... from family ${familyId.substring(0, 8)}...`)
+      sendJson(res, { success: true })
+      return
+    }
+
+    // GET /presence/{familyId} - get online peers
+    const presenceListMatch = path.match(/^\/presence\/([^/]+)$/)
+    if (presenceListMatch && method === 'GET') {
+      const familyId = decodeURIComponent(presenceListMatch[1])
+
+      const familyPresence = presence.get(familyId)
+      const peers: Array<{ deviceId: string; pubKey: string; ts: number }> = []
+
+      if (familyPresence) {
+        for (const [deviceId, entry] of familyPresence) {
+          peers.push({ deviceId, pubKey: entry.pubKey, ts: entry.ts })
+        }
+      }
+
+      sendJson(res, { peers })
+      return
+    }
+
+    // ============= Signal Queue API =============
+
+    // POST /signal/{topic}/{peerId} - send signal to peer
+    const signalSendMatch = path.match(/^\/signal\/([^/]+)\/([^/]+)$/)
+    if (signalSendMatch && method === 'POST') {
+      const topic = decodeURIComponent(signalSendMatch[1])
+      const peerId = decodeURIComponent(signalSendMatch[2])
+      const body = await parseBody(req)
+
+      const queueKey = `${topic}:${peerId}`
+      if (!signalQueues.has(queueKey)) {
+        signalQueues.set(queueKey, [])
+      }
+
+      const message: SignalingMessage = {
+        id: ++messageIdCounter,
+        type: body.type,
+        from: body.from,
+        to: peerId,
+        payload: body.payload,
+        room: topic,
+        timestamp: Date.now(),
+      }
+      signalQueues.get(queueKey)!.push(message)
+
+      // Keep only last 50 messages per queue
+      const queue = signalQueues.get(queueKey)!
+      if (queue.length > 50) {
+        signalQueues.set(queueKey, queue.slice(-50))
+      }
+
+      console.log(`[Signal] ${body.type} from ${body.from?.substring(0, 8) || 'unknown'}... to ${peerId.substring(0, 8)}...`)
+      sendJson(res, { success: true })
+      return
+    }
+
+    // GET /signal/{topic}/{peerId} - poll signals for peer
+    if (signalSendMatch && method === 'GET') {
+      const topic = decodeURIComponent(signalSendMatch[1])
+      const peerId = decodeURIComponent(signalSendMatch[2])
+
+      const queueKey = `${topic}:${peerId}`
+      const messages = signalQueues.get(queueKey) || []
+
+      // Clear the queue after reading (one-time delivery)
+      signalQueues.delete(queueKey)
+
+      sendJson(res, { messages })
+      return
+    }
+
     // 404 for unknown routes
     sendJson(res, { error: 'Not found' }, 404)
   } catch (error) {
@@ -228,11 +363,22 @@ server.listen(PORT, () => {
   console.log(`Homeschool Sync Signaling Server running on port ${PORT}`)
   console.log(``)
   console.log(`Endpoints:`)
-  console.log(`  GET  /health                    - Health check`)
-  console.log(`  POST /room/{roomId}/join        - Join a room (body: { peerId })`)
-  console.log(`  POST /room/{roomId}/leave       - Leave a room (body: { peerId })`)
-  console.log(`  GET  /room/{roomId}/messages    - Poll for messages (?peerId=...&after=...)`)
-  console.log(`  POST /signal                    - Send signaling message`)
+  console.log(`  GET  /health                         - Health check`)
+  console.log(``)
+  console.log(`  Presence API:`)
+  console.log(`  POST /presence/{familyId}/{deviceId} - Heartbeat (body: { pubKey })`)
+  console.log(`  DELETE /presence/{familyId}/{deviceId} - Remove presence`)
+  console.log(`  GET  /presence/{familyId}            - Get online peers`)
+  console.log(``)
+  console.log(`  Signal Queue API:`)
+  console.log(`  POST /signal/{topic}/{peerId}        - Send signal to peer`)
+  console.log(`  GET  /signal/{topic}/{peerId}        - Poll signals for peer`)
+  console.log(``)
+  console.log(`  Legacy Room API:`)
+  console.log(`  POST /room/{roomId}/join             - Join a room (body: { peerId })`)
+  console.log(`  POST /room/{roomId}/leave            - Leave a room (body: { peerId })`)
+  console.log(`  GET  /room/{roomId}/messages         - Poll for messages`)
+  console.log(`  POST /signal                         - Send signaling message`)
   console.log(``)
   console.log(`WebRTC data flows peer-to-peer after connection is established.`)
 })

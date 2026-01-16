@@ -11,17 +11,17 @@ export interface RTCIceServer {
   credential?: string
 }
 
-// Fly.io signaling server URL
-// This handles only device discovery and WebRTC connection setup
-// All actual sync data flows P2P via WebRTC
+// Signaling server URL
+// For local development: http://localhost:8080
+// For production: https://homeschool-signaling.fly.dev
 export const SIGNALING_SERVER_URL =
-  process.env.HOMESCHOOL_SIGNALING_URL || 'https://homeschool-signaling.fly.dev'
+  process.env.HOMESCHOOL_SIGNALING_URL || 'http://localhost:8080'
 
-// Legacy alias (will be removed)
+// Alias for signaling server
 export const WORKER_URL = SIGNALING_SERVER_URL
 
-// Legacy signaling server (will be removed)
-export const SIGNALING_URL = process.env.HOMESCHOOL_SIGNALING_URL || 'http://localhost:8080'
+// Legacy alias
+export const SIGNALING_URL = SIGNALING_SERVER_URL
 
 // ICE servers for NAT traversal
 export const ICE_SERVERS: RTCIceServer[] = [

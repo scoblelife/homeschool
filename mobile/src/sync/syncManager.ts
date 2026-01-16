@@ -2,103 +2,113 @@
  * Sync Manager - orchestrates sync operations and manages connections
  */
 
-import { SyncEvent, createSyncEvent, EventType, generateUUID, HLCTimestamp } from './events'
-import { HybridLogicalClock } from './hlc'
-import { EventLog } from './eventLog'
-import { FamilyManager } from './family'
-import { EventProjector } from './projector'
-import { Hyperswarm, createTopic, EventType as SwarmEventType } from './hyperswarm'
-import { WorkerSignalingProvider } from './workerSignaling'
-import { WORKER_URL } from './config'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { SyncEvent, createSyncEvent, EventType, HLCTimestamp } from "./events";
+import { HybridLogicalClock } from "./hlc";
+import { EventLog } from "./eventLog";
+import { FamilyManager } from "./family";
+import { EventProjector } from "./projector";
+import {
+  Hyperswarm,
+  createTopic,
+  EventType as SwarmEventType,
+} from "./hyperswarm";
+import { WorkerSignalingProvider } from "./workerSignaling";
+import { WORKER_URL } from "./config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const HLC_STATE_KEY = '@homeschool/hlc_state'
-const SYNC_STATE_KEY = '@homeschool/sync_state'
+const HLC_STATE_KEY = "@homeschool/hlc_state";
+const SYNC_STATE_KEY = "@homeschool/sync_state";
 
 export interface SyncPeer {
-  deviceId: string
-  deviceName: string
-  isOnline: boolean
-  lastSeen: number
+  deviceId: string;
+  deviceName: string;
+  isOnline: boolean;
+  lastSeen: number;
 }
 
 export interface SyncStatus {
-  enabled: boolean
-  connected: boolean
-  peerCount: number
-  pendingEvents: number
-  lastSyncTime: number | null
+  enabled: boolean;
+  connected: boolean;
+  peerCount: number;
+  pendingEvents: number;
+  lastSyncTime: number | null;
 }
 
-type SyncEventHandler = (event: SyncEvent) => void
-type PeerEventHandler = (peer: SyncPeer) => void
-type PeerUpdateHandler = (peers: SyncPeer[]) => void
+type SyncEventHandler = (event: SyncEvent) => void;
+type PeerEventHandler = (peer: SyncPeer) => void;
+type PeerUpdateHandler = (peers: SyncPeer[]) => void;
 
 export class SyncManager {
-  private static instance: SyncManager | null = null
+  private static instance: SyncManager | null = null;
 
-  private hlc: HybridLogicalClock | null = null
-  private eventLog: EventLog
-  private familyManager: FamilyManager
-  private projector: EventProjector
-  private swarm: Hyperswarm | null = null
+  private hlc: HybridLogicalClock | null = null;
+  private eventLog: EventLog;
+  private familyManager: FamilyManager;
+  private projector: EventProjector;
+  private swarm: Hyperswarm | null = null;
 
-  private peers: Map<string, SyncPeer> = new Map()
-  private connected = false
-  private lastSyncTime: number | null = null
-  private currentTopic: string | null = null
+  private peers: Map<string, SyncPeer> = new Map();
+  private connected = false;
+  private lastSyncTime: number | null = null;
+  private currentTopic: string | null = null;
 
-  private eventHandlers: Set<SyncEventHandler> = new Set()
-  private peerConnectedHandlers: Set<PeerEventHandler> = new Set()
-  private peerDisconnectedHandlers: Set<PeerEventHandler> = new Set()
-  private peerUpdateHandlers: Set<PeerUpdateHandler> = new Set()
-  private swarmEventCleanup: (() => void) | null = null
+  private eventHandlers: Set<SyncEventHandler> = new Set();
+  private peerConnectedHandlers: Set<PeerEventHandler> = new Set();
+  private peerDisconnectedHandlers: Set<PeerEventHandler> = new Set();
+  private peerUpdateHandlers: Set<PeerUpdateHandler> = new Set();
+  private swarmEventCleanup: (() => void) | null = null;
 
-  private initialized = false
+  private initialized = false;
+
+  // Accumulator for chunked sync responses
+  private syncChunks: Map<
+    string,
+    { events: SyncEvent[]; receivedChunks: number; totalChunks: number }
+  > = new Map();
 
   private constructor() {
-    this.eventLog = EventLog.getInstance()
-    this.familyManager = FamilyManager.getInstance()
-    this.projector = EventProjector.getInstance()
+    this.eventLog = EventLog.getInstance();
+    this.familyManager = FamilyManager.getInstance();
+    this.projector = EventProjector.getInstance();
   }
 
   static getInstance(): SyncManager {
     if (!SyncManager.instance) {
-      SyncManager.instance = new SyncManager()
+      SyncManager.instance = new SyncManager();
     }
-    return SyncManager.instance
+    return SyncManager.instance;
   }
 
   /**
    * Initialize the sync manager
    */
   async initialize(): Promise<void> {
-    if (this.initialized) return
+    if (this.initialized) return;
 
     // Initialize dependencies
-    await this.eventLog.initialize()
-    await this.familyManager.initialize()
+    await this.eventLog.initialize();
+    await this.familyManager.initialize();
 
     // Load or create HLC
-    const hlcJson = await AsyncStorage.getItem(HLC_STATE_KEY)
+    const hlcJson = await AsyncStorage.getItem(HLC_STATE_KEY);
     if (hlcJson) {
-      this.hlc = HybridLogicalClock.fromJSON(JSON.parse(hlcJson))
+      this.hlc = HybridLogicalClock.fromJSON(JSON.parse(hlcJson));
     } else {
-      this.hlc = new HybridLogicalClock()
-      await this.saveHLCState()
+      this.hlc = new HybridLogicalClock();
+      await this.saveHLCState();
     }
 
     // Load last sync time
-    const syncState = await AsyncStorage.getItem(SYNC_STATE_KEY)
+    const syncState = await AsyncStorage.getItem(SYNC_STATE_KEY);
     if (syncState) {
-      const state = JSON.parse(syncState)
-      this.lastSyncTime = state.lastSyncTime
+      const state = JSON.parse(syncState);
+      this.lastSyncTime = state.lastSyncTime;
     }
 
     // Process any pending events
-    await this.projector.processEvents()
+    await this.projector.processEvents();
 
-    this.initialized = true
+    this.initialized = true;
   }
 
   /**
@@ -111,136 +121,143 @@ export class SyncManager {
       peerCount: this.peers.size,
       pendingEvents: 0, // Will be calculated
       lastSyncTime: this.lastSyncTime,
-    }
+    };
   }
 
   /**
    * Get list of connected peers
    */
   getPeers(): SyncPeer[] {
-    return Array.from(this.peers.values())
+    return Array.from(this.peers.values());
   }
 
   /**
    * Create a new family
    */
   async createFamily(deviceName: string): Promise<void> {
-    await this.familyManager.createFamily(deviceName)
+    await this.familyManager.createFamily(deviceName);
 
     // Reset HLC with new node ID
-    this.hlc = new HybridLogicalClock(this.familyManager.getDeviceId() || undefined)
-    await this.saveHLCState()
+    this.hlc = new HybridLogicalClock(
+      this.familyManager.getDeviceId() || undefined,
+    );
+    await this.saveHLCState();
   }
 
   /**
    * Join an existing family
    */
   async joinFamily(qrData: string, deviceName: string): Promise<void> {
-    await this.familyManager.joinFamily(qrData, deviceName)
+    await this.familyManager.joinFamily(qrData, deviceName);
 
     // Reset HLC with new node ID
-    this.hlc = new HybridLogicalClock(this.familyManager.getDeviceId() || undefined)
-    await this.saveHLCState()
+    this.hlc = new HybridLogicalClock(
+      this.familyManager.getDeviceId() || undefined,
+    );
+    await this.saveHLCState();
   }
 
   /**
    * Leave the current family
    */
   async leaveFamily(): Promise<void> {
-    this.disconnect()
-    await this.familyManager.leaveFamily()
-    this.peers.clear()
-    this.lastSyncTime = null
+    this.disconnect();
+    await this.familyManager.leaveFamily();
+    this.peers.clear();
+    this.lastSyncTime = null;
   }
 
   /**
    * Get invite code for sharing
    */
   getInviteCode(): string {
-    return this.familyManager.getInviteCode()
+    return this.familyManager.getInviteCode();
   }
 
   /**
    * Get invite message for sharing
    */
   getInviteMessage(): string {
-    return this.familyManager.getInviteMessage()
+    return this.familyManager.getInviteMessage();
   }
 
   /**
    * Check if this device is the family manager
    */
   isManager(): boolean {
-    return this.familyManager.isManager()
+    return this.familyManager.isManager();
   }
 
   /**
    * Get device name
    */
   getDeviceName(): string | null {
-    return this.familyManager.getDeviceName()
+    return this.familyManager.getDeviceName();
   }
 
   /**
    * Update device name
    */
   async updateDeviceName(name: string): Promise<void> {
-    await this.familyManager.updateDeviceName(name)
+    await this.familyManager.updateDeviceName(name);
   }
 
   /**
    * Emit a sync event for a local change
    */
-  async emitEvent<T extends Record<string, unknown>>(type: EventType, data: T): Promise<void> {
+  async emitEvent<T extends Record<string, unknown>>(
+    type: EventType,
+    data: T,
+  ): Promise<void> {
     if (!this.familyManager.isSyncEnabled() || !this.hlc) {
-      return
+      return;
     }
 
-    const deviceId = this.familyManager.getDeviceId()
-    if (!deviceId) return
+    const deviceId = this.familyManager.getDeviceId();
+    if (!deviceId) return;
 
-    const timestamp = this.hlc.now()
-    const event = createSyncEvent(type, data, deviceId, timestamp)
+    const timestamp = this.hlc.now();
+    const event = createSyncEvent(type, data, deviceId, timestamp);
 
     // Store in event log
-    await this.eventLog.append(event)
-    await this.saveHLCState()
+    await this.eventLog.append(event);
+    await this.saveHLCState();
 
     // Broadcast to peers (if connected)
-    this.broadcastEvent(event)
+    this.broadcastEvent(event);
 
     // Notify local handlers
-    this.notifyEventHandlers(event)
+    this.notifyEventHandlers(event);
   }
 
   /**
    * Receive an event from a peer
    */
   async receiveEvent(event: SyncEvent): Promise<void> {
-    if (!this.hlc) return
+    if (!this.hlc) return;
 
     // Check if we already have this event
     if (await this.eventLog.hasEvent(event.id)) {
-      return
+      return;
     }
 
     // Update HLC
-    this.hlc.receive(event.timestamp)
-    await this.saveHLCState()
+    this.hlc.receive(event.timestamp);
+    await this.saveHLCState();
 
     // Store event
-    await this.eventLog.append(event)
+    await this.eventLog.append(event);
 
     // Process event
-    await this.projector.applyEvent(event)
-    await this.eventLog.markProcessed(event.id)
+    await this.projector.applyEvent(event);
+    await this.eventLog.markProcessed(event.id);
 
     // Notify handlers
-    this.notifyEventHandlers(event)
+    this.notifyEventHandlers(event);
 
     // Update last sync time
-    this.lastSyncTime = Date.now()
-    await this.saveSyncState()
+    this.lastSyncTime = Date.now();
+    await this.saveSyncState();
   }
 
   /**
@@ -248,73 +265,81 @@ export class SyncManager {
    */
   async connect(): Promise<void> {
     if (!this.familyManager.isSyncEnabled()) {
-      console.log('[SyncManager] Sync not enabled')
-      return
+      console.log("[SyncManager] Sync not enabled");
+      return;
     }
 
-    const deviceId = this.familyManager.getDeviceId()
-    const familyId = this.familyManager.getFamilyId()
+    const deviceId = this.familyManager.getDeviceId();
+    const familyId = this.familyManager.getFamilyId();
 
     if (!deviceId || !familyId) {
-      console.log('[SyncManager] Missing device or family ID')
-      return
+      console.log("[SyncManager] Missing device or family ID");
+      return;
     }
 
     // Use WebRTC P2P via Hyperswarm wrapper
-    await this.connectWebRTC(deviceId, familyId)
+    await this.connectWebRTC(deviceId, familyId);
   }
 
   /**
    * Connect via P2P network (WebRTC with Cloudflare Worker signaling)
    */
-  private async connectWebRTC(deviceId: string, familyId: string): Promise<void> {
-    console.log('[SyncManager] connectWebRTC called')
-    console.log('[SyncManager] deviceId:', deviceId)
-    console.log('[SyncManager] familyId:', familyId)
-    console.log('[SyncManager] WORKER_URL:', WORKER_URL)
+  private async connectWebRTC(
+    deviceId: string,
+    familyId: string,
+  ): Promise<void> {
+    console.log("[SyncManager] connectWebRTC called");
+    console.log("[SyncManager] deviceId:", deviceId);
+    console.log("[SyncManager] familyId:", familyId);
+    console.log("[SyncManager] WORKER_URL:", WORKER_URL);
 
     // Get the public key for presence
-    const pubKey = this.familyManager.getPubKey()
+    const pubKey = this.familyManager.getPubKey();
     if (!pubKey) {
-      console.error('[SyncManager] No public key available')
-      return
+      console.error("[SyncManager] No public key available");
+      return;
     }
 
     try {
-      console.log('[SyncManager] Creating Hyperswarm instance')
-      this.swarm = new Hyperswarm()
+      console.log("[SyncManager] Creating Hyperswarm instance");
+      this.swarm = new Hyperswarm();
 
       // Create Worker signaling provider for WebRTC
       const signaling = new WorkerSignalingProvider({
         pubKey,
         workerUrl: WORKER_URL,
-      })
+      });
 
-      console.log('[SyncManager] Calling swarm.create()')
-      await this.swarm.create({ deviceId, signaling })
-      console.log('[SyncManager] swarm.create() completed')
+      console.log("[SyncManager] Calling swarm.create()");
+      await this.swarm.create({ deviceId, signaling });
+      console.log("[SyncManager] swarm.create() completed");
 
       // Set up event handlers
       this.swarmEventCleanup = this.swarm.onAny((event) => {
-        this.handleSwarmEvent(event)
-      })
+        this.handleSwarmEvent(event);
+      });
 
-      console.log('[SyncManager] Calling swarm.start()')
-      await this.swarm.start()
-      console.log('[SyncManager] swarm.start() completed')
+      console.log("[SyncManager] Calling swarm.start()");
+      await this.swarm.start();
+      console.log("[SyncManager] swarm.start() completed");
 
       // Join the family topic
-      this.currentTopic = createTopic(familyId)
-      console.log('[SyncManager] Calling swarm.join() with topic:', this.currentTopic)
-      await this.swarm.join(this.currentTopic)
-      console.log('[SyncManager] swarm.join() completed')
+      this.currentTopic = createTopic(familyId);
+      console.log(
+        "[SyncManager] Calling swarm.join() with topic:",
+        this.currentTopic,
+      );
+      await this.swarm.join(this.currentTopic);
+      console.log("[SyncManager] swarm.join() completed");
 
-      this.connected = true
-      const mode = this.swarm.isSimulationMode() ? '(simulation mode)' : '(native)'
-      console.log(`[SyncManager] Connected to P2P network ${mode}`)
+      this.connected = true;
+      const mode = this.swarm.isSimulationMode()
+        ? "(simulation mode)"
+        : "(native)";
+      console.log(`[SyncManager] Connected to P2P network ${mode}`);
     } catch (error) {
-      console.error('[SyncManager] Failed to connect:', error)
-      this.connected = false
+      console.error("[SyncManager] Failed to connect:", error);
+      this.connected = false;
     }
   }
 
@@ -324,39 +349,43 @@ export class SyncManager {
   async disconnect(): Promise<void> {
     // Clean up Hyperswarm/WebRTC
     if (this.swarmEventCleanup) {
-      this.swarmEventCleanup()
-      this.swarmEventCleanup = null
+      this.swarmEventCleanup();
+      this.swarmEventCleanup = null;
     }
 
     if (this.swarm) {
       if (this.currentTopic) {
         try {
-          await this.swarm.leave(this.currentTopic)
-        } catch (e) {
+          await this.swarm.leave(this.currentTopic);
+        } catch {
           // Ignore leave errors during disconnect
         }
-        this.currentTopic = null
+        this.currentTopic = null;
       }
-      await this.swarm.stop()
-      this.swarm.destroy()
-      this.swarm = null
+      await this.swarm.stop();
+      this.swarm.destroy();
+      this.swarm = null;
     }
 
-    this.connected = false
-    this.peers.clear()
-    console.log('[SyncManager] Disconnected from sync network')
+    this.connected = false;
+    this.peers.clear();
+    console.log("[SyncManager] Disconnected from sync network");
   }
 
   /**
    * Handle events from the WebRTC/Hyperswarm network
    */
-  private handleSwarmEvent(event: { type: SwarmEventType; peerId?: string; data?: string }): void {
+  private handleSwarmEvent(event: {
+    type: SwarmEventType;
+    peerId?: string;
+    data?: string;
+  }): void {
     switch (event.type) {
       case SwarmEventType.Ready:
-        console.log('[SyncManager] Swarm ready')
+        console.log("[SyncManager] Swarm ready");
         // Request sync from any existing peers
-        this.requestSync()
-        break
+        this.requestSync();
+        break;
 
       case SwarmEventType.PeerConnected:
         if (event.peerId) {
@@ -365,47 +394,47 @@ export class SyncManager {
             deviceName: `Device ${event.peerId.substring(0, 8)}`,
             isOnline: true,
             lastSeen: Date.now(),
-          }
-          this.peers.set(event.peerId, peer)
-          this.notifyPeerConnected(peer)
-          console.log('[SyncManager] Peer connected:', event.peerId)
+          };
+          this.peers.set(event.peerId, peer);
+          this.notifyPeerConnected(peer);
+          console.log("[SyncManager] Peer connected:", event.peerId);
 
           // Request sync from new peer
-          this.sendSyncRequest(event.peerId)
+          this.sendSyncRequest(event.peerId);
         }
-        break
+        break;
 
       case SwarmEventType.PeerDisconnected:
         if (event.peerId) {
-          const peer = this.peers.get(event.peerId)
+          const peer = this.peers.get(event.peerId);
           if (peer) {
-            peer.isOnline = false
-            this.peers.delete(event.peerId)
-            this.notifyPeerDisconnected(peer)
-            console.log('[SyncManager] Peer disconnected:', event.peerId)
+            peer.isOnline = false;
+            this.peers.delete(event.peerId);
+            this.notifyPeerDisconnected(peer);
+            console.log("[SyncManager] Peer disconnected:", event.peerId);
           }
         }
-        break
+        break;
 
       case SwarmEventType.Data:
         if (event.data && event.peerId) {
           // Native Hyperswarm sends data as base64, decode it
-          let decodedData = event.data
+          let decodedData = event.data;
           try {
             // Check if it looks like base64 (no { at start means it's encoded)
-            if (!event.data.startsWith('{')) {
-              decodedData = Buffer.from(event.data, 'base64').toString('utf-8')
+            if (!event.data.startsWith("{")) {
+              decodedData = Buffer.from(event.data, "base64").toString("utf-8");
             }
           } catch (e) {
-            console.error('[SyncManager] Failed to decode base64 data:', e)
+            console.error("[SyncManager] Failed to decode base64 data:", e);
           }
-          this.handlePeerData(event.peerId, decodedData)
+          this.handlePeerData(event.peerId, decodedData);
         }
-        break
+        break;
 
       case SwarmEventType.Error:
-        console.error('[SyncManager] Swarm error')
-        break
+        console.error("[SyncManager] Swarm error");
+        break;
     }
   }
 
@@ -414,39 +443,42 @@ export class SyncManager {
    */
   private async handlePeerData(peerId: string, data: string): Promise<void> {
     try {
-      const message = JSON.parse(data)
+      const message = JSON.parse(data);
 
       switch (message.type) {
-        case 'sync_request':
+        case "sync_request":
           // Peer is requesting events after a certain timestamp
-          await this.handleSyncRequest(peerId, message.afterTimestamp)
-          break
+          await this.handleSyncRequest(peerId, message.afterTimestamp);
+          break;
 
-        case 'sync_response':
-          // Peer is sending events in response to our request
-          for (const event of message.events) {
-            await this.receiveEvent(event)
-          }
-          break
+        case "sync_response":
+          // Peer is sending events in response to our request (possibly chunked)
+          await this.handleSyncResponse(peerId, message);
+          break;
 
-        case 'event':
+        case "event":
           // Single event from peer
-          await this.receiveEvent(message.event)
-          break
+          await this.receiveEvent(message.event);
+          break;
 
-        case 'device_info':
+        case "device_info": {
           // Update peer device name
-          const peer = this.peers.get(peerId)
+          const peer = this.peers.get(peerId);
           if (peer) {
-            peer.deviceName = message.deviceName
-            console.log('[SyncManager] Received device_info, peer name updated:', peerId, message.deviceName)
+            peer.deviceName = message.deviceName;
+            console.log(
+              "[SyncManager] Received device_info, peer name updated:",
+              peerId,
+              message.deviceName,
+            );
             // Notify UI of the update
-            this.notifyPeersUpdate()
+            this.notifyPeersUpdate();
           }
-          break
+          break;
+        }
       }
     } catch (error) {
-      console.error('[SyncManager] Failed to parse peer data:', error)
+      console.error("[SyncManager] Failed to parse peer data:", error);
     }
   }
 
@@ -455,58 +487,130 @@ export class SyncManager {
    */
   private async sendSyncRequest(peerId: string): Promise<void> {
     if (!this.swarm) {
-      console.log('[SyncManager] sendSyncRequest: no swarm')
-      return
+      console.log("[SyncManager] sendSyncRequest: no swarm");
+      return;
     }
 
     try {
-      console.log('[SyncManager] sendSyncRequest: sending to peer', peerId)
-      const latestTimestamp = await this.eventLog.getLatestTimestamp()
+      console.log("[SyncManager] sendSyncRequest: sending to peer", peerId);
+      const latestTimestamp = await this.eventLog.getLatestTimestamp();
       const message = {
-        type: 'sync_request',
+        type: "sync_request",
         afterTimestamp: latestTimestamp,
-      }
+      };
 
-      await this.swarm.send(peerId, JSON.stringify(message))
-      console.log('[SyncManager] sendSyncRequest: sync_request sent successfully')
+      await this.swarm.send(peerId, JSON.stringify(message));
+      console.log(
+        "[SyncManager] sendSyncRequest: sync_request sent successfully",
+      );
 
       // Also send our device info
-      const deviceName = this.familyManager.getDeviceName()
+      const deviceName = this.familyManager.getDeviceName();
       if (deviceName) {
-        await this.swarm.send(peerId, JSON.stringify({
-          type: 'device_info',
-          deviceName,
-        }))
-        console.log('[SyncManager] sendSyncRequest: device_info sent successfully')
+        await this.swarm.send(
+          peerId,
+          JSON.stringify({
+            type: "device_info",
+            deviceName,
+          }),
+        );
+        console.log(
+          "[SyncManager] sendSyncRequest: device_info sent successfully",
+        );
       }
     } catch (error) {
-      console.error('[SyncManager] sendSyncRequest error:', error)
+      console.error("[SyncManager] sendSyncRequest error:", error);
+    }
+  }
+
+  /**
+   * Handle sync response (possibly chunked) from a peer
+   */
+  private async handleSyncResponse(
+    peerId: string,
+    message: {
+      events: SyncEvent[];
+      chunkIndex?: number;
+      totalChunks?: number;
+      done?: boolean;
+    },
+  ): Promise<void> {
+    const { events, chunkIndex, totalChunks, done } = message;
+
+    // If no chunk info, treat as single non-chunked response (backwards compatible)
+    if (chunkIndex === undefined || totalChunks === undefined) {
+      console.log(
+        "[SyncManager] Received sync response:",
+        events.length,
+        "events",
+      );
+      for (const event of events) {
+        await this.receiveEvent(event);
+      }
+      return;
+    }
+
+    // Get or create accumulator for this peer
+    let accumulator = this.syncChunks.get(peerId);
+    if (!accumulator || chunkIndex === 0) {
+      // Start fresh for first chunk
+      accumulator = { events: [], receivedChunks: 0, totalChunks };
+      this.syncChunks.set(peerId, accumulator);
+      console.log("[SyncManager] Receiving sync in", totalChunks, "chunks");
+    }
+
+    // Add events from this chunk
+    accumulator.events.push(...events);
+    accumulator.receivedChunks++;
+
+    // If we've received all chunks, process them
+    if (accumulator.receivedChunks >= totalChunks || done) {
+      console.log(
+        "[SyncManager] Sync complete:",
+        accumulator.events.length,
+        "events from",
+        peerId.substring(0, 8),
+      );
+
+      // Process all accumulated events
+      for (const event of accumulator.events) {
+        await this.receiveEvent(event);
+      }
+
+      // Clear accumulator
+      this.syncChunks.delete(peerId);
     }
   }
 
   /**
    * Handle sync request from a peer
    */
-  private async handleSyncRequest(peerId: string, afterTimestamp: HLCTimestamp | null): Promise<void> {
-    if (!this.swarm) return
+  private async handleSyncRequest(
+    peerId: string,
+    afterTimestamp: HLCTimestamp | null,
+  ): Promise<void> {
+    if (!this.swarm) return;
 
     // Get events after the requested timestamp
-    const events = await this.eventLog.getEventsAfter(afterTimestamp)
+    const events = await this.eventLog.getEventsAfter(afterTimestamp);
 
     const message = {
-      type: 'sync_response',
+      type: "sync_response",
       events,
-    }
+    };
 
-    await this.swarm.send(peerId, JSON.stringify(message))
+    await this.swarm.send(peerId, JSON.stringify(message));
 
     // Also send our device info so the peer knows our name
-    const deviceName = this.familyManager.getDeviceName()
+    const deviceName = this.familyManager.getDeviceName();
     if (deviceName) {
-      await this.swarm.send(peerId, JSON.stringify({
-        type: 'device_info',
-        deviceName,
-      }))
+      await this.swarm.send(
+        peerId,
+        JSON.stringify({
+          type: "device_info",
+          deviceName,
+        }),
+      );
     }
   }
 
@@ -514,78 +618,81 @@ export class SyncManager {
    * Request sync from peers
    */
   async requestSync(): Promise<void> {
-    if (!this.connected) return
+    if (!this.connected) return;
 
-    const latestTimestamp = await this.eventLog.getLatestTimestamp()
+    const latestTimestamp = await this.eventLog.getLatestTimestamp();
 
     // In production, would send SYNC_REQUEST to peers
-    console.log('Requesting sync after timestamp:', latestTimestamp)
+    console.log("Requesting sync after timestamp:", latestTimestamp);
   }
 
   // Event subscription methods
 
   onEventReceived(handler: SyncEventHandler): () => void {
-    this.eventHandlers.add(handler)
-    return () => this.eventHandlers.delete(handler)
+    this.eventHandlers.add(handler);
+    return () => this.eventHandlers.delete(handler);
   }
 
   onPeerConnected(handler: PeerEventHandler): () => void {
-    this.peerConnectedHandlers.add(handler)
-    return () => this.peerConnectedHandlers.delete(handler)
+    this.peerConnectedHandlers.add(handler);
+    return () => this.peerConnectedHandlers.delete(handler);
   }
 
   onPeerDisconnected(handler: PeerEventHandler): () => void {
-    this.peerDisconnectedHandlers.add(handler)
-    return () => this.peerDisconnectedHandlers.delete(handler)
+    this.peerDisconnectedHandlers.add(handler);
+    return () => this.peerDisconnectedHandlers.delete(handler);
   }
 
   onPeersUpdate(handler: PeerUpdateHandler): () => void {
-    this.peerUpdateHandlers.add(handler)
-    return () => this.peerUpdateHandlers.delete(handler)
+    this.peerUpdateHandlers.add(handler);
+    return () => this.peerUpdateHandlers.delete(handler);
   }
 
   // Private methods
 
   private async saveHLCState(): Promise<void> {
     if (this.hlc) {
-      await AsyncStorage.setItem(HLC_STATE_KEY, JSON.stringify(this.hlc.toJSON()))
+      await AsyncStorage.setItem(
+        HLC_STATE_KEY,
+        JSON.stringify(this.hlc.toJSON()),
+      );
     }
   }
 
   private async saveSyncState(): Promise<void> {
     await AsyncStorage.setItem(
       SYNC_STATE_KEY,
-      JSON.stringify({ lastSyncTime: this.lastSyncTime })
-    )
+      JSON.stringify({ lastSyncTime: this.lastSyncTime }),
+    );
   }
 
   private async broadcastEvent(event: SyncEvent): Promise<void> {
     if (!this.connected) {
-      console.log('[SyncManager] Cannot broadcast - not connected')
-      return
+      console.log("[SyncManager] Cannot broadcast - not connected");
+      return;
     }
 
     const message = {
-      type: 'event',
+      type: "event",
       event,
-    }
+    };
 
     try {
       if (this.swarm) {
-        await this.swarm.broadcast(JSON.stringify(message))
-        console.log('[SyncManager] Broadcast event via WebRTC:', event.type)
+        await this.swarm.broadcast(JSON.stringify(message));
+        console.log("[SyncManager] Broadcast event via WebRTC:", event.type);
       }
     } catch (error) {
-      console.error('[SyncManager] Failed to broadcast:', error)
+      console.error("[SyncManager] Failed to broadcast:", error);
     }
   }
 
   private notifyEventHandlers(event: SyncEvent): void {
     for (const handler of this.eventHandlers) {
       try {
-        handler(event)
+        handler(event);
       } catch (error) {
-        console.error('Error in event handler:', error)
+        console.error("Error in event handler:", error);
       }
     }
   }
@@ -593,9 +700,9 @@ export class SyncManager {
   private notifyPeerConnected(peer: SyncPeer): void {
     for (const handler of this.peerConnectedHandlers) {
       try {
-        handler(peer)
+        handler(peer);
       } catch (error) {
-        console.error('Error in peer connected handler:', error)
+        console.error("Error in peer connected handler:", error);
       }
     }
   }
@@ -603,20 +710,20 @@ export class SyncManager {
   private notifyPeerDisconnected(peer: SyncPeer): void {
     for (const handler of this.peerDisconnectedHandlers) {
       try {
-        handler(peer)
+        handler(peer);
       } catch (error) {
-        console.error('Error in peer disconnected handler:', error)
+        console.error("Error in peer disconnected handler:", error);
       }
     }
   }
 
   private notifyPeersUpdate(): void {
-    const peers = this.getPeers()
+    const peers = this.getPeers();
     for (const handler of this.peerUpdateHandlers) {
       try {
-        handler(peers)
+        handler(peers);
       } catch (error) {
-        console.error('Error in peers update handler:', error)
+        console.error("Error in peers update handler:", error);
       }
     }
   }

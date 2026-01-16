@@ -5,108 +5,74 @@
  * Uses public STUN servers for NAT traversal and HTTP signaling for
  * the initial connection handshake.
  *
- * NOTE: This module runs in the Electron renderer process where
- * browser WebRTC APIs are available natively.
+ * NOTE: This module runs in the Electron main process where
+ * browser WebRTC APIs are not available. We use @roamhq/wrtc
+ * to provide WebRTC support in Node.js.
  */
 
-// WebRTC type declarations for Electron renderer context
-// These are available in the browser/renderer but not in Node.js type context
-declare const RTCPeerConnection: {
-  new (config?: RTCConfiguration): RTCPeerConnection
-  prototype: RTCPeerConnection
+// Import WebRTC from @roamhq/wrtc for Node.js support
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const wrtc = require('@roamhq/wrtc')
+const RTCPeerConnection = wrtc.RTCPeerConnection
+const RTCSessionDescription = wrtc.RTCSessionDescription
+const RTCIceCandidate = wrtc.RTCIceCandidate
+
+// Type declarations for wrtc
+interface RTCConfiguration {
+  iceServers?: Array<{ urls: string | string[]; username?: string; credential?: string }>
 }
 
-declare interface RTCPeerConnection {
-  createOffer(): Promise<RTCSessionDescriptionInit>
-  createAnswer(): Promise<RTCSessionDescriptionInit>
-  setLocalDescription(desc: RTCSessionDescriptionInit): Promise<void>
-  setRemoteDescription(desc: RTCSessionDescriptionInit): Promise<void>
-  addIceCandidate(candidate: RTCIceCandidateInit): Promise<void>
-  createDataChannel(label: string, options?: RTCDataChannelInit): RTCDataChannel
-  close(): void
-  connectionState: RTCPeerConnectionState
-  iceConnectionState: string
-  iceGatheringState: 'new' | 'gathering' | 'complete'
-  localDescription: RTCSessionDescription | null
-  onicecandidate: ((event: RTCPeerConnectionIceEvent) => void) | null
-  ondatachannel: ((event: RTCDataChannelEvent) => void) | null
-  onconnectionstatechange: (() => void) | null
-}
-
-declare interface RTCConfiguration {
-  iceServers?: RTCIceServer[]
-}
-
-declare interface RTCIceServer {
-  urls: string | string[]
-  username?: string
-  credential?: string
-}
-
-declare interface RTCSessionDescriptionInit {
+interface RTCSessionDescriptionInit {
   type: 'offer' | 'answer' | 'pranswer' | 'rollback'
   sdp?: string
 }
 
-declare const RTCSessionDescription: {
-  new (init: RTCSessionDescriptionInit): RTCSessionDescription
-  prototype: RTCSessionDescription
-}
-
-declare interface RTCSessionDescription {
-  type: 'offer' | 'answer' | 'pranswer' | 'rollback'
-  sdp: string
-}
-
-declare interface RTCIceCandidateInit {
+interface RTCIceCandidateInit {
   candidate?: string
   sdpMLineIndex?: number | null
   sdpMid?: string | null
 }
 
-declare const RTCIceCandidate: {
-  new (init: RTCIceCandidateInit): RTCIceCandidate
-  prototype: RTCIceCandidate
-}
-
-declare interface RTCIceCandidate {
-  candidate: string
-  sdpMLineIndex: number | null
-  sdpMid: string | null
-  toJSON(): RTCIceCandidateInit
-}
-
-declare interface RTCPeerConnectionIceEvent {
-  candidate: RTCIceCandidate | null
-}
-
-declare interface RTCDataChannelEvent {
-  channel: RTCDataChannel
-}
-
-declare interface RTCDataChannelInit {
+interface RTCDataChannelInit {
   ordered?: boolean
   maxRetransmits?: number
 }
 
-declare interface RTCDataChannel {
-  label: string
-  readyState: 'connecting' | 'open' | 'closing' | 'closed'
-  send(data: string | ArrayBuffer): void
-  close(): void
-  onopen: (() => void) | null
-  onclose: (() => void) | null
-  onmessage: ((event: MessageEvent) => void) | null
-  onerror: ((error: Event) => void) | null
-}
-
-declare type RTCPeerConnectionState =
+type RTCPeerConnectionState =
   | 'new'
   | 'connecting'
   | 'connected'
   | 'disconnected'
   | 'failed'
   | 'closed'
+
+// Runtime types - these are instances from @roamhq/wrtc
+interface RTCDataChannelLike {
+  readyState: string
+  send(data: string): void
+  close(): void
+  onopen: (() => void) | null
+  onclose: (() => void) | null
+  onmessage: ((event: { data: unknown }) => void) | null
+  onerror: ((error: unknown) => void) | null
+}
+
+interface RTCIceCandidateLike {
+  candidate?: string
+  sdpMLineIndex?: number | null
+  sdpMid?: string | null
+}
+
+interface RTCIceEvent {
+  candidate: RTCIceCandidateLike | null
+}
+
+interface RTCDataChannelEvent {
+  channel: RTCDataChannelLike
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RTCPeerConnectionLike = any
 
 import { EventEmitter } from 'events'
 import type { SyncEvent } from './events'
@@ -136,8 +102,8 @@ export interface WebRTCTransportOptions {
  * Manages a single WebRTC peer connection
  */
 class PeerConnection {
-  private pc: RTCPeerConnection
-  private dataChannel: RTCDataChannel | null = null
+  private pc: RTCPeerConnectionLike
+  private dataChannel: RTCDataChannelLike | null = null
   private peerId: string
   private localId: string
   private peerDeviceName: string = 'Unknown'
@@ -172,14 +138,14 @@ class PeerConnection {
   }
 
   private setupEventHandlers(): void {
-    this.pc.onicecandidate = (event) => {
+    this.pc.onicecandidate = (event: RTCIceEvent) => {
       if (event.candidate) {
         console.log('[WebRTC] ICE candidate generated')
       }
     }
 
     this.pc.onconnectionstatechange = () => {
-      const state = this.pc.connectionState
+      const state = this.pc.connectionState as RTCPeerConnectionState
       console.log('[WebRTC] Connection state:', state)
 
       if (state === 'connected' && !this.isConnected) {
@@ -193,13 +159,13 @@ class PeerConnection {
       }
     }
 
-    this.pc.ondatachannel = (event) => {
+    this.pc.ondatachannel = (event: RTCDataChannelEvent) => {
       console.log('[WebRTC] Received data channel')
       this.setupDataChannel(event.channel)
     }
   }
 
-  private setupDataChannel(channel: RTCDataChannel): void {
+  private setupDataChannel(channel: RTCDataChannelLike): void {
     this.dataChannel = channel
 
     channel.onopen = () => {
@@ -220,7 +186,7 @@ class PeerConnection {
       }
     }
 
-    channel.onmessage = (event) => {
+    channel.onmessage = (event: { data: unknown }) => {
       const data = event.data as string
       console.log('[WebRTC] Received message:', data.substring(0, 100))
 
@@ -239,7 +205,7 @@ class PeerConnection {
       this.onData?.(this.peerId, data)
     }
 
-    channel.onerror = (error) => {
+    channel.onerror = (error: unknown) => {
       console.error('[WebRTC] Data channel error:', error)
       this.onError?.(this.peerId, new Error('Data channel error'))
     }
@@ -248,7 +214,7 @@ class PeerConnection {
   /**
    * Create an offer to initiate connection
    */
-  async createOffer(localDeviceName: string): Promise<{ offer: RTCSessionDescriptionInit; iceCandidates: RTCIceCandidate[] }> {
+  async createOffer(localDeviceName: string): Promise<{ offer: RTCSessionDescriptionInit; iceCandidates: RTCIceCandidateLike[] }> {
     // Create data channel before creating offer
     const channel = this.pc.createDataChannel('data', {
       ordered: true,
@@ -273,7 +239,7 @@ class PeerConnection {
   async handleOffer(
     offer: RTCSessionDescriptionInit,
     iceCandidates: RTCIceCandidateInit[]
-  ): Promise<{ answer: RTCSessionDescriptionInit; iceCandidates: RTCIceCandidate[] }> {
+  ): Promise<{ answer: RTCSessionDescriptionInit; iceCandidates: RTCIceCandidateLike[] }> {
     await this.pc.setRemoteDescription(new RTCSessionDescription(offer))
 
     // Add ICE candidates from offer
@@ -308,15 +274,15 @@ class PeerConnection {
   /**
    * Wait for ICE gathering to complete
    */
-  private gatherIceCandidates(): Promise<RTCIceCandidate[]> {
+  private gatherIceCandidates(): Promise<RTCIceCandidateLike[]> {
     return new Promise((resolve) => {
-      const candidates: RTCIceCandidate[] = []
+      const candidates: RTCIceCandidateLike[] = []
       const timeout = setTimeout(() => {
         console.log('[WebRTC] ICE gathering timed out with', candidates.length, 'candidates')
         resolve(candidates)
       }, 5000)
 
-      this.pc.onicecandidate = (event) => {
+      this.pc.onicecandidate = (event: RTCIceEvent) => {
         if (event.candidate) {
           candidates.push(event.candidate)
         } else {
@@ -604,12 +570,28 @@ export class WebRTCTransport extends EventEmitter {
     }
 
     if (message.type === 'offer') {
-      // Received an offer, create answer
-      let peer = this.peers.get(message.from)
-      if (!peer) {
-        peer = this.createPeerConnection(message.from)
-        this.peers.set(message.from, peer)
+      // Handle WebRTC glare: both devices sent offers simultaneously
+      // The device with the smaller ID is "polite" and accepts the remote offer
+      // The device with the larger ID is "impolite" and ignores the remote offer
+      const existingPeer = this.peers.get(message.from)
+      const isPolite = this.deviceId < message.from
+
+      if (existingPeer && existingPeer.getState() !== 'connected') {
+        // We have an existing connection attempt (we sent an offer)
+        if (!isPolite) {
+          // We're impolite - ignore this offer, wait for answer to our offer
+          console.log('[WebRTCTransport] Glare: ignoring offer (we are impolite)')
+          return
+        }
+        // We're polite - close our attempt and accept their offer
+        console.log('[WebRTCTransport] Glare: accepting offer (we are polite)')
+        existingPeer.close()
+        this.peers.delete(message.from)
       }
+
+      // Create new peer connection and respond with answer
+      const peer = this.createPeerConnection(message.from)
+      this.peers.set(message.from, peer)
 
       // Set peer device name from offer
       if (payload.deviceName) {
@@ -672,19 +654,51 @@ export class WebRTCTransport extends EventEmitter {
   }
 
   /**
-   * Send sync response to a peer
+   * Send sync response to a peer in chunks
+   * WebRTC data channels have message size limits (~256KB typically)
+   * so we chunk large responses to avoid buffer overflow
    */
   async sendSyncResponse(events: SyncEvent[], done: boolean): Promise<void> {
-    const message = JSON.stringify({
-      type: 'sync_response',
-      events,
-      done,
-    })
+    // Chunk events to keep message size reasonable (target ~50KB per message)
+    const CHUNK_SIZE = 50 // events per chunk
+    const chunks: SyncEvent[][] = []
 
-    // Send to all connected peers (the one that requested will receive it)
-    for (const [, peer] of Array.from(this.peers.entries())) {
-      if (peer.getState() === 'connected') {
-        peer.send(message)
+    for (let i = 0; i < events.length; i += CHUNK_SIZE) {
+      chunks.push(events.slice(i, i + CHUNK_SIZE))
+    }
+
+    if (chunks.length === 0) {
+      chunks.push([]) // Send empty response if no events
+    }
+
+    console.log('[WebRTCTransport] Sending sync response:', events.length, 'events in', chunks.length, 'chunks')
+
+    // Send each chunk with a small delay to avoid overwhelming the channel
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]
+      const isLastChunk = i === chunks.length - 1
+
+      const message = JSON.stringify({
+        type: 'sync_response',
+        events: chunk,
+        chunkIndex: i,
+        totalChunks: chunks.length,
+        done: isLastChunk && done,
+      })
+
+      // Send to all connected peers
+      for (const [peerId, peer] of Array.from(this.peers.entries())) {
+        if (peer.getState() === 'connected') {
+          const sent = peer.send(message)
+          if (!sent) {
+            console.error('[WebRTCTransport] Failed to send chunk', i, 'to', peerId.slice(0, 8))
+          }
+        }
+      }
+
+      // Small delay between chunks to prevent buffer overflow
+      if (!isLastChunk) {
+        await new Promise(resolve => setTimeout(resolve, 10))
       }
     }
   }

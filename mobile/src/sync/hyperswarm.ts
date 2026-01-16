@@ -5,7 +5,7 @@
  * Falls back to simulation mode when WebRTC is not available.
  */
 
-import { WebRTCSwarm, SignalingProvider } from './webrtc'
+import { WebRTCSwarm, SignalingProvider, isWebRTCAvailable } from "./webrtc";
 
 export enum EventType {
   Ready = 0,
@@ -16,87 +16,80 @@ export enum EventType {
 }
 
 export interface SwarmEvent {
-  swarmId: number
-  type: EventType
-  peerId?: string
-  data?: string
-  address?: string
-  message?: string
+  swarmId: number;
+  type: EventType;
+  peerId?: string;
+  data?: string;
+  address?: string;
+  message?: string;
 }
 
 export interface SwarmConfig {
-  deviceId: string
-  signaling?: SignalingProvider
+  deviceId: string;
+  signaling?: SignalingProvider;
 }
 
-export type EventHandler = (event: SwarmEvent) => void
-
-// Check if WebRTC is available
-let isWebRTCAvailable = false
-try {
-  const { RTCPeerConnection } = require('react-native-webrtc')
-  isWebRTCAvailable = !!RTCPeerConnection
-} catch (e) {
-  isWebRTCAvailable = false
-}
+export type EventHandler = (event: SwarmEvent) => void;
 
 /**
  * P2P Swarm instance for peer networking
  * Uses WebRTC for actual P2P connections, falls back to simulation
  */
 export class Hyperswarm {
-  private swarmId: number | null = null
-  private handlers: Map<EventType, Set<EventHandler>> = new Map()
-  private deviceId: string = ''
-  private simulatedPeers: Set<string> = new Set()
-  private webrtcSwarm: WebRTCSwarm | null = null
-  private signaling: SignalingProvider | null = null
-  private isSimulated: boolean = !isWebRTCAvailable
+  private swarmId: number | null = null;
+  private handlers: Map<EventType, Set<EventHandler>> = new Map();
+  private deviceId: string = "";
+  private simulatedPeers: Set<string> = new Set();
+  private webrtcSwarm: WebRTCSwarm | null = null;
+  private signaling: SignalingProvider | null = null;
+  private isSimulated: boolean = !isWebRTCAvailable;
 
   /**
    * Check if WebRTC P2P is available
    */
   static isAvailable(): boolean {
-    return isWebRTCAvailable
+    return isWebRTCAvailable;
   }
 
   /**
    * Create and initialize a new swarm
    */
   async create(config: SwarmConfig): Promise<void> {
-    this.deviceId = config.deviceId
-    this.signaling = config.signaling || null
-    console.log('[Hyperswarm] create() called, deviceId:', config.deviceId)
-    console.log('[Hyperswarm] WebRTC available:', isWebRTCAvailable)
-    console.log('[Hyperswarm] Signaling provider:', !!this.signaling)
+    this.deviceId = config.deviceId;
+    this.signaling = config.signaling || null;
+    console.log("[Hyperswarm] create() called, deviceId:", config.deviceId);
+    console.log("[Hyperswarm] WebRTC available:", isWebRTCAvailable);
+    console.log("[Hyperswarm] Signaling provider:", !!this.signaling);
 
     if (!isWebRTCAvailable || !this.signaling) {
-      console.log('[Hyperswarm] Running in simulation mode (WebRTC or signaling not available)')
-      this.isSimulated = true
-      this.swarmId = Date.now()
-      return
+      console.log(
+        "[Hyperswarm] Running in simulation mode (WebRTC or signaling not available)",
+      );
+      this.isSimulated = true;
+      this.swarmId = Date.now();
+      return;
     }
 
-    this.isSimulated = false
-    this.swarmId = Date.now()
+    this.isSimulated = false;
+    this.swarmId = Date.now();
 
     // Create WebRTC swarm
-    this.webrtcSwarm = new WebRTCSwarm(this.deviceId)
-    this.webrtcSwarm.setSignaling(this.signaling)
+    this.webrtcSwarm = new WebRTCSwarm(this.deviceId);
+    this.webrtcSwarm.setSignaling(this.signaling);
     this.webrtcSwarm.setEvents({
       onConnected: (peerId) => {
         this.emitEvent({
           swarmId: this.swarmId!,
           type: EventType.PeerConnected,
           peerId,
-        })
+        });
       },
       onDisconnected: (peerId) => {
         this.emitEvent({
           swarmId: this.swarmId!,
           type: EventType.PeerDisconnected,
           peerId,
-        })
+        });
       },
       onData: (peerId, data) => {
         this.emitEvent({
@@ -104,7 +97,7 @@ export class Hyperswarm {
           type: EventType.Data,
           peerId,
           data,
-        })
+        });
       },
       onError: (peerId, error) => {
         this.emitEvent({
@@ -112,37 +105,37 @@ export class Hyperswarm {
           type: EventType.Error,
           peerId,
           message: error.message,
-        })
+        });
       },
-    })
+    });
   }
 
   /**
    * Start the swarm (begin listening and connecting)
    */
   async start(): Promise<void> {
-    if (!this.swarmId) throw new Error('Swarm not created')
+    if (!this.swarmId) throw new Error("Swarm not created");
 
-    console.log('[Hyperswarm] Starting swarm, simulated:', this.isSimulated)
+    console.log("[Hyperswarm] Starting swarm, simulated:", this.isSimulated);
 
     // Emit ready event
     setTimeout(() => {
       this.emitEvent({
         swarmId: this.swarmId!,
         type: EventType.Ready,
-      })
-    }, 100)
+      });
+    }, 100);
   }
 
   /**
    * Stop the swarm
    */
   async stop(): Promise<void> {
-    if (!this.swarmId) return
-    console.log('[Hyperswarm] Swarm stopped')
+    if (!this.swarmId) return;
+    console.log("[Hyperswarm] Swarm stopped");
 
     if (this.webrtcSwarm) {
-      await this.webrtcSwarm.leave()
+      await this.webrtcSwarm.leave();
     }
   }
 
@@ -151,27 +144,27 @@ export class Hyperswarm {
    */
   async destroy(): Promise<void> {
     if (this.webrtcSwarm) {
-      this.webrtcSwarm.destroy()
-      this.webrtcSwarm = null
+      this.webrtcSwarm.destroy();
+      this.webrtcSwarm = null;
     }
 
-    this.swarmId = null
-    this.handlers.clear()
-    this.simulatedPeers.clear()
+    this.swarmId = null;
+    this.handlers.clear();
+    this.simulatedPeers.clear();
   }
 
   /**
    * Join a topic for peer discovery
    */
   async join(topic: string): Promise<void> {
-    if (!this.swarmId) throw new Error('Swarm not created')
+    if (!this.swarmId) throw new Error("Swarm not created");
 
-    console.log('[Hyperswarm] Joining topic:', topic)
+    console.log("[Hyperswarm] Joining topic:", topic);
 
     if (this.webrtcSwarm) {
-      await this.webrtcSwarm.join(topic)
+      await this.webrtcSwarm.join(topic);
     } else {
-      console.log('[Hyperswarm] Joined topic (simulated)')
+      console.log("[Hyperswarm] Joined topic (simulated)");
     }
   }
 
@@ -179,12 +172,12 @@ export class Hyperswarm {
    * Leave a topic
    */
   async leave(topic: string): Promise<void> {
-    if (!this.swarmId) throw new Error('Swarm not created')
+    if (!this.swarmId) throw new Error("Swarm not created");
 
-    console.log('[Hyperswarm] Leaving topic:', topic)
+    console.log("[Hyperswarm] Leaving topic:", topic);
 
     if (this.webrtcSwarm) {
-      await this.webrtcSwarm.leave()
+      await this.webrtcSwarm.leave();
     }
   }
 
@@ -192,12 +185,16 @@ export class Hyperswarm {
    * Send data to a specific peer
    */
   async send(peerId: string, data: string): Promise<void> {
-    if (!this.swarmId) throw new Error('Swarm not created')
+    if (!this.swarmId) throw new Error("Swarm not created");
 
     if (this.webrtcSwarm) {
-      this.webrtcSwarm.send(peerId, data)
+      this.webrtcSwarm.send(peerId, data);
     } else {
-      console.log('[Hyperswarm] Send to peer (simulated):', peerId, data.substring(0, 50))
+      console.log(
+        "[Hyperswarm] Send to peer (simulated):",
+        peerId,
+        data.substring(0, 50),
+      );
     }
   }
 
@@ -205,12 +202,12 @@ export class Hyperswarm {
    * Broadcast data to all connected peers
    */
   async broadcast(data: string): Promise<void> {
-    if (!this.swarmId) throw new Error('Swarm not created')
+    if (!this.swarmId) throw new Error("Swarm not created");
 
     if (this.webrtcSwarm) {
-      this.webrtcSwarm.broadcast(data)
+      this.webrtcSwarm.broadcast(data);
     } else {
-      console.log('[Hyperswarm] Broadcast (simulated):', data.substring(0, 50))
+      console.log("[Hyperswarm] Broadcast (simulated):", data.substring(0, 50));
     }
   }
 
@@ -218,27 +215,27 @@ export class Hyperswarm {
    * Get the local peer ID
    */
   async getLocalPeerId(): Promise<string> {
-    if (!this.swarmId) throw new Error('Swarm not created')
-    return this.deviceId
+    if (!this.swarmId) throw new Error("Swarm not created");
+    return this.deviceId;
   }
 
   /**
    * Get the number of connected peers
    */
   async getPeerCount(): Promise<number> {
-    if (!this.swarmId) throw new Error('Swarm not created')
+    if (!this.swarmId) throw new Error("Swarm not created");
 
     if (this.webrtcSwarm) {
-      return this.webrtcSwarm.getPeerCount()
+      return this.webrtcSwarm.getPeerCount();
     }
-    return this.simulatedPeers.size
+    return this.simulatedPeers.size;
   }
 
   /**
    * Check if running in simulation mode
    */
   isSimulationMode(): boolean {
-    return this.isSimulated
+    return this.isSimulated;
   }
 
   /**
@@ -246,14 +243,14 @@ export class Hyperswarm {
    */
   on(eventType: EventType, handler: EventHandler): () => void {
     if (!this.handlers.has(eventType)) {
-      this.handlers.set(eventType, new Set())
+      this.handlers.set(eventType, new Set());
     }
-    this.handlers.get(eventType)!.add(handler)
+    this.handlers.get(eventType)!.add(handler);
 
     // Return unsubscribe function
     return () => {
-      this.handlers.get(eventType)?.delete(handler)
-    }
+      this.handlers.get(eventType)?.delete(handler);
+    };
   }
 
   /**
@@ -266,23 +263,23 @@ export class Hyperswarm {
       this.on(EventType.PeerDisconnected, handler),
       this.on(EventType.Data, handler),
       this.on(EventType.Error, handler),
-    ]
+    ];
 
     return () => {
-      unsubscribers.forEach((unsub) => unsub())
-    }
+      unsubscribers.forEach((unsub) => unsub());
+    };
   }
 
   private emitEvent(event: SwarmEvent): void {
-    const handlers = this.handlers.get(event.type)
+    const handlers = this.handlers.get(event.type);
     if (handlers) {
       handlers.forEach((handler) => {
         try {
-          handler(event)
+          handler(event);
         } catch (e) {
-          console.error('[Hyperswarm] Error in event handler:', e)
+          console.error("[Hyperswarm] Error in event handler:", e);
         }
-      })
+      });
     }
   }
 
@@ -292,52 +289,52 @@ export class Hyperswarm {
    * Simulate a peer connection (for testing)
    */
   simulatePeerConnect(peerId: string): void {
-    if (!this.isSimulated) return
+    if (!this.isSimulated) return;
 
-    this.simulatedPeers.add(peerId)
+    this.simulatedPeers.add(peerId);
     this.emitEvent({
       swarmId: this.swarmId!,
       type: EventType.PeerConnected,
       peerId,
-    })
+    });
   }
 
   /**
    * Simulate a peer disconnection (for testing)
    */
   simulatePeerDisconnect(peerId: string): void {
-    if (!this.isSimulated) return
+    if (!this.isSimulated) return;
 
-    this.simulatedPeers.delete(peerId)
+    this.simulatedPeers.delete(peerId);
     this.emitEvent({
       swarmId: this.swarmId!,
       type: EventType.PeerDisconnected,
       peerId,
-    })
+    });
   }
 
   /**
    * Simulate receiving data (for testing)
    */
   simulateData(peerId: string, data: string): void {
-    if (!this.isSimulated) return
+    if (!this.isSimulated) return;
 
     this.emitEvent({
       swarmId: this.swarmId!,
       type: EventType.Data,
       peerId,
       data,
-    })
+    });
   }
 }
 
 /**
- * Create a topic hash from a family ID
- * Must match desktop implementation: SHA256 hash of "homeschool:family:{familyId}"
+ * Create a topic from a family ID
+ * Must match desktop implementation: use the familyId directly for presence/signaling
  */
 export function createTopic(familyId: string): string {
-  const topicString = `homeschool:family:${familyId}`
-  return topicString
+  // Use familyId directly to match desktop implementation
+  return familyId;
 }
 
-export default Hyperswarm
+export default Hyperswarm;
