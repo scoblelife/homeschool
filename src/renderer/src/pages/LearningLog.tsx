@@ -87,9 +87,9 @@ export default function Activities(): JSX.Element {
 
     try {
       // Get subject IDs from recent activities (first 10)
-      const recentSubjectIds = [
-        ...new Set(filteredActivities.slice(0, 10).map((a) => a.subjectId)),
-      ];
+      const recentSubjectIds = Array.from(
+        new Set(filteredActivities.slice(0, 10).map((a) => a.subjectId)),
+      );
 
       // Get subject names for filtering
       const subjectNames = recentSubjectIds

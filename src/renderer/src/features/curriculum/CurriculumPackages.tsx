@@ -329,7 +329,7 @@ export function CurriculumPackages() {
                     onClick={() => toggleSubject(subject.id)}
                     variant={
                       formData.subjectIds?.includes(subject.id)
-                        ? "default"
+                        ? "secondary"
                         : "outline"
                     }
                     size="sm"
@@ -350,7 +350,7 @@ export function CurriculumPackages() {
                     onClick={() => toggleGradeLevel(level.value)}
                     variant={
                       formData.gradeLevels?.includes(level.value)
-                        ? "default"
+                        ? "secondary"
                         : "outline"
                     }
                     size="sm"
