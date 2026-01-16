@@ -24,12 +24,9 @@ const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
   { value: "worksheet", label: "Worksheet", icon: "📝" },
   { value: "video", label: "Video", icon: "🎬" },
   { value: "reading", label: "Reading", icon: "📖" },
-  { value: "writing_print", label: "Writing (Print)", icon: "✏️" },
-  { value: "writing_cursive", label: "Writing (Cursive)", icon: "✍️" },
+  { value: "writing", label: "Writing", icon: "✏️" },
   { value: "hands_on", label: "Hands-on", icon: "🎨" },
-  { value: "game", label: "Game", icon: "🎮" },
-  { value: "assessment", label: "Assessment", icon: "📋" },
-  { value: "field_trip", label: "Field Trip", icon: "🚌" },
+  { value: "interactive", label: "Interactive", icon: "🎮" },
 ];
 
 export default function Activities(): JSX.Element {

@@ -13,11 +13,10 @@ import type {
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
-import { Modal } from "../components/ui/Modal";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
 
-type StatusFilter = "all" | "not_started" | "reading" | "finished";
+type StatusFilter = "all" | "not_started" | "in_progress" | "completed";
 
 const statusLabels: Record<
   ReadingStatus,
@@ -28,12 +27,12 @@ const statusLabels: Record<
     color: "text-gray-600",
     bg: "bg-gray-100",
   },
-  reading: {
+  in_progress: {
     label: "Reading",
     color: "text-student-blue-600",
     bg: "bg-student-blue-100",
   },
-  finished: {
+  completed: {
     label: "Finished",
     color: "text-status-success",
     bg: "bg-status-successLight",
@@ -100,7 +99,7 @@ function BookCard({
         {/* Quick Actions Overlay */}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
           <div className="flex gap-2">
-            {studentId && status !== "finished" && book.totalPages && (
+            {studentId && status !== "completed" && book.totalPages && (
               <button
                 onClick={onLogReading}
                 className="px-3 py-2 bg-white rounded-lg text-sm font-medium text-gray-900 hover:bg-gray-100 transition-colors shadow-lg"
@@ -131,7 +130,7 @@ function BookCard({
         </div>
 
         {/* Progress Ring for books being read */}
-        {studentId && status === "reading" && book.totalPages && (
+        {studentId && status === "in_progress" && book.totalPages && (
           <div className="absolute bottom-2 left-2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
             <svg className="w-8 h-8 -rotate-90">
               <circle
@@ -205,7 +204,7 @@ function BookCard({
                 <div className="w-full bg-gray-100 rounded-full h-1.5">
                   <div
                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                      status === "finished"
+                      status === "completed"
                         ? "bg-status-success"
                         : "bg-brand-primary"
                     }`}
@@ -224,8 +223,8 @@ function BookCard({
                 className="text-xs border-0 bg-gray-100 rounded-lg px-2 py-1.5 text-gray-700 focus:ring-2 focus:ring-brand-primary"
               >
                 <option value="not_started">Not Started</option>
-                <option value="reading">Reading</option>
-                <option value="finished">Finished</option>
+                <option value="in_progress">Reading</option>
+                <option value="completed">Finished</option>
               </select>
 
               {/* More Menu */}
@@ -374,16 +373,16 @@ export default function Library(): JSX.Element {
 
   const stats = useMemo(() => {
     const total = books.length;
-    const finished = books.filter(
-      (b) => b.studentProgress?.status === "finished",
+    const completed = books.filter(
+      (b) => b.studentProgress?.status === "completed",
     ).length;
-    const reading = books.filter(
-      (b) => b.studentProgress?.status === "reading",
+    const in_progress = books.filter(
+      (b) => b.studentProgress?.status === "in_progress",
     ).length;
     const notStarted = books.filter(
       (b) => !b.studentProgress || b.studentProgress.status === "not_started",
     ).length;
-    return { total, finished, reading, notStarted };
+    return { total, completed, in_progress, notStarted };
   }, [books]);
 
   const openAddModal = () => {
@@ -500,13 +499,13 @@ export default function Library(): JSX.Element {
             </div>
             <div>
               <div className="text-2xl font-bold text-status-success">
-                {stats.finished}
+                {stats.completed}
               </div>
               <div className="text-sm text-gray-500">Finished</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-student-blue-600">
-                {stats.reading}
+                {stats.in_progress}
               </div>
               <div className="text-sm text-gray-500">Reading</div>
             </div>
@@ -533,7 +532,7 @@ export default function Library(): JSX.Element {
         {selectedStudentId && (
           <div className="flex gap-1">
             {(
-              ["all", "not_started", "reading", "finished"] as StatusFilter[]
+              ["all", "not_started", "in_progress", "completed"] as StatusFilter[]
             ).map((status) => (
               <button
                 key={status}
@@ -548,7 +547,7 @@ export default function Library(): JSX.Element {
                   ? "All"
                   : status === "not_started"
                     ? "Not Started"
-                    : status === "reading"
+                    : status === "in_progress"
                       ? "Reading"
                       : "Finished"}
               </button>

@@ -4,6 +4,7 @@ import { Tab } from "@headlessui/react";
 import { useStore } from "../stores/useStore";
 import { useMilestones } from "../hooks/useDatabase";
 import { MilestoneCertificate } from "../features/certificates";
+import { universalStatusConfig as statusLabels } from "../config/statusLabels";
 import type {
   Milestone,
   UpdateMilestone,
@@ -18,28 +19,7 @@ import { Modal } from "../components/ui/Modal";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
 
-type StatusFilter = "all" | "not_started" | "in_progress" | "completed";
-
-const statusLabels: Record<
-  Milestone["status"],
-  { label: string; color: string; bg: string }
-> = {
-  not_started: {
-    label: "Not Started",
-    color: "text-gray-600",
-    bg: "bg-gray-100",
-  },
-  in_progress: {
-    label: "In Progress",
-    color: "text-status-warning",
-    bg: "bg-status-warningLight",
-  },
-  completed: {
-    label: "Completed",
-    color: "text-status-success",
-    bg: "bg-status-successLight",
-  },
-};
+type StatusFilter = "all" | "not_started" | "in_progress" | "completed" | "cancelled";
 
 function MilestoneCard({
   milestone,
@@ -176,7 +156,7 @@ function MilestoneCard({
                       </button>
                       <button
                         onClick={() => handleDeleteResource(resource.id)}
-                        className="text-red-500 hover:text-red-700 text-xs"
+                        className="text-status-error hover:text-status-errorDark text-xs"
                       >
                         Delete
                       </button>

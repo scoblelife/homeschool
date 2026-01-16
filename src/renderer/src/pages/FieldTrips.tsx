@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { format, parseISO, isPast, isFuture, isToday, addDays } from "date-fns";
 
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
-import { Badge } from "../components/ui/Badge";
 import { Modal } from "../components/ui/Modal";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
@@ -17,16 +16,14 @@ const toDate = (date: string | Date): Date => {
 import { useStore } from "../stores/useStore";
 import {
   MapLink,
-  MapButton,
   ShareButton,
   LinkedActivities,
-  LinkedCountBadge,
 } from "../features/fieldTrips";
 import type {
   FieldTrip,
   CreateFieldTrip,
-  FieldTripStatus,
-  EventActivityType,
+  UniversalStatus,
+  EventCategory,
   ActivityTask,
   CreateActivityTask,
   TaskPhase,
@@ -41,16 +38,21 @@ import type {
   ExpenseCategory,
 } from "../../../shared/types";
 
-type StatusFilter = "all" | "planned" | "completed" | "cancelled";
+type StatusFilter = "all" | "not_started" | "in_progress" | "completed" | "cancelled";
 
 const statusLabels: Record<
-  FieldTripStatus,
+  UniversalStatus,
   { label: string; color: string; bg: string }
 > = {
-  planned: {
-    label: "Planned",
-    color: "text-student-blue-600",
-    bg: "bg-student-blue-100",
+  not_started: {
+    label: "Not Started",
+    color: "text-gray-600",
+    bg: "bg-gray-100",
+  },
+  in_progress: {
+    label: "In Progress",
+    color: "text-status-warning",
+    bg: "bg-status-warningLight",
   },
   completed: {
     label: "Completed",
@@ -60,73 +62,56 @@ const statusLabels: Record<
   cancelled: { label: "Cancelled", color: "text-gray-600", bg: "bg-gray-100" },
 };
 
-const activityTypeConfig: Record<
-  EventActivityType,
-  { icon: string; label: string; color: string; bg: string }
+const eventCategoryConfig: Record<
+  EventCategory,
+  { icon: string; label: string; color: string; bg: string; description: string }
 > = {
-  field_trip: {
-    icon: "🚌",
-    label: "Field Trip",
-    color: "text-status-warning",
-    bg: "bg-status-warningLight",
-  },
-  park_day: {
-    icon: "🌳",
-    label: "Park Day",
-    color: "text-status-successDark",
-    bg: "bg-status-successLight",
-  },
-  game_night: {
-    icon: "🎲",
-    label: "Game Night",
-    color: "text-student-purple-700",
-    bg: "bg-student-purple-100",
-  },
-  playdate: {
-    icon: "👋",
-    label: "Playdate",
-    color: "text-student-fuchsia-700",
-    bg: "bg-student-fuchsia-100",
-  },
-  coop_class: {
+  educational: {
     icon: "📚",
-    label: "Co-op Class",
+    label: "Educational",
     color: "text-student-blue-700",
     bg: "bg-student-blue-100",
+    description: "Field trips, museum visits, science centers, co-op classes"
   },
-  custom: {
-    icon: "📅",
-    label: "Other",
-    color: "text-gray-700",
-    bg: "bg-gray-100",
+  social: {
+    icon: "🌳",
+    label: "Social",
+    color: "text-status-successDark",
+    bg: "bg-status-successLight",
+    description: "Park days, playdates, game nights"
   },
+  coop: {
+    icon: "👥",
+    label: "Co-op",
+    color: "text-student-purple-700",
+    bg: "bg-student-purple-100",
+    description: "Co-op classes, group activities"
+  }
 };
 
 const phaseLabels: Record<TaskPhase, { label: string; icon: string }> = {
-  pre: { label: "Before", icon: "📋" },
-  day_of: { label: "Day Of", icon: "📍" },
-  post: { label: "After", icon: "✨" },
+  before: { label: "Before", icon: "📋" },
+  during: { label: "During", icon: "📍" },
+  after: { label: "After", icon: "✨" },
 };
 
 const contactRoleLabels: Record<ContactRole, string> = {
   venue: "Venue",
-  organizer: "Organizer",
+  coordinator: "Coordinator",
   emergency: "Emergency",
-  other: "Other",
 };
 
 const rsvpStatusLabels: Record<
   RSVPStatus,
   { label: string; color: string; bg: string }
 > = {
-  invited: { label: "Invited", color: "text-gray-600", bg: "bg-gray-100" },
-  confirmed: {
-    label: "Confirmed",
+  yes: {
+    label: "Yes",
     color: "text-status-success",
     bg: "bg-status-successLight",
   },
-  declined: {
-    label: "Declined",
+  no: {
+    label: "No",
     color: "text-status-error",
     bg: "bg-status-errorLight",
   },
@@ -137,11 +122,10 @@ const rsvpStatusLabels: Record<
   },
 };
 
-// Activity types that show RSVP section (group events)
-const groupActivityTypes: EventActivityType[] = [
-  "park_day",
-  "game_night",
-  "coop_class",
+// Event categories that show RSVP section (group events)
+const groupEventCategories: EventCategory[] = [
+  "social",
+  "coop",
 ];
 
 const expenseCategoryLabels: Record<
@@ -150,9 +134,8 @@ const expenseCategoryLabels: Record<
 > = {
   admission: { label: "Admission", icon: "🎟️" },
   food: { label: "Food", icon: "🍕" },
-  supplies: { label: "Supplies", icon: "📦" },
-  transportation: { label: "Transportation", icon: "🚗" },
-  other: { label: "Other", icon: "📝" },
+  materials: { label: "Materials", icon: "📦" },
+  travel: { label: "Travel", icon: "🚗" },
 };
 
 function FieldTripCard({
@@ -227,12 +210,12 @@ function FieldTripCard({
   onUnlinkActivity: (activityId: string) => Promise<void>;
 }) {
   const statusInfo = statusLabels[trip.status];
-  const activityConfig =
-    activityTypeConfig[trip.activityType] || activityTypeConfig.field_trip;
+  const categoryConfig =
+    eventCategoryConfig[trip.eventCategory] || eventCategoryConfig.educational;
   const tripDate = toDate(trip.date);
   const isUpcoming = isFuture(tripDate) || isToday(tripDate);
   const isPastTrip = isPast(tripDate) && !isToday(tripDate);
-  const showRSVP = groupActivityTypes.includes(trip.activityType);
+  const showRSVP = groupEventCategories.includes(trip.eventCategory);
 
   const tripStudents = students.filter((s) => trip.studentIds.includes(s.id));
   const tripSubjects = subjects.filter((s) => trip.subjectIds.includes(s.id));
@@ -328,9 +311,9 @@ function FieldTripCard({
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <span
-              className={`text-sm px-2 py-0.5 rounded-full ${activityConfig.bg} ${activityConfig.color}`}
+              className={`text-sm px-2 py-0.5 rounded-full ${categoryConfig.bg} ${categoryConfig.color}`}
             >
-              {activityConfig.icon} {activityConfig.label}
+              {categoryConfig.icon} {categoryConfig.label}
             </span>
             <h3 className="font-medium text-gray-900">{trip.title}</h3>
             <span
@@ -418,7 +401,7 @@ function FieldTripCard({
           )}
 
           {/* Alert for past unfinished activities */}
-          {isPastTrip && trip.status === "planned" && (
+          {isPastTrip && trip.status === "not_started" && (
             <p className="text-sm text-status-warning mt-2">
               ⚠️ This activity date has passed. Update the status to completed
               or cancelled.
@@ -453,7 +436,7 @@ function FieldTripCard({
             onChange={(e) => onStatusChange(e.target.value as FieldTripStatus)}
             className="text-sm border border-gray-300 rounded-lg px-2 py-1"
           >
-            <option value="planned">Planned</option>
+            <option value="not_started">Planned</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
@@ -1016,13 +999,14 @@ export default function FieldTrips(): JSX.Element {
 
   const [formData, setFormData] = useState<CreateFieldTrip>({
     title: "",
-    activityType: "field_trip",
+    activityType: "interactive",
+    eventCategory: "educational",
     location: "",
     description: "",
     date: format(new Date(), "yyyy-MM-dd"),
     startTime: "",
     endTime: "",
-    status: "planned",
+    status: "not_started",
     studentIds: [],
     subjectIds: [],
     cost: undefined,
@@ -1083,26 +1067,27 @@ export default function FieldTrips(): JSX.Element {
 
   const stats = useMemo(() => {
     const total = trips.length;
-    const planned = trips.filter((t) => t.status === "planned").length;
+    const not_started = trips.filter((t) => t.status === "not_started").length;
     const completed = trips.filter((t) => t.status === "completed").length;
     const upcoming = trips.filter(
       (t) =>
-        t.status === "planned" &&
+        t.status === "not_started" &&
         (isFuture(toDate(t.date)) || isToday(toDate(t.date))),
     ).length;
-    return { total, planned, completed, upcoming };
+    return { total, not_started, completed, upcoming };
   }, [trips]);
 
   const openAddModal = () => {
     setFormData({
       title: "",
-      activityType: "field_trip",
+      activityType: "interactive",
+      eventCategory: "educational",
       location: "",
       description: "",
       date: format(new Date(), "yyyy-MM-dd"),
       startTime: "",
       endTime: "",
-      status: "planned",
+      status: "not_started",
       studentIds: selectedStudentId ? [selectedStudentId] : [],
       subjectIds: [],
       cost: undefined,
@@ -1386,7 +1371,7 @@ export default function FieldTrips(): JSX.Element {
           </div>
           <div>
             <div className="text-2xl font-bold text-status-warning">
-              {stats.planned}
+              {stats.not_started}
             </div>
             <div className="text-sm text-gray-500">Planned</div>
           </div>
@@ -1394,7 +1379,7 @@ export default function FieldTrips(): JSX.Element {
       </Card>
       {/* Filters */}
       <div className="flex gap-1 mb-6">
-        {(["all", "planned", "completed", "cancelled"] as StatusFilter[]).map(
+        {(["all", "not_started", "completed", "cancelled"] as StatusFilter[]).map(
           (status) => (
             <button
               key={status}
@@ -1417,7 +1402,7 @@ export default function FieldTrips(): JSX.Element {
         <Card className="text-center py-12">
           <p className="text-gray-500">
             {trips.length === 0
-              ? "No activities planned yet. Start by planning your first activity!"
+              ? "No activities not_started yet. Start by planning your first activity!"
               : "No activities match your filter."}
           </p>
         </Card>
@@ -1493,19 +1478,19 @@ export default function FieldTrips(): JSX.Element {
             </label>
             <div className="grid grid-cols-3 gap-2">
               {(
-                Object.entries(activityTypeConfig) as [
-                  EventActivityType,
-                  typeof activityTypeConfig.field_trip,
+                Object.entries(eventCategoryConfig) as [
+                  EventCategory,
+                  typeof eventCategoryConfig.educational,
                 ][]
-              ).map(([type, config]) => (
+              ).map(([category, config]) => (
                 <button
-                  key={type}
+                  key={category}
                   type="button"
                   onClick={() =>
-                    setFormData({ ...formData, activityType: type })
+                    setFormData({ ...formData, eventCategory: category })
                   }
                   className={`p-2 rounded-lg text-center transition-all ${
-                    formData.activityType === type
+                    formData.eventCategory === category
                       ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
                       : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                   }`}

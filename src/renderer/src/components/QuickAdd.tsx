@@ -32,11 +32,9 @@ const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
   { value: 'worksheet', label: 'Worksheet', icon: '📝' },
   { value: 'video', label: 'Video', icon: '🎬' },
   { value: 'reading', label: 'Reading', icon: '📖' },
-  { value: 'writing_print', label: 'Print', icon: '✏️' },
-  { value: 'writing_cursive', label: 'Cursive', icon: '✍️' },
+  { value: 'writing', label: 'Writing', icon: '✏️' },
   { value: 'hands_on', label: 'Hands-on', icon: '🎨' },
-  { value: 'game', label: 'Game', icon: '🎮' },
-  { value: 'assessment', label: 'Test', icon: '📋' },
+  { value: 'interactive', label: 'Interactive', icon: '🎮' },
 ]
 
 // Default duration options in minutes
