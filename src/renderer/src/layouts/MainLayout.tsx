@@ -1,38 +1,30 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { useStore } from '../stores/useStore'
-import { SyncStatusIndicator } from '../components/sync'
-import { TimerIndicator } from '../features/timer'
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useStore } from "../stores/useStore";
+import { SyncStatusIndicator } from "../components/sync";
+import { TimerIndicator } from "../features/timer";
+import { Select } from "../components/ui/Input";
 
+// Simplified navigation - consolidated into logical groups
 const navItems = [
-  { path: '/', label: 'Dashboard', icon: '🏠' },
-  { path: '/log', label: 'Learning Log', icon: '📝' },
-  { path: '/milestones', label: 'Milestones', icon: '🎯' },
-  { path: '/weekly-planner', label: 'Weekly Plan', icon: '📋' },
-  { path: '/weekly-summary', label: 'Weekly Summary', icon: '📈' },
-  { path: '/attendance', label: 'Attendance', icon: '✓' },
-  { path: '/curriculum', label: 'Curriculum', icon: '📐' },
-  { path: '/hour-tracking', label: 'Hour Tracking', icon: '⏱️' },
-  { path: '/templates', label: 'Templates', icon: '🗃️' },
-  { path: '/recommendations', label: 'Curricula', icon: '📖' },
-  { path: '/resources', label: 'Resources', icon: '🔗' },
-  { path: '/library', label: 'Library', icon: '📚' },
-  { path: '/field-trips', label: 'Activities', icon: '🎪' },
-  { path: '/coop', label: 'Co-op Groups', icon: '👥' },
-  { path: '/calendar', label: 'Calendar', icon: '📅' },
-  { path: '/reports', label: 'Reports', icon: '📊' },
-  { path: '/annual-report', label: 'Annual Report', icon: '📆' }
-]
+  { path: "/", label: "Dashboard", icon: "🏠" },
+  { path: "/log", label: "Learning Log", icon: "📝" },
+  { path: "/milestones", label: "Milestones", icon: "🎯" },
+  { path: "/calendar", label: "Calendar", icon: "📅" },
+  { path: "/curriculum", label: "Curriculum", icon: "📚" },
+  { path: "/reports", label: "Reports", icon: "📊" },
+];
 
 export default function MainLayout(): JSX.Element {
-  const { students, selectedStudentId, setSelectedStudentId, isLoading } = useStore()
-  const navigate = useNavigate()
+  const { students, selectedStudentId, setSelectedStudentId, isLoading } =
+    useStore();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-gray-500">Loading...</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -44,19 +36,20 @@ export default function MainLayout(): JSX.Element {
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-gray-900">Homeschool</h1>
             <div className="flex items-center gap-2">
-              <TimerIndicator onClick={() => navigate('/')} />
-              <SyncStatusIndicator onClick={() => navigate('/settings')} />
+              <TimerIndicator onClick={() => navigate("/")} />
+              <SyncStatusIndicator onClick={() => navigate("/settings")} />
             </div>
           </div>
         </div>
 
         {/* Child Selector */}
         <div className="p-4 border-b border-gray-200">
-          <label className="label">Student</label>
-          <select
-            value={selectedStudentId || ''}
+          <label className="block text-sm font-medium text-neutral-text mb-1">
+            Student
+          </label>
+          <Select
+            value={selectedStudentId || ""}
             onChange={(e) => setSelectedStudentId(e.target.value || null)}
-            className="input"
           >
             <option value="">All Students</option>
             {students.map((student) => (
@@ -64,7 +57,7 @@ export default function MainLayout(): JSX.Element {
                 {student.name} ({student.gradeLevel})
               </option>
             ))}
-          </select>
+          </Select>
         </div>
 
         {/* Navigation */}
@@ -76,8 +69,8 @@ export default function MainLayout(): JSX.Element {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-fuchsia-50 text-fuchsia-700'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? "bg-fuchsia-50 text-fuchsia-700"
+                    : "text-gray-700 hover:bg-gray-100"
                 }`
               }
             >
@@ -87,28 +80,15 @@ export default function MainLayout(): JSX.Element {
           ))}
         </nav>
 
-        {/* Settings Links */}
-        <div className="p-4 border-t border-gray-200 space-y-1">
-          <NavLink
-            to="/api-services"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-fuchsia-50 text-fuchsia-700'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`
-            }
-          >
-            <span>🔌</span>
-            API Services
-          </NavLink>
+        {/* Settings */}
+        <div className="p-4 border-t border-gray-200">
           <NavLink
             to="/settings"
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 isActive
-                  ? 'bg-fuchsia-50 text-fuchsia-700'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? "bg-fuchsia-50 text-fuchsia-700"
+                  : "text-gray-700 hover:bg-gray-100"
               }`
             }
           >
@@ -123,5 +103,5 @@ export default function MainLayout(): JSX.Element {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }
