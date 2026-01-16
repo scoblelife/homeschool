@@ -9,6 +9,7 @@ export interface LearningResource {
   subjects: string[]
   gradeLevels: GradeLevel[]
   isFree: boolean
+  isSponsored?: boolean // True if this resource has a sponsorship partnership
   suggestedActivityType: ActivityType
   suggestedDuration: number // in minutes
   icon: string // emoji
@@ -27,6 +28,7 @@ export const LEARNING_RESOURCES: LearningResource[] = [
     subjects: ['math', 'science', 'reading', 'history', 'art'],
     gradeLevels: ['pre-k', 'k', '1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th', '11th', '12th'],
     isFree: true,
+    isSponsored: true,
     suggestedActivityType: 'video',
     suggestedDuration: 30,
     icon: '🎓',

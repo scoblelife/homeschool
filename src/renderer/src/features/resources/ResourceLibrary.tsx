@@ -281,9 +281,16 @@ function ResourceCard({
         <div className="flex items-center gap-2">
           <span className="text-2xl">{resource.icon}</span>
           <div>
-            <h3 className="font-medium text-gray-900 dark:text-white">
-              {resource.name}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-medium text-gray-900 dark:text-white">
+                {resource.name}
+              </h3>
+              {resource.isSponsored && (
+                <span className="text-xs px-2 py-0.5 bg-student-blue-50 dark:bg-student-blue-900/30 text-student-blue-600 dark:text-student-blue-300 rounded border border-student-blue-200 dark:border-student-blue-700">
+                  Partner
+                </span>
+              )}
+            </div>
             {resource.isFree && (
               <span className="text-xs text-green-600 dark:text-green-400">FREE</span>
             )}

@@ -668,6 +668,7 @@ export interface CurriculumPackage {
   gradeLevels: GradeLevel[]  // JSON array stored as string in DB
   websiteUrl?: string
   notes?: string
+  isSponsored?: boolean  // True if this curriculum has a sponsorship partnership
   isActive: boolean
   createdAt: string
   updatedAt: string

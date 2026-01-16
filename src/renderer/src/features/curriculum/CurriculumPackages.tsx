@@ -53,6 +53,7 @@ export function CurriculumPackages() {
     gradeLevels: [],
     websiteUrl: "",
     notes: "",
+    isSponsored: false,
     isActive: true,
   });
 
@@ -114,6 +115,7 @@ export function CurriculumPackages() {
       gradeLevels: pkg.gradeLevels,
       websiteUrl: pkg.websiteUrl || "",
       notes: pkg.notes || "",
+      isSponsored: pkg.isSponsored || false,
       isActive: pkg.isActive,
     });
     setShowAddForm(true);
@@ -137,6 +139,7 @@ export function CurriculumPackages() {
       gradeLevels: [],
       websiteUrl: "",
       notes: "",
+      isSponsored: false,
       isActive: true,
     });
     setEditingId(null);
@@ -183,6 +186,7 @@ export function CurriculumPackages() {
         ),
       websiteUrl: curriculum.url,
       notes: curriculum.description,
+      isSponsored: false,
       isActive: true,
     });
     setShowAddForm(true);
@@ -373,14 +377,24 @@ export function CurriculumPackages() {
               />
             </div>
 
-            <Checkbox
-              id="isActive"
-              checked={formData.isActive}
-              onChange={(e) =>
-                setFormData({ ...formData, isActive: e.target.checked })
-              }
-              label="Currently using this curriculum"
-            />
+            <div className="space-y-2">
+              <Checkbox
+                id="isActive"
+                checked={formData.isActive}
+                onChange={(e) =>
+                  setFormData({ ...formData, isActive: e.target.checked })
+                }
+                label="Currently using this curriculum"
+              />
+              <Checkbox
+                id="isSponsored"
+                checked={formData.isSponsored || false}
+                onChange={(e) =>
+                  setFormData({ ...formData, isSponsored: e.target.checked })
+                }
+                label="Sponsored partner (show Partner badge)"
+              />
+            </div>
 
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" onClick={resetForm} variant="outline">
@@ -427,6 +441,11 @@ export function CurriculumPackages() {
                       <h3 className="font-medium text-gray-900 dark:text-white">
                         {pkg.name}
                       </h3>
+                      {pkg.isSponsored && (
+                        <span className="px-2 py-0.5 text-xs bg-student-blue-50 dark:bg-student-blue-900/30 text-student-blue-600 dark:text-student-blue-300 rounded border border-student-blue-200 dark:border-student-blue-700">
+                          Partner
+                        </span>
+                      )}
                       {!pkg.isActive && (
                         <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
                           Inactive
