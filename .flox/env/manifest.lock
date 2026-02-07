@@ -15,8 +15,14 @@
       "nodejs_22": {
         "pkg-path": "nodejs_22"
       },
+      "pandoc": {
+        "pkg-path": "pandoc"
+      },
       "python3": {
         "pkg-path": "python3"
+      },
+      "texliveSmall": {
+        "pkg-path": "texliveSmall"
       }
     },
     "vars": {
@@ -536,6 +542,126 @@
       "priority": 5
     },
     {
+      "attr_path": "pandoc",
+      "broken": false,
+      "derivation": "/nix/store/f7v2nq5wvi9rcksyn57wdrd9vd824far-pandoc-cli-3.7.0.2.drv",
+      "description": "Conversion between documentation formats",
+      "install_id": "pandoc",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "pandoc-cli-3.7.0.2",
+      "pname": "pandoc",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:03:18.899400Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.7.0.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/pq3hcbr86l5hdi2b1dx60a7n46jzb25s-pandoc-cli-3.7.0.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "pandoc",
+      "broken": false,
+      "derivation": "/nix/store/slip9d82fff3x1ycxkjfrm7a8frg7w83-pandoc-cli-3.7.0.2.drv",
+      "description": "Conversion between documentation formats",
+      "install_id": "pandoc",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "pandoc-cli-3.7.0.2",
+      "pname": "pandoc",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:19:31.239890Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.7.0.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/cz73zr2ah6r4lv1brssxyi2g8fly51mx-pandoc-cli-3.7.0.2"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "pandoc",
+      "broken": false,
+      "derivation": "/nix/store/7lq93ywm5gq9l6dyck4rn01118sckgv6-pandoc-cli-3.7.0.2.drv",
+      "description": "Conversion between documentation formats",
+      "install_id": "pandoc",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "pandoc-cli-3.7.0.2",
+      "pname": "pandoc",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:35:15.781614Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.7.0.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/gyg7x70p0cn4kkaqg2gjjg3dah40a16k-pandoc-cli-3.7.0.2"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "pandoc",
+      "broken": false,
+      "derivation": "/nix/store/wllbslvwavl9jk3k00d8awyiknwf2jll-pandoc-cli-3.7.0.2.drv",
+      "description": "Conversion between documentation formats",
+      "install_id": "pandoc",
+      "license": "GPL-2.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "pandoc-cli-3.7.0.2",
+      "pname": "pandoc",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:51:29.052766Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "3.7.0.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/xhggc7yr5462kdvf5gpgv5zgg3mdkir6-pandoc-cli-3.7.0.2"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
       "attr_path": "python3",
       "broken": false,
       "derivation": "/nix/store/4lyx38kvkyv0w29n42zchi7kknxsj75j-python3-3.13.11.drv",
@@ -654,6 +780,138 @@
       "outputs": {
         "debug": "/nix/store/jzjb5519pa3fmarkvk0wj6swh0k1kqi6-python3-3.13.11-debug",
         "out": "/nix/store/qzc04a3npl70cyyy6flnnrb2ig3kayxm-python3-3.13.11"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "texliveSmall",
+      "broken": false,
+      "derivation": "/nix/store/98kiav1dd57sjc2bnbwfc1xjilx9vvpc-texlive-2025-env.drv",
+      "description": "TeX Live environment",
+      "install_id": "texliveSmall",
+      "license": "[ Apache-2.0, CC-BY-4.0, CC-BY-SA-4.0, CC0-1.0, EUPL-1.2, GFDL-1.3-only, Unspecified free software license, GUST Font License, GPL-1.0-only, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, Knuth-CTAN, LGPL-2.0, LGPL-2.1, LPPL-1.0, LPPL-1.2, LPPL-1.3c, MIT, OFL-1.1, Public Domain, X11 ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "texlive-2025-env",
+      "pname": "texliveSmall",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:05:08.138125Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2025-env",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/d64zv8vzihwak4h51gas3h5rqfwfwiyh-texlive-2025-env-info",
+        "man": "/nix/store/cwackp6ygifw383qbcb6bq5nka3l4di8-texlive-2025-env-man",
+        "out": "/nix/store/szwrni24zm6wcxn3xymd9qxh3acb32di-texlive-2025-env"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "texliveSmall",
+      "broken": false,
+      "derivation": "/nix/store/srl7jcfp8nbls45jcgsz0pc1cdb8hg9b-texlive-2025-env.drv",
+      "description": "TeX Live environment",
+      "install_id": "texliveSmall",
+      "license": "[ Apache-2.0, CC-BY-4.0, CC-BY-SA-4.0, CC0-1.0, EUPL-1.2, GFDL-1.3-only, Unspecified free software license, GUST Font License, GPL-1.0-only, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, Knuth-CTAN, LGPL-2.0, LGPL-2.1, LPPL-1.0, LPPL-1.2, LPPL-1.3c, MIT, OFL-1.1, Public Domain, X11 ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "texlive-2025-env",
+      "pname": "texliveSmall",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:21:24.432673Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2025-env",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/x8cwfy8k3ffky0qgx1q5v8jw998pipsc-texlive-2025-env-info",
+        "man": "/nix/store/8lf0rzrjyvvr9x292wjkx6kfijj3c81i-texlive-2025-env-man",
+        "out": "/nix/store/a21a83jy52pa71rnkk088jfjplavv4lg-texlive-2025-env"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "texliveSmall",
+      "broken": false,
+      "derivation": "/nix/store/j094cdmhmn3phlx5i1hmcll8lixv6wnf-texlive-2025-env.drv",
+      "description": "TeX Live environment",
+      "install_id": "texliveSmall",
+      "license": "[ Apache-2.0, CC-BY-4.0, CC-BY-SA-4.0, CC0-1.0, EUPL-1.2, GFDL-1.3-only, Unspecified free software license, GUST Font License, GPL-1.0-only, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, Knuth-CTAN, LGPL-2.0, LGPL-2.1, LPPL-1.0, LPPL-1.2, LPPL-1.3c, MIT, OFL-1.1, Public Domain, X11 ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "texlive-2025-env",
+      "pname": "texliveSmall",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:36:51.720457Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2025-env",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/m9gp4g2flnh7p3sy3cllf9lc9jai9zbw-texlive-2025-env-info",
+        "man": "/nix/store/41a6lqhhmckkhhkbfr0cw07vzfrg6nlz-texlive-2025-env-man",
+        "out": "/nix/store/8wna31cj3kl38pl0bfrkmfnzmmi253pa-texlive-2025-env"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "texliveSmall",
+      "broken": false,
+      "derivation": "/nix/store/ncx167g9gp01g5bkw9pzp3swwxfv7nfm-texlive-2025-env.drv",
+      "description": "TeX Live environment",
+      "install_id": "texliveSmall",
+      "license": "[ Apache-2.0, CC-BY-4.0, CC-BY-SA-4.0, CC0-1.0, EUPL-1.2, GFDL-1.3-only, Unspecified free software license, GUST Font License, GPL-1.0-only, GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, Knuth-CTAN, LGPL-2.0, LGPL-2.1, LPPL-1.0, LPPL-1.2, LPPL-1.3c, MIT, OFL-1.1, Public Domain, X11 ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=cad22e7d996aea55ecab064e84834289143e44a0",
+      "name": "texlive-2025-env",
+      "pname": "texliveSmall",
+      "rev": "cad22e7d996aea55ecab064e84834289143e44a0",
+      "rev_count": 919991,
+      "rev_date": "2025-12-30T17:40:09Z",
+      "scrape_date": "2026-01-02T03:53:24.919038Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2025-env",
+      "outputs_to_install": [
+        "man",
+        "out"
+      ],
+      "outputs": {
+        "info": "/nix/store/lzg8689bf2a00f1dcgcfryibhhpkpd9d-texlive-2025-env-info",
+        "man": "/nix/store/xwch2l9rim2i9psmbrx6mvnhrmf5q6b1-texlive-2025-env-man",
+        "out": "/nix/store/6h7rhh81r45nax9klj0vaii1g4v4i56z-texlive-2025-env"
       },
       "system": "x86_64-linux",
       "group": "toplevel",

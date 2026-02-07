@@ -2,7 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useStore } from "../stores/useStore";
 import { SyncStatusIndicator } from "../components/sync";
 import { TimerIndicator } from "../features/timer";
-import { Select } from "../components/ui/Input";
+import { ChangeEvent } from "react";
 
 // Simplified navigation - consolidated into logical groups
 const navItems = [
@@ -47,9 +47,12 @@ export default function MainLayout(): JSX.Element {
           <label className="block text-sm font-medium text-neutral-text mb-1">
             Student
           </label>
-          <Select
+          <select
             value={selectedStudentId || ""}
-            onChange={(e) => setSelectedStudentId(e.target.value || null)}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+              setSelectedStudentId(e.target.value || null)
+            }
+            className="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
           >
             <option value="">All Students</option>
             {students.map((student) => (
@@ -57,7 +60,7 @@ export default function MainLayout(): JSX.Element {
                 {student.name} ({student.gradeLevel})
               </option>
             ))}
-          </Select>
+          </select>
         </div>
 
         {/* Navigation */}
@@ -69,7 +72,7 @@ export default function MainLayout(): JSX.Element {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
-                    ? "bg-fuchsia-50 text-fuchsia-700"
+                    ? "bg-brand-primaryLight text-brand-primaryDark"
                     : "text-gray-700 hover:bg-gray-100"
                 }`
               }
@@ -87,7 +90,7 @@ export default function MainLayout(): JSX.Element {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-fuchsia-50 text-fuchsia-700"
+                  ? "bg-brand-primaryLight text-brand-primaryDark"
                   : "text-gray-700 hover:bg-gray-100"
               }`
             }

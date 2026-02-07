@@ -8,34 +8,36 @@
  * - "Both kids watched a science documentary about space"
  */
 
-import { useState, useEffect, useRef } from 'react'
-import { format } from 'date-fns'
-import { useAIInsightsStore } from './aiInsightsStore'
+import { useState, useEffect, useRef } from "react";
+import { format } from "date-fns";
+import { useAIInsightsStore } from "./aiInsightsStore";
+import { Button } from "../../components/ui/Button";
+import { Textarea } from "../../components/ui/Input";
 
 interface ParsedActivity {
-  studentName: string
-  studentId: string
-  subjectName: string
-  subjectId: string
-  title: string
-  duration: number | null
-  activityType: string
+  studentName: string;
+  studentId: string;
+  subjectName: string;
+  subjectId: string;
+  title: string;
+  duration: number | null;
+  activityType: string;
 }
 
 interface Student {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface Subject {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface ChatLoggerProps {
-  students: Student[]
-  subjects: Subject[]
-  onActivitiesCreated?: () => void
+  students: Student[];
+  subjects: Subject[];
+  onActivitiesCreated?: () => void;
 }
 
 export function ChatLogger({
@@ -43,40 +45,42 @@ export function ChatLogger({
   subjects,
   onActivitiesCreated,
 }: ChatLoggerProps): JSX.Element | null {
-  const { isInitialized, isAvailable, initialize } = useAIInsightsStore()
+  const { isInitialized, isAvailable, initialize } = useAIInsightsStore();
 
-  const [isOpen, setIsOpen] = useState(false)
-  const [input, setInput] = useState('')
-  const [parsedActivities, setParsedActivities] = useState<ParsedActivity[]>([])
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [parsedActivities, setParsedActivities] = useState<ParsedActivity[]>(
+    [],
+  );
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Initialize AI
   useEffect(() => {
     if (!isInitialized) {
-      initialize()
+      initialize();
     }
-  }, [isInitialized, initialize])
+  }, [isInitialized, initialize]);
 
   // Focus input when opened
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const parseInput = async () => {
-    if (!input.trim() || !isAvailable) return
+    if (!input.trim() || !isAvailable) return;
 
-    setIsProcessing(true)
-    setError(null)
-    setParsedActivities([])
+    setIsProcessing(true);
+    setError(null);
+    setParsedActivities([]);
 
     try {
-      const studentList = students.map((s) => s.name).join(', ')
-      const subjectList = subjects.map((s) => s.name).join(', ')
+      const studentList = students.map((s) => s.name).join(", ");
+      const subjectList = subjects.map((s) => s.name).join(", ");
 
       const prompt = `You are a homeschool activity parser. Parse the following natural language into structured activities.
 
@@ -84,7 +88,7 @@ Input: "${input}"
 
 Available Students: ${studentList}
 Available Subjects: ${subjectList}
-Today's Date: ${format(new Date(), 'yyyy-MM-dd')}
+Today's Date: ${format(new Date(), "yyyy-MM-dd")}
 
 Parse into JSON array of activities:
 [
@@ -111,38 +115,38 @@ Guidelines:
 - Extract duration from phrases like "for 30 minutes", "an hour", etc.
 - Create descriptive titles from the activity description
 
-Return only valid JSON array.`
+Return only valid JSON array.`;
 
       const result = await window.api.aiComplete(prompt, {
         maxTokens: 500,
         temperature: 0.3,
         useCache: false,
-      })
+      });
 
       if (!result.success || !result.response) {
-        throw new Error(result.error || 'Failed to parse activities')
+        throw new Error(result.error || "Failed to parse activities");
       }
 
       try {
         const parsed = JSON.parse(result.response) as Array<{
-          studentName: string
-          subjectName: string
-          title: string
-          duration: number | null
-          activityType: string
-        }>
+          studentName: string;
+          subjectName: string;
+          title: string;
+          duration: number | null;
+          activityType: string;
+        }>;
 
         // Map to IDs
         const activities: ParsedActivity[] = parsed
           .map((p) => {
             const student = students.find(
-              (s) => s.name.toLowerCase() === p.studentName.toLowerCase()
-            )
+              (s) => s.name.toLowerCase() === p.studentName.toLowerCase(),
+            );
             const subject = subjects.find(
-              (s) => s.name.toLowerCase() === p.subjectName.toLowerCase()
-            )
+              (s) => s.name.toLowerCase() === p.subjectName.toLowerCase(),
+            );
 
-            if (!student || !subject) return null
+            if (!student || !subject) return null;
 
             return {
               studentName: student.name,
@@ -152,37 +156,37 @@ Return only valid JSON array.`
               title: p.title,
               duration: p.duration,
               activityType: p.activityType,
-            }
+            };
           })
-          .filter((a): a is ParsedActivity => a !== null)
+          .filter((a): a is ParsedActivity => a !== null);
 
         if (activities.length === 0) {
-          setError('Could not parse any activities. Try being more specific.')
+          setError("Could not parse any activities. Try being more specific.");
         } else {
-          setParsedActivities(activities)
+          setParsedActivities(activities);
         }
       } catch {
-        setError('Failed to parse AI response. Try rephrasing.')
+        setError("Failed to parse AI response. Try rephrasing.");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to process')
+      setError(err instanceof Error ? err.message : "Failed to process");
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   const removeActivity = (index: number) => {
-    setParsedActivities(parsedActivities.filter((_, i) => i !== index))
-  }
+    setParsedActivities(parsedActivities.filter((_, i) => i !== index));
+  };
 
   const saveActivities = async () => {
-    if (parsedActivities.length === 0) return
+    if (parsedActivities.length === 0) return;
 
-    setIsSaving(true)
-    setError(null)
+    setIsSaving(true);
+    setError(null);
 
     try {
-      const today = format(new Date(), 'yyyy-MM-dd')
+      const today = format(new Date(), "yyyy-MM-dd");
 
       for (const activity of parsedActivities) {
         await window.api.createActivity({
@@ -190,61 +194,70 @@ Return only valid JSON array.`
           studentId: activity.studentId,
           subjectId: activity.subjectId,
           title: activity.title,
-          description: '',
-          activityType: activity.activityType as 'worksheet' | 'video' | 'reading' | 'writing_print' | 'writing_cursive' | 'hands_on' | 'game' | 'assessment',
+          description: "",
+          activityType: activity.activityType as
+            | "worksheet"
+            | "video"
+            | "reading"
+            | "writing"
+            | "hands_on"
+            | "interactive",
           dateCompleted: today,
           durationMinutes: activity.duration ?? null,
           grade: null,
           maxGrade: null,
           notes: `Logged via chat: "${input}"`,
-        })
+        });
       }
 
       // Reset state
-      setInput('')
-      setParsedActivities([])
-      setIsOpen(false)
-      onActivitiesCreated?.()
+      setInput("");
+      setParsedActivities([]);
+      setIsOpen(false);
+      onActivitiesCreated?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save activities')
+      setError(
+        err instanceof Error ? err.message : "Failed to save activities",
+      );
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      parseInput()
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      parseInput();
     }
-  }
+  };
 
   // Don't render if AI not available
   if (isInitialized && !isAvailable) {
-    return null
+    return null;
   }
 
   if (!isInitialized) {
-    return null
+    return null;
   }
 
   const activityTypeLabels: Record<string, string> = {
-    worksheet: 'Worksheet',
-    video: 'Video',
-    reading: 'Reading',
-    writing_print: 'Writing (Print)',
-    writing_cursive: 'Writing (Cursive)',
-    hands_on: 'Hands-on',
-    game: 'Game',
-    assessment: 'Assessment',
-  }
+    worksheet: "Worksheet",
+    video: "Video",
+    reading: "Reading",
+    writing_print: "Writing (Print)",
+    writing_cursive: "Writing (Cursive)",
+    hands_on: "Hands-on",
+    game: "Game",
+    assessment: "Assessment",
+  };
 
   return (
     <>
       {/* Chat FAB Button */}
+      {/* eslint-disable-next-line design-system/require-design-system-components */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-24 w-12 h-12 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center text-xl z-40"
+        className="fixed bottom-6 right-24 w-12 h-12 bg-student-purple-600 hover:bg-student-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center text-xl z-40"
         title="Log activities with chat"
       >
         💬
@@ -262,20 +275,33 @@ Return only valid JSON array.`
           {/* Panel */}
           <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden">
             {/* Header */}
-            <div className="bg-purple-600 px-6 py-4">
+            <div className="bg-student-purple-600 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-white">Chat Logger</h2>
-                  <p className="text-purple-200 text-sm">
+                  <h2 className="text-lg font-semibold text-white">
+                    Chat Logger
+                  </h2>
+                  <p className="text-student-purple-200 text-sm">
                     Describe what you did today
                   </p>
                 </div>
+                {/* eslint-disable-next-line design-system/require-design-system-components */}
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-white/80 hover:text-white"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -284,26 +310,27 @@ Return only valid JSON array.`
             <div className="p-6 space-y-4">
               {/* Input */}
               <div>
-                <textarea
+                <Textarea
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="e.g., We did math worksheets and read for an hour..."
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  className="px-4 py-3"
                 />
                 <div className="flex justify-between items-center mt-2">
                   <span className="text-xs text-gray-500">
                     Press Enter to parse, Shift+Enter for new line
                   </span>
-                  <button
+                  <Button
                     onClick={parseInput}
                     disabled={isProcessing || !input.trim()}
-                    className="px-4 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    size="sm"
+                    loading={isProcessing}
                   >
-                    {isProcessing ? 'Parsing...' : 'Parse'}
-                  </button>
+                    {isProcessing ? "Parsing..." : "Parse"}
+                  </Button>
                 </div>
               </div>
 
@@ -317,7 +344,7 @@ Return only valid JSON array.`
                     {parsedActivities.map((activity, index) => (
                       <div
                         key={index}
-                        className="p-3 bg-purple-50 rounded-lg border border-purple-100"
+                        className="p-3 bg-student-purple-50 rounded-lg border border-student-purple-100"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -326,11 +353,16 @@ Return only valid JSON array.`
                             </div>
                             <div className="text-sm text-gray-600 mt-1">
                               <span className="inline-flex items-center gap-1">
-                                <span className="font-medium">{activity.studentName}</span>
+                                <span className="font-medium">
+                                  {activity.studentName}
+                                </span>
                                 <span>•</span>
                                 <span>{activity.subjectName}</span>
                                 <span>•</span>
-                                <span>{activityTypeLabels[activity.activityType] || activity.activityType}</span>
+                                <span>
+                                  {activityTypeLabels[activity.activityType] ||
+                                    activity.activityType}
+                                </span>
                                 {activity.duration && (
                                   <>
                                     <span>•</span>
@@ -340,12 +372,23 @@ Return only valid JSON array.`
                               </span>
                             </div>
                           </div>
+                          {/* eslint-disable-next-line design-system/require-design-system-components */}
                           <button
                             onClick={() => removeActivity(index)}
-                            className="ml-2 text-gray-400 hover:text-red-500"
+                            className="ml-2 text-gray-400 hover:text-status-error"
                           >
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -353,19 +396,23 @@ Return only valid JSON array.`
                     ))}
                   </div>
 
-                  <button
+                  <Button
                     onClick={saveActivities}
                     disabled={isSaving}
-                    className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    loading={isSaving}
+                    fullWidth
+                    className="bg-status-successDark hover:bg-status-success"
                   >
-                    {isSaving ? 'Saving...' : `Save ${parsedActivities.length} Activities`}
-                  </button>
+                    {isSaving
+                      ? "Saving..."
+                      : `Save ${parsedActivities.length} Activities`}
+                  </Button>
                 </div>
               )}
 
               {/* Error */}
               {error && (
-                <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-600">
+                <div className="p-3 bg-status-errorLight border border-status-error/20 rounded-lg text-sm text-status-error">
                   {error}
                 </div>
               )}
@@ -387,5 +434,5 @@ Return only valid JSON array.`
         </div>
       )}
     </>
-  )
+  );
 }

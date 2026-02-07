@@ -39,8 +39,8 @@ export async function getSponsors(activeOnly = false): Promise<Sponsor[]> {
 
 export async function getSponsor(id: string): Promise<Sponsor | null> {
   const db = await getDatabase()
-  const row = await db.get('SELECT * FROM sponsors WHERE id = ?', id)
-  return row ? mapSponsorFromDB(row) : null
+  const rows = await db.all('SELECT * FROM sponsors WHERE id = ?', id)
+  return rows[0] ? mapSponsorFromDB(rows[0]) : null
 }
 
 export async function createSponsor(data: CreateSponsor): Promise<Sponsor> {
@@ -227,8 +227,8 @@ export async function getSponsoredResources(filters?: {
 
 export async function getSponsoredResource(id: string): Promise<SponsoredResource | null> {
   const db = await getDatabase()
-  const row = await db.get('SELECT * FROM sponsored_resources WHERE id = ?', id)
-  return row ? mapSponsoredResourceFromDB(row) : null
+  const rows = await db.all('SELECT * FROM sponsored_resources WHERE id = ?', id)
+  return rows[0] ? mapSponsoredResourceFromDB(rows[0]) : null
 }
 
 export async function createSponsoredResource(
@@ -430,15 +430,13 @@ export async function getSponsorAnalytics(filters?: {
     ORDER BY total_clicks DESC
   `
 
-  const rows = await db.all<
-    {
-      sponsor_id: string
-      sponsor_name: string
-      tier: SponsorTier
-      monthly_fee: number
-      total_clicks: number
-    }[]
-  >(query, ...clickValues, ...sponsorValues)
+  const rows = await db.all<{
+    sponsor_id: string
+    sponsor_name: string
+    tier: SponsorTier
+    monthly_fee: number
+    total_clicks: number
+  }>(query, ...clickValues, ...sponsorValues)
 
   // Get clicks by location and resource for each sponsor
   const analytics: SponsorAnalytics[] = []
@@ -454,7 +452,7 @@ export async function getSponsorAnalytics(filters?: {
       WHERE sr.sponsor_id = ? ${clickWhere}
       GROUP BY sc.location
     `
-    const locationRows = await db.all<{ location: SponsoredLocation; clicks: number }[]>(
+    const locationRows = await db.all<{ location: SponsoredLocation; clicks: number }>(
       locationQuery,
       row.sponsor_id,
       ...clickValues
@@ -483,9 +481,11 @@ export async function getSponsorAnalytics(filters?: {
       GROUP BY sr.id
       ORDER BY clicks DESC
     `
-    const resourceRows = await db.all<
-      { resource_id: string; resource_name: string; clicks: number }[]
-    >(resourceQuery, ...clickValues, row.sponsor_id)
+    const resourceRows = await db.all<{
+      resource_id: string
+      resource_name: string
+      clicks: number
+    }>(resourceQuery, ...clickValues, row.sponsor_id)
 
     analytics.push({
       sponsorId: row.sponsor_id,

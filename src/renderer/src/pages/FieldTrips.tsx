@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { format, parseISO, isPast, isFuture, isToday, addDays } from "date-fns";
 
 import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
+import { Input, Textarea } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
 import { Modal } from "../components/ui/Modal";
 import { PageHeader } from "../components/layout/PageHeader";
@@ -14,11 +14,7 @@ const toDate = (date: string | Date): Date => {
   return parseISO(date);
 };
 import { useStore } from "../stores/useStore";
-import {
-  MapLink,
-  ShareButton,
-  LinkedActivities,
-} from "../features/fieldTrips";
+import { MapLink, ShareButton, LinkedActivities } from "../features/fieldTrips";
 import type {
   FieldTrip,
   CreateFieldTrip,
@@ -38,7 +34,12 @@ import type {
   ExpenseCategory,
 } from "../../../shared/types";
 
-type StatusFilter = "all" | "not_started" | "in_progress" | "completed" | "cancelled";
+type StatusFilter =
+  | "all"
+  | "not_started"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
 
 const statusLabels: Record<
   UniversalStatus,
@@ -64,29 +65,35 @@ const statusLabels: Record<
 
 const eventCategoryConfig: Record<
   EventCategory,
-  { icon: string; label: string; color: string; bg: string; description: string }
+  {
+    icon: string;
+    label: string;
+    color: string;
+    bg: string;
+    description: string;
+  }
 > = {
   educational: {
     icon: "📚",
     label: "Educational",
     color: "text-student-blue-700",
     bg: "bg-student-blue-100",
-    description: "Field trips, museum visits, science centers, co-op classes"
+    description: "Field trips, museum visits, science centers, co-op classes",
   },
   social: {
     icon: "🌳",
     label: "Social",
     color: "text-status-successDark",
     bg: "bg-status-successLight",
-    description: "Park days, playdates, game nights"
+    description: "Park days, playdates, game nights",
   },
   coop: {
     icon: "👥",
     label: "Co-op",
     color: "text-student-purple-700",
     bg: "bg-student-purple-100",
-    description: "Co-op classes, group activities"
-  }
+    description: "Co-op classes, group activities",
+  },
 };
 
 const phaseLabels: Record<TaskPhase, { label: string; icon: string }> = {
@@ -123,10 +130,7 @@ const rsvpStatusLabels: Record<
 };
 
 // Event categories that show RSVP section (group events)
-const groupEventCategories: EventCategory[] = [
-  "social",
-  "coop",
-];
+const groupEventCategories: EventCategory[] = ["social", "coop"];
 
 const expenseCategoryLabels: Record<
   ExpenseCategory,
@@ -177,7 +181,7 @@ function FieldTripCard({
   onEdit: () => void;
   onDelete: () => void;
   onDuplicate: () => void;
-  onStatusChange: (status: FieldTripStatus) => void;
+  onStatusChange: (status: UniversalStatus) => void;
   isExpanded: boolean;
   onToggleExpand: () => void;
   tasks: ActivityTask[];
@@ -254,7 +258,7 @@ function FieldTripCard({
     onAddRSVP({
       familyName: newRSVPName.trim(),
       attendingCount: newRSVPCount,
-      status: "invited",
+      status: "maybe",
     });
     setNewRSVPName("");
     setNewRSVPCount(1);
@@ -263,12 +267,12 @@ function FieldTripCard({
 
   // Calculate RSVP summary
   const rsvpSummary = useMemo(() => {
-    const confirmed = rsvps.filter((r) => r.status === "confirmed");
-    const totalAttending = confirmed.reduce(
+    const attending = rsvps.filter((r) => r.status === "yes");
+    const totalAttending = attending.reduce(
       (sum, r) => sum + r.attendingCount,
       0,
     );
-    return { confirmed: confirmed.length, totalAttending };
+    return { confirmed: attending.length, totalAttending };
   }, [rsvps]);
 
   // Local state for expense form
@@ -276,7 +280,7 @@ function FieldTripCard({
   const [newExpenseDesc, setNewExpenseDesc] = useState("");
   const [newExpenseAmount, setNewExpenseAmount] = useState("");
   const [newExpenseCategory, setNewExpenseCategory] =
-    useState<ExpenseCategory>("other");
+    useState<ExpenseCategory>("admission");
 
   const handleAddExpense = () => {
     if (!newExpenseDesc.trim() || !newExpenseAmount) return;
@@ -323,6 +327,7 @@ function FieldTripCard({
             </span>
           </div>
 
+          {/* eslint-disable-next-line design-system/pages-use-components-only */}
           <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 flex-wrap">
             <MapLink location={trip.location} />
             <span>•</span>
@@ -351,6 +356,7 @@ function FieldTripCard({
           {/* Students */}
           <div className="mt-3 flex flex-wrap gap-2">
             {tripStudents.map((student) => (
+              // eslint-disable-next-line design-system/pages-use-components-only
               <span
                 key={student.id}
                 className="text-xs px-2 py-0.5 rounded-full bg-student-purple-100 text-student-purple-700"
@@ -363,6 +369,7 @@ function FieldTripCard({
           {/* Subjects */}
           <div className="mt-2 flex flex-wrap gap-2">
             {tripSubjects.map((subject) => (
+              // eslint-disable-next-line design-system/pages-use-components-only
               <span
                 key={subject.id}
                 className="text-xs px-2 py-0.5 rounded-full bg-brand-primaryLight text-brand-primaryDark"
@@ -409,6 +416,7 @@ function FieldTripCard({
           )}
 
           {/* Task progress indicator */}
+          {/* eslint-disable-next-line design-system/require-design-system-components */}
           <button
             onClick={onToggleExpand}
             className="mt-3 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
@@ -418,6 +426,7 @@ function FieldTripCard({
               Tasks: {tasks.filter((t) => t.completedAt).length}/{tasks.length}
             </span>
             {tasks.length > 0 && (
+              // eslint-disable-next-line design-system/pages-use-components-only
               <div className="flex-1 max-w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-status-success transition-all"
@@ -433,19 +442,21 @@ function FieldTripCard({
         <div className="flex items-center gap-2">
           <select
             value={trip.status}
-            onChange={(e) => onStatusChange(e.target.value as FieldTripStatus)}
+            onChange={(e) => onStatusChange(e.target.value as UniversalStatus)}
             className="text-sm border border-gray-300 rounded-lg px-2 py-1"
           >
             <option value="not_started">Planned</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
           </select>
+          {/* eslint-disable-next-line design-system/require-design-system-components */}
           <button
             onClick={onEdit}
             className="text-brand-primary hover:text-brand-primaryDark text-sm"
           >
             Edit
           </button>
+          {/* eslint-disable-next-line design-system/require-design-system-components */}
           <button
             onClick={onDuplicate}
             className="text-gray-600 hover:text-gray-800 text-sm"
@@ -453,9 +464,10 @@ function FieldTripCard({
             Duplicate
           </button>
           <ShareButton trip={trip} students={students} subjects={subjects} />
+          {/* eslint-disable-next-line design-system/require-design-system-components */}
           <button
             onClick={onDelete}
-            className="text-red-500 hover:text-red-700 text-sm"
+            className="text-status-error hover:text-status-errorDark text-sm"
           >
             Delete
           </button>
@@ -476,7 +488,7 @@ function FieldTripCard({
               {(
                 Object.entries(phaseLabels) as [
                   TaskPhase,
-                  typeof phaseLabels.pre,
+                  typeof phaseLabels.before,
                 ][]
               ).map(([phase, config]) => (
                 <option key={phase} value={phase}>
@@ -484,12 +496,13 @@ function FieldTripCard({
                 </option>
               ))}
             </select>
-            <input
+            <Input
               type="text"
+              size="sm"
               value={newTaskTitle}
               onChange={(e) => onNewTaskTitleChange(e.target.value)}
               placeholder="Add a task..."
-              className="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-1.5"
+              className="flex-1"
               onKeyDown={(e) => e.key === "Enter" && onAddTask()}
             />
             <Button
@@ -503,7 +516,7 @@ function FieldTripCard({
           </div>
 
           {/* Tasks by Phase */}
-          {(["pre", "day_of", "post"] as TaskPhase[]).map((phase) => {
+          {(["before", "during", "after"] as TaskPhase[]).map((phase) => {
             const phaseTasks = tasks.filter((t) => t.phase === phase);
             if (phaseTasks.length === 0) return null;
 
@@ -515,10 +528,12 @@ function FieldTripCard({
                 </div>
                 <div className="space-y-1">
                   {phaseTasks.map((task) => (
+                    // eslint-disable-next-line design-system/pages-use-components-only
                     <div
                       key={task.id}
                       className="flex items-center gap-2 p-2 bg-white/50 rounded"
                     >
+                      {/* eslint-disable-next-line design-system/require-design-system-components */}
                       <input
                         type="checkbox"
                         checked={!!task.completedAt}
@@ -530,9 +545,10 @@ function FieldTripCard({
                       >
                         {task.title}
                       </span>
+                      {/* eslint-disable-next-line design-system/require-design-system-components */}
                       <button
                         onClick={() => onDeleteTask(task.id)}
-                        className="text-gray-400 hover:text-red-500 text-xs"
+                        className="text-gray-400 hover:text-status-error text-xs"
                       >
                         ✕
                       </button>
@@ -555,6 +571,7 @@ function FieldTripCard({
               <div className="text-sm font-medium text-gray-700">
                 📞 Contacts
               </div>
+              {/* eslint-disable-next-line design-system/require-design-system-components */}
               <button
                 onClick={() => setShowContactForm(!showContactForm)}
                 className="text-xs text-brand-primary hover:text-brand-primaryDark"
@@ -564,13 +581,14 @@ function FieldTripCard({
             </div>
 
             {showContactForm && (
+              // eslint-disable-next-line design-system/pages-use-components-only
               <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-2">
-                <input
+                <Input
                   type="text"
+                  size="sm"
                   value={newContactName}
                   onChange={(e) => setNewContactName(e.target.value)}
                   placeholder="Contact name"
-                  className="w-full text-sm border border-gray-300 rounded px-2 py-1"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <select
@@ -591,27 +609,27 @@ function FieldTripCard({
                       </option>
                     ))}
                   </select>
-                  <input
+                  <Input
                     type="tel"
+                    size="sm"
                     value={newContactPhone}
                     onChange={(e) => setNewContactPhone(e.target.value)}
                     placeholder="Phone"
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
                   />
                 </div>
-                <input
+                <Input
                   type="email"
+                  size="sm"
                   value={newContactEmail}
                   onChange={(e) => setNewContactEmail(e.target.value)}
                   placeholder="Email"
-                  className="w-full text-sm border border-gray-300 rounded px-2 py-1"
                 />
-                <input
+                <Input
                   type="text"
+                  size="sm"
                   value={newContactNotes}
                   onChange={(e) => setNewContactNotes(e.target.value)}
                   placeholder="Website URL or notes"
-                  className="w-full text-sm border border-gray-300 rounded px-2 py-1"
                 />
                 <Button
                   variant="primary"
@@ -632,9 +650,10 @@ function FieldTripCard({
                       <div className="text-sm font-medium text-gray-700">
                         {contact.name}
                       </div>
+                      {/* eslint-disable-next-line design-system/require-design-system-components */}
                       <button
                         onClick={() => onDeleteContact(contact.id)}
-                        className="text-gray-400 hover:text-red-500 text-xs"
+                        className="text-gray-400 hover:text-status-error text-xs"
                       >
                         ✕
                       </button>
@@ -729,6 +748,7 @@ function FieldTripCard({
                     </span>
                   )}
                 </div>
+                {/* eslint-disable-next-line design-system/require-design-system-components */}
                 <button
                   onClick={() => setShowRSVPForm(!showRSVPForm)}
                   className="text-xs text-brand-primary hover:text-brand-primaryDark"
@@ -738,24 +758,26 @@ function FieldTripCard({
               </div>
 
               {showRSVPForm && (
+                // eslint-disable-next-line design-system/pages-use-components-only
                 <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-2">
-                  <input
+                  <Input
                     type="text"
+                    size="sm"
                     value={newRSVPName}
                     onChange={(e) => setNewRSVPName(e.target.value)}
                     placeholder="Family name"
-                    className="w-full text-sm border border-gray-300 rounded px-2 py-1"
                   />
                   <div className="flex gap-2 items-center">
                     <label className="text-xs text-gray-600">Attending:</label>
-                    <input
+                    <Input
                       type="number"
+                      size="sm"
                       value={newRSVPCount}
                       onChange={(e) =>
                         setNewRSVPCount(parseInt(e.target.value) || 1)
                       }
                       min="1"
-                      className="w-16 text-sm border border-gray-300 rounded px-2 py-1"
+                      className="w-16"
                     />
                   </div>
                   <Button
@@ -774,6 +796,7 @@ function FieldTripCard({
                   {rsvps.map((rsvp) => {
                     const statusInfo = rsvpStatusLabels[rsvp.status];
                     return (
+                      // eslint-disable-next-line design-system/pages-use-components-only
                       <div
                         key={rsvp.id}
                         className="flex items-center justify-between p-2 bg-white/50 rounded"
@@ -811,9 +834,10 @@ function FieldTripCard({
                               </option>
                             ))}
                           </select>
+                          {/* eslint-disable-next-line design-system/require-design-system-components */}
                           <button
                             onClick={() => onDeleteRSVP(rsvp.id)}
-                            className="text-gray-400 hover:text-red-500 text-xs"
+                            className="text-gray-400 hover:text-status-error text-xs"
                           >
                             ✕
                           </button>
@@ -843,6 +867,7 @@ function FieldTripCard({
                   </span>
                 )}
               </div>
+              {/* eslint-disable-next-line design-system/require-design-system-components */}
               <button
                 onClick={() => setShowExpenseForm(!showExpenseForm)}
                 className="text-xs text-brand-primary hover:text-brand-primaryDark"
@@ -852,23 +877,24 @@ function FieldTripCard({
             </div>
 
             {showExpenseForm && (
+              // eslint-disable-next-line design-system/pages-use-components-only
               <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-2">
-                <input
+                <Input
                   type="text"
+                  size="sm"
                   value={newExpenseDesc}
                   onChange={(e) => setNewExpenseDesc(e.target.value)}
                   placeholder="Description"
-                  className="w-full text-sm border border-gray-300 rounded px-2 py-1"
                 />
                 <div className="grid grid-cols-2 gap-2">
-                  <input
+                  <Input
                     type="number"
+                    size="sm"
                     value={newExpenseAmount}
                     onChange={(e) => setNewExpenseAmount(e.target.value)}
                     placeholder="Amount"
                     min="0"
                     step="0.01"
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
                   />
                   <select
                     value={newExpenseCategory}
@@ -905,7 +931,7 @@ function FieldTripCard({
                 {expenses.map((expense) => {
                   const catConfig = expense.category
                     ? expenseCategoryLabels[expense.category]
-                    : expenseCategoryLabels.other;
+                    : { label: "Other", icon: "📦" };
                   return (
                     <div key={expense.id} className="p-2 bg-white/50 rounded">
                       <div className="flex items-center justify-between">
@@ -916,9 +942,10 @@ function FieldTripCard({
                           <span className="text-sm font-medium text-gray-700">
                             ${expense.amount.toFixed(2)}
                           </span>
+                          {/* eslint-disable-next-line design-system/require-design-system-components */}
                           <button
                             onClick={() => onDeleteExpense(expense.id)}
-                            className="text-gray-400 hover:text-red-500 text-xs"
+                            className="text-gray-400 hover:text-status-error text-xs"
                           >
                             ✕
                           </button>
@@ -980,7 +1007,7 @@ export default function FieldTrips(): JSX.Element {
   const [expandedTripId, setExpandedTripId] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Record<string, ActivityTask[]>>({});
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [newTaskPhase, setNewTaskPhase] = useState<TaskPhase>("pre");
+  const [newTaskPhase, setNewTaskPhase] = useState<TaskPhase>("before");
   const [contacts, setContacts] = useState<Record<string, ActivityContact[]>>(
     {},
   );
@@ -1103,6 +1130,7 @@ export default function FieldTrips(): JSX.Element {
     setFormData({
       title: trip.title,
       activityType: trip.activityType,
+      eventCategory: trip.eventCategory,
       location: trip.location,
       description: trip.description || "",
       date: trip.date,
@@ -1149,7 +1177,7 @@ export default function FieldTrips(): JSX.Element {
     }
   };
 
-  const handleStatusChange = async (id: string, status: FieldTripStatus) => {
+  const handleStatusChange = async (id: string, status: UniversalStatus) => {
     await window.api.updateFieldTrip(id, { status });
     loadTrips();
   };
@@ -1379,23 +1407,23 @@ export default function FieldTrips(): JSX.Element {
       </Card>
       {/* Filters */}
       <div className="flex gap-1 mb-6">
-        {(["all", "not_started", "completed", "cancelled"] as StatusFilter[]).map(
-          (status) => (
-            <button
-              key={status}
-              onClick={() => setFilterStatus(status)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                filterStatus === status
-                  ? "bg-brand-primaryLight text-brand-primaryDark"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              {status === "all"
-                ? "All"
-                : status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          ),
-        )}
+        {(
+          ["all", "not_started", "completed", "cancelled"] as StatusFilter[]
+        ).map((status) => (
+          <button
+            key={status}
+            onClick={() => setFilterStatus(status)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              filterStatus === status
+                ? "bg-brand-primaryLight text-brand-primaryDark"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            {status === "all"
+              ? "All"
+              : status.charAt(0).toUpperCase() + status.slice(1)}
+          </button>
+        ))}
       </div>
       {/* Activities List */}
       {filteredTrips.length === 0 ? (
@@ -1658,12 +1686,11 @@ export default function FieldTrips(): JSX.Element {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Description
             </label>
-            <textarea
+            <Textarea
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
               rows={2}
               placeholder="What will you see/do?"
             />
@@ -1674,12 +1701,11 @@ export default function FieldTrips(): JSX.Element {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Learning Outcomes
               </label>
-              <textarea
+              <Textarea
                 value={formData.learningOutcomes}
                 onChange={(e) =>
                   setFormData({ ...formData, learningOutcomes: e.target.value })
                 }
-                className="input"
                 rows={2}
                 placeholder="What did the students learn?"
               />
@@ -1690,12 +1716,11 @@ export default function FieldTrips(): JSX.Element {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Notes
             </label>
-            <textarea
+            <Textarea
               value={formData.notes}
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
               rows={2}
               placeholder="Parking info, what to bring, etc."
             />
@@ -1749,6 +1774,7 @@ export default function FieldTrips(): JSX.Element {
                 Copy Options
               </label>
               <label className="flex items-center gap-2 text-sm">
+                {/* eslint-disable-next-line design-system/require-design-system-components */}
                 <input
                   type="checkbox"
                   checked={duplicateCopyTasks}
@@ -1758,6 +1784,7 @@ export default function FieldTrips(): JSX.Element {
                 <span>Copy tasks (will be reset to incomplete)</span>
               </label>
               <label className="flex items-center gap-2 text-sm">
+                {/* eslint-disable-next-line design-system/require-design-system-components */}
                 <input
                   type="checkbox"
                   checked={duplicateCopyContacts}

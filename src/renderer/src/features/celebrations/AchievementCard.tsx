@@ -4,70 +4,87 @@
  * Displays unlocked achievements and progress towards next milestones.
  */
 
-import { useState, useEffect } from 'react'
-import { Dialog } from '@headlessui/react'
-import { format, parseISO } from 'date-fns'
+import { useState, useEffect } from "react";
+import { Dialog } from "@headlessui/react";
+import { format, parseISO } from "date-fns";
+import { Button } from "../../components/ui/Button";
 import {
   useAchievementStore,
   ACHIEVEMENT_DEFINITIONS,
   type Achievement,
   type AchievementProgress,
-} from './achievementStore'
-import { Confetti } from './Confetti'
+} from "./achievementStore";
+import { Confetti } from "./Confetti";
 
 interface AchievementCardProps {
-  studentId: string
-  studentName: string
+  studentId: string;
+  studentName: string;
 }
 
-export function AchievementCard({ studentId, studentName }: AchievementCardProps): JSX.Element {
-  const [showModal, setShowModal] = useState(false)
-  const [stats, setStats] = useState<{ totalHours: number; totalActivities: number; booksFinished: number }>({
+export function AchievementCard({
+  studentId,
+  studentName,
+}: AchievementCardProps): JSX.Element {
+  const [showModal, setShowModal] = useState(false);
+  const [stats, setStats] = useState<{
+    totalHours: number;
+    totalActivities: number;
+    booksFinished: number;
+  }>({
     totalHours: 0,
     totalActivities: 0,
     booksFinished: 0,
-  })
+  });
 
-  const getUnlocked = useAchievementStore((state) => state.getUnlocked)
-  const checkAndUnlock = useAchievementStore((state) => state.checkAndUnlock)
-  const recentlyUnlocked = useAchievementStore((state) => state.recentlyUnlocked)
-  const clearRecentlyUnlocked = useAchievementStore((state) => state.clearRecentlyUnlocked)
+  const getUnlocked = useAchievementStore((state) => state.getUnlocked);
+  const checkAndUnlock = useAchievementStore((state) => state.checkAndUnlock);
+  const recentlyUnlocked = useAchievementStore(
+    (state) => state.recentlyUnlocked,
+  );
+  const clearRecentlyUnlocked = useAchievementStore(
+    (state) => state.clearRecentlyUnlocked,
+  );
 
-  const unlocked = getUnlocked(studentId)
+  const unlocked = getUnlocked(studentId);
 
   // Load stats and check for new achievements
   useEffect(() => {
-    loadStats()
-  }, [studentId])
+    loadStats();
+  }, [studentId]);
 
   const loadStats = async () => {
     // Get all-time activity totals
-    const activities = await window.api.getActivities({ studentId })
-    const totalMinutes = activities.reduce((sum, a) => sum + (a.durationMinutes || 0), 0)
-    const totalHours = Math.floor(totalMinutes / 60)
-    const totalActivities = activities.length
+    const activities = await window.api.getActivities({ studentId });
+    const totalMinutes = activities.reduce(
+      (sum, a) => sum + (a.durationMinutes || 0),
+      0,
+    );
+    const totalHours = Math.floor(totalMinutes / 60);
+    const totalActivities = activities.length;
 
     // Get finished books
-    const booksWithProgress = await window.api.getBooksWithProgress(studentId)
+    const booksWithProgress = await window.api.getBooksWithProgress(studentId);
     const booksFinished = booksWithProgress.filter(
-      (b) => b.studentProgress?.status === 'finished'
-    ).length
+      (b) => b.studentProgress?.status === "completed",
+    ).length;
 
-    setStats({ totalHours, totalActivities, booksFinished })
+    setStats({ totalHours, totalActivities, booksFinished });
 
     // Check for new achievements
-    checkAndUnlock(studentId, 'hours', totalHours)
-    checkAndUnlock(studentId, 'activities', totalActivities)
-    checkAndUnlock(studentId, 'books', booksFinished)
-  }
+    checkAndUnlock(studentId, "hours", totalHours);
+    checkAndUnlock(studentId, "activities", totalActivities);
+    checkAndUnlock(studentId, "books", booksFinished);
+  };
 
   // Get recent achievements (last 3)
   const recentAchievements = [...unlocked]
     .sort((a, b) => {
-      if (!a.unlockedAt || !b.unlockedAt) return 0
-      return new Date(b.unlockedAt).getTime() - new Date(a.unlockedAt).getTime()
+      if (!a.unlockedAt || !b.unlockedAt) return 0;
+      return (
+        new Date(b.unlockedAt).getTime() - new Date(a.unlockedAt).getTime()
+      );
     })
-    .slice(0, 3)
+    .slice(0, 3);
 
   return (
     <>
@@ -84,7 +101,9 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
               <span className="text-3xl">{recentlyUnlocked.icon}</span>
               <div>
                 <div className="font-bold">Achievement Unlocked!</div>
-                <div className="text-sm opacity-90">{recentlyUnlocked.name}</div>
+                <div className="text-sm opacity-90">
+                  {recentlyUnlocked.name}
+                </div>
               </div>
             </div>
           </div>
@@ -94,9 +113,10 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Achievements</h3>
+          {/* eslint-disable-next-line design-system/require-design-system-components */}
           <button
             onClick={() => setShowModal(true)}
-            className="text-sm text-fuchsia-600 hover:text-fuchsia-800"
+            className="text-sm text-brand-primary hover:text-brand-primaryDark"
           >
             View All ({unlocked.length}/{ACHIEVEMENT_DEFINITIONS.length})
           </button>
@@ -105,15 +125,21 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
         {/* Stats summary */}
         <div className="grid grid-cols-3 gap-4 mb-4">
           <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-xl font-bold text-gray-900">{stats.totalHours}</div>
+            <div className="text-xl font-bold text-gray-900">
+              {stats.totalHours}
+            </div>
             <div className="text-xs text-gray-500">Hours</div>
           </div>
           <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-xl font-bold text-gray-900">{stats.totalActivities}</div>
+            <div className="text-xl font-bold text-gray-900">
+              {stats.totalActivities}
+            </div>
             <div className="text-xs text-gray-500">Activities</div>
           </div>
           <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <div className="text-xl font-bold text-gray-900">{stats.booksFinished}</div>
+            <div className="text-xl font-bold text-gray-900">
+              {stats.booksFinished}
+            </div>
             <div className="text-xs text-gray-500">Books</div>
           </div>
         </div>
@@ -124,7 +150,7 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
             {recentAchievements.map((achievement) => (
               <span
                 key={achievement.id}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 text-amber-800 rounded-full text-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-status-warningLight text-status-warningDark rounded-full text-sm"
                 title={achievement.description}
               >
                 {achievement.icon} {achievement.name}
@@ -132,7 +158,9 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-500">Keep learning to unlock achievements!</p>
+          <p className="text-sm text-gray-500">
+            Keep learning to unlock achievements!
+          </p>
         )}
       </div>
 
@@ -144,15 +172,15 @@ export function AchievementCard({ studentId, studentName }: AchievementCardProps
         stats={stats}
       />
     </>
-  )
+  );
 }
 
 interface AchievementModalProps {
-  open: boolean
-  onClose: () => void
-  studentName: string
-  unlocked: Achievement[]
-  stats: { totalHours: number; totalActivities: number; booksFinished: number }
+  open: boolean;
+  onClose: () => void;
+  studentName: string;
+  unlocked: Achievement[];
+  stats: { totalHours: number; totalActivities: number; booksFinished: number };
 }
 
 function AchievementModal({
@@ -162,15 +190,15 @@ function AchievementModal({
   unlocked,
   stats,
 }: AchievementModalProps): JSX.Element {
-  const unlockedIds = new Set(unlocked.map((a) => a.id))
-  const unlockedMap = new Map(unlocked.map((a) => [a.id, a]))
+  const unlockedIds = new Set(unlocked.map((a) => a.id));
+  const unlockedMap = new Map(unlocked.map((a) => [a.id, a]));
 
   // Group by category
   const categories = [
-    { id: 'hours', name: 'Learning Hours', current: stats.totalHours },
-    { id: 'activities', name: 'Activities', current: stats.totalActivities },
-    { id: 'books', name: 'Books Read', current: stats.booksFinished },
-  ] as const
+    { id: "hours", name: "Learning Hours", current: stats.totalHours },
+    { id: "activities", name: "Activities", current: stats.totalActivities },
+    { id: "books", name: "Books Read", current: stats.booksFinished },
+  ] as const;
 
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
@@ -189,52 +217,63 @@ function AchievementModal({
           <div className="flex-1 overflow-y-auto p-4 space-y-6">
             {categories.map((category) => {
               const categoryAchievements = ACHIEVEMENT_DEFINITIONS.filter(
-                (a) => a.category === category.id
-              )
+                (a) => a.category === category.id,
+              );
 
               return (
                 <div key={category.id}>
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-gray-700">{category.name}</h4>
-                    <span className="text-sm text-gray-500">Current: {category.current}</span>
+                    <h4 className="font-medium text-gray-700">
+                      {category.name}
+                    </h4>
+                    <span className="text-sm text-gray-500">
+                      Current: {category.current}
+                    </span>
                   </div>
 
                   <div className="space-y-2">
                     {categoryAchievements.map((achievement) => {
-                      const isUnlocked = unlockedIds.has(achievement.id)
-                      const unlockedData = unlockedMap.get(achievement.id)
+                      const isUnlocked = unlockedIds.has(achievement.id);
+                      const unlockedData = unlockedMap.get(achievement.id);
                       const progress = isUnlocked
                         ? 100
-                        : Math.min((category.current / achievement.threshold) * 100, 99)
+                        : Math.min(
+                            (category.current / achievement.threshold) * 100,
+                            99,
+                          );
 
                       return (
                         <div
                           key={achievement.id}
                           className={`flex items-center gap-3 p-3 rounded-lg ${
                             isUnlocked
-                              ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200'
-                              : 'bg-gray-50 border border-gray-100'
+                              ? "bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200"
+                              : "bg-gray-50 border border-gray-100"
                           }`}
                         >
-                          <span className={`text-2xl ${isUnlocked ? '' : 'grayscale opacity-40'}`}>
+                          <span
+                            className={`text-2xl ${isUnlocked ? "" : "grayscale opacity-40"}`}
+                          >
                             {achievement.icon}
                           </span>
                           <div className="flex-1 min-w-0">
                             <div
                               className={`font-medium ${
-                                isUnlocked ? 'text-gray-900' : 'text-gray-400'
+                                isUnlocked ? "text-gray-900" : "text-gray-400"
                               }`}
                             >
                               {achievement.name}
                             </div>
-                            <div className={`text-xs ${isUnlocked ? 'text-gray-600' : 'text-gray-400'}`}>
+                            <div
+                              className={`text-xs ${isUnlocked ? "text-gray-600" : "text-gray-400"}`}
+                            >
                               {achievement.description}
                             </div>
                             {!isUnlocked && (
                               <div className="mt-1">
                                 <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                                   <div
-                                    className="h-full bg-fuchsia-400 rounded-full transition-all"
+                                    className="h-full bg-brand-primary rounded-full transition-all"
                                     style={{ width: `${progress}%` }}
                                   />
                                 </div>
@@ -244,32 +283,36 @@ function AchievementModal({
                               </div>
                             )}
                             {isUnlocked && unlockedData?.unlockedAt && (
-                              <div className="text-xs text-amber-600 mt-0.5">
-                                Unlocked {format(parseISO(unlockedData.unlockedAt), 'MMM d, yyyy')}
+                              <div className="text-xs text-status-warning mt-0.5">
+                                Unlocked{" "}
+                                {format(
+                                  parseISO(unlockedData.unlockedAt),
+                                  "MMM d, yyyy",
+                                )}
                               </div>
                             )}
                           </div>
                           {isUnlocked && (
-                            <span className="text-green-500">✓</span>
+                            <span className="text-status-success">✓</span>
                           )}
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
 
           <div className="p-4 border-t flex justify-end">
-            <button onClick={onClose} className="btn btn-secondary">
+            <Button variant="secondary" onClick={onClose}>
               Close
-            </button>
+            </Button>
           </div>
         </Dialog.Panel>
       </div>
     </Dialog>
-  )
+  );
 }
 
 // Shareable achievement card (for export/sharing)
@@ -277,25 +320,29 @@ export function ShareableAchievementCard({
   achievement,
   studentName,
 }: {
-  achievement: Achievement
-  studentName: string
+  achievement: Achievement;
+  studentName: string;
 }): JSX.Element {
   return (
     <div className="w-80 bg-gradient-to-br from-purple-500 via-pink-500 to-amber-500 p-1 rounded-2xl">
       <div className="bg-white rounded-xl p-6 text-center">
         <div className="text-5xl mb-3">{achievement.icon}</div>
-        <div className="text-xl font-bold text-gray-900">{achievement.name}</div>
-        <div className="text-sm text-gray-600 mt-1">{achievement.description}</div>
+        <div className="text-xl font-bold text-gray-900">
+          {achievement.name}
+        </div>
+        <div className="text-sm text-gray-600 mt-1">
+          {achievement.description}
+        </div>
         <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="text-sm text-gray-500">Unlocked by</div>
           <div className="font-semibold text-gray-900">{studentName}</div>
           {achievement.unlockedAt && (
             <div className="text-xs text-gray-400 mt-1">
-              {format(parseISO(achievement.unlockedAt), 'MMMM d, yyyy')}
+              {format(parseISO(achievement.unlockedAt), "MMMM d, yyyy")}
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }

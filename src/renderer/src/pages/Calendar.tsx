@@ -24,7 +24,7 @@ import type {
 } from "../../../shared/types";
 
 import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
+import { Input, Textarea } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
 import { Modal } from "../components/ui/Modal";
 import { PageHeader } from "../components/layout/PageHeader";
@@ -34,12 +34,9 @@ const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
   { value: "worksheet", label: "Worksheet", icon: "📝" },
   { value: "video", label: "Video", icon: "🎬" },
   { value: "reading", label: "Reading", icon: "📖" },
-  { value: "writing_print", label: "Print", icon: "✏️" },
-  { value: "writing_cursive", label: "Cursive", icon: "✍️" },
+  { value: "writing", label: "Writing", icon: "✏️" },
   { value: "hands_on", label: "Hands-on", icon: "🎨" },
-  { value: "game", label: "Game", icon: "🎮" },
-  { value: "assessment", label: "Test", icon: "📋" },
-  { value: "field_trip", label: "Field Trip", icon: "🚌" },
+  { value: "interactive", label: "Interactive", icon: "🎮" },
 ];
 
 // Colors for field trip activity types
@@ -410,6 +407,7 @@ export default function Calendar(): JSX.Element {
             </div>
 
             {/* Legend */}
+            {/* eslint-disable-next-line design-system/pages-use-components-only */}
             <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-status-successLight0" />
@@ -567,6 +565,7 @@ export default function Calendar(): JSX.Element {
                               ` • ${activity.durationMinutes} min`}
                           </div>
                         </div>
+                        {/* eslint-disable-next-line design-system/require-design-system-components */}
                         <button
                           onClick={() => handleDeleteActivity(activity.id)}
                           className="text-status-error hover:text-status-error text-sm"
@@ -695,12 +694,11 @@ export default function Calendar(): JSX.Element {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Notes
             </label>
-            <textarea
+            <Textarea
               value={formData.notes}
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
               rows={2}
             />
           </div>

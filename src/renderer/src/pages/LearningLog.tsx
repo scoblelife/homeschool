@@ -195,7 +195,7 @@ export default function Activities(): JSX.Element {
   };
 
   const showReadingFields = formData.activityType === "reading";
-  const showGradeFields = formData.activityType === "assessment";
+  const showGradeFields = formData.activityType === "interactive";
 
   return (
     <PageContainer>
@@ -209,6 +209,7 @@ export default function Activities(): JSX.Element {
       />
       {/* Filter by type */}
       <div className="mb-6 flex flex-wrap gap-2">
+        {}
         <button
           onClick={() => setFilterType("")}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${

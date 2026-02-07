@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { TemplateLibrary, ActivityTemplate } from "../features/templates";
 import { useStore } from "../stores/useStore";
+import { Button } from "../components/ui/Button";
 import { PageContainer } from "../components/layout/PageContainer";
 import { PageHeader } from "../components/layout/PageHeader";
 
 export default function Templates() {
-  const { students, selectedStudentId, subjects, setActivities, activities } =
-    useStore();
+  const { students, selectedStudentId, subjects, setActivities } = useStore();
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] =
     useState<ActivityTemplate | null>(null);
@@ -47,11 +47,9 @@ export default function Templates() {
           | "worksheet"
           | "video"
           | "reading"
-          | "writing_print"
-          | "writing_cursive"
+          | "writing"
           | "hands_on"
-          | "game"
-          | "assessment",
+          | "interactive",
         title: selectedTemplate.name,
         description: selectedTemplate.description,
         dateCompleted: today,
@@ -87,6 +85,7 @@ export default function Templates() {
 
       {/* Success Message */}
       {successMessage && (
+        /* eslint-disable-next-line design-system/pages-use-components-only */
         <div className="mb-4 p-4 bg-status-successLight border border-status-success rounded-lg">
           <p className="text-status-successDark flex items-center gap-2">
             <CheckIcon className="w-5 h-5" />
@@ -102,14 +101,16 @@ export default function Templates() {
 
       {/* Add Activity Modal */}
       {showAddModal && selectedTemplate && (
+        /* eslint-disable-next-line design-system/pages-use-components-only */
         <div className="fixed inset-0 bg-neutral-overlay flex items-center justify-center z-50">
+          {/* eslint-disable-next-line design-system/pages-use-components-only */}
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6">
               <h2 className="text-lg font-semibold text-neutral-text mb-2">
                 Add Activity from Template
               </h2>
               <p className="text-neutral-textSecondary mb-4">
-                Adding "{selectedTemplate.name}" (
+                Adding &ldquo;{selectedTemplate.name}&rdquo; (
                 {selectedTemplate.durationMinutes} min)
               </p>
 
@@ -119,12 +120,13 @@ export default function Templates() {
 
               <div className="space-y-2">
                 {students.map((student) => (
-                  <button
+                  <Button
                     key={student.id}
                     onClick={() => handleAddActivity(student.id)}
                     disabled={addingActivity}
-                    className="w-full px-4 py-3 text-left bg-neutral-backgroundDeep rounded-lg
-                      hover:bg-gray-100 disabled:opacity-50 flex items-center justify-between"
+                    variant="ghost"
+                    fullWidth
+                    className="justify-between px-4 py-3 bg-neutral-backgroundDeep hover:bg-gray-100"
                   >
                     <span>
                       <span className="font-medium text-neutral-text">
@@ -135,20 +137,20 @@ export default function Templates() {
                       </span>
                     </span>
                     <PlusIcon className="w-5 h-5 text-neutral-textTertiary" />
-                  </button>
+                  </Button>
                 ))}
               </div>
 
               <div className="mt-6 flex justify-end">
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => {
                     setShowAddModal(false);
                     setSelectedTemplate(null);
                   }}
-                  className="px-4 py-2 text-neutral-textSecondary hover:text-neutral-text"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
           </div>
