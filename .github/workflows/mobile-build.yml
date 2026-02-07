@@ -1,5 +1,19 @@
 name: Mobile Build
 
+# Builds run locally on Depot/GitHub runners — zero EAS build credits consumed.
+# EAS is only used for credential management and store submission.
+#
+# Runner strategy:
+#   - Type check + Android build: Depot Linux (fast, $0.004/min)
+#   - iOS build: GitHub macOS (has Xcode, free tier)
+#     → Switch to depot-macos-latest if on Depot Startup plan for 2x speed
+#   - Store submission: Depot Linux (just uploads to EAS)
+#
+# Setup required:
+#   1. Connect GitHub org to Depot: https://depot.dev/docs/github-actions/quickstart
+#   2. Set EXPO_TOKEN secret in GitHub repo settings
+#   3. Run `eas credentials` locally once to set up signing credentials
+
 on:
   push:
     branches: [main]
@@ -35,87 +49,169 @@ on:
         default: false
         type: boolean
 
+env:
+  NODE_VERSION: '20'
+  JAVA_VERSION: '17'
+  BUILD_PROFILE: ${{ github.event.inputs.profile || 'preview' }}
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  # ──────────────────────────────────────────────────
+  # Type check (runs on every push + PR, no EAS needed)
+  # ──────────────────────────────────────────────────
+  typecheck:
+    runs-on: depot-ubuntu-latest
     defaults:
       run:
         working-directory: mobile
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
           cache-dependency-path: mobile/package-lock.json
 
-      - name: Setup Expo
-        uses: expo/expo-github-action@v8
+      - run: npm ci
+      - run: npm run typecheck
+
+  # ──────────────────────────────────────────────────
+  # Android build — Depot Linux, eas build --local
+  # ──────────────────────────────────────────────────
+  build-android:
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
+    needs: typecheck
+    runs-on: depot-ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Type check
-        run: npm run typecheck
+      - name: Build Android locally
+        run: eas build --platform android --profile ${{ env.BUILD_PROFILE }} --local --non-interactive --output ./build-android.apk
+        env:
+          HYPERSWARM_NATIVE: '0'
 
-      - name: Build iOS
-        if: github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == ''
-        run: eas build --platform ios --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ env.BUILD_PROFILE }}
+          path: mobile/build-android.apk
 
-      - name: Build Android
-        if: github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == ''
-        run: eas build --platform android --profile ${{ github.event.inputs.profile || 'preview' }} --non-interactive
-
-      - name: Submit iOS to TestFlight
-        if: github.event.inputs.submit == 'true' && (github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all')
-        run: eas submit --platform ios --latest --non-interactive
-
-      - name: Submit Android to Play Store Internal Testing
-        if: github.event.inputs.submit == 'true' && (github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all')
-        run: eas submit --platform android --latest --non-interactive
-
-  # Automatic preview builds on main branch pushes
-  preview-build:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+  # ──────────────────────────────────────────────────
+  # iOS build — macOS runner, eas build --local
+  # Uses GitHub macOS (free tier, has Xcode).
+  # For faster builds, switch to: depot-macos-latest
+  # ──────────────────────────────────────────────────
+  build-ios:
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'))
+    needs: typecheck
+    runs-on: macos-latest
     defaults:
       run:
         working-directory: mobile
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
           cache-dependency-path: mobile/package-lock.json
 
-      - name: Setup Expo
-        uses: expo/expo-github-action@v8
+      - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Type check
-        run: npm run typecheck
+      - name: Build iOS locally
+        run: eas build --platform ios --profile ${{ env.BUILD_PROFILE }} --local --non-interactive --output ./build-ios.ipa
+        env:
+          HYPERSWARM_NATIVE: '0'
 
-      - name: Build preview for both platforms
-        run: eas build --platform all --profile preview --non-interactive
-
-      - name: Comment build URLs on commit
-        uses: expo/expo-github-action/preview-comment@v8
+      - uses: actions/upload-artifact@v4
         with:
-          channel: preview
+          name: ios-${{ env.BUILD_PROFILE }}
+          path: mobile/build-ios.ipa
+
+  # ──────────────────────────────────────────────────
+  # Store submission — EAS only (what only Expo can do)
+  # Downloads built artifacts and submits via eas submit
+  # ──────────────────────────────────────────────────
+  submit-ios:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.submit == 'true' && (github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all')
+    needs: build-ios
+    runs-on: depot-ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ios-${{ env.BUILD_PROFILE }}
+          path: mobile/
+
+      - name: Submit to TestFlight
+        run: eas submit --platform ios --path ./build-ios.ipa --non-interactive
+
+  submit-android:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.submit == 'true' && (github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all')
+    needs: build-android
+    runs-on: depot-ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-${{ env.BUILD_PROFILE }}
+          path: mobile/
+
+      - name: Submit to Play Store
+        run: eas submit --platform android --path ./build-android.apk --non-interactive

@@ -50,7 +50,9 @@
       "expo-sqlite",
       "expo-asset",
       "./plugins/withWebRTC",
+      "./plugins/withLocalNotificationsOnly",
       "expo-notifications",
+      "./plugins/withAndroidBuildMemory",
       [
         "expo-quick-actions",
         {
