@@ -38,9 +38,7 @@
       },
       "package": "com.scoblelife.homeschool",
       "versionCode": 1,
-      "permissions": [
-        "android.permission.CAMERA"
-      ]
+      "permissions": ["android.permission.CAMERA"]
     },
     "web": {
       "bundler": "metro",
@@ -61,23 +59,30 @@
               "id": "log_activity",
               "title": "Log Activity",
               "icon": "compose",
-              "params": { "action": "log" }
+              "params": {
+                "action": "log"
+              }
             },
             {
               "id": "start_timer",
               "title": "Start Timer",
               "icon": "time",
-              "params": { "action": "timer" }
+              "params": {
+                "action": "timer"
+              }
             },
             {
               "id": "view_today",
               "title": "View Today",
               "icon": "task",
-              "params": { "action": "today" }
+              "params": {
+                "action": "today"
+              }
             }
           ]
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true

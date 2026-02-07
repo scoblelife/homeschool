@@ -3,11 +3,9 @@ import { Ionicons } from '@expo/vector-icons'
 import { useDeviceType } from '../../src/hooks/useDeviceType'
 
 export default function TabLayout() {
-  const { isTablet, isLandscape } = useDeviceType()
+  const { isTablet } = useDeviceType()
 
-  // Tablet-specific styling
   const tabBarHeight = isTablet ? 64 : 50
-  const iconSize = isTablet ? 26 : 24
   const labelFontSize = isTablet ? 12 : 10
 
   return (
@@ -27,7 +25,6 @@ export default function TabLayout() {
         },
         headerStyle: {
           backgroundColor: '#fff',
-          // Larger header on tablets
           ...(isTablet && { height: 64 }),
         },
         headerTintColor: '#1f2937',
@@ -37,75 +34,99 @@ export default function TabLayout() {
         },
       }}
     >
+      {/* === 4 VISIBLE TABS === */}
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
-          tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+          title: 'Today',
+          tabBarIcon: ({ color, size }) => <Ionicons name="sunny" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
+        name="log"
+        options={{
+          title: 'Log',
+          tabBarIcon: ({ color, size }) => <Ionicons name="add-circle" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="progress"
+        options={{
+          title: 'Progress',
+          tabBarIcon: ({ color, size }) => <Ionicons name="trending-up" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="more"
+        options={{
+          title: 'More',
+          tabBarIcon: ({ color, size }) => <Ionicons name="grid" size={size} color={color} />,
+        }}
+      />
+
+      {/* === HIDDEN TABS (accessible via More screen stack navigation) === */}
+      <Tabs.Screen
         name="activities"
         options={{
+          href: null, // Hide from tab bar
           title: 'Activities',
-          tabBarIcon: ({ color, size }) => <Ionicons name="list" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="library"
         options={{
+          href: null,
           title: 'Library',
-          tabBarIcon: ({ color, size }) => <Ionicons name="book" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="milestones"
         options={{
+          href: null,
           title: 'Milestones',
-          tabBarIcon: ({ color, size }) => <Ionicons name="flag" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="planner"
         options={{
+          href: null,
           title: 'Planner',
-          tabBarIcon: ({ color, size }) => <Ionicons name="clipboard" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="calendar"
         options={{
+          href: null,
           title: 'Calendar',
-          tabBarIcon: ({ color, size }) => <Ionicons name="calendar" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="field-trips"
         options={{
+          href: null,
           title: 'Events',
-          tabBarIcon: ({ color, size }) => <Ionicons name="map" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="reports"
         options={{
+          href: null,
           title: 'Reports',
-          tabBarIcon: ({ color, size }) => <Ionicons name="bar-chart" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="sync"
         options={{
+          href: null,
           title: 'Sync',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => <Ionicons name="sync" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
+          href: null,
           title: 'Settings',
-          tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} />,
         }}
       />
     </Tabs>

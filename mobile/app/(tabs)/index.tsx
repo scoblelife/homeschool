@@ -1,63 +1,70 @@
 import { useEffect, useState, useCallback } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
-import { format, startOfWeek } from 'date-fns'
+import { Ionicons } from '@expo/vector-icons'
+import { format } from 'date-fns'
+import { useRouter } from 'expo-router'
 import { useStore } from '../../src/stores/useStore'
 import {
   getActivities,
   getSuggestedMilestones,
-  getStudentStarTotals,
-  getActiveFamilyGoal,
-  getFamilyTotalStars,
   getUpcomingFieldTrips,
+  getActivitySummary,
 } from '../../src/database'
-import type { Activity, Milestone, FamilyGoal, FieldTrip } from '../../src/types'
+import type { Activity, Milestone, FieldTrip } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { ActivityCard } from '../../src/components/ActivityCard'
 import { MilestoneCard } from '../../src/components/MilestoneCard'
-import { FieldTripCard } from '../../src/components/FieldTripCard'
-import { StarDisplay } from '../../src/components/StarDisplay'
-import { QuickAdd } from '../../src/components/QuickAdd'
 import { useDeviceType } from '../../src/hooks/useDeviceType'
-import { ResponsiveContainer, ResponsiveGrid } from '../../src/layouts'
 
-export default function Dashboard() {
+export default function TodayScreen() {
   const { selectedStudentId, getSelectedStudent, getSubjectById, students } = useStore()
-  const [recentActivities, setRecentActivities] = useState<Activity[]>([])
+  const [todayActivities, setTodayActivities] = useState<Activity[]>([])
   const [suggestedMilestones, setSuggestedMilestones] = useState<Milestone[]>([])
-  const [starTotals, setStarTotals] = useState({ weeklyTotal: 0, allTimeTotal: 0 })
-  const [familyGoal, setFamilyGoal] = useState<FamilyGoal | null>(null)
-  const [familyStars, setFamilyStars] = useState(0)
-  const [upcomingTrips, setUpcomingTrips] = useState<FieldTrip[]>([])
+  const [upcomingTrip, setUpcomingTrip] = useState<FieldTrip | null>(null)
+  const [weekStats, setWeekStats] = useState({ activities: 0, hours: 0, subjects: 0 })
   const [refreshing, setRefreshing] = useState(false)
+  const router = useRouter()
 
   const selectedStudent = getSelectedStudent()
-  const { isTablet, isLandscape, columns } = useDeviceType()
+  const { isTablet } = useDeviceType()
+
+  const today = format(new Date(), 'yyyy-MM-dd')
+  const todayDisplay = format(new Date(), 'EEEE, MMMM d')
 
   const loadData = useCallback(async () => {
     if (!selectedStudentId) return
 
     try {
-      const today = format(new Date(), 'yyyy-MM-dd')
+      // Get this week's date range
+      const now = new Date()
+      const dayOfWeek = now.getDay()
+      const weekStart = new Date(now)
+      weekStart.setDate(now.getDate() - dayOfWeek)
+      const weekStartStr = format(weekStart, 'yyyy-MM-dd')
 
-      const [activities, milestones, stars, goal, totalStars, trips] = await Promise.all([
+      const [activities, milestones, trips, summary] = await Promise.all([
         getActivities({ studentId: selectedStudentId, startDate: today, endDate: today }),
         getSuggestedMilestones(selectedStudentId, 3),
-        getStudentStarTotals(selectedStudentId),
-        getActiveFamilyGoal(),
-        getFamilyTotalStars(),
-        getUpcomingFieldTrips(selectedStudentId, 3),
+        getUpcomingFieldTrips(selectedStudentId, 1),
+        getActivitySummary(selectedStudentId, weekStartStr, today),
       ])
 
-      setRecentActivities(activities.slice(0, 5))
+      setTodayActivities(activities)
       setSuggestedMilestones(milestones)
-      setStarTotals(stars)
-      setFamilyGoal(goal)
-      setFamilyStars(totalStars)
-      setUpcomingTrips(trips)
+      setUpcomingTrip(trips.length > 0 ? trips[0] : null)
+
+      // Calculate week stats
+      const totalActivities = summary.reduce((sum, s) => sum + s.totalActivities, 0)
+      const totalMinutes = summary.reduce((sum, s) => sum + s.totalMinutes, 0)
+      setWeekStats({
+        activities: totalActivities,
+        hours: Math.round((totalMinutes / 60) * 10) / 10,
+        subjects: summary.length,
+      })
     } catch (err) {
-      console.error('Failed to load dashboard data:', err)
+      console.error('Failed to load today data:', err)
     }
-  }, [selectedStudentId])
+  }, [selectedStudentId, today])
 
   useEffect(() => {
     loadData()
@@ -81,127 +88,10 @@ export default function Dashboard() {
 
   const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
 
-  // Tablet layout: Two columns in landscape
-  const useTabletLayout = isTablet && isLandscape
-  const padding = isTablet ? 24 : 16
-  const cardPadding = isTablet ? 20 : 16
-
-  // Card style with responsive padding
-  const cardStyle = {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: cardPadding,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  }
-
-  // Stars and Goal card (left column on tablet)
-  const StarsGoalSection = () => (
-    <>
-      {/* Stars Section */}
-      <View style={[cardStyle, { marginBottom: 16 }]}>
-        <Text style={{ fontSize: isTablet ? 18 : 16, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>Stars Earned</Text>
-        <StarDisplay weeklyStars={starTotals.weeklyTotal} totalStars={starTotals.allTimeTotal} color={studentColor} />
-      </View>
-
-      {/* Family Goal */}
-      {familyGoal && (
-        <View style={[cardStyle, { marginBottom: 16 }]}>
-          <Text style={{ fontSize: isTablet ? 18 : 16, fontWeight: '600', color: '#1f2937', marginBottom: 8 }}>Family Goal</Text>
-          <Text style={{ fontSize: 14, color: '#6b7280' }}>{familyGoal.title}</Text>
-          <View style={{ marginTop: 8 }}>
-            <View style={{ height: 8, backgroundColor: '#e5e7eb', borderRadius: 4, overflow: 'hidden' }}>
-              <View
-                style={{
-                  height: '100%',
-                  backgroundColor: '#10b981',
-                  borderRadius: 4,
-                  width: `${Math.min((familyStars / familyGoal.starTarget) * 100, 100)}%`,
-                }}
-              />
-            </View>
-            <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
-              {familyStars} / {familyGoal.starTarget} stars
-            </Text>
-          </View>
-          {familyGoal.rewardDescription && (
-            <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>Reward: {familyGoal.rewardDescription}</Text>
-          )}
-        </View>
-      )}
-
-      {/* Upcoming Events - shows in left column on tablet */}
-      {useTabletLayout && (
-        <View>
-          <Text style={{ fontSize: isTablet ? 18 : 16, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>Upcoming Events</Text>
-          {upcomingTrips.length === 0 ? (
-            <View style={[cardStyle, { alignItems: 'center' }]}>
-              <Text style={{ color: '#9ca3af' }}>No upcoming events</Text>
-            </View>
-          ) : (
-            upcomingTrips.map((trip) => <FieldTripCard key={trip.id} fieldTrip={trip} />)
-          )}
-        </View>
-      )}
-    </>
-  )
-
-  // Activities and Milestones section (right column on tablet)
-  const ActivitiesMilestonesSection = () => (
-    <>
-      {/* Today's Activities */}
-      <View style={{ marginBottom: 16 }}>
-        <Text style={{ fontSize: isTablet ? 18 : 16, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>Today's Activities</Text>
-        {recentActivities.length === 0 ? (
-          <View style={[cardStyle, { alignItems: 'center' }]}>
-            <Text style={{ color: '#9ca3af' }}>No activities logged today</Text>
-          </View>
-        ) : (
-          recentActivities.map((activity) => (
-            <ActivityCard
-              key={activity.id}
-              activity={activity}
-              subject={getSubjectById(activity.subjectId)}
-            />
-          ))
-        )}
-      </View>
-
-      {/* Suggested Milestones */}
-      <View style={{ marginBottom: 16 }}>
-        <Text style={{ fontSize: isTablet ? 18 : 16, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>Focus On</Text>
-        {suggestedMilestones.length === 0 ? (
-          <View style={[cardStyle, { alignItems: 'center' }]}>
-            <Text style={{ color: '#9ca3af' }}>No milestones to suggest</Text>
-          </View>
-        ) : (
-          suggestedMilestones.map((milestone) => (
-            <MilestoneCard
-              key={milestone.id}
-              milestone={milestone}
-              subject={getSubjectById(milestone.subjectId)}
-            />
-          ))
-        )}
-      </View>
-
-      {/* Upcoming Events - shows at bottom on phone */}
-      {!useTabletLayout && (
-        <View style={{ marginBottom: 24 }}>
-          <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>Upcoming Events</Text>
-          {upcomingTrips.length === 0 ? (
-            <View style={[cardStyle, { alignItems: 'center' }]}>
-              <Text style={{ color: '#9ca3af' }}>No upcoming events</Text>
-            </View>
-          ) : (
-            upcomingTrips.map((trip) => <FieldTripCard key={trip.id} fieldTrip={trip} />)
-          )}
-        </View>
-      )}
-    </>
-  )
+  // Compliance health: simple green/yellow based on this week's activity
+  const isOnTrack = weekStats.activities >= 3 || weekStats.hours >= 2
+  const healthColor = isOnTrack ? '#10b981' : '#f59e0b'
+  const healthLabel = isOnTrack ? 'On track' : 'Light week'
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
@@ -209,34 +99,122 @@ export default function Dashboard() {
         style={{ flex: 1 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
       >
-        <View style={{ padding, maxWidth: isTablet ? 1200 : undefined, alignSelf: 'center', width: '100%' }}>
-          {/* Student Selector */}
+        <View style={{ padding: isTablet ? 24 : 16, maxWidth: isTablet ? 800 : undefined, alignSelf: 'center', width: '100%' }}>
+          {/* Date + Student + Health */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <View>
+              <Text style={{ fontSize: 22, fontWeight: '700', color: '#1f2937' }}>{todayDisplay}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: healthColor + '20', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: healthColor }} />
+              <Text style={{ fontSize: 12, fontWeight: '500', color: healthColor }}>{healthLabel}</Text>
+            </View>
+          </View>
+
           <StudentSelector />
 
-          {/* Two-column layout for tablets in landscape */}
-          {useTabletLayout ? (
-            <View style={{ flexDirection: 'row', marginTop: 16, gap: 24 }}>
-              {/* Left column: Stars, Goal, Events */}
-              <View style={{ width: '35%' }}>
-                <StarsGoalSection />
-              </View>
-              {/* Right column: Activities, Milestones */}
-              <View style={{ flex: 1 }}>
-                <ActivitiesMilestonesSection />
-              </View>
+          {/* This Week Stats */}
+          <View style={{ flexDirection: 'row', gap: 8, marginTop: 16 }}>
+            <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, alignItems: 'center' }}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: '#1f2937' }}>{weekStats.activities}</Text>
+              <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>Activities</Text>
             </View>
-          ) : (
-            /* Single column layout for phones and portrait tablets */
-            <View style={{ marginTop: 16 }}>
-              <StarsGoalSection />
-              <ActivitiesMilestonesSection />
+            <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, alignItems: 'center' }}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: '#1f2937' }}>{weekStats.hours}</Text>
+              <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>Hours</Text>
+            </View>
+            <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, alignItems: 'center' }}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: '#1f2937' }}>{weekStats.subjects}</Text>
+              <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>Subjects</Text>
+            </View>
+          </View>
+
+          {/* Upcoming Event Banner */}
+          {upcomingTrip && (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => router.push('/(tabs)/field-trips')}
+              style={{
+                marginTop: 16,
+                backgroundColor: '#fef3c7',
+                borderRadius: 12,
+                padding: 12,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+              }}
+            >
+              <Ionicons name="calendar" size={20} color="#f59e0b" />
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: '#92400e' }}>{upcomingTrip.title}</Text>
+                <Text style={{ fontSize: 12, color: '#b45309' }}>
+                  {upcomingTrip.date === today ? 'Today' : format(new Date(upcomingTrip.date + 'T12:00:00'), 'EEE, MMM d')}
+                  {upcomingTrip.startTime && ` at ${upcomingTrip.startTime}`}
+                  {upcomingTrip.location && ` · ${upcomingTrip.location}`}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={16} color="#b45309" />
+            </TouchableOpacity>
+          )}
+
+          {/* Today's Activities */}
+          <View style={{ marginTop: 20 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>Today's Activities</Text>
+              <TouchableOpacity onPress={() => router.push('/(tabs)/log' as any)}>
+                <Text style={{ fontSize: 13, fontWeight: '500', color: studentColor }}>+ Log</Text>
+              </TouchableOpacity>
+            </View>
+
+            {todayActivities.length === 0 ? (
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/log' as any)}
+                activeOpacity={0.8}
+                style={{
+                  backgroundColor: '#fff',
+                  borderRadius: 12,
+                  padding: 24,
+                  alignItems: 'center',
+                  borderWidth: 1,
+                  borderColor: '#e5e7eb',
+                  borderStyle: 'dashed',
+                }}
+              >
+                <Ionicons name="add-circle-outline" size={32} color="#d1d5db" />
+                <Text style={{ color: '#9ca3af', fontSize: 15, marginTop: 8 }}>Nothing logged yet</Text>
+                <Text style={{ color: studentColor, fontSize: 14, fontWeight: '500', marginTop: 4 }}>Tap to log an activity</Text>
+              </TouchableOpacity>
+            ) : (
+              todayActivities.map((activity) => (
+                <ActivityCard
+                  key={activity.id}
+                  activity={activity}
+                  subject={getSubjectById(activity.subjectId)}
+                />
+              ))
+            )}
+          </View>
+
+          {/* Focus On (Suggested Milestones) */}
+          {suggestedMilestones.length > 0 && (
+            <View style={{ marginTop: 20 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>Focus On</Text>
+                <TouchableOpacity onPress={() => router.push('/(tabs)/milestones')}>
+                  <Text style={{ fontSize: 13, fontWeight: '500', color: studentColor }}>All</Text>
+                </TouchableOpacity>
+              </View>
+              {suggestedMilestones.map((milestone) => (
+                <MilestoneCard
+                  key={milestone.id}
+                  milestone={milestone}
+                  subject={getSubjectById(milestone.subjectId)}
+                />
+              ))}
             </View>
           )}
         </View>
       </ScrollView>
-
-      {/* Quick Add FAB */}
-      <QuickAdd onActivityCreated={loadData} />
     </View>
   )
 }

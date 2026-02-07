@@ -4,24 +4,29 @@ import { Ionicons } from '@expo/vector-icons'
 import { format, parseISO } from 'date-fns'
 import { useStore } from '../../src/stores/useStore'
 import { getFieldTrips, createFieldTrip, updateFieldTrip, deleteFieldTrip } from '../../src/database'
-import type { FieldTrip, CreateFieldTrip, FieldTripStatus, EventActivityType } from '../../src/types'
+import type { FieldTrip, CreateFieldTrip, UniversalStatus, EventCategory } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
-import { Card, Badge, Button, EmptyState, FAB, Modal, Input, TextArea, Chip, ChipGroup } from '../../src/components/ui'
+import { Card, Badge, Button, EmptyState, FAB, Modal, Input, TextArea, DatePicker, TimePicker } from '../../src/components/ui'
 
-const activityTypeOptions: { value: EventActivityType; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
-  { value: 'field_trip', label: 'Field Trip', icon: 'bus' },
-  { value: 'park_day', label: 'Park Day', icon: 'leaf' },
-  { value: 'game_night', label: 'Game Night', icon: 'game-controller' },
-  { value: 'playdate', label: 'Playdate', icon: 'people' },
-  { value: 'coop_class', label: 'Co-op Class', icon: 'school' },
-  { value: 'custom', label: 'Custom', icon: 'calendar' },
+const eventCategoryOptions: { value: EventCategory; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+  { value: 'educational', label: 'Educational', icon: 'school' },
+  { value: 'social', label: 'Social', icon: 'people' },
+  { value: 'coop', label: 'Co-op', icon: 'library' },
 ]
 
-const statusOptions: { value: FieldTripStatus; label: string }[] = [
-  { value: 'planned', label: 'Planned' },
+const statusOptions: { value: UniversalStatus; label: string }[] = [
+  { value: 'not_started', label: 'Planned' },
+  { value: 'in_progress', label: 'In Progress' },
   { value: 'completed', label: 'Completed' },
   { value: 'cancelled', label: 'Cancelled' },
 ]
+
+const statusLabels: Record<UniversalStatus, string> = {
+  not_started: 'Planned',
+  in_progress: 'In Progress',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+}
 
 export default function FieldTripsScreen() {
   const { selectedStudentId, getSelectedStudent, students, subjects } = useStore()
@@ -30,10 +35,10 @@ export default function FieldTripsScreen() {
   const [modalVisible, setModalVisible] = useState(false)
   const [detailModalVisible, setDetailModalVisible] = useState(false)
   const [selectedTrip, setSelectedTrip] = useState<FieldTrip | null>(null)
-  const [filter, setFilter] = useState<'all' | FieldTripStatus>('all')
+  const [filter, setFilter] = useState<'all' | UniversalStatus>('all')
   const [newTrip, setNewTrip] = useState<Partial<CreateFieldTrip>>({
-    activityType: 'field_trip',
-    status: 'planned',
+    eventCategory: 'educational',
+    status: 'not_started',
     date: format(new Date(), 'yyyy-MM-dd'),
     studentIds: [],
     subjectIds: [],
@@ -76,13 +81,13 @@ export default function FieldTripsScreen() {
     try {
       await createFieldTrip({
         title: newTrip.title,
-        activityType: newTrip.activityType || 'field_trip',
+        eventCategory: newTrip.eventCategory || 'educational',
         location: newTrip.location,
         description: newTrip.description,
         date: newTrip.date,
         startTime: newTrip.startTime,
         endTime: newTrip.endTime,
-        status: newTrip.status || 'planned',
+        status: newTrip.status || 'not_started',
         studentIds: newTrip.studentIds?.length ? newTrip.studentIds : students.map((s) => s.id),
         subjectIds: newTrip.subjectIds || [],
         cost: newTrip.cost,
@@ -93,8 +98,8 @@ export default function FieldTripsScreen() {
 
       setModalVisible(false)
       setNewTrip({
-        activityType: 'field_trip',
-        status: 'planned',
+        eventCategory: 'educational',
+        status: 'not_started',
         date: format(new Date(), 'yyyy-MM-dd'),
         studentIds: [],
         subjectIds: [],
@@ -106,7 +111,7 @@ export default function FieldTripsScreen() {
     }
   }
 
-  const handleUpdateStatus = async (trip: FieldTrip, newStatus: FieldTripStatus) => {
+  const handleUpdateStatus = async (trip: FieldTrip, newStatus: UniversalStatus) => {
     try {
       await updateFieldTrip(trip.id, { status: newStatus })
       await loadFieldTrips()
@@ -138,10 +143,12 @@ export default function FieldTripsScreen() {
     ])
   }
 
-  const getStatusBadgeVariant = (status: FieldTripStatus) => {
+  const getStatusBadgeVariant = (status: UniversalStatus) => {
     switch (status) {
-      case 'planned':
+      case 'not_started':
         return 'info' as const
+      case 'in_progress':
+        return 'warning' as const
       case 'completed':
         return 'success' as const
       case 'cancelled':
@@ -162,7 +169,7 @@ export default function FieldTripsScreen() {
             <View style={{ flexDirection: 'row', gap: 8 }}>
               {[
                 { key: 'all', label: 'All' },
-                { key: 'planned', label: 'Planned' },
+                { key: 'not_started', label: 'Planned' },
                 { key: 'completed', label: 'Completed' },
                 { key: 'cancelled', label: 'Cancelled' },
               ].map((item) => (
@@ -199,7 +206,7 @@ export default function FieldTripsScreen() {
               />
             ) : (
               fieldTrips.map((trip) => {
-                const typeOption = activityTypeOptions.find((t) => t.value === trip.activityType)
+                const categoryOption = eventCategoryOptions.find((t) => t.value === trip.eventCategory)
 
                 return (
                   <TouchableOpacity
@@ -223,7 +230,7 @@ export default function FieldTripsScreen() {
                             marginRight: 12,
                           }}
                         >
-                          <Ionicons name={typeOption?.icon || 'calendar'} size={20} color="#d946ef" />
+                          <Ionicons name={categoryOption?.icon || 'calendar'} size={20} color="#d946ef" />
                         </View>
                         <View style={{ flex: 1 }}>
                           <Text style={{ fontSize: 15, fontWeight: '600', color: '#1f2937' }}>{trip.title}</Text>
@@ -242,8 +249,8 @@ export default function FieldTripsScreen() {
                       </View>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
                         <View style={{ flexDirection: 'row', gap: 6 }}>
-                          <Badge variant="primary">{typeOption?.label || 'Event'}</Badge>
-                          <Badge variant={getStatusBadgeVariant(trip.status)}>{trip.status}</Badge>
+                          <Badge variant="primary">{categoryOption?.label || 'Event'}</Badge>
+                          <Badge variant={getStatusBadgeVariant(trip.status)}>{statusLabels[trip.status]}</Badge>
                         </View>
                         {trip.cost && <Text style={{ fontSize: 12, color: '#6b7280' }}>${trip.cost.toFixed(2)}</Text>}
                       </View>
@@ -283,41 +290,38 @@ export default function FieldTripsScreen() {
           placeholder="Natural History Museum"
         />
 
-        <Input
+        <DatePicker
           label="Date *"
           value={newTrip.date || ''}
-          onChangeText={(text) => setNewTrip({ ...newTrip, date: text })}
-          placeholder="2024-03-15"
+          onChange={(date) => setNewTrip({ ...newTrip, date })}
         />
 
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
           <View style={{ flex: 1 }}>
-            <Input
+            <TimePicker
               label="Start Time"
               value={newTrip.startTime || ''}
-              onChangeText={(text) => setNewTrip({ ...newTrip, startTime: text })}
-              placeholder="10:00"
+              onChange={(time) => setNewTrip({ ...newTrip, startTime: time })}
               containerStyle={{ marginBottom: 0 }}
             />
           </View>
           <View style={{ flex: 1 }}>
-            <Input
+            <TimePicker
               label="End Time"
               value={newTrip.endTime || ''}
-              onChangeText={(text) => setNewTrip({ ...newTrip, endTime: text })}
-              placeholder="14:00"
+              onChange={(time) => setNewTrip({ ...newTrip, endTime: time })}
               containerStyle={{ marginBottom: 0 }}
             />
           </View>
         </View>
 
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Event Type</Text>
+        <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Event Category</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', gap: 8 }}>
-            {activityTypeOptions.map((type) => (
+            {eventCategoryOptions.map((category) => (
               <TouchableOpacity
-                key={type.value}
-                onPress={() => setNewTrip({ ...newTrip, activityType: type.value })}
+                key={category.value}
+                onPress={() => setNewTrip({ ...newTrip, eventCategory: category.value })}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -325,16 +329,16 @@ export default function FieldTripsScreen() {
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                   borderRadius: 8,
-                  backgroundColor: newTrip.activityType === type.value ? studentColor : '#f3f4f6',
+                  backgroundColor: newTrip.eventCategory === category.value ? studentColor : '#f3f4f6',
                 }}
               >
                 <Ionicons
-                  name={type.icon}
+                  name={category.icon}
                   size={16}
-                  color={newTrip.activityType === type.value ? '#fff' : '#6b7280'}
+                  color={newTrip.eventCategory === category.value ? '#fff' : '#6b7280'}
                 />
-                <Text style={{ color: newTrip.activityType === type.value ? '#fff' : '#6b7280' }}>
-                  {type.label}
+                <Text style={{ color: newTrip.eventCategory === category.value ? '#fff' : '#6b7280' }}>
+                  {category.label}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -384,7 +388,7 @@ export default function FieldTripsScreen() {
           title="Event Details"
           footer={
             <View style={{ gap: 8 }}>
-              {selectedTrip.status === 'planned' && (
+              {selectedTrip.status === 'not_started' && (
                 <Button
                   onPress={() => handleUpdateStatus(selectedTrip, 'completed')}
                   color="#10b981"
@@ -405,9 +409,9 @@ export default function FieldTripsScreen() {
 
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
             <Badge variant="primary">
-              {activityTypeOptions.find((t) => t.value === selectedTrip.activityType)?.label || 'Event'}
+              {eventCategoryOptions.find((t) => t.value === selectedTrip.eventCategory)?.label || 'Event'}
             </Badge>
-            <Badge variant={getStatusBadgeVariant(selectedTrip.status)}>{selectedTrip.status}</Badge>
+            <Badge variant={getStatusBadgeVariant(selectedTrip.status)}>{statusLabels[selectedTrip.status]}</Badge>
           </View>
 
           <View style={{ gap: 12, marginBottom: 16 }}>

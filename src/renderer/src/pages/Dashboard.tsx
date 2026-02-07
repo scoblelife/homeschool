@@ -3,18 +3,10 @@ import { format, parseISO, isFuture, isToday } from "date-fns";
 import { Link } from "react-router-dom";
 import { getStudentColor } from "./Settings";
 import QuickAdd from "../components/QuickAdd";
-import { VoiceInput } from "../features/voiceInput";
 import { RecurringActivities } from "../features/recurring";
 import { Timer } from "../features/timer";
 import { StreakDisplay, useStreakTracking } from "../features/streaks";
-import { SubjectBalance } from "../features/balance";
-import { AchievementCard } from "../features/celebrations";
-import {
-  ActivitySuggestions,
-  LearningPatterns,
-  CompliancePrediction,
-  ChatLogger,
-} from "../features/aiInsights";
+import { CompliancePrediction } from "../features/aiInsights";
 import {
   ErrorBoundary,
   WidgetErrorFallback,
@@ -26,7 +18,6 @@ import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
-import { RecommendedResourcesCard } from "../features/sponsored/RecommendedResourcesCard";
 import { IconBadge } from "../components/dashboard/IconBadge";
 import { ProgressBar } from "../components/dashboard/ProgressBar";
 
@@ -82,12 +73,13 @@ export default function Dashboard(): JSX.Element {
     setTodaySessions(sessions);
     setRecentActivities(activities.slice(0, 5));
 
-    // Filter to only upcoming/today field trips that are planned
+    // Filter to only upcoming/today field trips that are not started or in progress
     const upcoming = fieldTrips
       .filter((trip) => {
         const tripDate = toDate(trip.date);
         return (
-          (isFuture(tripDate) || isToday(tripDate)) && trip.status === "planned"
+          (isFuture(tripDate) || isToday(tripDate)) &&
+          (trip.status === "not_started" || trip.status === "in_progress")
         );
       })
       .sort((a, b) => toDate(a.date).getTime() - toDate(b.date).getTime())
@@ -161,12 +153,86 @@ export default function Dashboard(): JSX.Element {
           </div>
         }
       />
+
+      {/* ═══ ACTION ZONE ═══ */}
+
       {/* Recurring Activities - Today's Schedule */}
       <RecurringActivities onActivityCreated={handleActivityCreated} />
+
       {/* Session Timer */}
       <div className="mb-6">
         <Timer onSessionSaved={handleActivityCreated} />
       </div>
+
+      {/* ═══ SNAPSHOT ═══ */}
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <Card className="hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-3">
+            <IconBadge icon="📚" variant="blue" />
+            <div>
+              <div className="text-sm font-medium text-gray-500">
+                Today's Sessions
+              </div>
+              <div className="text-2xl font-bold text-gray-900">
+                {todaySessions.length}
+              </div>
+            </div>
+          </div>
+        </Card>
+        <Card className="hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-3">
+            <IconBadge icon="✏️" variant="success" />
+            <div>
+              <div className="text-sm font-medium text-gray-500">
+                Recent Activities
+              </div>
+              <div className="text-2xl font-bold text-gray-900">
+                {recentActivities.length}
+              </div>
+            </div>
+          </div>
+        </Card>
+        <Card className="hover:shadow-md transition-shadow">
+          <div className="flex items-center gap-3">
+            <IconBadge icon="🎯" variant="purple" />
+            <div>
+              <div className="text-sm font-medium text-gray-500">Subjects</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {subjects.length}
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Compliance + Streak row */}
+      {selectedStudent && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <ErrorBoundary fallback={<WidgetErrorFallback />}>
+            <CompliancePrediction
+              studentId={selectedStudent.id}
+              studentName={selectedStudent.name}
+            />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={<WidgetErrorFallback />}>
+            <StreakDisplay
+              studentId={selectedStudent.id}
+              studentName={selectedStudent.name}
+              studentColor={selectedStudent.color}
+            />
+          </ErrorBoundary>
+        </div>
+      )}
+
+      {/* Compliance Deadlines */}
+      <div className="mb-6">
+        <ErrorBoundary fallback={<WidgetErrorFallback />}>
+          <ComplianceDeadlines compact />
+        </ErrorBoundary>
+      </div>
+
       {/* Milestone Progress (when student selected) */}
       {selectedStudent && milestones.length > 0 && (
         <Card className="mb-6 bg-gradient-to-r from-brand-primaryLight to-student-purple-50 border-brand-primaryLight">
@@ -213,138 +279,12 @@ export default function Dashboard(): JSX.Element {
           </div>
         </Card>
       )}
-      {/* Streak Display (when student selected) */}
-      {selectedStudent && (
-        <div className="mb-6">
-          <ErrorBoundary fallback={<WidgetErrorFallback />}>
-            <StreakDisplay
-              studentId={selectedStudent.id}
-              studentName={selectedStudent.name}
-              studentColor={selectedStudent.color}
-            />
-          </ErrorBoundary>
-        </div>
-      )}
-      {/* Subject Balance (when student selected) */}
-      {selectedStudent && (
-        <div className="mb-6">
-          <ErrorBoundary fallback={<WidgetErrorFallback />}>
-            <SubjectBalance
-              studentId={selectedStudent.id}
-              studentName={selectedStudent.name}
-              subjects={subjects}
-            />
-          </ErrorBoundary>
-        </div>
-      )}
-      {/* Recommended Resources (when student selected) */}
-      {selectedStudent && (
-        <div className="mb-6">
-          <ErrorBoundary fallback={<WidgetErrorFallback />}>
-            <RecommendedResourcesCard
-              studentId={selectedStudent.id}
-              studentName={selectedStudent.name}
-              gradeLevel={selectedStudent.gradeLevel}
-            />
-          </ErrorBoundary>
-        </div>
-      )}
-      {/* Achievements (when student selected) */}
-      {selectedStudent && (
-        <div className="mb-6">
-          <ErrorBoundary fallback={<WidgetErrorFallback />}>
-            <AchievementCard
-              studentId={selectedStudent.id}
-              studentName={selectedStudent.name}
-            />
-          </ErrorBoundary>
-        </div>
-      )}
-      {/* AI Activity Suggestions (when student selected) */}
-      {selectedStudent && (
-        <div className="mb-6">
-          <ErrorBoundary fallback={<WidgetErrorFallback />}>
-            <ActivitySuggestions
-              studentId={selectedStudent.id}
-              studentName={selectedStudent.name}
-              gradeLevel={selectedStudent.gradeLevel}
-              subjects={subjects}
-            />
-          </ErrorBoundary>
-        </div>
-      )}
-      {/* AI Learning Patterns (when student selected) */}
-      {selectedStudent && (
-        <div className="mb-6">
-          <ErrorBoundary fallback={<WidgetErrorFallback />}>
-            <LearningPatterns
-              studentId={selectedStudent.id}
-              studentName={selectedStudent.name}
-              gradeLevel={selectedStudent.gradeLevel}
-            />
-          </ErrorBoundary>
-        </div>
-      )}
-      {/* Compliance Prediction (when student selected) */}
-      {selectedStudent && (
-        <div className="mb-6">
-          <ErrorBoundary fallback={<WidgetErrorFallback />}>
-            <CompliancePrediction
-              studentId={selectedStudent.id}
-              studentName={selectedStudent.name}
-            />
-          </ErrorBoundary>
-        </div>
-      )}
-      {/* Compliance Deadlines */}
-      <div className="mb-6">
-        <ErrorBoundary fallback={<WidgetErrorFallback />}>
-          <ComplianceDeadlines compact />
-        </ErrorBoundary>
-      </div>
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3">
-            <IconBadge icon="📚" variant="blue" />
-            <div>
-              <div className="text-sm font-medium text-gray-500">
-                Today's Sessions
-              </div>
-              <div className="text-2xl font-bold text-gray-900">
-                {todaySessions.length}
-              </div>
-            </div>
-          </div>
-        </Card>
-        <Card className="hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3">
-            <IconBadge icon="✏️" variant="success" />
-            <div>
-              <div className="text-sm font-medium text-gray-500">
-                Recent Activities
-              </div>
-              <div className="text-2xl font-bold text-gray-900">
-                {recentActivities.length}
-              </div>
-            </div>
-          </div>
-        </Card>
-        <Card className="hover:shadow-md transition-shadow">
-          <div className="flex items-center gap-3">
-            <IconBadge icon="🎯" variant="purple" />
-            <div>
-              <div className="text-sm font-medium text-gray-500">Subjects</div>
-              <div className="text-2xl font-bold text-gray-900">
-                {subjects.length}
-              </div>
-            </div>
-          </div>
-        </Card>
-      </div>
+
+      {/* ═══ DETAILS ═══ */}
+
       {/* Upcoming Field Trips */}
       {upcomingFieldTrips.length > 0 && (
-        <Card className="mb-8 bg-gradient-to-r from-status-warningLight to-student-orange-50 border-status-warningLight">
+        <Card className="mb-6 bg-gradient-to-r from-status-warningLight to-student-orange-50 border-status-warningLight">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
               <span>🚌</span> Upcoming Field Trips
@@ -405,7 +345,8 @@ export default function Dashboard(): JSX.Element {
           </div>
         </Card>
       )}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Today's Sessions */}
         <Card>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -448,9 +389,17 @@ export default function Dashboard(): JSX.Element {
 
         {/* Recent Activities */}
         <Card>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Recent Activities
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Recent Activities
+            </h2>
+            <Link
+              to="/log"
+              className="text-sm text-brand-primary hover:text-brand-primaryDark"
+            >
+              View All →
+            </Link>
+          </div>
           {recentActivities.length === 0 ? (
             <p className="text-gray-500 text-sm">No activities recorded yet.</p>
           ) : (
@@ -487,9 +436,10 @@ export default function Dashboard(): JSX.Element {
           )}
         </Card>
       </div>
+
       {/* Focus This Week - Suggested Milestones */}
       {selectedStudent && suggestedMilestones.length > 0 && (
-        <div className="mt-8">
+        <div className="mt-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
               Focus This Week
@@ -539,9 +489,10 @@ export default function Dashboard(): JSX.Element {
           </div>
         </div>
       )}
+
       {/* Students Overview (if no student selected) */}
       {!selectedStudentId && students.length > 0 && (
-        <div className="mt-8">
+        <div className="mt-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Students</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {students.map((student) => {
@@ -583,16 +534,9 @@ export default function Dashboard(): JSX.Element {
           </div>
         </div>
       )}
-      {/* Quick Add FAB */}
+
+      {/* Single Quick Add FAB */}
       <QuickAdd onActivityCreated={handleActivityCreated} />
-      {/* Voice Input FAB */}
-      <VoiceInput onActivityCreated={handleActivityCreated} />
-      {/* Chat Logger FAB */}
-      <ChatLogger
-        students={students}
-        subjects={subjects}
-        onActivitiesCreated={handleActivityCreated}
-      />
     </PageContainer>
   );
 }

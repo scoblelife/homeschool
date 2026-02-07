@@ -15,29 +15,30 @@ import {
 } from 'date-fns'
 import { useStore } from '../../src/stores/useStore'
 import { getActivities, getFieldTrips } from '../../src/database'
-import type { Activity, FieldTrip } from '../../src/types'
+import type { Activity, FieldTrip, EventCategory, UniversalStatus } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, EmptyState } from '../../src/components/ui'
 
 const activityTypeIcons: Record<string, string> = {
-  worksheet: '📝',
-  video: '🎬',
-  reading: '📖',
-  writing_print: '✏️',
-  writing_cursive: '✍️',
-  hands_on: '🎨',
-  game: '🎮',
-  assessment: '📋',
-  field_trip: '🚌',
+  worksheet: '',
+  video: '',
+  reading: '',
+  writing: '',
+  hands_on: '',
+  interactive: '',
 }
 
-const fieldTripTypeColors: Record<string, { bg: string; color: string; icon: string }> = {
-  field_trip: { bg: '#fef3c7', color: '#f59e0b', icon: '🚌' },
-  park_day: { bg: '#dcfce7', color: '#22c55e', icon: '🌳' },
-  game_night: { bg: '#fdf4ff', color: '#d946ef', icon: '🎲' },
-  playdate: { bg: '#e0f2fe', color: '#14b8a6', icon: '👋' },
-  coop_class: { bg: '#dbeafe', color: '#3b82f6', icon: '📚' },
-  custom: { bg: '#f3f4f6', color: '#6b7280', icon: '📅' },
+const eventCategoryColors: Record<EventCategory, { bg: string; color: string; icon: string }> = {
+  educational: { bg: '#fef3c7', color: '#f59e0b', icon: '' },
+  social: { bg: '#dcfce7', color: '#22c55e', icon: '' },
+  coop: { bg: '#dbeafe', color: '#3b82f6', icon: '' },
+}
+
+const statusLabels: Record<UniversalStatus, string> = {
+  not_started: 'Planned',
+  in_progress: 'In Progress',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
 }
 
 export default function CalendarScreen() {
@@ -169,8 +170,8 @@ export default function CalendarScreen() {
                 } else if (isToday) {
                   bgColor = '#fef9c3'
                 } else if (hasFieldTrip && isCurrentMonth) {
-                  const tripType = events.fieldTrips[0].activityType || 'field_trip'
-                  bgColor = fieldTripTypeColors[tripType]?.bg || '#fef3c7'
+                  const category = events.fieldTrips[0].eventCategory || 'educational'
+                  bgColor = eventCategoryColors[category]?.bg || '#fef3c7'
                 }
 
                 return (
@@ -200,7 +201,7 @@ export default function CalendarScreen() {
                     {hasEvents && isCurrentMonth && !isSelected && (
                       <View style={{ flexDirection: 'row', gap: 2, marginTop: 2 }}>
                         {events.fieldTrips.slice(0, 2).map((trip, i) => {
-                          const tripType = trip.activityType || 'field_trip'
+                          const category = trip.eventCategory || 'educational'
                           return (
                             <View
                               key={i}
@@ -208,7 +209,7 @@ export default function CalendarScreen() {
                                 width: 4,
                                 height: 4,
                                 borderRadius: 2,
-                                backgroundColor: fieldTripTypeColors[tripType]?.color || '#d97706',
+                                backgroundColor: eventCategoryColors[category]?.color || '#d97706',
                               }}
                             />
                           )
@@ -238,8 +239,16 @@ export default function CalendarScreen() {
               <Text style={{ fontSize: 11, color: '#6b7280' }}>Activities</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#d97706' }} />
-              <Text style={{ fontSize: 11, color: '#6b7280' }}>Events</Text>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#f59e0b' }} />
+              <Text style={{ fontSize: 11, color: '#6b7280' }}>Educational</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#22c55e' }} />
+              <Text style={{ fontSize: 11, color: '#6b7280' }}>Social</Text>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#3b82f6' }} />
+              <Text style={{ fontSize: 11, color: '#6b7280' }}>Co-op</Text>
             </View>
           </View>
 
@@ -261,8 +270,8 @@ export default function CalendarScreen() {
                   Events ({selectedDayEvents.fieldTrips.length})
                 </Text>
                 {selectedDayEvents.fieldTrips.map((trip) => {
-                  const tripType = trip.activityType || 'field_trip'
-                  const colors = fieldTripTypeColors[tripType] || fieldTripTypeColors.field_trip
+                  const category = trip.eventCategory || 'educational'
+                  const colors = eventCategoryColors[category] || eventCategoryColors.educational
                   const tripStudents = students.filter((s) => trip.studentIds.includes(s.id))
 
                   return (
@@ -283,7 +292,7 @@ export default function CalendarScreen() {
                         <Badge
                           variant={trip.status === 'completed' ? 'success' : trip.status === 'cancelled' ? 'default' : 'primary'}
                         >
-                          {trip.status}
+                          {statusLabels[trip.status]}
                         </Badge>
                       </View>
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 4 }}>
@@ -313,7 +322,7 @@ export default function CalendarScreen() {
                 selectedDayEvents.activities.map((activity) => {
                   const student = students.find((s) => s.id === activity.studentId)
                   const subject = getSubjectById(activity.subjectId)
-                  const icon = activityTypeIcons[activity.activityType] || '📝'
+                  const icon = activityTypeIcons[activity.activityType] || ''
 
                   return (
                     <View

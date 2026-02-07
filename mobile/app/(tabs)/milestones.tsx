@@ -8,7 +8,7 @@ import type { Milestone, UpdateMilestone } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, Button, EmptyState, FAB, Modal, Input, ProgressBar } from '../../src/components/ui'
 
-const statusOrder = ['in_progress', 'not_started', 'completed'] as const
+const statusOrder = ['in_progress', 'not_started', 'completed', 'cancelled'] as const
 
 export default function MilestonesScreen() {
   const { selectedStudentId, getSelectedStudent, getSubjectById, subjects } = useStore()
@@ -186,10 +186,11 @@ export default function MilestonesScreen() {
             ) : (
               filteredMilestones.map((milestone) => {
                 const subject = getSubjectById(milestone.subjectId)
-                const statusColors = {
-                  not_started: { variant: 'default' as const },
-                  in_progress: { variant: 'warning' as const },
-                  completed: { variant: 'success' as const },
+                const statusColors: Record<string, { variant: 'default' | 'warning' | 'success' | 'danger' }> = {
+                  not_started: { variant: 'default' },
+                  in_progress: { variant: 'warning' },
+                  completed: { variant: 'success' },
+                  cancelled: { variant: 'danger' },
                 }
 
                 return (

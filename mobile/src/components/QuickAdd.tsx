@@ -34,19 +34,23 @@ interface RecentActivityTemplate {
   title: string;
   subjectId: string;
   activityType: ActivityType;
+  activitySubType?: string;
   studentId: string;
   count: number;
 }
 
-const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
+const activityTypes: {
+  value: ActivityType;
+  label: string;
+  icon: string;
+  subType?: string;
+}[] = [
   { value: "worksheet", label: "Worksheet", icon: "" },
   { value: "video", label: "Video", icon: "" },
   { value: "reading", label: "Reading", icon: "" },
-  { value: "writing_print", label: "Print", icon: "" },
-  { value: "writing_cursive", label: "Cursive", icon: "" },
+  { value: "writing", label: "Writing", icon: "" },
   { value: "hands_on", label: "Hands-on", icon: "" },
-  { value: "game", label: "Game", icon: "" },
-  { value: "assessment", label: "Test", icon: "" },
+  { value: "interactive", label: "Interactive", icon: "" },
 ];
 
 const durationOptions = [15, 30, 45, 60, 90];
@@ -97,6 +101,7 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
             title: activity.title,
             subjectId: activity.subjectId,
             activityType: activity.activityType,
+            activitySubType: activity.activitySubType,
             studentId: activity.studentId,
             count: 1,
           });
@@ -163,6 +168,7 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
         subjectId: template.subjectId,
         sessionId: null,
         activityType: template.activityType,
+        activitySubType: template.activitySubType,
         title: template.title,
         description: "",
         dateCompleted: format(new Date(), "yyyy-MM-dd"),
@@ -472,7 +478,7 @@ export function QuickAdd({ onActivityCreated }: QuickAddProps) {
                           }}
                           activeOpacity={0.7}
                           style={{
-                            width: "23%",
+                            width: "30%",
                             paddingVertical: 16,
                             backgroundColor: colors.surface,
                             borderRadius: 12,

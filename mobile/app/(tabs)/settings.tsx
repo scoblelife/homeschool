@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { useStore } from '../../src/stores/useStore'
 import { getStudents, createStudent, updateStudent, deleteStudent } from '../../src/database'
 import type { Student, CreateStudent, GradeLevel } from '../../src/types'
-import { Card, Button, Modal, Input, EmptyState, Badge } from '../../src/components/ui'
+import { Card, Button, Modal, Input, EmptyState, Badge, DatePicker } from '../../src/components/ui'
 import { FeedbackModal, FeedbackButton } from '../../src/components/Feedback'
 import { useTheme, useColors } from '../../src/theme/ThemeContext'
 
@@ -333,11 +333,11 @@ export default function SettingsScreen() {
           placeholder="Enter name"
         />
 
-        <Input
+        <DatePicker
           label="Date of Birth *"
           value={newStudent.dateOfBirth || ''}
-          onChangeText={(text) => setNewStudent({ ...newStudent, dateOfBirth: text })}
-          placeholder="YYYY-MM-DD"
+          onChange={(date) => setNewStudent({ ...newStudent, dateOfBirth: date })}
+          placeholder="Select date of birth"
         />
 
         <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Grade Level</Text>

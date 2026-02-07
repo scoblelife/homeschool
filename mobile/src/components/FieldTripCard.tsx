@@ -3,33 +3,41 @@ import { Ionicons } from "@expo/vector-icons";
 import { format, parseISO } from "date-fns";
 import { useColors } from "../theme/createStyles";
 import type { ColorTheme } from "../theme/colors";
-import type { FieldTrip } from "../types";
+import type { FieldTrip, EventCategory, UniversalStatus } from "../types";
 
-const activityTypeLabels: Record<string, string> = {
-  field_trip: "Field Trip",
-  park_day: "Park Day",
-  game_night: "Game Night",
-  playdate: "Playdate",
-  coop_class: "Co-op Class",
-  custom: "Custom Event",
+const eventCategoryLabels: Record<EventCategory, string> = {
+  educational: "Educational",
+  social: "Social",
+  coop: "Co-op",
 };
 
-const activityTypeIcons: Record<string, keyof typeof Ionicons.glyphMap> = {
-  field_trip: "bus",
-  park_day: "leaf",
-  game_night: "game-controller",
-  playdate: "people",
-  coop_class: "school",
-  custom: "calendar",
+const eventCategoryIcons: Record<
+  EventCategory,
+  keyof typeof Ionicons.glyphMap
+> = {
+  educational: "school",
+  social: "people",
+  coop: "library",
 };
 
 const getStatusColors = (
   colors: ColorTheme,
-): Record<string, { bg: string; text: string }> => ({
-  planned: { bg: colors.surfaceSecondary, text: colors.primary },
+): Record<UniversalStatus, { bg: string; text: string }> => ({
+  not_started: { bg: colors.surfaceSecondary, text: colors.primary },
+  in_progress: {
+    bg: colors.warningLight || colors.surfaceSecondary,
+    text: colors.warning || colors.primary,
+  },
   completed: { bg: colors.successLight, text: colors.success },
   cancelled: { bg: colors.errorLight, text: colors.error },
 });
+
+const statusLabels: Record<UniversalStatus, string> = {
+  not_started: "Planned",
+  in_progress: "In Progress",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};
 
 interface FieldTripCardProps {
   fieldTrip: FieldTrip;
@@ -39,8 +47,9 @@ interface FieldTripCardProps {
 export function FieldTripCard({ fieldTrip, onPress }: FieldTripCardProps) {
   const colors = useColors();
   const statusColors = getStatusColors(colors);
-  const statusStyle = statusColors[fieldTrip.status];
-  const icon = activityTypeIcons[fieldTrip.activityType] || "calendar";
+  const statusStyle =
+    statusColors[fieldTrip.status] || statusColors.not_started;
+  const icon = eventCategoryIcons[fieldTrip.eventCategory] || "calendar";
 
   return (
     <TouchableOpacity
@@ -123,7 +132,7 @@ export function FieldTripCard({ fieldTrip, onPress }: FieldTripCardProps) {
             }}
           >
             <Text style={{ fontSize: 12, color: colors.primary }}>
-              {activityTypeLabels[fieldTrip.activityType]}
+              {eventCategoryLabels[fieldTrip.eventCategory]}
             </Text>
           </View>
           <View
@@ -138,10 +147,9 @@ export function FieldTripCard({ fieldTrip, onPress }: FieldTripCardProps) {
               style={{
                 fontSize: 12,
                 color: statusStyle.text,
-                textTransform: "capitalize",
               }}
             >
-              {fieldTrip.status}
+              {statusLabels[fieldTrip.status]}
             </Text>
           </View>
         </View>

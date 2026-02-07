@@ -8,12 +8,14 @@ const getStatusColors = (colors: ColorTheme) => ({
   not_started: { bg: colors.surfaceSecondary, text: colors.textSecondary },
   in_progress: { bg: colors.warningLight, text: colors.warning },
   completed: { bg: colors.successLight, text: colors.success },
+  cancelled: { bg: colors.surfaceSecondary, text: colors.textTertiary },
 });
 
-const statusLabels = {
+const statusLabels: Record<string, string> = {
   not_started: "Not Started",
   in_progress: "In Progress",
   completed: "Completed",
+  cancelled: "Cancelled",
 };
 
 interface MilestoneCardProps {

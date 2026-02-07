@@ -12,11 +12,9 @@ const activityTypes: { value: ActivityType; label: string }[] = [
   { value: 'worksheet', label: 'Worksheet' },
   { value: 'video', label: 'Video' },
   { value: 'reading', label: 'Reading' },
-  { value: 'writing_print', label: 'Print Writing' },
-  { value: 'writing_cursive', label: 'Cursive Writing' },
+  { value: 'writing', label: 'Writing' },
   { value: 'hands_on', label: 'Hands-On' },
-  { value: 'game', label: 'Game' },
-  { value: 'assessment', label: 'Assessment' },
+  { value: 'interactive', label: 'Interactive' },
 ]
 
 export default function ActivitiesScreen() {

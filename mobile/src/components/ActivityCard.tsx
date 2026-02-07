@@ -1,5 +1,4 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import { format } from "date-fns";
 import { useColors } from "../theme/createStyles";
 import type { Activity, Subject } from "../types";
 
@@ -7,12 +6,9 @@ const activityTypeLabels: Record<string, string> = {
   worksheet: "Worksheet",
   video: "Video",
   reading: "Reading",
-  writing_print: "Print Writing",
-  writing_cursive: "Cursive Writing",
+  writing: "Writing",
   hands_on: "Hands-On",
-  game: "Game",
-  assessment: "Assessment",
-  field_trip: "Field Trip",
+  interactive: "Interactive",
 };
 
 interface ActivityCardProps {
@@ -27,6 +23,23 @@ export function ActivityCard({
   onPress,
 }: ActivityCardProps) {
   const colors = useColors();
+
+  // Build display label including sub-type if present
+  let typeLabel =
+    activityTypeLabels[activity.activityType] || activity.activityType;
+  if (activity.activitySubType) {
+    const subTypeLabels: Record<string, string> = {
+      print: "Print",
+      cursive: "Cursive",
+      game: "Game",
+      test: "Test",
+      event: "Event",
+    };
+    const subLabel = subTypeLabels[activity.activitySubType];
+    if (subLabel) {
+      typeLabel = `${typeLabel} (${subLabel})`;
+    }
+  }
 
   return (
     <TouchableOpacity
@@ -86,7 +99,7 @@ export function ActivityCard({
               }}
             >
               <Text style={{ fontSize: 12, color: colors.text }}>
-                {activityTypeLabels[activity.activityType]}
+                {typeLabel}
               </Text>
             </View>
           </View>

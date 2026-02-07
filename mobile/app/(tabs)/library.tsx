@@ -15,12 +15,12 @@ import type { Book, BookWithProgress, CreateBook, ReadingStatus } from '../../sr
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, Button, EmptyState, Modal, Input, ProgressBar } from '../../src/components/ui'
 
-type StatusFilter = 'all' | 'not_started' | 'reading' | 'finished'
+type StatusFilter = 'all' | 'not_started' | 'in_progress' | 'completed'
 
 const statusLabels: Record<ReadingStatus, { label: string; color: string; bgColor: string }> = {
   not_started: { label: 'Not Started', color: '#6b7280', bgColor: '#f3f4f6' },
-  reading: { label: 'Reading', color: '#3b82f6', bgColor: '#dbeafe' },
-  finished: { label: 'Finished', color: '#10b981', bgColor: '#d1fae5' },
+  in_progress: { label: 'Reading', color: '#3b82f6', bgColor: '#dbeafe' },
+  completed: { label: 'Finished', color: '#10b981', bgColor: '#d1fae5' },
 }
 
 function BookCard({
@@ -89,7 +89,7 @@ function BookCard({
                   <Text style={{ fontSize: 11, color: '#9ca3af' }}>Page {currentPage}</Text>
                   <Text style={{ fontSize: 11, color: '#9ca3af' }}>{book.totalPages} pages</Text>
                 </View>
-                <ProgressBar progress={progressPercent} color={status === 'finished' ? '#10b981' : studentColor} height={4} />
+                <ProgressBar progress={progressPercent} color={status === 'completed' ? '#10b981' : studentColor} height={4} />
               </View>
             )}
           </View>
@@ -178,8 +178,8 @@ export default function LibraryScreen() {
 
   const stats = useMemo(() => {
     const total = books.length
-    const finished = books.filter((b) => b.studentProgress?.status === 'finished').length
-    const reading = books.filter((b) => b.studentProgress?.status === 'reading').length
+    const finished = books.filter((b) => b.studentProgress?.status === 'completed').length
+    const reading = books.filter((b) => b.studentProgress?.status === 'in_progress').length
     const notStarted = books.filter((b) => !b.studentProgress || b.studentProgress.status === 'not_started').length
     return { total, finished, reading, notStarted }
   }, [books])
@@ -353,9 +353,9 @@ export default function LibraryScreen() {
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 {[
                   { key: 'all', label: 'All' },
-                  { key: 'reading', label: 'Reading' },
+                  { key: 'in_progress', label: 'Reading' },
                   { key: 'not_started', label: 'Not Started' },
-                  { key: 'finished', label: 'Finished' },
+                  { key: 'completed', label: 'Finished' },
                 ].map((item) => (
                   <TouchableOpacity
                     key={item.key}
@@ -503,7 +503,7 @@ export default function LibraryScreen() {
           title="Book Details"
           footer={
             <View style={{ gap: 8 }}>
-              {selectedStudentId && selectedBook.totalPages && selectedBook.studentProgress?.status !== 'finished' && (
+              {selectedStudentId && selectedBook.totalPages && selectedBook.studentProgress?.status !== 'completed' && (
                 <Button onPress={() => openLogReading(selectedBook)} color={studentColor} fullWidth>
                   Log Reading
                 </Button>
@@ -555,7 +555,7 @@ export default function LibraryScreen() {
 
                 {/* Status Selector */}
                 <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
-                  {(['not_started', 'reading', 'finished'] as ReadingStatus[]).map((status) => {
+                  {(['not_started', 'in_progress', 'completed'] as ReadingStatus[]).map((status) => {
                     const info = statusLabels[status]
                     const isSelected = (selectedBook.studentProgress?.status || 'not_started') === status
                     return (
@@ -593,7 +593,7 @@ export default function LibraryScreen() {
                       progress={
                         ((selectedBook.studentProgress?.currentPage || 0) / selectedBook.totalPages) * 100
                       }
-                      color={selectedBook.studentProgress?.status === 'finished' ? '#10b981' : studentColor}
+                      color={selectedBook.studentProgress?.status === 'completed' ? '#10b981' : studentColor}
                     />
                   </View>
                 )}
