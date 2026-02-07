@@ -83,7 +83,6 @@ export class PeerConnection {
   }
 
   private setupEventHandlers(): void {
-    // @ts-expect-error - react-native-webrtc has different event handler types
     this.pc.onicecandidate = (event: any) => {
       if (event.candidate) {
         console.log("[WebRTC] ICE candidate generated");
@@ -104,9 +103,7 @@ export class PeerConnection {
       }
     };
 
-    // @ts-expect-error - react-native-webrtc has different event handler types
     this.pc.onconnectionstatechange = () => {
-      // @ts-expect-error - connectionState not in RTCPeerConnection type
       const state = this.pc.connectionState;
       console.log("[WebRTC] Connection state:", state);
 
@@ -125,7 +122,6 @@ export class PeerConnection {
       }
     };
 
-    // @ts-expect-error - react-native-webrtc has different event handler types
     this.pc.ondatachannel = (event: any) => {
       console.log("[WebRTC] Received data channel");
       this.setupDataChannel(event.channel);
@@ -162,7 +158,6 @@ export class PeerConnection {
    */
   async createOffer(): Promise<{ offer: any; iceCandidates: any[] }> {
     // Create data channel before creating offer
-    // @ts-expect-error - createDataChannel not in RTCPeerConnection type
     const channel = this.pc.createDataChannel("data", {
       ordered: true,
     });
@@ -229,7 +224,6 @@ export class PeerConnection {
         return;
       }
 
-      // @ts-expect-error - iceGatheringState not in RTCPeerConnection type
       if (this.pc.iceGatheringState === "complete") {
         this.iceGatheringComplete = true;
         resolve([...this.collectedCandidates]);
@@ -292,7 +286,6 @@ export class PeerConnection {
    * Get connection state
    */
   getState(): string {
-    // @ts-expect-error - connectionState not in RTCPeerConnection type
     return this.pc.connectionState || "unknown";
   }
 }
