@@ -9,7 +9,7 @@
  */
 
 import { ipcMain, BrowserWindow, shell } from 'electron'
-import { FamilyManager, createFamilyManager, type FamilyStatus, type QRCodePayload } from '../sync/family'
+import { FamilyManager, createFamilyManager } from '../sync/family'
 import { EventLog, createEventLog } from '../sync/eventLog'
 import { EventProjector, createProjector } from '../sync/projector'
 import { WebRTCTransport, createWebRTCTransport, type PeerInfo } from '../sync/webrtcTransport'
@@ -133,10 +133,22 @@ async function initializeWebRTC(config: { deviceId: string; deviceName: string; 
         console.error('[Sync] Failed to process WebRTC event:', err)
       }
     },
-    onPeerConnected: (peerId, deviceName) => {
+    onPeerConnected: async (peerId, deviceName) => {
       console.log('[Sync] Peer connected via WebRTC:', deviceName, peerId.slice(0, 8))
       updateSyncState('syncing') // Starting sync with new peer
       broadcastToWindows('sync:peer-connected', peerId)
+
+      // Auto-request sync from the newly connected peer
+      try {
+        const projectorState = projector?.getState()
+        const lastTimestamp = projectorState?.lastProcessedEventId
+          ? undefined // Request all events if we have a processed ID but no timestamp
+          : undefined
+        await webrtcTransport?.requestSync(lastTimestamp)
+        console.log('[Sync] Auto-sync requested from peer:', peerId.slice(0, 8))
+      } catch (err) {
+        console.error('[Sync] Failed to request auto-sync:', err)
+      }
     },
     onPeerDisconnected: (peerId) => {
       console.log('[Sync] Peer disconnected:', peerId.slice(0, 8))
@@ -190,6 +202,121 @@ async function initializeWebRTC(config: { deviceId: string; deviceName: string; 
     await webrtcTransport.broadcast(fullEvent)
     console.log('[Sync] Broadcast event via WebRTC:', fullEvent.type)
   })
+}
+
+// Track active invite polling timers
+const activeInvitePolls: Map<string, ReturnType<typeof setInterval>> = new Map()
+
+/**
+ * Start polling for join requests on an invite topic (trusted device side)
+ * When a new device scans the QR code and posts an offer, this auto-approves it
+ */
+async function startInvitePolling(invite: import('../sync/family').InvitePayload): Promise<void> {
+  // Clear any existing poll for this topic
+  const existing = activeInvitePolls.get(invite.topic)
+  if (existing) clearInterval(existing)
+
+  const { SignalingClient } = await import('../sync/signalingClient')
+  const { WORKER_URL } = await import('../sync/config')
+  const signaling = new SignalingClient(WORKER_URL)
+
+  console.log('[Sync] Polling for join requests on topic:', invite.topic.slice(0, 8))
+
+  const pollTimer = setInterval(async () => {
+    try {
+      const offer = await signaling.getOffer(invite.topic)
+      if (!offer) return
+
+      console.log('[Sync] Received join request from:', offer.newDeviceName)
+
+      // Validate the join request
+      const joinRequest = {
+        nonce: offer.nonce,
+        newPubKey: offer.newPubKey,
+        newDeviceId: offer.newDeviceId,
+        newDeviceName: offer.newDeviceName,
+        encryptedOffer: offer.offer,
+        encryptedIceCandidates: offer.iceCandidates,
+      }
+
+      const validation = familyManager!.validateJoinRequest(joinRequest, invite)
+      if (!validation.valid) {
+        console.error('[Sync] Invalid join request:', validation.error)
+        return
+      }
+
+      // Auto-approve and create response
+      const response = familyManager!.createJoinResponse(
+        joinRequest,
+        true,
+        JSON.stringify({ type: 'join-accepted' }),
+        JSON.stringify([])
+      )
+
+      // Post the answer
+      await signaling.postAnswer(invite.topic, {
+        trustedPubKey: response.trustedPubKey,
+        trustedDeviceId: response.trustedDeviceId,
+        answer: response.encryptedAnswer || '',
+        iceCandidates: response.encryptedIceCandidates || '',
+        familyData: response.encryptedFamilyData,
+      })
+
+      // Add the new member to our family config
+      await familyManager!.addMember({
+        deviceId: offer.newDeviceId,
+        deviceName: offer.newDeviceName,
+        pubKey: offer.newPubKey,
+        addedAt: new Date().toISOString(),
+        addedBy: familyManager!.getDeviceId() || '',
+        isManager: false,
+      })
+
+      // Broadcast member.added event if sync is active
+      if (eventLog && webrtcTransport) {
+        const memberEvent = await eventLog.append({
+          id: createEventId(),
+          type: 'member.added',
+          data: {
+            deviceId: offer.newDeviceId,
+            deviceName: offer.newDeviceName,
+            pubKey: offer.newPubKey,
+            addedBy: familyManager!.getDeviceId() || '',
+            isManager: false,
+          },
+        })
+        const index = (await eventLog.length()) - 1
+        await projector!.updateStateOnly(memberEvent.id, index)
+        await webrtcTransport.broadcast(memberEvent)
+      }
+
+      // Notify renderer
+      broadcastToWindows('sync:member-joined', {
+        deviceId: offer.newDeviceId,
+        deviceName: offer.newDeviceName,
+      })
+
+      console.log('[Sync] Approved join request from:', offer.newDeviceName)
+
+      // Stop polling - invite is consumed
+      clearInterval(pollTimer)
+      activeInvitePolls.delete(invite.topic)
+      familyManager!.removePendingInvite(invite.topic)
+    } catch {
+      // Ignore polling errors
+    }
+  }, 2000) // Poll every 2 seconds
+
+  activeInvitePolls.set(invite.topic, pollTimer)
+
+  // Stop polling when invite expires
+  const expiresIn = invite.expiresAt - Date.now()
+  if (expiresIn > 0) {
+    setTimeout(() => {
+      clearInterval(pollTimer)
+      activeInvitePolls.delete(invite.topic)
+    }, expiresIn)
+  }
 }
 
 /**
@@ -265,21 +392,84 @@ export function registerSyncIPC(): void {
     }
   })
 
-  // Join an existing family
+  // Join an existing family (v2 OAuth-style flow)
   ipcMain.handle('sync:join-family', async (_, qrData: string, deviceName: string) => {
     await initializeSync()
 
     try {
-      const payload = FamilyManager.parseQRCodeData(qrData)
-      const config = await familyManager!.joinFamily(payload, deviceName)
+      // Parse the v2 invite from QR data
+      const invite = FamilyManager.parseInviteQRData(qrData)
+
+      // Validate the invite
+      const validation = familyManager!.validateInvite(invite)
+      if (!validation.valid) {
+        return { success: false, error: validation.error }
+      }
+
+      // Create a join request with a temporary WebRTC offer
+      // For now, we'll use the signaling server to exchange the offer/answer
+      const { SignalingClient } = await import('../sync/signalingClient')
+      const { WORKER_URL } = await import('../sync/config')
+      const signaling = new SignalingClient(WORKER_URL)
+
+      // Create join request (generates keypair and encrypts offer)
+      const { request, keyPair, deviceId } = familyManager!.createJoinRequest(
+        invite,
+        deviceName,
+        JSON.stringify({ type: 'join-placeholder' }),
+        JSON.stringify([])
+      )
+
+      // Post the offer to the signaling server
+      await signaling.postOffer(invite.topic, {
+        nonce: request.nonce,
+        newPubKey: request.newPubKey,
+        newDeviceId: request.newDeviceId,
+        newDeviceName: request.newDeviceName,
+        offer: request.encryptedOffer,
+        iceCandidates: request.encryptedIceCandidates,
+      })
+
+      // Poll for the answer from the trusted device
+      let answer = null
+      const maxAttempts = 120 // 2 minutes at 1s intervals
+      for (let i = 0; i < maxAttempts; i++) {
+        answer = await signaling.getAnswer(invite.topic)
+        if (answer) break
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+
+      if (!answer) {
+        return { success: false, error: 'Timed out waiting for approval from the trusted device' }
+      }
+
+      if (!answer.answer) {
+        return { success: false, error: 'Join request was rejected' }
+      }
+
+      // Complete the join using the family manager
+      const result = await familyManager!.completeJoin(
+        invite,
+        {
+          approved: true,
+          encryptedAnswer: answer.answer,
+          encryptedIceCandidates: answer.iceCandidates || '',
+          encryptedFamilyData: answer.familyData,
+          trustedPubKey: answer.trustedPubKey,
+          trustedDeviceId: answer.trustedDeviceId,
+        },
+        keyPair,
+        deviceId,
+        deviceName
+      )
 
       // Initialize event log for joined family
-      eventLog = await createEventLog(config.deviceId)
+      eventLog = await createEventLog(result.config.deviceId)
 
       // Initialize WebRTC transport
-      await initializeWebRTC(config)
+      await initializeWebRTC(result.config)
 
-      return { success: true, config }
+      return { success: true, config: result.config }
     } catch (err) {
       return { success: false, error: (err as Error).message }
     }
@@ -311,12 +501,21 @@ export function registerSyncIPC(): void {
     }
   })
 
-  // Get QR code data for sharing
+  // Get QR code data for sharing (v2 invite)
   ipcMain.handle('sync:get-qr-code', async () => {
     await initializeSync()
 
-    const qrData = familyManager!.getQRCodeData()
-    return { success: qrData !== null, qrData }
+    try {
+      const invite = familyManager!.createInvite()
+      const qrData = familyManager!.getInviteQRData(invite)
+
+      // Start polling for join requests on this invite's topic
+      startInvitePolling(invite)
+
+      return { success: true, qrData, invite }
+    } catch (err) {
+      return { success: false, error: (err as Error).message, qrData: null }
+    }
   })
 
   // Update device name

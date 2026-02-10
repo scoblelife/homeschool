@@ -106,6 +106,7 @@ class PeerConnection {
   private dataChannel: RTCDataChannelLike | null = null
   private peerId: string
   private localId: string
+  private localDeviceName: string
   private peerDeviceName: string = 'Unknown'
   private isConnected = false
   private onConnected?: (peerId: string, deviceName: string) => void
@@ -116,6 +117,7 @@ class PeerConnection {
   constructor(
     localId: string,
     peerId: string,
+    localDeviceName: string,
     events: {
       onConnected?: (peerId: string, deviceName: string) => void
       onDisconnected?: (peerId: string) => void
@@ -125,6 +127,7 @@ class PeerConnection {
   ) {
     this.localId = localId
     this.peerId = peerId
+    this.localDeviceName = localDeviceName
     this.onConnected = events.onConnected
     this.onDisconnected = events.onDisconnected
     this.onData = events.onData
@@ -174,7 +177,7 @@ class PeerConnection {
       this.send(JSON.stringify({
         type: 'hello',
         deviceId: this.localId,
-        deviceName: 'Desktop' // Will be overridden by actual name
+        deviceName: this.localDeviceName
       }))
     }
 
@@ -514,7 +517,7 @@ export class WebRTCTransport extends EventEmitter {
    * Create a new peer connection with event handlers
    */
   private createPeerConnection(peerId: string): PeerConnection {
-    return new PeerConnection(this.deviceId, peerId, {
+    return new PeerConnection(this.deviceId, peerId, this.deviceName, {
       onConnected: (id, name) => {
         console.log('[WebRTCTransport] Peer connected:', name, id)
         this.onPeerConnected?.(id, name)
