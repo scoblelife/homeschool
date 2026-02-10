@@ -45,6 +45,7 @@ export default defineConfig({
         }
       }
     },
-    plugins: [react()]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- @vitejs/plugin-react bundles its own vite types that conflict with electron-vite's vite version
+    plugins: [react() as any]
   }
 })

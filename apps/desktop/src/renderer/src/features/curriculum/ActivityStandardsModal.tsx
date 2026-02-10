@@ -6,7 +6,7 @@ import type {
   Student,
 } from "../../../../shared/types";
 import { StandardsList } from "./StandardsList";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 
 interface Props {
   activity: Activity;

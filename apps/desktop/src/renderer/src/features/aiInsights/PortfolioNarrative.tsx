@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 import { useAIInsightsStore } from "./aiInsightsStore";
 
 interface SubjectData {

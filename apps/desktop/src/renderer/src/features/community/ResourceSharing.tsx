@@ -1,7 +1,13 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ChangeEvent,
+} from "react";
 import { Dialog } from "@headlessui/react";
 import { format, parseISO } from "date-fns";
-import { Button, Input, Textarea } from "@/components/ui";
+import { Button, Input, Textarea } from "../../components/ui";
 import type {
   SharedResource,
   CreateSharedResource,
@@ -164,7 +170,9 @@ export function ResourceSharing() {
             <Input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setSearchQuery(e.target.value)
+              }
               placeholder="Search resources..."
               className="pl-10"
             />
@@ -451,7 +459,9 @@ function AddResourceModal({
               <Input
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setTitle(e.target.value)
+                }
                 placeholder="e.g., Khan Academy Math"
                 required
               />
@@ -464,7 +474,9 @@ function AddResourceModal({
               <Input
                 type="url"
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setUrl(e.target.value)
+                }
                 placeholder="https://..."
               />
             </div>
@@ -477,7 +489,9 @@ function AddResourceModal({
                 <Input
                   type="text"
                   value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setSubject(e.target.value)
+                  }
                   placeholder="e.g., Math"
                 />
               </div>
@@ -488,7 +502,9 @@ function AddResourceModal({
                 <Input
                   type="text"
                   value={gradeLevel}
-                  onChange={(e) => setGradeLevel(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setGradeLevel(e.target.value)
+                  }
                   placeholder="e.g., K-3"
                 />
               </div>
@@ -500,7 +516,9 @@ function AddResourceModal({
               </label>
               <Textarea
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                  setDescription(e.target.value)
+                }
                 placeholder="What makes this resource great?"
                 rows={3}
               />

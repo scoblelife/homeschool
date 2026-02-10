@@ -1,7 +1,13 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ChangeEvent,
+} from "react";
 import { Dialog } from "@headlessui/react";
 import { format, parseISO } from "date-fns";
-import { Button, Input, Textarea, Checkbox } from "@/components/ui";
+import { Button, Input, Textarea, Checkbox } from "../../components/ui";
 import type {
   MentorProfile,
   CreateMentorProfile,
@@ -821,7 +827,9 @@ function FindMentorsFilters({
           <Input
             type="text"
             value={searchQuery}
-            onChange={(e) => onSearchQueryChange(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              onSearchQueryChange(e.target.value)
+            }
             placeholder="Search mentors..."
             className="pl-10"
           />
@@ -1084,7 +1092,9 @@ function IncomingRequestResponseForm({
     <div className="mt-4 space-y-3">
       <Textarea
         value={responseMessage}
-        onChange={(e) => setResponseMessage(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+          setResponseMessage(e.target.value)
+        }
         placeholder="Add a message (optional)"
         rows={2}
       />
@@ -1322,7 +1332,9 @@ function ProfileBioField({
       {editing ? (
         <Textarea
           value={bio}
-          onChange={(e) => onBioChange(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+            onBioChange(e.target.value)
+          }
           rows={3}
         />
       ) : (
@@ -1347,7 +1359,9 @@ function ProfileYearsField({
         <Input
           type="number"
           value={yearsHomeschooling}
-          onChange={(e) => onYearsChange(parseInt(e.target.value) || 0)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            onYearsChange(parseInt(e.target.value) || 0)
+          }
           min={0}
           className="w-24"
         />
@@ -1417,7 +1431,9 @@ function ProfileMaxMenteesField({
         <Input
           type="number"
           value={maxMentees}
-          onChange={(e) => onMaxMenteesChange(parseInt(e.target.value) || 1)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            onMaxMenteesChange(parseInt(e.target.value) || 1)
+          }
           min={1}
           max={10}
           className="w-24"
@@ -1441,7 +1457,9 @@ function ProfileAcceptingField({
     <div>
       <Checkbox
         checked={editing ? isAcceptingRequests : displayIsAccepting}
-        onChange={(e) => editing && onAcceptingChange(e.target.checked)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          editing && onAcceptingChange(e.target.checked)
+        }
         disabled={!editing}
         label="Accepting new mentorship requests"
       />
@@ -1693,7 +1711,9 @@ function BecomeMentorFormFields({
         <Input
           type="number"
           value={yearsHomeschooling}
-          onChange={(e) => onYearsChange(parseInt(e.target.value) || 0)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            onYearsChange(parseInt(e.target.value) || 0)
+          }
           min={0}
           className="w-24"
           required
@@ -1717,7 +1737,9 @@ function BecomeMentorFormFields({
         </label>
         <Textarea
           value={bio}
-          onChange={(e) => onBioChange(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+            onBioChange(e.target.value)
+          }
           placeholder="Share your homeschool experience and what makes you a good mentor..."
           rows={4}
           required
@@ -1731,7 +1753,9 @@ function BecomeMentorFormFields({
         <Input
           type="number"
           value={maxMentees}
-          onChange={(e) => onMaxMenteesChange(parseInt(e.target.value) || 1)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            onMaxMenteesChange(parseInt(e.target.value) || 1)
+          }
           min={1}
           max={10}
           className="w-24"
@@ -1912,7 +1936,9 @@ function RequestMentorForm({
         </label>
         <Textarea
           value={message}
-          onChange={(e) => onMessageChange(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+            onMessageChange(e.target.value)
+          }
           placeholder="Introduce yourself and what you're hoping to learn..."
           rows={4}
           required

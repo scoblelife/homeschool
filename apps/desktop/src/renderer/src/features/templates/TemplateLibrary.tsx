@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type MouseEvent } from "react";
 import { useTemplatesStore } from "./templatesStore";
 import { ActivityTemplate, getTemplateById } from "./templateData";
 import type { GradeLevel } from "../../../../shared/types";
-import { Button, Input } from "@/components/ui";
+import { Button, Input } from "../../components/ui";
 
 interface Props {
   onSelectTemplate: (template: ActivityTemplate) => void;
@@ -91,7 +91,9 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
           type="text"
           placeholder="Search templates..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setSearchQuery(e.target.value)
+          }
           className="pl-10"
         />
       </div>
@@ -296,7 +298,7 @@ function TemplateCard({
             </p>
           </div>
           <Button
-            onClick={(e) => {
+            onClick={(e: MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation();
               onToggleFavorite();
             }}
@@ -334,7 +336,7 @@ function TemplateCard({
           {template.tags.slice(0, 3).map((tag) => (
             <Button
               key={tag}
-              onClick={(e) => {
+              onClick={(e: MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
                 onTagClick(tag);
               }}

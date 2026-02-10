@@ -5,7 +5,7 @@
  * if the student is falling behind requirements.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type MouseEvent } from "react";
 import {
   format,
   differenceInDays,
@@ -14,7 +14,7 @@ import {
   startOfYear,
   endOfYear,
 } from "date-fns";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 import { useAIInsightsStore } from "./aiInsightsStore";
 
 interface PredictionData {
@@ -381,7 +381,7 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
             <Button
               variant="ghost"
               size="sm"
-              onClick={(e) => {
+              onClick={(e: MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
                 analyzeCompliance();
               }}

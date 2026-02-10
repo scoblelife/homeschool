@@ -7,9 +7,9 @@
  * - Optimal session lengths
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type MouseEvent } from "react";
 import { format, subDays, parseISO } from "date-fns";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 import { useAIInsightsStore } from "./aiInsightsStore";
 
 interface PatternInsight {
@@ -369,7 +369,7 @@ Be specific with numbers. Make insights actionable. Return only valid JSON.`;
             <Button
               variant="ghost"
               size="sm"
-              onClick={(e) => {
+              onClick={(e: MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
                 analyzePatterns();
               }}

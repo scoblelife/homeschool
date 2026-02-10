@@ -233,22 +233,30 @@ export const FormModal = {
                   type="button"
                   variant="ghost"
                   className="w-8 h-8 rounded-full bg-student-fuchsia-500 ring-2 ring-offset-2 ring-student-fuchsia-500 p-0"
-                />
+                >
+                  <span className="sr-only">Fuchsia</span>
+                </Button>
                 <Button
                   type="button"
                   variant="ghost"
                   className="w-8 h-8 rounded-full bg-student-teal-500 p-0"
-                />
+                >
+                  <span className="sr-only">Teal</span>
+                </Button>
                 <Button
                   type="button"
                   variant="ghost"
                   className="w-8 h-8 rounded-full bg-student-blue-500 p-0"
-                />
+                >
+                  <span className="sr-only">Blue</span>
+                </Button>
                 <Button
                   type="button"
                   variant="ghost"
                   className="w-8 h-8 rounded-full bg-student-orange-500 p-0"
-                />
+                >
+                  <span className="sr-only">Orange</span>
+                </Button>
               </div>
             </div>
             <ModalActions>

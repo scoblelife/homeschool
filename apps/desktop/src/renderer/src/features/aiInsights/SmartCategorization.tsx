@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 
 interface SubjectSuggestion {
   subjectId: string;

@@ -5,9 +5,9 @@
  * for underrepresented subjects.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type MouseEvent } from "react";
 import { format, subDays } from "date-fns";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 import { useAIInsightsStore } from "./aiInsightsStore";
 
 interface SubjectActivity {
@@ -331,7 +331,7 @@ Only return the JSON array, no other text.`;
             <Button
               variant="ghost"
               size="sm"
-              onClick={(e) => {
+              onClick={(e: MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
                 generateSuggestions();
               }}

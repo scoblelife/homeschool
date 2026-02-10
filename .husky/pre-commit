@@ -3,5 +3,8 @@
 # Lint staged files (eslint + prettier)
 npx lint-staged
 
+# Typecheck all packages
+pnpm typecheck
+
 # Run unit tests (exclude integration tests that need external services)
 pnpm --filter @homeschool/desktop exec vitest run --exclude '**/integration.test.*' --exclude '**/e2e/**'

@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type ChangeEvent } from "react";
 import { Dialog } from "@headlessui/react";
-import { Button, Input, Textarea } from "@/components/ui";
+import { Button, Input, Textarea } from "../../components/ui";
 import type {
   CoopGroup,
   CreateCoopGroup,
@@ -203,7 +203,9 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
                 <Input
                   type="text"
                   value={newGroupName}
-                  onChange={(e) => setNewGroupName(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setNewGroupName(e.target.value)
+                  }
                   placeholder="e.g., Valley Homeschool Co-op"
                 />
               </div>
@@ -214,7 +216,9 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
                 </label>
                 <Textarea
                   value={newGroupDescription}
-                  onChange={(e) => setNewGroupDescription(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                    setNewGroupDescription(e.target.value)
+                  }
                   placeholder="What's your group about?"
                   rows={3}
                 />
@@ -227,7 +231,9 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
                 <Input
                   type="text"
                   value={familyName}
-                  onChange={(e) => setFamilyName(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setFamilyName(e.target.value)
+                  }
                   placeholder="e.g., The Smith Family"
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -273,7 +279,9 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
                 <Input
                   type="text"
                   value={joinCode}
-                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setJoinCode(e.target.value.toUpperCase())
+                  }
                   placeholder="Enter 6-character code"
                   maxLength={6}
                   className="font-mono text-center text-lg tracking-widest"
@@ -287,7 +295,9 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
                 <Input
                   type="text"
                   value={familyName}
-                  onChange={(e) => setFamilyName(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setFamilyName(e.target.value)
+                  }
                   placeholder="e.g., The Smith Family"
                 />
               </div>

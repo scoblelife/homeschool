@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
 import { format, parseISO, isWithinInterval, subDays, addDays } from "date-fns";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 import type {
   Activity,
   FieldTripActivity,

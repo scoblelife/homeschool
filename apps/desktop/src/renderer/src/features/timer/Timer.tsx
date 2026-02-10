@@ -5,10 +5,10 @@
  * Shows elapsed time, student/subject info, and control buttons.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, type ChangeEvent } from "react";
 import { Dialog, Transition, Listbox } from "@headlessui/react";
 import { Fragment } from "react";
-import { Button, Input, Textarea } from "@/components/ui";
+import { Button, Input, Textarea } from "../../components/ui";
 import { useTimerStore } from "./timerStore";
 import { useStore } from "../../stores/useStore";
 import type { CreateActivity } from "../../../../shared/types";
@@ -387,7 +387,9 @@ export function Timer({ onSessionSaved }: TimerProps) {
                       <Input
                         type="text"
                         value={sessionTitle}
-                        onChange={(e) => setSessionTitle(e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          setSessionTitle(e.target.value)
+                        }
                         placeholder="e.g., Math practice, Reading time"
                       />
                     </div>
@@ -462,7 +464,9 @@ export function Timer({ onSessionSaved }: TimerProps) {
                       </label>
                       <Textarea
                         value={sessionNotes}
-                        onChange={(e) => setSessionNotes(e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                          setSessionNotes(e.target.value)
+                        }
                         placeholder="What did you work on?"
                         rows={3}
                       />

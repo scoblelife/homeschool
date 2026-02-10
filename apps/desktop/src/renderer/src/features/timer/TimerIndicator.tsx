@@ -8,7 +8,7 @@
 import { useState, useEffect } from "react";
 import { useTimerStore } from "./timerStore";
 import { useStore } from "../../stores/useStore";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 
 interface TimerIndicatorProps {
   onClick?: () => void;

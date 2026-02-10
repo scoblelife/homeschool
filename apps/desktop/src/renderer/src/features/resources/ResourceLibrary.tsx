@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Button, Input, Checkbox } from "@/components/ui";
+import { useState, type ChangeEvent, type MouseEvent } from "react";
+import { Button, Input, Checkbox } from "../../components/ui";
 import { useResourcesStore } from "./resourcesStore";
 import { LearningResource, getResourceById } from "./resourceData";
 import type { GradeLevel } from "../../../../shared/types";
@@ -119,7 +119,9 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
           type="text"
           placeholder="Search resources..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setSearchQuery(e.target.value)
+          }
           className="pl-10"
         />
       </div>
@@ -176,7 +178,9 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
 
         <Checkbox
           checked={freeOnly}
-          onChange={(e) => setFreeOnly(e.target.checked)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setFreeOnly(e.target.checked)
+          }
           label="Free only"
         />
 
@@ -343,7 +347,7 @@ function ResourceCard({
         <Button
           variant="ghost"
           size="sm"
-          onClick={(e) => {
+          onClick={(e: MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation();
             onToggleFavorite();
           }}
@@ -482,7 +486,7 @@ function LogActivityModal({
               min="1"
               max="480"
               value={duration}
-              onChange={(e) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setDuration(
                   parseInt(e.target.value) || resource.suggestedDuration,
                 )

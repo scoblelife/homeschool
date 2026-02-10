@@ -1,4 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ChangeEvent,
+} from "react";
 import {
   format,
   parseISO,
@@ -7,7 +13,7 @@ import {
   isThisWeek,
   isThisMonth,
 } from "date-fns";
-import { Button, Input } from "@/components/ui";
+import { Button, Input } from "../../components/ui";
 import type { CoopEvent } from "../../../../shared/types";
 
 type ExtendedCoopEvent = CoopEvent & {
@@ -129,7 +135,9 @@ export function FieldTripDiscovery() {
             <Input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setSearchQuery(e.target.value)
+              }
               placeholder="Search events, locations..."
               className="pl-10"
             />

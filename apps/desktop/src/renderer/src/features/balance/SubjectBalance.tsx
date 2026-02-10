@@ -4,10 +4,10 @@
  * Displays weekly subject balance with targets and alerts.
  */
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, type ChangeEvent } from "react";
 import { Dialog } from "@headlessui/react";
 import { format, startOfWeek, endOfWeek } from "date-fns";
-import { Button, Input } from "@/components/ui";
+import { Button, Input } from "../../components/ui";
 import {
   useBalanceStore,
   calculateBalanceStatus,
@@ -279,7 +279,7 @@ function TargetSettingsModal({
                       max={40}
                       step={0.5}
                       value={currentHours || ""}
-                      onChange={(e) =>
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         handleTargetChange(
                           subject.id,
                           parseFloat(e.target.value) || 0,

@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type MouseEvent } from "react";
 import { useRecommendationsStore } from "./recommendationsStore";
 import type { CurriculumRecommendation } from "./curriculumData";
 import type { GradeLevel } from "../../../../shared/types";
-import { Button, Input } from "@/components/ui";
+import { Button, Input } from "../../components/ui";
 
 export function CurriculumRecommendations() {
   const {
@@ -103,7 +103,9 @@ export function CurriculumRecommendations() {
           type="text"
           placeholder="Search curricula..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setSearchQuery(e.target.value)
+          }
           className="pl-10"
         />
       </div>
@@ -299,7 +301,7 @@ function RecommendationCard({
             </p>
           </div>
           <Button
-            onClick={(e) => {
+            onClick={(e: MouseEvent<HTMLButtonElement>) => {
               e.stopPropagation();
               onToggleSaved();
             }}

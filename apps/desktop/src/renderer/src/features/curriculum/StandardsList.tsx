@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, type ChangeEvent } from "react";
 import { useCurriculumStore } from "./curriculumStore";
 import type { LearningStandard, GradeLevel } from "../../../../shared/types";
-import { Button, Input, Checkbox } from "@/components/ui";
+import { Button, Input, Checkbox } from "../../components/ui";
 
 interface Props {
   gradeLevel: GradeLevel;
@@ -118,7 +118,9 @@ export function StandardsList({
             type="text"
             placeholder="Search standards..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setSearchQuery(e.target.value)
+            }
           />
         </div>
       </div>

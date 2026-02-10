@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
 import { format, parseISO } from "date-fns";
-import { Button } from "@/components/ui";
+import { Button } from "../../components/ui";
 import type { FieldTrip } from "../../../../shared/types";
 
 // Simplified types for sharing - only need id and name
