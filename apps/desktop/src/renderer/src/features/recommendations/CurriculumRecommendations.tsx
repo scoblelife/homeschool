@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRecommendationsStore } from "./recommendationsStore";
 import type { CurriculumRecommendation } from "./curriculumData";
 import type { GradeLevel } from "../../../../shared/types";
+import { Button, Input } from "@/components/ui";
 
 export function CurriculumRecommendations() {
   const {
@@ -98,13 +99,12 @@ export function CurriculumRecommendations() {
       {/* Search */}
       <div className="relative">
         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
+        <Input
           type="text"
           placeholder="Search curricula..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          className="pl-10"
         />
       </div>
 
@@ -196,14 +196,10 @@ export function CurriculumRecommendations() {
         </select>
 
         {hasFilters && (
-          <button
-            onClick={clearFilters}
-            className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900
-              dark:hover:text-white flex items-center gap-1"
-          >
+          <Button onClick={clearFilters} variant="ghost" size="sm">
             <XIcon className="w-4 h-4" />
             Clear
-          </button>
+          </Button>
         )}
       </div>
 
@@ -260,17 +256,19 @@ function RecommendationCard({
   subjectLabels,
 }: RecommendationCardProps) {
   const priceColors: Record<CurriculumRecommendation["priceRange"], string> = {
-    free: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-    budget: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+    free: "bg-status-successLight text-status-successDark dark:bg-status-successDark/30 dark:text-status-successLight",
+    budget:
+      "bg-status-infoLight text-status-infoDark dark:bg-status-infoDark/30 dark:text-status-infoLight",
     mid: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
     premium:
-      "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+      "bg-student-purple-100 text-student-purple-700 dark:bg-student-purple-900/30 dark:text-student-purple-300",
   };
 
   const categoryColors: Record<CurriculumRecommendation["category"], string> = {
     complete:
-      "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-300",
-    subject: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
+      "bg-brand-primaryLight text-brand-primaryDark dark:bg-brand-primaryDark/30 dark:text-brand-primaryLight",
+    subject:
+      "bg-student-teal-100 text-student-teal-700 dark:bg-student-teal-900/30 dark:text-student-teal-300",
     supplement: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
   };
 
@@ -300,20 +298,22 @@ function RecommendationCard({
               by {recommendation.publisher}
             </p>
           </div>
-          <button
+          <Button
             onClick={(e) => {
               e.stopPropagation();
               onToggleSaved();
             }}
-            className="p-1 text-gray-400 hover:text-red-500"
+            variant="ghost"
+            size="sm"
+            className="p-1 text-gray-400 hover:text-status-error"
             title={isSaved ? "Remove from saved" : "Save for later"}
           >
             {isSaved ? (
-              <HeartFilledIcon className="w-5 h-5 text-red-500" />
+              <HeartFilledIcon className="w-5 h-5 text-status-error" />
             ) : (
               <HeartIcon className="w-5 h-5" />
             )}
-          </button>
+          </Button>
         </div>
 
         {/* Description */}
@@ -368,7 +368,7 @@ function RecommendationCard({
                 {recommendation.features.map((f, i) => (
                   <span
                     key={i}
-                    className="px-2 py-0.5 text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded"
+                    className="px-2 py-0.5 text-xs bg-status-infoLight dark:bg-status-infoDark/20 text-status-infoDark dark:text-status-infoLight rounded"
                   >
                     {f}
                   </span>
@@ -409,7 +409,7 @@ function RecommendationCard({
                 {recommendation.bestFor.map((b, i) => (
                   <span
                     key={i}
-                    className="px-2 py-0.5 text-xs bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded"
+                    className="px-2 py-0.5 text-xs bg-status-successLight dark:bg-status-successDark/20 text-status-successDark dark:text-status-successLight rounded"
                   >
                     {b}
                   </span>
@@ -425,19 +425,15 @@ function RecommendationCard({
             href={recommendation.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 px-3 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600
+            className="flex-1 px-3 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primaryDark
               text-sm font-medium flex items-center justify-center gap-2"
           >
             <ExternalLinkIcon className="w-4 h-4" />
             Visit Website
           </a>
-          <button
-            onClick={onToggleExpand}
-            className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900
-              dark:hover:text-white text-sm border border-gray-300 dark:border-gray-600 rounded-lg"
-          >
+          <Button onClick={onToggleExpand} variant="outline" size="sm">
             {isExpanded ? "Less" : "Details"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

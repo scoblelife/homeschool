@@ -26,7 +26,9 @@ export default function Recommendations() {
       />
 
       {/* Quick Help */}
-      <div className="mb-6 p-4 bg-student-blue-50 border border-student-blue-200 rounded-lg">
+      <div
+        className={`mb-6 p-4 bg-student-blue-50 border border-student-blue-200 rounded-lg`}
+      >
         <h3 className="font-medium text-student-blue-900 mb-2">
           Finding the Right Curriculum
         </h3>

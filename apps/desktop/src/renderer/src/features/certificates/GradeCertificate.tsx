@@ -46,6 +46,12 @@ export function GradeCertificate({ student, isOpen, onClose }: Props) {
             0,
           );
           setTotalHours(Math.round(minutes / 60));
+        })
+        .catch((error) => {
+          console.error(
+            "[GradeCertificate] Failed to load activities for hours calculation:",
+            error,
+          );
         });
     }
   }, [isOpen, student.id]);

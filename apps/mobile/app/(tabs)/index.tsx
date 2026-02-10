@@ -15,6 +15,7 @@ import { StudentSelector } from '../../src/components/StudentSelector'
 import { ActivityCard } from '../../src/components/ActivityCard'
 import { MilestoneCard } from '../../src/components/MilestoneCard'
 import { useDeviceType } from '../../src/hooks/useDeviceType'
+import { useColors } from '../../src/theme/createStyles'
 
 export default function TodayScreen() {
   const { selectedStudentId, getSelectedStudent, getSubjectById, students } = useStore()
@@ -27,6 +28,7 @@ export default function TodayScreen() {
 
   const selectedStudent = getSelectedStudent()
   const { isTablet } = useDeviceType()
+  const colors = useColors()
 
   const today = format(new Date(), 'yyyy-MM-dd')
   const todayDisplay = format(new Date(), 'EEEE, MMMM d')
@@ -79,22 +81,22 @@ export default function TodayScreen() {
   if (students.length === 0) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-        <Text style={{ fontSize: 18, color: '#6b7280', textAlign: 'center' }}>
+        <Text style={{ fontSize: 18, color: colors.textSecondary, textAlign: 'center' }}>
           No students yet. Add a student in Settings to get started.
         </Text>
       </View>
     )
   }
 
-  const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
+  const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
 
   // Compliance health: simple green/yellow based on this week's activity
   const isOnTrack = weekStats.activities >= 3 || weekStats.hours >= 2
-  const healthColor = isOnTrack ? '#10b981' : '#f59e0b'
+  const healthColor = isOnTrack ? colors.success : colors.warning
   const healthLabel = isOnTrack ? 'On track' : 'Light week'
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         style={{ flex: 1 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
@@ -103,9 +105,14 @@ export default function TodayScreen() {
           {/* Date + Student + Health */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <View>
-              <Text style={{ fontSize: 22, fontWeight: '700', color: '#1f2937' }}>{todayDisplay}</Text>
+              <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text }} accessibilityRole="header">{todayDisplay}</Text>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: healthColor + '20', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}>
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: healthColor + '20', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 }}
+              accessible
+              accessibilityLabel={`Compliance status: ${healthLabel}`}
+              accessibilityRole="text"
+            >
               <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: healthColor }} />
               <Text style={{ fontSize: 12, fontWeight: '500', color: healthColor }}>{healthLabel}</Text>
             </View>
@@ -115,17 +122,17 @@ export default function TodayScreen() {
 
           {/* This Week Stats */}
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 16 }}>
-            <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, alignItems: 'center' }}>
-              <Text style={{ fontSize: 20, fontWeight: '700', color: '#1f2937' }}>{weekStats.activities}</Text>
-              <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>Activities</Text>
+            <View style={{ flex: 1, backgroundColor: colors.surface, borderRadius: 12, padding: 12, alignItems: 'center' }} accessible accessibilityLabel={`${weekStats.activities} activities this week`}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text }}>{weekStats.activities}</Text>
+              <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Activities</Text>
             </View>
-            <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, alignItems: 'center' }}>
-              <Text style={{ fontSize: 20, fontWeight: '700', color: '#1f2937' }}>{weekStats.hours}</Text>
-              <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>Hours</Text>
+            <View style={{ flex: 1, backgroundColor: colors.surface, borderRadius: 12, padding: 12, alignItems: 'center' }} accessible accessibilityLabel={`${weekStats.hours} hours this week`}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text }}>{weekStats.hours}</Text>
+              <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Hours</Text>
             </View>
-            <View style={{ flex: 1, backgroundColor: '#fff', borderRadius: 12, padding: 12, alignItems: 'center' }}>
-              <Text style={{ fontSize: 20, fontWeight: '700', color: '#1f2937' }}>{weekStats.subjects}</Text>
-              <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>Subjects</Text>
+            <View style={{ flex: 1, backgroundColor: colors.surface, borderRadius: 12, padding: 12, alignItems: 'center' }} accessible accessibilityLabel={`${weekStats.subjects} subjects this week`}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text }}>{weekStats.subjects}</Text>
+              <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Subjects</Text>
             </View>
           </View>
 
@@ -136,7 +143,7 @@ export default function TodayScreen() {
               onPress={() => router.push('/(tabs)/field-trips')}
               style={{
                 marginTop: 16,
-                backgroundColor: '#fef3c7',
+                backgroundColor: colors.warningLight,
                 borderRadius: 12,
                 padding: 12,
                 flexDirection: 'row',
@@ -144,7 +151,7 @@ export default function TodayScreen() {
                 gap: 10,
               }}
             >
-              <Ionicons name="calendar" size={20} color="#f59e0b" />
+              <Ionicons name="calendar" size={20} color={colors.warning} />
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 13, fontWeight: '600', color: '#92400e' }}>{upcomingTrip.title}</Text>
                 <Text style={{ fontSize: 12, color: '#b45309' }}>
@@ -160,7 +167,7 @@ export default function TodayScreen() {
           {/* Today's Activities */}
           <View style={{ marginTop: 20 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>Today's Activities</Text>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }} accessibilityRole="header">Today's Activities</Text>
               <TouchableOpacity onPress={() => router.push('/(tabs)/log' as any)}>
                 <Text style={{ fontSize: 13, fontWeight: '500', color: studentColor }}>+ Log</Text>
               </TouchableOpacity>
@@ -171,17 +178,17 @@ export default function TodayScreen() {
                 onPress={() => router.push('/(tabs)/log' as any)}
                 activeOpacity={0.8}
                 style={{
-                  backgroundColor: '#fff',
+                  backgroundColor: colors.surface,
                   borderRadius: 12,
                   padding: 24,
                   alignItems: 'center',
                   borderWidth: 1,
-                  borderColor: '#e5e7eb',
+                  borderColor: colors.border,
                   borderStyle: 'dashed',
                 }}
               >
-                <Ionicons name="add-circle-outline" size={32} color="#d1d5db" />
-                <Text style={{ color: '#9ca3af', fontSize: 15, marginTop: 8 }}>Nothing logged yet</Text>
+                <Ionicons name="add-circle-outline" size={32} color={colors.border} />
+                <Text style={{ color: colors.textTertiary, fontSize: 15, marginTop: 8 }}>Nothing logged yet</Text>
                 <Text style={{ color: studentColor, fontSize: 14, fontWeight: '500', marginTop: 4 }}>Tap to log an activity</Text>
               </TouchableOpacity>
             ) : (
@@ -199,7 +206,7 @@ export default function TodayScreen() {
           {suggestedMilestones.length > 0 && (
             <View style={{ marginTop: 20 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>Focus On</Text>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }} accessibilityRole="header">Focus On</Text>
                 <TouchableOpacity onPress={() => router.push('/(tabs)/milestones')}>
                   <Text style={{ fontSize: 13, fontWeight: '500', color: studentColor }}>All</Text>
                 </TouchableOpacity>

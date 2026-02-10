@@ -23,7 +23,12 @@ export function HourReport({ studentId }: Props) {
 
   // Get current school year on mount
   useEffect(() => {
-    window.api.getCurrentSchoolYear().then(setSchoolYear);
+    window.api
+      .getCurrentSchoolYear()
+      .then(setSchoolYear)
+      .catch((error) => {
+        console.error("[HourReport] Failed to load school year:", error);
+      });
   }, []);
 
   // Auto-select first student

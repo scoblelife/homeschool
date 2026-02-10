@@ -8,6 +8,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Dialog, Transition, Listbox } from "@headlessui/react";
 import { Fragment } from "react";
+import { Button, Input, Textarea } from "@/components/ui";
 import { useTimerStore } from "./timerStore";
 import { useStore } from "../../stores/useStore";
 import type { CreateActivity } from "../../../../shared/types";
@@ -152,7 +153,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
             className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
               isPaused
                 ? "bg-yellow-100 text-yellow-800"
-                : "bg-green-100 text-green-800"
+                : "bg-status-successLight text-status-successDark"
             }`}
           >
             {isPaused ? "Paused" : "Running"}
@@ -180,9 +181,10 @@ export function Timer({ onSessionSaved }: TimerProps) {
           {/* Control Buttons */}
           <div className="flex justify-center gap-3">
             {isPaused ? (
-              <button
+              <Button
+                variant="primary"
                 onClick={resumeTimer}
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                className="bg-status-successDark hover:bg-status-successDark"
               >
                 <svg
                   className="w-5 h-5 mr-2"
@@ -196,11 +198,12 @@ export function Timer({ onSessionSaved }: TimerProps) {
                   />
                 </svg>
                 Resume
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
+                variant="primary"
                 onClick={pauseTimer}
-                className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
+                className="bg-yellow-500 hover:bg-yellow-600"
               >
                 <svg
                   className="w-5 h-5 mr-2"
@@ -214,12 +217,9 @@ export function Timer({ onSessionSaved }: TimerProps) {
                   />
                 </svg>
                 Pause
-              </button>
+              </Button>
             )}
-            <button
-              onClick={handleStop}
-              className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-            >
+            <Button variant="danger" onClick={handleStop}>
               <svg
                 className="w-5 h-5 mr-2"
                 fill="currentColor"
@@ -232,7 +232,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                 />
               </svg>
               Stop
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
@@ -243,9 +243,11 @@ export function Timer({ onSessionSaved }: TimerProps) {
           <p className="mt-4 text-gray-500 text-sm">
             Start a timer to track your learning session
           </p>
-          <button
+          <Button
+            variant="primary"
+            size="lg"
             onClick={handleStart}
-            className="mt-4 inline-flex items-center px-6 py-3 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 font-medium"
+            className="mt-4"
           >
             <svg
               className="w-5 h-5 mr-2"
@@ -259,7 +261,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
               />
             </svg>
             Start Timer
-          </button>
+          </Button>
         </div>
       )}
 
@@ -309,7 +311,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                         onChange={setSelectedStudentId}
                       >
                         <div className="relative">
-                          <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
+                          <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary">
                             <span className="block truncate">
                               {selectedStudent?.name || "Select student..."}
                             </span>
@@ -326,7 +328,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                                   key={student.id}
                                   value={student.id}
                                   className={({ active }) =>
-                                    `cursor-pointer select-none py-2 px-3 ${active ? "bg-fuchsia-50 text-fuchsia-900" : "text-gray-900"}`
+                                    `cursor-pointer select-none py-2 px-3 ${active ? "bg-brand-primaryLight text-brand-primaryDark" : "text-gray-900"}`
                                   }
                                 >
                                   {student.name}
@@ -348,7 +350,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                         onChange={setSelectedSubjectId}
                       >
                         <div className="relative">
-                          <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
+                          <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary">
                             <span className="block truncate">
                               {selectedSubject?.name || "Select subject..."}
                             </span>
@@ -365,7 +367,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                                   key={subject.id}
                                   value={subject.id}
                                   className={({ active }) =>
-                                    `cursor-pointer select-none py-2 px-3 ${active ? "bg-fuchsia-50 text-fuchsia-900" : "text-gray-900"}`
+                                    `cursor-pointer select-none py-2 px-3 ${active ? "bg-brand-primaryLight text-brand-primaryDark" : "text-gray-900"}`
                                   }
                                 >
                                   {subject.name}
@@ -382,30 +384,29 @@ export function Timer({ onSessionSaved }: TimerProps) {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Title <span className="text-gray-400">(optional)</span>
                       </label>
-                      <input
+                      <Input
                         type="text"
                         value={sessionTitle}
                         onChange={(e) => setSessionTitle(e.target.value)}
                         placeholder="e.g., Math practice, Reading time"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
                       />
                     </div>
                   </div>
 
                   <div className="mt-6 flex justify-end gap-3">
-                    <button
+                    <Button
+                      variant="ghost"
                       onClick={() => setShowStartDialog(false)}
-                      className="px-4 py-2 text-gray-700 hover:text-gray-900"
                     >
                       Cancel
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="primary"
                       onClick={handleConfirmStart}
                       disabled={!selectedStudentId || !selectedSubjectId}
-                      className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 disabled:opacity-50"
                     >
                       Start
-                    </button>
+                    </Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
@@ -459,31 +460,31 @@ export function Timer({ onSessionSaved }: TimerProps) {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Notes <span className="text-gray-400">(optional)</span>
                       </label>
-                      <textarea
+                      <Textarea
                         value={sessionNotes}
                         onChange={(e) => setSessionNotes(e.target.value)}
                         placeholder="What did you work on?"
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
                       />
                     </div>
                   </div>
 
                   <div className="mt-6 flex justify-between">
-                    <button
+                    <Button
+                      variant="ghost"
                       onClick={handleDiscard}
-                      className="px-4 py-2 text-red-600 hover:text-red-700"
                       disabled={saving}
+                      className="text-status-error hover:text-status-errorDark"
                     >
                       Discard
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="primary"
                       onClick={handleSave}
                       disabled={saving}
-                      className="px-6 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 disabled:opacity-50"
                     >
                       {saving ? "Saving..." : "Save Activity"}
-                    </button>
+                    </Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

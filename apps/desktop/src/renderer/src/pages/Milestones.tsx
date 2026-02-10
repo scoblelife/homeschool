@@ -13,7 +13,7 @@ import type {
 } from "../../../shared/types";
 
 import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
+import { Input, Textarea } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
 import { Modal } from "../components/ui/Modal";
 import { PageHeader } from "../components/layout/PageHeader";
@@ -48,8 +48,16 @@ function MilestoneCard({
   }, [milestone.id]);
 
   const loadResources = async () => {
-    const data = await window.api.getResources(milestone.id);
-    setResources(data);
+    try {
+      const data = await window.api.getResources(milestone.id);
+      setResources(data);
+    } catch (error) {
+      console.error(
+        "[MilestoneCard] Failed to load resources for milestone:",
+        milestone.id,
+        error,
+      );
+    }
   };
 
   const handleAddUrl = async () => {
@@ -60,31 +68,59 @@ function MilestoneCard({
       title: urlForm.title,
       url: urlForm.url,
     };
-    await window.api.createResource(data);
-    setUrlForm({ title: "", url: "" });
-    setShowAddResource(false);
-    loadResources();
+    try {
+      await window.api.createResource(data);
+      setUrlForm({ title: "", url: "" });
+      setShowAddResource(false);
+      loadResources();
+    } catch (error) {
+      console.error(
+        "[MilestoneCard] Failed to create URL resource:",
+        data.title,
+        error,
+      );
+    }
   };
 
   const handleUploadFile = async () => {
-    const resource = await window.api.uploadResourceFile(
-      milestone.id,
-      fileTitle,
-    );
-    if (resource) {
-      setFileTitle("");
-      setShowAddResource(false);
-      loadResources();
+    try {
+      const resource = await window.api.uploadResourceFile(
+        milestone.id,
+        fileTitle,
+      );
+      if (resource) {
+        setFileTitle("");
+        setShowAddResource(false);
+        loadResources();
+      }
+    } catch (error) {
+      console.error(
+        "[MilestoneCard] Failed to upload resource file for milestone:",
+        milestone.id,
+        error,
+      );
     }
   };
 
   const handleDeleteResource = async (id: string) => {
-    await window.api.deleteResource(id);
-    loadResources();
+    try {
+      await window.api.deleteResource(id);
+      loadResources();
+    } catch (error) {
+      console.error("[MilestoneCard] Failed to delete resource:", id, error);
+    }
   };
 
   const handleOpenResource = async (resource: MilestoneResource) => {
-    await window.api.openResource(resource);
+    try {
+      await window.api.openResource(resource);
+    } catch (error) {
+      console.error(
+        "[MilestoneCard] Failed to open resource:",
+        resource.id,
+        error,
+      );
+    }
   };
 
   const statusInfo = statusLabels[milestone.status];
@@ -109,12 +145,16 @@ function MilestoneCard({
               {statusInfo.label}
             </span>
             {milestone.category && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-brand-primaryLight text-brand-primary">
+              <span
+                className={`text-xs px-2 py-0.5 rounded-full bg-brand-primaryLight text-brand-primary`}
+              >
                 {milestone.category}
               </span>
             )}
             {resources.length > 0 && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-student-blue-50 text-student-blue-600">
+              <span
+                className={`text-xs px-2 py-0.5 rounded-full bg-student-blue-50 text-student-blue-600`}
+              >
                 {resources.length} resource{resources.length > 1 ? "s" : ""}
               </span>
             )}
@@ -133,12 +173,14 @@ function MilestoneCard({
 
           {/* Resources Section */}
           <div className="mt-3">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setShowResources(!showResources)}
               className="text-xs text-brand-primary hover:text-brand-primaryDark"
             >
               {showResources ? "Hide Resources" : "Show Resources"}
-            </button>
+            </Button>
 
             {showResources && (
               <div className="mt-2 space-y-2">
@@ -148,32 +190,37 @@ function MilestoneCard({
                   resources.map((resource) => (
                     <div
                       key={resource.id}
-                      className="flex items-center gap-2 text-sm bg-white p-2 rounded border"
+                      className={`flex items-center gap-2 text-sm bg-white p-2 rounded border`}
                     >
                       <span className="text-lg">
                         {resource.type === "url" ? "🔗" : "📄"}
                       </span>
-                      <button
+                      <Button
+                        variant="ghost"
                         onClick={() => handleOpenResource(resource)}
                         className="text-student-blue-600 hover:underline flex-1 text-left truncate"
                       >
                         {resource.title}
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => handleDeleteResource(resource.id)}
                         className="text-status-error hover:text-status-errorDark text-xs"
                       >
                         Delete
-                      </button>
+                      </Button>
                     </div>
                   ))
                 )}
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setShowAddResource(true)}
                   className="text-xs bg-brand-primaryLight text-brand-primaryDark px-2 py-1 rounded hover:bg-brand-primaryLight"
                 >
                   + Add Resource
-                </button>
+                </Button>
               </div>
             )}
           </div>
@@ -191,16 +238,20 @@ function MilestoneCard({
             <option value="in_progress">In Progress</option>
             <option value="completed">Completed</option>
           </select>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onEdit}
-            className="text-brand-primary hover:text-brand-primaryDark text-sm"
+            className="text-brand-primary hover:text-brand-primaryDark"
           >
             Edit
-          </button>
+          </Button>
           {milestone.status === "completed" && (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={onPrintCertificate}
-              className="text-status-success hover:text-status-successDark text-sm flex items-center gap-1"
+              className="text-status-success hover:text-status-successDark flex items-center gap-1"
             >
               <svg
                 className="w-4 h-4"
@@ -216,7 +267,7 @@ function MilestoneCard({
                 />
               </svg>
               Certificate
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -383,7 +434,17 @@ export default function Milestones(): JSX.Element {
     milestone: Milestone,
     newStatus: Milestone["status"],
   ) => {
-    await updateMilestone(milestone.id, { status: newStatus });
+    try {
+      await updateMilestone(milestone.id, { status: newStatus });
+    } catch (error) {
+      console.error(
+        "[Milestones] Failed to update milestone status:",
+        milestone.id,
+        "to",
+        newStatus,
+        error,
+      );
+    }
   };
 
   const handleInitialize = async () => {
@@ -411,11 +472,19 @@ export default function Milestones(): JSX.Element {
     e.preventDefault();
     if (!editingMilestone) return;
 
-    await updateMilestone(editingMilestone.id, {
-      targetDate: editForm.targetDate || null,
-      evidenceNotes: editForm.evidenceNotes || "",
-    });
-    setEditingMilestone(null);
+    try {
+      await updateMilestone(editingMilestone.id, {
+        targetDate: editForm.targetDate || null,
+        evidenceNotes: editForm.evidenceNotes || "",
+      });
+      setEditingMilestone(null);
+    } catch (error) {
+      console.error(
+        "[Milestones] Failed to save milestone edits:",
+        editingMilestone.id,
+        error,
+      );
+    }
   };
 
   if (!selectedStudent) {
@@ -473,7 +542,7 @@ export default function Milestones(): JSX.Element {
         </div>
         <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
           <div
-            className="bg-gradient-to-r from-brand-primary to-student-purple-500 h-3 rounded-full transition-all duration-500"
+            className={`bg-gradient-to-r from-brand-primary to-student-purple-500 h-3 rounded-full transition-all duration-500`}
             style={{ width: `${stats.percentage}%` }}
           />
         </div>
@@ -531,14 +600,11 @@ export default function Milestones(): JSX.Element {
                 "completed",
               ] as StatusFilter[]
             ).map((status) => (
-              <button
+              <Button
                 key={status}
+                variant={filterStatus === status ? "primary" : "ghost"}
+                size="sm"
                 onClick={() => setFilterStatus(status)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  filterStatus === status
-                    ? "bg-brand-primaryLight text-brand-primaryDark"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
               >
                 {status === "all"
                   ? "All"
@@ -547,7 +613,7 @@ export default function Milestones(): JSX.Element {
                     : status === "in_progress"
                       ? "In Progress"
                       : "Completed"}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -635,12 +701,11 @@ export default function Milestones(): JSX.Element {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Evidence / Notes
               </label>
-              <textarea
+              <Textarea
                 value={editForm.evidenceNotes || ""}
                 onChange={(e) =>
                   setEditForm({ ...editForm, evidenceNotes: e.target.value })
                 }
-                className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
                 rows={3}
                 placeholder="Document evidence of mastery, resources used, etc."
               />

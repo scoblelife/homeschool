@@ -113,9 +113,12 @@ export function ComplianceDeadlines({
   };
 
   const getUrgencyColor = (daysUntil: number): string => {
-    if (daysUntil < 0) return "text-red-600 bg-red-50 border-red-200";
-    if (daysUntil <= 7) return "text-red-600 bg-red-50 border-red-200";
-    if (daysUntil <= 30) return "text-amber-600 bg-amber-50 border-amber-200";
+    if (daysUntil < 0)
+      return "text-status-errorDark bg-status-errorLight border-status-errorLight";
+    if (daysUntil <= 7)
+      return "text-status-errorDark bg-status-errorLight border-status-errorLight";
+    if (daysUntil <= 30)
+      return "text-status-warningDark bg-status-warningLight border-status-warningLight";
     return "text-gray-600 bg-gray-50 border-gray-200";
   };
 
@@ -166,14 +169,14 @@ export function ComplianceDeadlines({
   if (deadlines.length === 0) {
     return (
       <Card
-        className={`${className} bg-green-50 border-green-200`}
+        className={`${className} bg-status-successLight border-status-successLight`}
         padding="sm"
       >
         <div className="flex items-center gap-2">
           <Badge variant="success" dot>
             All Clear
           </Badge>
-          <p className="text-sm text-green-700">
+          <p className="text-sm text-status-successDark">
             {stateName} has no specific filing deadlines. You're all set!
           </p>
         </div>
@@ -188,14 +191,16 @@ export function ComplianceDeadlines({
     if (urgentDeadlines.length === 0 && pendingDeadlines.length === 0) {
       return (
         <Card
-          className={`${className} bg-green-50 border-green-200`}
+          className={`${className} bg-status-successLight border-status-successLight`}
           padding="sm"
         >
           <div className="flex items-center gap-2">
             <Badge variant="success" dot>
               Complete
             </Badge>
-            <p className="text-sm text-green-700">All deadlines met!</p>
+            <p className="text-sm text-status-successDark">
+              All deadlines met!
+            </p>
           </div>
         </Card>
       );
@@ -246,7 +251,7 @@ export function ComplianceDeadlines({
           <p className="text-sm text-gray-500">{stateName} Requirements</p>
         </div>
         {completedCount > 0 && (
-          <span className="text-sm text-green-600">
+          <span className="text-sm text-status-successDark">
             {completedCount} of {deadlines.length} completed
           </span>
         )}
@@ -271,7 +276,7 @@ export function ComplianceDeadlines({
                   onClick={() => toggleDeadlineComplete(deadline)}
                   className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                     isCompleted
-                      ? "bg-green-500 border-green-500 text-white"
+                      ? "bg-status-success border-status-success text-white"
                       : "border-gray-300 hover:border-gray-400"
                   }`}
                 >

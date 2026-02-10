@@ -80,7 +80,9 @@ export default function Coop() {
       ) : activeTab === "groups" ? (
         <>
           {/* Info box */}
-          <div className="mb-6 p-4 bg-student-blue-50 border border-student-blue-200 rounded-lg">
+          <div
+            className={`mb-6 p-4 bg-student-blue-50 border border-student-blue-200 rounded-lg`}
+          >
             <h3 className="font-medium text-student-blue-900 mb-2">
               What are Co-op Groups?
             </h3>

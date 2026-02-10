@@ -7,6 +7,8 @@
 
 import { useState, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { Button } from "./ui/Button";
+import { Input, Textarea } from "./ui/Input";
 
 type FeedbackCategory = "bug" | "feature" | "question" | "other";
 
@@ -127,24 +129,29 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                       </label>
                       <div className="grid grid-cols-2 gap-2">
                         {CATEGORIES.map((category) => (
-                          <button
+                          <Button
                             key={category.value}
                             type="button"
+                            variant={
+                              formData.category === category.value
+                                ? "primary"
+                                : "outline"
+                            }
                             onClick={() =>
                               setFormData({
                                 ...formData,
                                 category: category.value,
                               })
                             }
-                            className={`p-3 rounded-lg border text-left transition-colors ${
+                            className={`p-3 text-left justify-start ${
                               formData.category === category.value
-                                ? "border-fuchsia-500 bg-fuchsia-50 text-fuchsia-700"
+                                ? "border-brand-primary bg-brand-primaryLight text-brand-primaryDark"
                                 : "border-gray-200 hover:border-gray-300"
                             }`}
                           >
                             <span className="mr-2">{category.emoji}</span>
                             {category.label}
-                          </button>
+                          </Button>
                         ))}
                       </div>
                     </div>
@@ -156,10 +163,9 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                       >
                         Description
                       </label>
-                      <textarea
+                      <Textarea
                         id="description"
                         rows={4}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent resize-none"
                         placeholder="Tell us what's on your mind..."
                         value={formData.description}
                         onChange={(e) =>
@@ -179,10 +185,9 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                       >
                         Email (optional)
                       </label>
-                      <input
+                      <Input
                         type="email"
                         id="email"
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
                         placeholder="your@email.com"
                         value={formData.email}
                         onChange={(e) =>
@@ -195,27 +200,29 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                     </div>
 
                     {submitStatus === "error" && (
-                      <p className="text-sm text-red-600">
+                      <p className="text-sm text-status-error">
                         Something went wrong. Please try again.
                       </p>
                     )}
 
                     <div className="flex gap-3 pt-2">
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
                         onClick={handleClose}
-                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="flex-1"
                         disabled={isSubmitting}
                       >
                         Cancel
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="submit"
-                        className="flex-1 px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 transition-colors disabled:opacity-50"
+                        variant="primary"
+                        className="flex-1"
                         disabled={isSubmitting || !formData.description.trim()}
                       >
                         {isSubmitting ? "Sending..." : "Send Feedback"}
-                      </button>
+                      </Button>
                     </div>
                   </form>
                 )}
@@ -240,9 +247,10 @@ export function FeedbackButton({ className = "" }: FeedbackButtonProps) {
 
   return (
     <>
-      <button
+      <Button
+        variant="ghost"
         onClick={() => setIsOpen(true)}
-        className={`flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors ${className}`}
+        className={className}
       >
         <svg
           className="w-5 h-5"
@@ -258,7 +266,7 @@ export function FeedbackButton({ className = "" }: FeedbackButtonProps) {
           />
         </svg>
         Send Feedback
-      </button>
+      </Button>
 
       <FeedbackModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>

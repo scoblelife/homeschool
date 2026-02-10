@@ -8,6 +8,7 @@
 import { useState, useEffect } from "react";
 import { useTimerStore } from "./timerStore";
 import { useStore } from "../../stores/useStore";
+import { Button } from "@/components/ui";
 
 interface TimerIndicatorProps {
   onClick?: () => void;
@@ -60,12 +61,14 @@ export function TimerIndicator({ onClick }: TimerIndicatorProps) {
   };
 
   return (
-    <button
+    <Button
       onClick={onClick}
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+      variant="ghost"
+      size="sm"
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
         isPaused
           ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-          : "bg-green-100 text-green-800 hover:bg-green-200"
+          : "bg-status-successLight text-status-successDark hover:bg-status-successLight"
       }`}
     >
       {/* Timer icon */}
@@ -92,10 +95,12 @@ export function TimerIndicator({ onClick }: TimerIndicatorProps) {
       </span>
 
       {/* Pause/Resume button */}
-      <button
+      <Button
         onClick={handlePauseResume}
+        variant="ghost"
+        size="sm"
         className={`p-1 rounded-full ${
-          isPaused ? "hover:bg-yellow-300" : "hover:bg-green-300"
+          isPaused ? "hover:bg-yellow-300" : "hover:bg-status-success"
         }`}
         title={isPaused ? "Resume" : "Pause"}
       >
@@ -116,16 +121,16 @@ export function TimerIndicator({ onClick }: TimerIndicatorProps) {
             />
           </svg>
         )}
-      </button>
+      </Button>
 
       {/* Pulsing dot when running */}
       {!isPaused && (
         <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-warning opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
         </span>
       )}
-    </button>
+    </Button>
   );
 }
 

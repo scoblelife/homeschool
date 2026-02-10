@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
 import { format, parseISO } from "date-fns";
+import { Button, Input, Textarea } from "@/components/ui";
 import type {
   SharedResource,
   CreateSharedResource,
@@ -22,26 +23,26 @@ const resourceTypeConfig: Record<
   link: {
     icon: "🔗",
     label: "Link",
-    color: "text-blue-600",
-    bg: "bg-blue-100",
+    color: "text-status-infoDark",
+    bg: "bg-status-infoLight",
   },
   template: {
     icon: "📋",
     label: "Template",
-    color: "text-purple-600",
-    bg: "bg-purple-100",
+    color: "text-student-purple-600",
+    bg: "bg-student-purple-100",
   },
   curriculum: {
     icon: "📚",
     label: "Curriculum",
-    color: "text-green-600",
-    bg: "bg-green-100",
+    color: "text-status-successDark",
+    bg: "bg-status-successLight",
   },
   book: {
     icon: "📖",
     label: "Book",
-    color: "text-amber-600",
-    bg: "bg-amber-100",
+    color: "text-status-warningDark",
+    bg: "bg-status-warningLight",
   },
   other: {
     icon: "📁",
@@ -144,12 +145,13 @@ export function ResourceSharing() {
           </p>
         </div>
         {groups.length > 0 && (
-          <button
+          <Button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 transition-colors text-sm font-medium"
+            variant="primary"
+            size="md"
           >
             Share Resource
-          </button>
+          </Button>
         )}
       </div>
 
@@ -159,12 +161,12 @@ export function ResourceSharing() {
         <div className="flex-1">
           <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
+            <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search resources..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
+              className="pl-10"
             />
           </div>
         </div>
@@ -268,9 +270,10 @@ function ResourceCard({
     resourceTypeConfig[resource.resourceType] || resourceTypeConfig.other;
 
   return (
-    <button
+    <Button
       onClick={onClick}
-      className="text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-fuchsia-300 dark:hover:border-fuchsia-600 transition-colors w-full"
+      variant="ghost"
+      className="text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-brand-primaryLight dark:hover:border-brand-primary transition-colors w-full"
     >
       <div className="flex items-start gap-3">
         <div className={`p-2 rounded-lg ${config.bg}`}>
@@ -299,7 +302,7 @@ function ResourceCard({
             <div className="flex items-center gap-1">
               {resource.ratingCount > 0 ? (
                 <>
-                  <StarFilledIcon className="w-4 h-4 text-amber-400" />
+                  <StarFilledIcon className="w-4 h-4 text-status-warning" />
                   <span className="text-sm text-gray-600 dark:text-gray-400">
                     {resource.averageRating.toFixed(1)} ({resource.ratingCount})
                   </span>
@@ -314,7 +317,7 @@ function ResourceCard({
           </div>
         </div>
       </div>
-    </button>
+    </Button>
   );
 }
 
@@ -423,11 +426,12 @@ function AddResourceModal({
                     typeof resourceTypeConfig.link,
                   ][]
                 ).map(([type, config]) => (
-                  <button
+                  <Button
                     key={type}
                     type="button"
+                    variant="ghost"
                     onClick={() => setResourceType(type)}
-                    className={`p-2 rounded-lg text-center transition-all ${
+                    className={`p-2 rounded-lg text-center transition-all flex-col ${
                       resourceType === type
                         ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
                         : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -435,7 +439,7 @@ function AddResourceModal({
                   >
                     <div className="text-lg">{config.icon}</div>
                     <div className="text-xs mt-0.5">{config.label}</div>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -444,12 +448,11 @@ function AddResourceModal({
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Title *
               </label>
-              <input
+              <Input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g., Khan Academy Math"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 required
               />
             </div>
@@ -458,12 +461,11 @@ function AddResourceModal({
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 URL
               </label>
-              <input
+              <Input
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
@@ -472,24 +474,22 @@ function AddResourceModal({
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Subject
                 </label>
-                <input
+                <Input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="e.g., Math"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Grade Level
                 </label>
-                <input
+                <Input
                   type="text"
                   value={gradeLevel}
                   onChange={(e) => setGradeLevel(e.target.value)}
                   placeholder="e.g., K-3"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
             </div>
@@ -498,30 +498,26 @@ function AddResourceModal({
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Description
               </label>
-              <textarea
+              <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What makes this resource great?"
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
+              <Button type="button" onClick={onClose} variant="ghost">
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
                 disabled={!title.trim() || submitting}
-                className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                variant="primary"
+                loading={submitting}
               >
                 {submitting ? "Sharing..." : "Share Resource"}
-              </button>
+              </Button>
             </div>
           </form>
         </Dialog.Panel>
@@ -600,7 +596,7 @@ function ResourceDetailModal({
                   href={resource.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline truncate"
+                  className="text-status-infoDark hover:underline truncate"
                 >
                   {resource.url}
                 </a>
@@ -634,7 +630,7 @@ function ResourceDetailModal({
                       key={star}
                       className={`w-5 h-5 ${
                         star <= Math.round(resource.averageRating)
-                          ? "text-amber-400"
+                          ? "text-status-warning"
                           : "text-gray-300 dark:text-gray-500"
                       }`}
                     />
@@ -674,7 +670,7 @@ function ResourceDetailModal({
                             {[1, 2, 3, 4, 5].map((star) => (
                               <StarFilledIcon
                                 key={star}
-                                className={`w-3 h-3 ${star <= rating.rating ? "text-amber-400" : "text-gray-300"}`}
+                                className={`w-3 h-3 ${star <= rating.rating ? "text-status-warning" : "text-gray-300"}`}
                               />
                             ))}
                           </div>
@@ -699,22 +695,20 @@ function ResourceDetailModal({
           </div>
 
           <div className="flex justify-between">
-            <button
+            <Button
               onClick={() => {
                 if (confirm("Are you sure you want to delete this resource?")) {
                   onDelete(resource.id);
                 }
               }}
-              className="text-red-600 hover:text-red-700 text-sm"
+              variant="danger"
+              size="sm"
             >
               Delete
-            </button>
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            >
+            </Button>
+            <Button onClick={onClose} variant="secondary">
               Close
-            </button>
+            </Button>
           </div>
         </Dialog.Panel>
       </div>

@@ -7,6 +7,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
 import { format, startOfWeek, endOfWeek } from "date-fns";
+import { Button, Input } from "@/components/ui";
 import {
   useBalanceStore,
   calculateBalanceStatus,
@@ -86,12 +87,14 @@ export function SubjectBalance({
           <h3 className="font-semibold text-gray-900">
             Weekly Subject Balance
           </h3>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setShowSettings(true)}
-            className="text-sm text-fuchsia-600 hover:text-fuchsia-800"
+            className="text-brand-primary hover:text-brand-primaryDark"
           >
             {hasTargets ? "Edit Targets" : "Set Targets"}
-          </button>
+          </Button>
         </div>
 
         {!hasTargets ? (
@@ -102,14 +105,14 @@ export function SubjectBalance({
           <>
             {/* Alerts for under-target subjects */}
             {underTargetSubjects.length > 0 && (
-              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="mb-4 p-3 bg-status-warningLight border border-status-warning rounded-lg">
                 <div className="flex items-start gap-2">
-                  <span className="text-amber-500 text-lg">⚠️</span>
+                  <span className="text-status-warning text-lg">⚠️</span>
                   <div className="flex-1">
-                    <div className="font-medium text-amber-800">
+                    <div className="font-medium text-status-warningDark">
                       Subjects Need Attention
                     </div>
-                    <ul className="mt-1 text-sm text-amber-700 space-y-1">
+                    <ul className="mt-1 text-sm text-status-warningDark space-y-1">
                       {underTargetSubjects.map((subject) => (
                         <li key={subject.subjectId}>
                           {getBalanceRecommendation(subject)}
@@ -155,10 +158,10 @@ function BalanceBar({ data }: BalanceBarProps): JSX.Element {
   const percentage = Math.min(data.percentageOfTarget, 150); // Cap at 150% for display
   const barColor =
     data.status === "under"
-      ? "bg-amber-500"
+      ? "bg-status-warning"
       : data.status === "over"
-        ? "bg-blue-500"
-        : "bg-green-500";
+        ? "bg-status-info"
+        : "bg-status-success";
 
   return (
     <div>
@@ -180,7 +183,7 @@ function BalanceBar({ data }: BalanceBarProps): JSX.Element {
       <div className="flex justify-between text-xs text-gray-400 mt-0.5">
         <span>{Math.round(data.percentageOfTarget)}% of target</span>
         {data.status === "under" && (
-          <span className="text-amber-600">
+          <span className="text-status-warningDark">
             {formatMinutes(data.targetMinutes - data.actualMinutes)} remaining
           </span>
         )}
@@ -270,7 +273,7 @@ function TargetSettingsModal({
                     </label>
                   </div>
                   <div className="flex items-center gap-2">
-                    <input
+                    <Input
                       type="number"
                       min={0}
                       max={40}
@@ -282,7 +285,8 @@ function TargetSettingsModal({
                           parseFloat(e.target.value) || 0,
                         )
                       }
-                      className="w-20 px-2 py-1.5 border border-gray-300 rounded-lg text-center text-sm"
+                      size="sm"
+                      className="w-20 text-center"
                       placeholder="0"
                     />
                     <span className="text-sm text-gray-500">hrs/week</span>
@@ -293,12 +297,12 @@ function TargetSettingsModal({
           </div>
 
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
-            <button onClick={onClose} className="btn btn-secondary">
+            <Button variant="secondary" onClick={onClose}>
               Cancel
-            </button>
-            <button onClick={handleSave} className="btn btn-primary">
+            </Button>
+            <Button variant="primary" onClick={handleSave}>
               Save Targets
-            </button>
+            </Button>
           </div>
         </Dialog.Panel>
       </div>
@@ -361,12 +365,14 @@ export function SubjectBalanceAlert({
   if (underTargetSubjects.length === 0) return null;
 
   return (
-    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+    <div className="p-3 bg-status-warningLight border border-status-warning rounded-lg">
       <div className="flex items-start gap-2">
-        <span className="text-amber-500">⚠️</span>
+        <span className="text-status-warning">⚠️</span>
         <div className="text-sm">
-          <span className="font-medium text-amber-800">Behind on: </span>
-          <span className="text-amber-700">
+          <span className="font-medium text-status-warningDark">
+            Behind on:{" "}
+          </span>
+          <span className="text-status-warningDark">
             {underTargetSubjects.map((s) => s.name).join(", ")}
           </span>
         </div>

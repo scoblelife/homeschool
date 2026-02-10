@@ -254,14 +254,14 @@ Return only valid JSON array.`;
   return (
     <>
       {/* Chat FAB Button */}
-      {/* eslint-disable-next-line design-system/require-design-system-components */}
-      <button
+      <Button
+        variant="primary"
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-24 w-12 h-12 bg-student-purple-600 hover:bg-student-purple-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center text-xl z-40"
         title="Log activities with chat"
       >
         💬
-      </button>
+      </Button>
 
       {/* Chat Modal */}
       {isOpen && (
@@ -285,8 +285,8 @@ Return only valid JSON array.`;
                     Describe what you did today
                   </p>
                 </div>
-                {/* eslint-disable-next-line design-system/require-design-system-components */}
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => setIsOpen(false)}
                   className="text-white/80 hover:text-white"
                 >
@@ -303,7 +303,7 @@ Return only valid JSON array.`;
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -372,8 +372,8 @@ Return only valid JSON array.`;
                               </span>
                             </div>
                           </div>
-                          {/* eslint-disable-next-line design-system/require-design-system-components */}
-                          <button
+                          <Button
+                            variant="ghost"
                             onClick={() => removeActivity(index)}
                             className="ml-2 text-gray-400 hover:text-status-error"
                           >
@@ -390,7 +390,7 @@ Return only valid JSON array.`;
                                 d="M6 18L18 6M6 6l12 12"
                               />
                             </svg>
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     ))}

@@ -18,6 +18,7 @@ import { getActivities, getFieldTrips } from '../../src/database'
 import type { Activity, FieldTrip, EventCategory, UniversalStatus } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, EmptyState } from '../../src/components/ui'
+import { useColors } from '../../src/theme/createStyles'
 
 const activityTypeIcons: Record<string, string> = {
   worksheet: '',
@@ -49,8 +50,10 @@ export default function CalendarScreen() {
   const [fieldTrips, setFieldTrips] = useState<FieldTrip[]>([])
   const [refreshing, setRefreshing] = useState(false)
 
+  const colors = useColors()
+
   const selectedStudent = getSelectedStudent()
-  const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
+  const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
 
   const { calendarDays, startDateStr, endDateStr } = useMemo(() => {
     const monthStart = startOfMonth(currentMonth)
@@ -113,7 +116,7 @@ export default function CalendarScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
       >
@@ -126,12 +129,14 @@ export default function CalendarScreen() {
               <TouchableOpacity
                 onPress={() => setCurrentMonth(subMonths(currentMonth, 1))}
                 style={{ padding: 8 }}
+                accessibilityLabel="Previous month"
+                accessibilityRole="button"
               >
-                <Ionicons name="chevron-back" size={24} color="#6b7280" />
+                <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={goToToday}>
-                <Text style={{ fontSize: 18, fontWeight: '600', color: '#1f2937' }}>
+              <TouchableOpacity onPress={goToToday} accessibilityLabel={`${format(currentMonth, 'MMMM yyyy')}, tap to go to today`}>
+                <Text style={{ fontSize: 18, fontWeight: '600', color: colors.text }}>
                   {format(currentMonth, 'MMMM yyyy')}
                 </Text>
               </TouchableOpacity>
@@ -139,8 +144,10 @@ export default function CalendarScreen() {
               <TouchableOpacity
                 onPress={() => setCurrentMonth(addMonths(currentMonth, 1))}
                 style={{ padding: 8 }}
+                accessibilityLabel="Next month"
+                accessibilityRole="button"
               >
-                <Ionicons name="chevron-forward" size={24} color="#6b7280" />
+                <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -148,7 +155,7 @@ export default function CalendarScreen() {
             <View style={{ flexDirection: 'row', marginBottom: 8 }}>
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
                 <View key={day} style={{ flex: 1, alignItems: 'center' }}>
-                  <Text style={{ fontSize: 12, fontWeight: '500', color: '#9ca3af' }}>{day}</Text>
+                  <Text style={{ fontSize: 12, fontWeight: '500', color: colors.textTertiary }}>{day}</Text>
                 </View>
               ))}
             </View>
@@ -168,16 +175,18 @@ export default function CalendarScreen() {
                 if (isSelected) {
                   bgColor = studentColor
                 } else if (isToday) {
-                  bgColor = '#fef9c3'
+                  bgColor = colors.warningLight
                 } else if (hasFieldTrip && isCurrentMonth) {
                   const category = events.fieldTrips[0].eventCategory || 'educational'
-                  bgColor = eventCategoryColors[category]?.bg || '#fef3c7'
+                  bgColor = eventCategoryColors[category]?.bg || colors.warningLight
                 }
 
                 return (
                   <TouchableOpacity
                     key={day.toISOString()}
                     onPress={() => setSelectedDate(day)}
+                    accessibilityLabel={`${format(day, 'MMMM d')}${isToday ? ', today' : ''}${hasEvents ? ', has events' : ''}`}
+                    accessibilityState={{ selected: isSelected }}
                     style={{
                       width: '14.28%',
                       aspectRatio: 1,
@@ -191,7 +200,7 @@ export default function CalendarScreen() {
                       style={{
                         fontSize: 14,
                         fontWeight: isToday || isSelected ? '600' : '400',
-                        color: isSelected ? '#fff' : !isCurrentMonth ? '#d1d5db' : isToday ? studentColor : '#1f2937',
+                        color: isSelected ? colors.textInverse : !isCurrentMonth ? colors.border : isToday ? studentColor : colors.text,
                       }}
                     >
                       {format(day, 'd')}
@@ -209,7 +218,7 @@ export default function CalendarScreen() {
                                 width: 4,
                                 height: 4,
                                 borderRadius: 2,
-                                backgroundColor: eventCategoryColors[category]?.color || '#d97706',
+                                backgroundColor: eventCategoryColors[category]?.color || colors.warning,
                               }}
                             />
                           )
@@ -220,7 +229,7 @@ export default function CalendarScreen() {
                               width: 4,
                               height: 4,
                               borderRadius: 2,
-                              backgroundColor: '#10b981',
+                              backgroundColor: colors.success,
                             }}
                           />
                         )}
@@ -235,27 +244,27 @@ export default function CalendarScreen() {
           {/* Legend */}
           <View style={{ marginTop: 12, flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#10b981' }} />
-              <Text style={{ fontSize: 11, color: '#6b7280' }}>Activities</Text>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.success }} />
+              <Text style={{ fontSize: 11, color: colors.textSecondary }}>Activities</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#f59e0b' }} />
-              <Text style={{ fontSize: 11, color: '#6b7280' }}>Educational</Text>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.warning }} />
+              <Text style={{ fontSize: 11, color: colors.textSecondary }}>Educational</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#22c55e' }} />
-              <Text style={{ fontSize: 11, color: '#6b7280' }}>Social</Text>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.studentGreen }} />
+              <Text style={{ fontSize: 11, color: colors.textSecondary }}>Social</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#3b82f6' }} />
-              <Text style={{ fontSize: 11, color: '#6b7280' }}>Co-op</Text>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.studentBlue }} />
+              <Text style={{ fontSize: 11, color: colors.textSecondary }}>Co-op</Text>
             </View>
           </View>
 
           {/* Selected Day Details */}
           <Card style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }} accessibilityRole="header">
                 {format(selectedDate, 'EEEE, MMMM d')}
               </Text>
               {isSameDay(selectedDate, new Date()) && (
@@ -266,27 +275,27 @@ export default function CalendarScreen() {
             {/* Field Trips */}
             {selectedDayEvents.fieldTrips.length > 0 && (
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 13, fontWeight: '500', color: '#6b7280', marginBottom: 8 }}>
+                <Text style={{ fontSize: 13, fontWeight: '500', color: colors.textSecondary, marginBottom: 8 }}>
                   Events ({selectedDayEvents.fieldTrips.length})
                 </Text>
                 {selectedDayEvents.fieldTrips.map((trip) => {
                   const category = trip.eventCategory || 'educational'
-                  const colors = eventCategoryColors[category] || eventCategoryColors.educational
+                  const categoryColors = eventCategoryColors[category] || eventCategoryColors.educational
                   const tripStudents = students.filter((s) => trip.studentIds.includes(s.id))
 
                   return (
                     <View
                       key={trip.id}
                       style={{
-                        backgroundColor: colors.bg,
+                        backgroundColor: categoryColors.bg,
                         padding: 12,
                         borderRadius: 8,
                         marginBottom: 8,
                       }}
                     >
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                        <Text style={{ fontSize: 16 }}>{colors.icon}</Text>
-                        <Text style={{ fontSize: 15, fontWeight: '600', color: colors.color, flex: 1 }}>
+                        <Text style={{ fontSize: 16 }}>{categoryColors.icon}</Text>
+                        <Text style={{ fontSize: 15, fontWeight: '600', color: categoryColors.color, flex: 1 }}>
                           {trip.title}
                         </Text>
                         <Badge
@@ -296,11 +305,11 @@ export default function CalendarScreen() {
                         </Badge>
                       </View>
                       <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 4 }}>
-                        <Ionicons name="location" size={14} color={colors.color} />
-                        <Text style={{ fontSize: 13, color: colors.color }}>{trip.location}</Text>
+                        <Ionicons name="location" size={14} color={categoryColors.color} />
+                        <Text style={{ fontSize: 13, color: categoryColors.color }}>{trip.location}</Text>
                       </View>
                       {tripStudents.length > 0 && (
-                        <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                        <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 4 }}>
                           {tripStudents.map((s) => s.name).join(', ')}
                         </Text>
                       )}
@@ -312,12 +321,12 @@ export default function CalendarScreen() {
 
             {/* Activities */}
             <View>
-              <Text style={{ fontSize: 13, fontWeight: '500', color: '#6b7280', marginBottom: 8 }}>
+              <Text style={{ fontSize: 13, fontWeight: '500', color: colors.textSecondary, marginBottom: 8 }}>
                 Activities ({selectedDayEvents.activities.length})
               </Text>
 
               {selectedDayEvents.activities.length === 0 ? (
-                <Text style={{ fontSize: 13, color: '#9ca3af', fontStyle: 'italic' }}>No activities logged</Text>
+                <Text style={{ fontSize: 13, color: colors.textTertiary, fontStyle: 'italic' }}>No activities logged</Text>
               ) : (
                 selectedDayEvents.activities.map((activity) => {
                   const student = students.find((s) => s.id === activity.studentId)
@@ -328,7 +337,7 @@ export default function CalendarScreen() {
                     <View
                       key={activity.id}
                       style={{
-                        backgroundColor: '#ecfdf5',
+                        backgroundColor: colors.successLight,
                         padding: 12,
                         borderRadius: 8,
                         marginBottom: 8,
@@ -336,24 +345,24 @@ export default function CalendarScreen() {
                     >
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                         <Text style={{ fontSize: 16 }}>{icon}</Text>
-                        <Text style={{ fontSize: 14, fontWeight: '500', color: '#1f2937', flex: 1 }}>
+                        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, flex: 1 }}>
                           {activity.title}
                         </Text>
                       </View>
                       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
                         {student && (
-                          <Text style={{ fontSize: 12, color: '#6b7280' }}>{student.name}</Text>
+                          <Text style={{ fontSize: 12, color: colors.textSecondary }}>{student.name}</Text>
                         )}
                         {subject && (
                           <>
-                            <Text style={{ fontSize: 12, color: '#d1d5db' }}>•</Text>
-                            <Text style={{ fontSize: 12, color: '#6b7280' }}>{subject.name}</Text>
+                            <Text style={{ fontSize: 12, color: colors.border }}>•</Text>
+                            <Text style={{ fontSize: 12, color: colors.textSecondary }}>{subject.name}</Text>
                           </>
                         )}
                         {activity.durationMinutes && (
                           <>
-                            <Text style={{ fontSize: 12, color: '#d1d5db' }}>•</Text>
-                            <Text style={{ fontSize: 12, color: '#6b7280' }}>{activity.durationMinutes} min</Text>
+                            <Text style={{ fontSize: 12, color: colors.border }}>•</Text>
+                            <Text style={{ fontSize: 12, color: colors.textSecondary }}>{activity.durationMinutes} min</Text>
                           </>
                         )}
                       </View>

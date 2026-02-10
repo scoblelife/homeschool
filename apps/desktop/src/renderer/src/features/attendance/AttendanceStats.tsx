@@ -137,9 +137,10 @@ export function AttendanceStats({ students }: Props) {
 
   // Determine attendance percentage color
   const getPercentageColor = (percentage: number) => {
-    if (percentage >= 90) return "text-green-600 dark:text-green-400";
+    if (percentage >= 90)
+      return "text-status-successDark dark:text-status-success";
     if (percentage >= 80) return "text-yellow-600 dark:text-yellow-400";
-    return "text-red-600 dark:text-red-400";
+    return "text-status-error dark:text-status-error";
   };
 
   return (
@@ -174,36 +175,42 @@ export function AttendanceStats({ students }: Props) {
         </div>
 
         {/* School Days */}
-        <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-4">
+        <div
+          className={`bg-status-successLight dark:bg-status-successDark/30 rounded-lg p-4`}
+        >
           <div className="flex items-center gap-2 mb-2">
-            <AcademicCapIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
-            <span className="text-sm text-green-600 dark:text-green-400">
+            <AcademicCapIcon className="w-5 h-5 text-status-successDark dark:text-status-success" />
+            <span className="text-sm text-status-successDark dark:text-status-success">
               School Days
             </span>
           </div>
-          <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+          <p className="text-2xl font-bold text-status-successDark dark:text-status-success">
             {displayStats.schoolDays}
           </p>
         </div>
 
         {/* Absences */}
-        <div className="bg-red-50 dark:bg-red-900/30 rounded-lg p-4">
+        <div
+          className={`bg-status-errorLight dark:bg-status-errorDark/30 rounded-lg p-4`}
+        >
           <div className="flex items-center gap-2 mb-2">
-            <ExclamationCircleIcon className="w-5 h-5 text-red-600 dark:text-red-400" />
-            <span className="text-sm text-red-600 dark:text-red-400">
+            <ExclamationCircleIcon className="w-5 h-5 text-status-error dark:text-status-error" />
+            <span className="text-sm text-status-error dark:text-status-error">
               Absences
             </span>
           </div>
-          <p className="text-2xl font-bold text-red-700 dark:text-red-300">
+          <p className="text-2xl font-bold text-status-errorDark dark:text-status-error">
             {displayStats.absences}
           </p>
         </div>
 
         {/* Attendance Percentage */}
-        <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4">
+        <div
+          className={`bg-status-infoLight dark:bg-status-infoDark/30 rounded-lg p-4`}
+        >
           <div className="flex items-center gap-2 mb-2">
-            <CheckCircleIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            <span className="text-sm text-blue-600 dark:text-blue-400">
+            <CheckCircleIcon className="w-5 h-5 text-status-infoDark dark:text-status-info" />
+            <span className="text-sm text-status-infoDark dark:text-status-info">
               Attendance Rate
             </span>
           </div>
@@ -229,10 +236,10 @@ export function AttendanceStats({ students }: Props) {
           <div
             className={`h-full rounded-full transition-all duration-500 ${
               displayStats.percentage >= 90
-                ? "bg-green-500"
+                ? "bg-status-success"
                 : displayStats.percentage >= 80
                   ? "bg-yellow-500"
-                  : "bg-red-500"
+                  : "bg-status-error"
             }`}
             style={{ width: `${displayStats.percentage}%` }}
           />
@@ -240,8 +247,12 @@ export function AttendanceStats({ students }: Props) {
       </div>
 
       {/* State requirement notice */}
-      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <p className="text-sm text-blue-800 dark:text-blue-200">
+      <div
+        className={`mt-6 p-4 bg-status-infoLight dark:bg-status-infoDark/20 rounded-lg`}
+      >
+        <p
+          className={`text-sm text-status-infoDark dark:text-status-infoLight`}
+        >
           <strong>Note:</strong> Many states require tracking of instructional
           days. Nevada requires notification of intent to homeschool but has no
           minimum day requirement. Check your state's specific requirements in

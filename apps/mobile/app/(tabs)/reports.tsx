@@ -6,6 +6,7 @@ import { useStore } from '../../src/stores/useStore'
 import { getActivitySummary, getDailySummaries } from '../../src/database'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, EmptyState, ProgressBar } from '../../src/components/ui'
+import { useColors } from '../../src/theme/createStyles'
 
 interface ActivitySummary {
   subjectId: string
@@ -40,8 +41,9 @@ export default function ReportsScreen() {
   const [refreshing, setRefreshing] = useState(false)
   const [selectedRange, setSelectedRange] = useState(30)
 
+  const colors = useColors()
   const selectedStudent = getSelectedStudent()
-  const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
+  const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
 
   const loadReports = useCallback(async () => {
     if (!selectedStudentId) {
@@ -90,7 +92,7 @@ export default function ReportsScreen() {
 
   if (!selectedStudentId) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ padding: 16 }}>
           <StudentSelector />
         </View>
@@ -106,7 +108,7 @@ export default function ReportsScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
       >
@@ -120,16 +122,19 @@ export default function ReportsScreen() {
                 <TouchableOpacity
                   key={range.days}
                   onPress={() => setRange(range.days)}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: selectedRange === range.days }}
+                  accessibilityLabel={`${range.label} date range`}
                   style={{
                     paddingHorizontal: 16,
                     paddingVertical: 8,
                     borderRadius: 20,
-                    backgroundColor: selectedRange === range.days ? studentColor : '#f3f4f6',
+                    backgroundColor: selectedRange === range.days ? studentColor : colors.surfaceSecondary,
                   }}
                 >
                   <Text
                     style={{
-                      color: selectedRange === range.days ? '#fff' : '#6b7280',
+                      color: selectedRange === range.days ? colors.textInverse : colors.textSecondary,
                       fontWeight: '500',
                     }}
                   >
@@ -143,27 +148,27 @@ export default function ReportsScreen() {
           {/* Summary Stats */}
           <View style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', gap: 8 }}>
-              <Card style={{ flex: 1 }}>
-                <Text style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Activities</Text>
-                <Text style={{ fontSize: 24, fontWeight: '700', color: '#1f2937' }}>{stats.totalActivities}</Text>
+              <Card style={{ flex: 1 }} accessibilityLabel={`${stats.totalActivities} total activities`}>
+                <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 4 }}>Activities</Text>
+                <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>{stats.totalActivities}</Text>
               </Card>
-              <Card style={{ flex: 1 }}>
-                <Text style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Hours</Text>
-                <Text style={{ fontSize: 24, fontWeight: '700', color: '#1f2937' }}>{stats.totalHours}</Text>
+              <Card style={{ flex: 1 }} accessibilityLabel={`${stats.totalHours} total hours`}>
+                <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 4 }}>Hours</Text>
+                <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>{stats.totalHours}</Text>
               </Card>
-              <Card style={{ flex: 1 }}>
-                <Text style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Active Days</Text>
-                <Text style={{ fontSize: 24, fontWeight: '700', color: '#1f2937' }}>{stats.activeDays}</Text>
+              <Card style={{ flex: 1 }} accessibilityLabel={`${stats.activeDays} active days`}>
+                <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 4 }}>Active Days</Text>
+                <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>{stats.activeDays}</Text>
               </Card>
             </View>
           </View>
 
           {/* Subject Breakdown */}
           <Card style={{ marginTop: 16 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>By Subject</Text>
+            <Text accessibilityRole="header" style={{ fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 12 }}>By Subject</Text>
 
             {activitySummary.length === 0 ? (
-              <Text style={{ fontSize: 13, color: '#9ca3af', fontStyle: 'italic' }}>
+              <Text style={{ fontSize: 13, color: colors.textTertiary, fontStyle: 'italic' }}>
                 No activities in this date range
               </Text>
             ) : (
@@ -175,8 +180,8 @@ export default function ReportsScreen() {
                   return (
                     <View key={summary.subjectId}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <Text style={{ fontSize: 14, fontWeight: '500', color: '#1f2937' }}>{summary.subjectName}</Text>
-                        <Text style={{ fontSize: 12, color: '#6b7280' }}>
+                        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>{summary.subjectName}</Text>
+                        <Text style={{ fontSize: 12, color: colors.textSecondary }}>
                           {summary.totalActivities} activities • {hours} hrs
                         </Text>
                       </View>
@@ -204,10 +209,10 @@ export default function ReportsScreen() {
 
           {/* Daily Activity */}
           <Card style={{ marginTop: 16 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>Daily Activity</Text>
+            <Text accessibilityRole="header" style={{ fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 12 }}>Daily Activity</Text>
 
             {dailySummaries.length === 0 ? (
-              <Text style={{ fontSize: 13, color: '#9ca3af', fontStyle: 'italic' }}>
+              <Text style={{ fontSize: 13, color: colors.textTertiary, fontStyle: 'italic' }}>
                 No activity in this date range
               </Text>
             ) : (
@@ -219,16 +224,16 @@ export default function ReportsScreen() {
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      backgroundColor: '#f9fafb',
+                      backgroundColor: colors.background,
                       padding: 12,
                       borderRadius: 8,
                     }}
                   >
                     <View>
-                      <Text style={{ fontSize: 14, fontWeight: '500', color: '#1f2937' }}>
+                      <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>
                         {format(parseISO(day.date), 'EEE, MMM d')}
                       </Text>
-                      <Text style={{ fontSize: 12, color: '#6b7280' }}>
+                      <Text style={{ fontSize: 12, color: colors.textSecondary }}>
                         {day.activitiesCount} activities • {day.totalMinutes} min
                       </Text>
                     </View>

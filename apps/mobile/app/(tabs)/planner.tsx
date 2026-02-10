@@ -16,6 +16,7 @@ import { getMilestones, updateMilestone, createReward } from '../../src/database
 import type { Milestone } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, Button, EmptyState, Modal } from '../../src/components/ui'
+import { useColors } from '../../src/theme/createStyles'
 
 function getCurrentWeekStart(): Date {
   return startOfWeek(new Date(), { weekStartsOn: 1 })
@@ -28,8 +29,9 @@ export default function PlannerScreen() {
   const [refreshing, setRefreshing] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
 
+  const colors = useColors()
   const selectedStudent = getSelectedStudent()
-  const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
+  const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
 
   const { weekStartDate, weekEndDate, weekDays, weekEndStr } = useMemo(() => {
     const start = parseISO(currentWeekStart)
@@ -139,7 +141,7 @@ export default function PlannerScreen() {
 
   if (!selectedStudentId) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ padding: 16 }}>
           <StudentSelector />
         </View>
@@ -155,7 +157,7 @@ export default function PlannerScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
       >
@@ -165,18 +167,18 @@ export default function PlannerScreen() {
           {/* Week Navigation */}
           <Card style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <TouchableOpacity onPress={() => navigateWeek('prev')} style={{ padding: 8 }}>
-                <Ionicons name="chevron-back" size={24} color="#6b7280" />
+              <TouchableOpacity onPress={() => navigateWeek('prev')} style={{ padding: 8 }} accessibilityLabel="Previous week" accessibilityRole="button">
+                <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
 
               <TouchableOpacity onPress={goToCurrentWeek}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
                   {format(weekStartDate, 'MMM d')} - {format(weekEndDate, 'MMM d, yyyy')}
                 </Text>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => navigateWeek('next')} style={{ padding: 8 }}>
-                <Ionicons name="chevron-forward" size={24} color="#6b7280" />
+              <TouchableOpacity onPress={() => navigateWeek('next')} style={{ padding: 8 }} accessibilityLabel="Next week" accessibilityRole="button">
+                <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -192,14 +194,14 @@ export default function PlannerScreen() {
                       alignItems: 'center',
                       paddingVertical: 8,
                       borderRadius: 8,
-                      backgroundColor: isTodayDay ? studentColor : '#f3f4f6',
+                      backgroundColor: isTodayDay ? studentColor : colors.surfaceSecondary,
                     }}
                   >
                     <Text
                       style={{
                         fontSize: 10,
                         fontWeight: '500',
-                        color: isTodayDay ? '#fff' : '#6b7280',
+                        color: isTodayDay ? colors.textInverse : colors.textSecondary,
                         textTransform: 'uppercase',
                       }}
                     >
@@ -209,7 +211,7 @@ export default function PlannerScreen() {
                       style={{
                         fontSize: 16,
                         fontWeight: '600',
-                        color: isTodayDay ? '#fff' : '#1f2937',
+                        color: isTodayDay ? colors.textInverse : colors.text,
                       }}
                     >
                       {format(day, 'd')}
@@ -224,20 +226,20 @@ export default function PlannerScreen() {
           <View style={{ marginTop: 16, flexDirection: 'row', gap: 8 }}>
             <Card style={{ flex: 1, alignItems: 'center' }}>
               <Text style={{ fontSize: 20, fontWeight: '700', color: studentColor }}>{stats.total}</Text>
-              <Text style={{ fontSize: 11, color: '#6b7280' }}>Milestones</Text>
+              <Text style={{ fontSize: 11, color: colors.textSecondary }}>Milestones</Text>
             </Card>
             <Card style={{ flex: 1, alignItems: 'center' }}>
-              <Text style={{ fontSize: 20, fontWeight: '700', color: '#10b981' }}>{stats.completed}</Text>
-              <Text style={{ fontSize: 11, color: '#6b7280' }}>Completed</Text>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: colors.success }}>{stats.completed}</Text>
+              <Text style={{ fontSize: 11, color: colors.textSecondary }}>Completed</Text>
             </Card>
             <Card style={{ flex: 1, alignItems: 'center' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-                <Ionicons name="star" size={16} color="#fbbf24" />
-                <Text style={{ fontSize: 20, fontWeight: '700', color: '#f59e0b' }}>
+                <Ionicons name="star" size={16} color={colors.warning} />
+                <Text style={{ fontSize: 20, fontWeight: '700', color: colors.warning }}>
                   {stats.earnedStars}/{stats.totalStars}
                 </Text>
               </View>
-              <Text style={{ fontSize: 11, color: '#6b7280' }}>Stars</Text>
+              <Text style={{ fontSize: 11, color: colors.textSecondary }}>Stars</Text>
             </Card>
           </View>
 
@@ -256,7 +258,7 @@ export default function PlannerScreen() {
                 const subject = getSubjectById(subjectId)
                 return (
                   <Card key={subjectId} style={{ marginBottom: 12 }}>
-                    <Text style={{ fontSize: 15, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>
+                    <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 12 }}>
                       {subject?.name || 'Unknown Subject'}
                     </Text>
 
@@ -267,14 +269,17 @@ export default function PlannerScreen() {
                           <TouchableOpacity
                             key={milestone.id}
                             onPress={() => handleToggleComplete(milestone)}
+                            accessibilityRole="checkbox"
+                            accessibilityState={{ checked: isCompleted }}
+                            accessibilityLabel={`${milestone.title}, ${isCompleted ? 'completed' : 'not completed'}`}
                             style={{
                               flexDirection: 'row',
                               alignItems: 'flex-start',
                               padding: 12,
                               borderRadius: 8,
-                              backgroundColor: isCompleted ? '#ecfdf5' : '#f9fafb',
+                              backgroundColor: isCompleted ? colors.successLight : colors.background,
                               borderLeftWidth: 3,
-                              borderLeftColor: isCompleted ? '#10b981' : '#d1d5db',
+                              borderLeftColor: isCompleted ? colors.success : colors.border,
                             }}
                           >
                             <View
@@ -283,14 +288,14 @@ export default function PlannerScreen() {
                                 height: 22,
                                 borderRadius: 4,
                                 borderWidth: 2,
-                                borderColor: isCompleted ? '#10b981' : '#d1d5db',
-                                backgroundColor: isCompleted ? '#10b981' : 'transparent',
+                                borderColor: isCompleted ? colors.success : colors.border,
+                                backgroundColor: isCompleted ? colors.success : 'transparent',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 marginRight: 10,
                               }}
                             >
-                              {isCompleted && <Ionicons name="checkmark" size={14} color="#fff" />}
+                              {isCompleted && <Ionicons name="checkmark" size={14} color={colors.textInverse} />}
                             </View>
 
                             <View style={{ flex: 1 }}>
@@ -298,7 +303,7 @@ export default function PlannerScreen() {
                                 style={{
                                   fontSize: 14,
                                   fontWeight: '500',
-                                  color: isCompleted ? '#6b7280' : '#1f2937',
+                                  color: isCompleted ? colors.textSecondary : colors.text,
                                   textDecorationLine: isCompleted ? 'line-through' : 'none',
                                 }}
                               >
@@ -306,7 +311,7 @@ export default function PlannerScreen() {
                               </Text>
                               {milestone.description && (
                                 <Text
-                                  style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}
+                                  style={{ fontSize: 12, color: colors.textTertiary, marginTop: 2 }}
                                   numberOfLines={1}
                                 >
                                   {milestone.description}
@@ -314,8 +319,8 @@ export default function PlannerScreen() {
                               )}
                               <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 8 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-                                  <Ionicons name="star" size={12} color="#fbbf24" />
-                                  <Text style={{ fontSize: 11, color: '#6b7280' }}>{milestone.starValue}</Text>
+                                  <Ionicons name="star" size={12} color={colors.warning} />
+                                  <Text style={{ fontSize: 11, color: colors.textSecondary }}>{milestone.starValue}</Text>
                                 </View>
                                 <Badge
                                   variant={

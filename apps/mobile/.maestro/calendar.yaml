@@ -1,0 +1,30 @@
+appId: com.scoblelife.homeschool
+name: Calendar Navigation Flow
+---
+
+# Navigate to Calendar via More tab
+- tapOn: "More"
+- tapOn: "Calendar"
+
+# Verify Calendar screen loaded
+- assertVisible: "Calendar"
+
+# Navigate to next month
+- tapOn:
+    id: "next-month"
+
+# Navigate back to previous month
+- tapOn:
+    id: "prev-month"
+
+# Tap on today's date (should show activities)
+- tapOn:
+    id: "today-date"
+
+# Verify day details appear
+- extendedWaitUntil:
+    visible: "Activities"
+    timeout: 3000
+
+# Navigate back to calendar view
+- back

@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { Button } from "@/components/ui";
 
 interface MapLinkProps {
   location: string;
@@ -31,14 +32,16 @@ export function MapLink({
   if (!location) return null;
 
   return (
-    <button
+    <Button
       onClick={handleClick}
-      className={`inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline ${className}`}
+      variant="ghost"
+      size="sm"
+      className={`inline-flex items-center gap-1 text-status-infoDark hover:text-status-infoDark hover:underline ${className}`}
       title={`Open "${location}" in Google Maps`}
     >
       {showIcon && <MapPinIcon className="w-4 h-4" />}
       <span>{location}</span>
-    </button>
+    </Button>
   );
 }
 
@@ -80,12 +83,14 @@ export function MapButton({ location }: { location: string }) {
   if (!location) return null;
 
   return (
-    <button
+    <Button
       onClick={handleClick}
-      className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+      variant="ghost"
+      size="sm"
+      className="p-1.5 text-gray-500 hover:text-status-infoDark hover:bg-status-infoLight rounded"
       title={`View "${location}" on map`}
     >
       <MapPinIcon className="w-4 h-4" />
-    </button>
+    </Button>
   );
 }

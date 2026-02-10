@@ -12,6 +12,7 @@ import {
   WidgetErrorFallback,
 } from "../components/ErrorBoundary";
 import { ComplianceDeadlines } from "../components/ComplianceDeadlines";
+import { validateApiArray } from "../services/validateApiResponse";
 
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
@@ -57,59 +58,77 @@ export default function Dashboard(): JSX.Element {
   const today = format(new Date(), "yyyy-MM-dd");
 
   const loadDashboardData = useCallback(async (): Promise<void> => {
-    const [sessions, activities, fieldTrips] = await Promise.all([
-      window.api.getSessions({
-        studentId: selectedStudentId || undefined,
-        startDate: today,
-        endDate: today,
-      }),
-      window.api.getActivities({
-        studentId: selectedStudentId || undefined,
-      }),
-      window.api.getFieldTrips(
-        selectedStudentId ? { studentId: selectedStudentId } : undefined,
-      ),
-    ]);
-    setTodaySessions(sessions);
-    setRecentActivities(activities.slice(0, 5));
-
-    // Filter to only upcoming/today field trips that are not started or in progress
-    const upcoming = fieldTrips
-      .filter((trip) => {
-        const tripDate = toDate(trip.date);
-        return (
-          (isFuture(tripDate) || isToday(tripDate)) &&
-          (trip.status === "not_started" || trip.status === "in_progress")
-        );
-      })
-      .sort((a, b) => toDate(a.date).getTime() - toDate(b.date).getTime())
-      .slice(0, 3);
-    setUpcomingFieldTrips(upcoming);
-
-    // Load suggested milestones if student selected
-    if (selectedStudentId) {
-      const suggested = await window.api.getSuggestedMilestones(
-        selectedStudentId,
-        5,
+    try {
+      const [sessionsRaw, activitiesRaw, fieldTripsRaw] = await Promise.all([
+        window.api.getSessions({
+          studentId: selectedStudentId || undefined,
+          startDate: today,
+          endDate: today,
+        }),
+        window.api.getActivities({
+          studentId: selectedStudentId || undefined,
+        }),
+        window.api.getFieldTrips(
+          selectedStudentId ? { studentId: selectedStudentId } : undefined,
+        ),
+      ]);
+      const sessions = validateApiArray<Session>(sessionsRaw, "Dashboard");
+      const activities = validateApiArray<Activity>(activitiesRaw, "Dashboard");
+      const fieldTrips = validateApiArray<FieldTrip>(
+        fieldTripsRaw,
+        "Dashboard",
       );
-      setSuggestedMilestones(suggested);
-    } else {
-      setSuggestedMilestones([]);
+      setTodaySessions(sessions);
+      setRecentActivities(activities.slice(0, 5));
+
+      // Filter to only upcoming/today field trips that are not started or in progress
+      const upcoming = fieldTrips
+        .filter((trip) => {
+          const tripDate = toDate(trip.date);
+          return (
+            (isFuture(tripDate) || isToday(tripDate)) &&
+            (trip.status === "not_started" || trip.status === "in_progress")
+          );
+        })
+        .sort((a, b) => toDate(a.date).getTime() - toDate(b.date).getTime())
+        .slice(0, 3);
+      setUpcomingFieldTrips(upcoming);
+
+      // Load suggested milestones if student selected
+      if (selectedStudentId) {
+        const suggestedRaw = await window.api.getSuggestedMilestones(
+          selectedStudentId,
+          5,
+        );
+        const suggested = validateApiArray<Milestone>(
+          suggestedRaw,
+          "Dashboard",
+        );
+        setSuggestedMilestones(suggested);
+      } else {
+        setSuggestedMilestones([]);
+      }
+    } catch (error) {
+      console.error("[Dashboard] Failed to load dashboard data:", error);
     }
   }, [selectedStudentId, today]);
 
   // Wrapper to handle activity creation + streak tracking
   const handleActivityCreated = useCallback(async () => {
-    // First load fresh data
-    await loadDashboardData();
-    // Then update streaks for any today's activities
-    const todayActivities = await window.api.getActivities({
-      startDate: today,
-      endDate: today,
-    });
-    todayActivities.forEach((activity) => {
-      recordActivity(activity.studentId, activity.dateCompleted);
-    });
+    try {
+      // First load fresh data
+      await loadDashboardData();
+      // Then update streaks for any today's activities
+      const todayActivities = await window.api.getActivities({
+        startDate: today,
+        endDate: today,
+      });
+      todayActivities.forEach((activity) => {
+        recordActivity(activity.studentId, activity.dateCompleted);
+      });
+    } catch (error) {
+      console.error("[Dashboard] Failed to handle activity created:", error);
+    }
   }, [loadDashboardData, today, recordActivity]);
 
   useEffect(() => {

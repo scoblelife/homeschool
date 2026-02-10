@@ -7,6 +7,7 @@ import { getActivities, createActivity, deleteActivity } from '../../src/databas
 import type { Activity, CreateActivity, ActivityType } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { ActivityCard } from '../../src/components/ActivityCard'
+import { useColors } from '../../src/theme/createStyles'
 
 const activityTypes: { value: ActivityType; label: string }[] = [
   { value: 'worksheet', label: 'Worksheet' },
@@ -30,8 +31,9 @@ export default function ActivitiesScreen() {
     dateCompleted: format(new Date(), 'yyyy-MM-dd'),
   })
 
+  const colors = useColors()
   const selectedStudent = getSelectedStudent()
-  const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
+  const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
 
   const loadActivities = useCallback(async () => {
     if (!selectedStudentId) return
@@ -112,7 +114,7 @@ export default function ActivitiesScreen() {
   if (!selectedStudentId) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-        <Text style={{ fontSize: 18, color: '#6b7280', textAlign: 'center' }}>
+        <Text style={{ fontSize: 18, color: colors.textSecondary, textAlign: 'center' }}>
           Select a student to view activities
         </Text>
       </View>
@@ -120,7 +122,7 @@ export default function ActivitiesScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
       >
@@ -129,9 +131,9 @@ export default function ActivitiesScreen() {
 
           <View style={{ marginTop: 16 }}>
             {activities.length === 0 ? (
-              <View style={{ backgroundColor: '#fff', borderRadius: 12, padding: 24, alignItems: 'center' }}>
-                <Text style={{ color: '#9ca3af', fontSize: 16 }}>No activities in the last 30 days</Text>
-                <Text style={{ color: '#9ca3af', fontSize: 14, marginTop: 4 }}>Tap + to log an activity</Text>
+              <View style={{ backgroundColor: colors.surface, borderRadius: 12, padding: 24, alignItems: 'center' }}>
+                <Text style={{ color: colors.textTertiary, fontSize: 16 }}>No activities in the last 30 days</Text>
+                <Text style={{ color: colors.textTertiary, fontSize: 14, marginTop: 4 }}>Tap + to log an activity</Text>
               </View>
             ) : (
               activities.map((activity) => (
@@ -150,6 +152,8 @@ export default function ActivitiesScreen() {
       {/* FAB */}
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
+        accessibilityLabel="Log new activity"
+        accessibilityRole="button"
         style={{
           position: 'absolute',
           bottom: 24,
@@ -166,17 +170,17 @@ export default function ActivitiesScreen() {
           elevation: 4,
         }}
       >
-        <Ionicons name="add" size={28} color="#fff" />
+        <Ionicons name="add" size={28} color={colors.textInverse} />
       </TouchableOpacity>
 
       {/* Create Activity Modal */}
       <Modal visible={modalVisible} animationType="slide" presentationStyle="pageSheet">
-        <View style={{ flex: 1, backgroundColor: '#fff' }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' }}>
+        <View style={{ flex: 1, backgroundColor: colors.surface }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderBottomWidth: 1, borderBottomColor: colors.border }}>
             <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={{ color: '#6b7280', fontSize: 16 }}>Cancel</Text>
+              <Text style={{ color: colors.textSecondary, fontSize: 16 }}>Cancel</Text>
             </TouchableOpacity>
-            <Text style={{ fontSize: 18, fontWeight: '600' }}>Log Activity</Text>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: colors.text }}>Log Activity</Text>
             <TouchableOpacity onPress={handleCreateActivity}>
               <Text style={{ color: studentColor, fontSize: 16, fontWeight: '600' }}>Save</Text>
             </TouchableOpacity>
@@ -184,36 +188,41 @@ export default function ActivitiesScreen() {
 
           <ScrollView style={{ flex: 1, padding: 16 }}>
             {/* Title */}
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Title *</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Title *</Text>
             <TextInput
               value={newActivity.title}
               onChangeText={(text) => setNewActivity({ ...newActivity, title: text })}
               placeholder="What did they do?"
+              accessibilityLabel="Activity title"
               style={{
-                backgroundColor: '#f9fafb',
+                backgroundColor: colors.background,
                 borderRadius: 8,
                 padding: 12,
                 fontSize: 16,
                 marginBottom: 16,
+                color: colors.text,
               }}
             />
 
             {/* Subject */}
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Subject *</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 8 }}>Subject *</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 {subjects.map((subject) => (
                   <TouchableOpacity
                     key={subject.id}
                     onPress={() => setNewActivity({ ...newActivity, subjectId: subject.id })}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: newActivity.subjectId === subject.id }}
+                    accessibilityLabel={subject.name}
                     style={{
                       paddingHorizontal: 12,
                       paddingVertical: 8,
                       borderRadius: 8,
-                      backgroundColor: newActivity.subjectId === subject.id ? studentColor : '#f3f4f6',
+                      backgroundColor: newActivity.subjectId === subject.id ? studentColor : colors.surfaceSecondary,
                     }}
                   >
-                    <Text style={{ color: newActivity.subjectId === subject.id ? '#fff' : '#6b7280' }}>
+                    <Text style={{ color: newActivity.subjectId === subject.id ? colors.textInverse : colors.textSecondary }}>
                       {subject.name}
                     </Text>
                   </TouchableOpacity>
@@ -222,21 +231,24 @@ export default function ActivitiesScreen() {
             </ScrollView>
 
             {/* Activity Type */}
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Type</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 8 }}>Type</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 {activityTypes.map((type) => (
                   <TouchableOpacity
                     key={type.value}
                     onPress={() => setNewActivity({ ...newActivity, activityType: type.value })}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: newActivity.activityType === type.value }}
+                    accessibilityLabel={type.label}
                     style={{
                       paddingHorizontal: 12,
                       paddingVertical: 8,
                       borderRadius: 8,
-                      backgroundColor: newActivity.activityType === type.value ? studentColor : '#f3f4f6',
+                      backgroundColor: newActivity.activityType === type.value ? studentColor : colors.surfaceSecondary,
                     }}
                   >
-                    <Text style={{ color: newActivity.activityType === type.value ? '#fff' : '#6b7280' }}>
+                    <Text style={{ color: newActivity.activityType === type.value ? colors.textInverse : colors.textSecondary }}>
                       {type.label}
                     </Text>
                   </TouchableOpacity>
@@ -245,37 +257,41 @@ export default function ActivitiesScreen() {
             </ScrollView>
 
             {/* Duration */}
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Duration (minutes)</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Duration (minutes)</Text>
             <TextInput
               value={newActivity.durationMinutes?.toString() || ''}
               onChangeText={(text) => setNewActivity({ ...newActivity, durationMinutes: parseInt(text) || undefined })}
               placeholder="30"
               keyboardType="number-pad"
+              accessibilityLabel="Duration in minutes"
               style={{
-                backgroundColor: '#f9fafb',
+                backgroundColor: colors.background,
                 borderRadius: 8,
                 padding: 12,
                 fontSize: 16,
                 marginBottom: 16,
+                color: colors.text,
               }}
             />
 
             {/* Notes */}
-            <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Notes</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Notes</Text>
             <TextInput
               value={newActivity.notes}
               onChangeText={(text) => setNewActivity({ ...newActivity, notes: text })}
               placeholder="Any additional notes..."
               multiline
               numberOfLines={3}
+              accessibilityLabel="Activity notes"
               style={{
-                backgroundColor: '#f9fafb',
+                backgroundColor: colors.background,
                 borderRadius: 8,
                 padding: 12,
                 fontSize: 16,
                 marginBottom: 16,
                 minHeight: 80,
                 textAlignVertical: 'top',
+                color: colors.text,
               }}
             />
           </ScrollView>

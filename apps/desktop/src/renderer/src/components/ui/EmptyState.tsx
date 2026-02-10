@@ -6,6 +6,7 @@
 
 import { ReactNode } from "react";
 import { clsx } from "clsx";
+import { Button } from "./Button";
 
 export interface EmptyStateProps {
   icon?: ReactNode;
@@ -63,12 +64,9 @@ export function NoStudentsEmpty({ onAdd }: { onAdd?: () => void }) {
       description="Add your first student to start tracking their learning journey."
       action={
         onAdd && (
-          <button
-            onClick={onAdd}
-            className="inline-flex items-center px-4 py-2 bg-fuchsia-500 text-white text-sm font-semibold rounded-lg hover:bg-fuchsia-600 transition-colors"
-          >
+          <Button variant="primary" onClick={onAdd}>
             Add Student
-          </button>
+          </Button>
         )
       }
     />

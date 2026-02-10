@@ -130,6 +130,8 @@ export default function OnboardingState() {
           onChangeText={setSearchQuery}
           autoCapitalize="none"
           autoCorrect={false}
+          accessibilityLabel="Search states"
+          accessibilityRole="search"
         />
       </View>
 
@@ -146,6 +148,9 @@ export default function OnboardingState() {
               selectedState === state.code && styles.stateRowSelected,
             ]}
             onPress={() => setSelectedState(state.code)}
+            accessibilityLabel={`${state.name}${selectedState === state.code ? ', selected' : ''}`}
+            accessibilityRole="radio"
+            accessibilityState={{ selected: selectedState === state.code }}
           >
             <Text
               style={[
@@ -168,7 +173,12 @@ export default function OnboardingState() {
       </ScrollView>
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
-        <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+        <TouchableOpacity
+          style={styles.skipButton}
+          onPress={handleSkip}
+          accessibilityLabel="Skip state selection"
+          accessibilityRole="button"
+        >
           <Text style={styles.skipButtonText}>Skip for now</Text>
         </TouchableOpacity>
 
@@ -180,6 +190,9 @@ export default function OnboardingState() {
           ]}
           onPress={handleFinish}
           disabled={!selectedState || isSubmitting}
+          accessibilityLabel={isSubmitting ? 'Finishing setup' : 'Finish Setup'}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: !selectedState || isSubmitting }}
         >
           <Text style={styles.buttonText}>
             {isSubmitting ? 'Finishing...' : 'Finish Setup'}

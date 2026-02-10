@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
 import { format, parseISO } from "date-fns";
+import { Button } from "@/components/ui";
 import type { FieldTrip } from "../../../../shared/types";
 
 // Simplified types for sharing - only need id and name
@@ -196,39 +197,42 @@ export function FieldTripShare({
 
             {/* Quick Actions */}
             <div className="grid grid-cols-3 gap-3 mb-6">
-              <button
+              <Button
                 onClick={handleCopyText}
-                className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                variant="ghost"
+                className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
               >
                 {copied ? (
-                  <CheckIcon className="w-6 h-6 text-green-600" />
+                  <CheckIcon className="w-6 h-6 text-status-successDark" />
                 ) : (
                   <ClipboardIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                 )}
                 <span className="text-sm text-gray-700 dark:text-gray-200">
                   {copied ? "Copied!" : "Copy Text"}
                 </span>
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleDownloadICS}
-                className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                variant="ghost"
+                className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
               >
                 <CalendarIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                 <span className="text-sm text-gray-700 dark:text-gray-200">
                   Calendar
                 </span>
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={handleEmailShare}
-                className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                variant="ghost"
+                className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
               >
                 <EmailIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
                 <span className="text-sm text-gray-700 dark:text-gray-200">
                   Email
                 </span>
-              </button>
+              </Button>
             </div>
 
             {/* Preview */}
@@ -247,7 +251,7 @@ export function FieldTripShare({
                 href={mapsLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
+                className="inline-flex items-center gap-2 text-status-infoDark hover:text-status-infoDark text-sm"
               >
                 <MapIcon className="w-4 h-4" />
                 View location on Google Maps
@@ -256,12 +260,9 @@ export function FieldTripShare({
 
             {/* Close button */}
             <div className="flex justify-end">
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-              >
+              <Button onClick={onClose} variant="secondary">
                 Close
-              </button>
+              </Button>
             </div>
           </div>
         </Dialog.Panel>
@@ -373,13 +374,15 @@ export function ShareButton({ trip, students, subjects }: ShareButtonProps) {
 
   return (
     <>
-      <button
+      <Button
         onClick={() => setIsOpen(true)}
-        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+        variant="ghost"
+        size="sm"
+        className="p-1.5 text-gray-500 hover:text-status-infoDark hover:bg-status-infoLight rounded"
         title="Share field trip"
       >
         <ShareIcon className="w-4 h-4" />
-      </button>
+      </Button>
 
       <FieldTripShare
         trip={trip}

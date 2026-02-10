@@ -45,7 +45,13 @@ export default function Curriculum(): JSX.Element {
           startDate,
           endDate,
         })
-        .then(setRecentActivities);
+        .then(setRecentActivities)
+        .catch((error) => {
+          console.error(
+            "[Curriculum] Failed to load recent activities:",
+            error,
+          );
+        });
     }
   }, [selectedStudentId]);
 
@@ -71,8 +77,9 @@ export default function Curriculum(): JSX.Element {
       <div className="border-b border-neutral-border mb-6">
         <nav className="-mb-px flex gap-6">
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab.id}
+              variant="ghost"
               onClick={() => setActiveTab(tab.id)}
               className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === tab.id
@@ -81,7 +88,7 @@ export default function Curriculum(): JSX.Element {
               }`}
             >
               {tab.label}
-            </button>
+            </Button>
           ))}
         </nav>
       </div>
@@ -117,7 +124,9 @@ export default function Curriculum(): JSX.Element {
           {activeTab === "custom" && selectedStudent && (
             <div className="space-y-6">
               {/* Instructions */}
-              <div className="bg-student-blue-50 border border-student-blue-200 rounded-lg p-4">
+              <div
+                className={`bg-student-blue-50 border border-student-blue-200 rounded-lg p-4`}
+              >
                 <p className="text-sm text-student-blue-700">
                   Select an activity from the list below to map it to learning
                   standards. This helps track which standards are being covered
@@ -183,22 +192,30 @@ function ActivityRow({
   const [standardCount, setStandardCount] = useState(0);
 
   useEffect(() => {
-    window.api.getActivityStandards(activity.id).then((standards) => {
-      setStandardCount(standards.length);
-    });
+    window.api
+      .getActivityStandards(activity.id)
+      .then((standards) => {
+        setStandardCount(standards.length);
+      })
+      .catch((error) => {
+        console.error("[Curriculum] Failed to load activity standards:", error);
+      });
   }, [activity.id]);
 
   return (
-    <button
+    <Button
+      variant="ghost"
       onClick={onClick}
-      className="w-full px-6 py-4 flex items-center justify-between hover:bg-neutral-backgroundDeep transition-colors text-left"
+      className={`w-full px-6 py-4 flex items-center justify-between hover:bg-neutral-backgroundDeep transition-colors text-left`}
     >
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium text-neutral-text">
             {activity.title}
           </span>
-          <span className="px-2 py-0.5 text-xs bg-neutral-backgroundDeep text-neutral-textSecondary rounded">
+          <span
+            className={`px-2 py-0.5 text-xs bg-neutral-backgroundDeep text-neutral-textSecondary rounded`}
+          >
             {activity.activityType.replace("_", " ")}
           </span>
         </div>
@@ -209,17 +226,21 @@ function ActivityRow({
       </div>
       <div className="flex items-center gap-3">
         {standardCount > 0 ? (
-          <span className="px-2 py-1 text-sm bg-status-successLight text-status-successDark rounded-full">
+          <span
+            className={`px-2 py-1 text-sm bg-status-successLight text-status-successDark rounded-full`}
+          >
             {standardCount} standards
           </span>
         ) : (
-          <span className="px-2 py-1 text-sm bg-neutral-backgroundDeep text-neutral-textSecondary rounded-full">
+          <span
+            className={`px-2 py-1 text-sm bg-neutral-backgroundDeep text-neutral-textSecondary rounded-full`}
+          >
             No standards
           </span>
         )}
         <ChevronRightIcon />
       </div>
-    </button>
+    </Button>
   );
 }
 

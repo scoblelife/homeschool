@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
 import { format, parseISO, isWithinInterval, subDays, addDays } from "date-fns";
+import { Button } from "@/components/ui";
 import type {
   Activity,
   FieldTripActivity,
@@ -104,13 +105,15 @@ export function LinkedActivities({
           <LinkIcon className="w-4 h-4" />
           Linked Activities
         </h4>
-        <button
+        <Button
           onClick={() => setIsLinkModalOpen(true)}
-          className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+          variant="ghost"
+          size="sm"
+          className="text-xs text-status-infoDark hover:text-status-infoDark"
         >
           <PlusIcon className="w-3 h-3" />
           Link Activity
-        </button>
+        </Button>
       </div>
 
       {linkedActivities.length === 0 ? (
@@ -134,14 +137,16 @@ export function LinkedActivities({
                     ` - ${activity.durationMinutes} min`}
                 </p>
               </div>
-              <button
+              <Button
                 onClick={() => handleUnlink(activity.id)}
                 disabled={loading}
-                className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors"
+                variant="ghost"
+                size="sm"
+                className="ml-2 p-1 text-gray-400 hover:text-status-error transition-colors"
                 title="Unlink activity"
               >
                 <XIcon className="w-4 h-4" />
-              </button>
+              </Button>
             </li>
           ))}
         </ul>
@@ -193,25 +198,27 @@ export function LinkedActivities({
                             ` - ${activity.durationMinutes} min`}
                         </p>
                       </div>
-                      <button
+                      <Button
                         onClick={() => handleLink(activity.id)}
                         disabled={loading}
-                        className="ml-2 px-3 py-1 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded transition-colors"
+                        variant="ghost"
+                        size="sm"
+                        className="ml-2 px-3 py-1 text-xs bg-status-infoLight text-status-infoDark hover:bg-status-infoLight dark:bg-status-infoDark/30 dark:text-status-infoLight dark:hover:bg-status-infoDark/50 rounded"
                       >
                         Link
-                      </button>
+                      </Button>
                     </li>
                   ))}
                 </ul>
               )}
 
               <div className="flex justify-end mt-4">
-                <button
+                <Button
                   onClick={() => setIsLinkModalOpen(false)}
-                  className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  variant="secondary"
                 >
                   Done
-                </button>
+                </Button>
               </div>
             </div>
           </Dialog.Panel>
@@ -297,7 +304,7 @@ export function LinkedCountBadge({ fieldTripId }: LinkedCountBadgeProps) {
 
   return (
     <span
-      className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-full"
+      className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-status-infoLight text-status-infoDark dark:bg-status-infoDark/30 dark:text-status-infoLight rounded-full"
       title={`${count} linked ${count === 1 ? "activity" : "activities"}`}
     >
       <LinkIcon className="w-3 h-3" />

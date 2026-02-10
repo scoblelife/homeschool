@@ -32,57 +32,59 @@ export interface AlertProps {
 
 const variantClasses: Record<AlertVariant, Record<AlertStyle, string>> = {
   success: {
-    filled: "bg-green-500 text-white border-green-600",
-    outlined: "bg-white text-green-800 border-green-500",
-    subtle: "bg-green-50 text-green-800 border-green-200",
+    filled: "bg-status-success text-white border-status-successDark",
+    outlined: "bg-white text-status-successDark border-status-success",
+    subtle:
+      "bg-status-successLight text-status-successDark border-status-success/30",
   },
   warning: {
-    filled: "bg-amber-500 text-white border-amber-600",
-    outlined: "bg-white text-amber-800 border-amber-500",
-    subtle: "bg-amber-50 text-amber-800 border-amber-200",
+    filled: "bg-status-warning text-white border-status-warningDark",
+    outlined: "bg-white text-status-warningDark border-status-warning",
+    subtle:
+      "bg-status-warningLight text-status-warningDark border-status-warning/30",
   },
   error: {
-    filled: "bg-red-500 text-white border-red-600",
-    outlined: "bg-white text-red-800 border-red-500",
-    subtle: "bg-red-50 text-red-800 border-red-200",
+    filled: "bg-status-error text-white border-status-errorDark",
+    outlined: "bg-white text-status-errorDark border-status-error",
+    subtle: "bg-status-errorLight text-status-errorDark border-status-error/30",
   },
   info: {
-    filled: "bg-blue-500 text-white border-blue-600",
-    outlined: "bg-white text-blue-800 border-blue-500",
-    subtle: "bg-blue-50 text-blue-800 border-blue-200",
+    filled: "bg-status-info text-white border-status-infoDark",
+    outlined: "bg-white text-status-infoDark border-status-info",
+    subtle: "bg-status-infoLight text-status-infoDark border-status-info/30",
   },
   default: {
-    filled: "bg-gray-500 text-white border-gray-600",
-    outlined: "bg-white text-gray-800 border-gray-500",
-    subtle: "bg-gray-50 text-gray-800 border-gray-200",
+    filled: "bg-neutral-text text-white border-neutral-textLight",
+    outlined: "bg-white text-neutral-text border-neutral-border",
+    subtle: "bg-neutral-background text-neutral-text border-neutral-border",
   },
 };
 
 const iconColorClasses: Record<AlertVariant, Record<AlertStyle, string>> = {
   success: {
     filled: "text-white",
-    outlined: "text-green-600",
-    subtle: "text-green-600",
+    outlined: "text-status-success",
+    subtle: "text-status-success",
   },
   warning: {
     filled: "text-white",
-    outlined: "text-amber-600",
-    subtle: "text-amber-600",
+    outlined: "text-status-warning",
+    subtle: "text-status-warning",
   },
   error: {
     filled: "text-white",
-    outlined: "text-red-600",
-    subtle: "text-red-600",
+    outlined: "text-status-error",
+    subtle: "text-status-error",
   },
   info: {
     filled: "text-white",
-    outlined: "text-blue-600",
-    subtle: "text-blue-600",
+    outlined: "text-status-info",
+    subtle: "text-status-info",
   },
   default: {
     filled: "text-white",
-    outlined: "text-gray-600",
-    subtle: "text-gray-600",
+    outlined: "text-neutral-textLight",
+    subtle: "text-neutral-textLight",
   },
 };
 

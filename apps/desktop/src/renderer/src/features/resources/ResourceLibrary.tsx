@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button, Input, Checkbox } from "@/components/ui";
 import { useResourcesStore } from "./resourcesStore";
 import { LearningResource, getResourceById } from "./resourceData";
 import type { GradeLevel } from "../../../../shared/types";
@@ -114,13 +115,12 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
       {/* Search */}
       <div className="relative">
         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
+        <Input
           type="text"
           placeholder="Search resources..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          className="pl-10"
         />
       </div>
 
@@ -174,25 +174,22 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
           ))}
         </select>
 
-        <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={freeOnly}
-            onChange={(e) => setFreeOnly(e.target.checked)}
-            className="w-4 h-4 text-fuchsia-600 border-gray-300 rounded focus:ring-fuchsia-500"
-          />
-          Free only
-        </label>
+        <Checkbox
+          checked={freeOnly}
+          onChange={(e) => setFreeOnly(e.target.checked)}
+          label="Free only"
+        />
 
         {hasFilters && (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={clearFilters}
-            className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900
-              dark:hover:text-white flex items-center gap-1"
+            className="flex items-center gap-1"
           >
             <XIcon className="w-4 h-4" />
             Clear
-          </button>
+          </Button>
         )}
       </div>
 
@@ -204,15 +201,16 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
           </h3>
           <div className="flex flex-wrap gap-2">
             {recentResources.map((resource) => (
-              <button
+              <Button
                 key={resource.id}
+                variant="secondary"
+                size="sm"
                 onClick={() => handleOpenResource(resource)}
-                className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300
-                  rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 text-sm flex items-center gap-2"
+                className="flex items-center gap-2"
               >
                 <span>{resource.icon}</span>
                 {resource.name}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -226,15 +224,16 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
           </h3>
           <div className="flex flex-wrap gap-2">
             {favoriteResourcesList.map((resource) => (
-              <button
+              <Button
                 key={resource.id}
+                variant="ghost"
+                size="sm"
                 onClick={() => handleOpenResource(resource)}
-                className="px-3 py-2 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300
-                  rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 text-sm flex items-center gap-2"
+                className="bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 flex items-center gap-2"
               >
                 <span>{resource.icon}</span>
                 {resource.name}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -306,12 +305,13 @@ function ResourceCard({
   subjectLabels,
 }: ResourceCardProps) {
   const categoryColors: Record<LearningResource["category"], string> = {
-    video: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+    video:
+      "bg-status-errorLight text-status-errorDark dark:bg-red-900/30 dark:text-red-300",
     practice:
-      "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+      "bg-status-infoLight text-status-infoDark dark:bg-blue-900/30 dark:text-blue-300",
     reading:
-      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
-    game: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+      "bg-status-successLight text-status-successDark dark:bg-green-900/30 dark:text-green-300",
+    game: "bg-student-purple-100 text-student-purple-700 dark:bg-student-purple-900/30 dark:text-student-purple-300",
     tool: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
     reference: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
   };
@@ -334,13 +334,15 @@ function ResourceCard({
               )}
             </div>
             {resource.isFree && (
-              <span className="text-xs text-green-600 dark:text-green-400">
+              <span className="text-xs text-status-successDark dark:text-status-success">
                 FREE
               </span>
             )}
           </div>
         </div>
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={(e) => {
             e.stopPropagation();
             onToggleFavorite();
@@ -352,7 +354,7 @@ function ResourceCard({
           ) : (
             <StarIcon className="w-5 h-5" />
           )}
-        </button>
+        </Button>
       </div>
 
       {/* Description */}
@@ -391,25 +393,26 @@ function ResourceCard({
 
       {/* Actions */}
       <div className="flex items-center gap-2">
-        <button
+        <Button
+          variant="primary"
+          size="sm"
           onClick={onOpen}
-          className="flex-1 px-3 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600
-            text-sm font-medium flex items-center justify-center gap-2"
+          className="flex-1 flex items-center justify-center gap-2"
         >
           <ExternalLinkIcon className="w-4 h-4" />
           Open
-        </button>
+        </Button>
         {onLogActivity && (
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={onLogActivity}
-            className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900
-              dark:hover:text-white text-sm border border-gray-300 dark:border-gray-600 rounded-lg
-              flex items-center gap-1"
+            className="flex items-center gap-1"
             title="Log as activity"
           >
             <PlusIcon className="w-4 h-4" />
             Log
-          </button>
+          </Button>
         )}
       </div>
     </div>
@@ -474,7 +477,7 @@ function LogActivityModal({
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Duration (minutes)
             </label>
-            <input
+            <Input
               type="number"
               min="1"
               max="480"
@@ -484,26 +487,16 @@ function LogActivityModal({
                   parseInt(e.target.value) || resource.suggestedDuration,
                 )
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-                bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900
-                dark:hover:text-white"
-            >
+            <Button type="button" variant="ghost" onClick={onClose}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600"
-            >
+            </Button>
+            <Button type="submit" variant="primary">
               Log Activity
-            </button>
+            </Button>
           </div>
         </form>
       </div>

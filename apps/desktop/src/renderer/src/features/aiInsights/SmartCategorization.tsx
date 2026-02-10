@@ -9,6 +9,7 @@
  */
 
 import { useState, useCallback } from "react";
+import { Button } from "@/components/ui";
 
 interface SubjectSuggestion {
   subjectId: string;
@@ -352,13 +353,15 @@ export function SubjectSuggestions({
           </div>
           <div className="flex flex-wrap gap-2">
             {suggestions.map((suggestion) => (
-              <button
+              <Button
                 key={suggestion.subjectId}
                 onClick={() => onSelect(suggestion.subjectId)}
+                variant="ghost"
+                size="sm"
                 className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
                   selectedSubjectId === suggestion.subjectId
-                    ? "bg-fuchsia-100 border-fuchsia-300 text-fuchsia-700"
-                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-fuchsia-50 hover:border-fuchsia-200"
+                    ? "bg-brand-primaryLight border-brand-primaryLight text-brand-primaryDark"
+                    : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-brand-primaryLight hover:border-brand-primaryLight"
                 }`}
                 title={suggestion.reason}
               >
@@ -366,13 +369,13 @@ export function SubjectSuggestions({
                 <span className="ml-1 text-xs opacity-60">
                   {Math.round(suggestion.confidence * 100)}%
                 </span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
       ) : null}
 
-      {error && <div className="text-xs text-red-500 mt-1">{error}</div>}
+      {error && <div className="text-xs text-status-error mt-1">{error}</div>}
     </div>
   );
 }

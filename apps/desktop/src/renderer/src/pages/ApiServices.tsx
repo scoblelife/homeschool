@@ -301,7 +301,9 @@ export default function ApiServices(): JSX.Element {
 
         <div className="space-y-4">
           {/* API Key Status */}
-          <div className="flex items-center justify-between p-3 bg-neutral-backgroundDeep rounded-lg">
+          <div
+            className={`flex items-center justify-between p-3 bg-neutral-backgroundDeep rounded-lg`}
+          >
             <div>
               <span className="font-medium text-neutral-text">API Key</span>
               <p className="text-sm text-neutral-textSecondary">
@@ -322,7 +324,7 @@ export default function ApiServices(): JSX.Element {
                 <Button
                   variant="secondary"
                   onClick={handleRemoveApiKey}
-                  className="text-sm text-red-600 hover:text-status-errorDark"
+                  className="text-sm text-status-error hover:text-status-errorDark"
                 >
                   Remove
                 </Button>
@@ -333,7 +335,8 @@ export default function ApiServices(): JSX.Element {
           {/* Controls */}
           {aiConfig?.apiKey && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <button
+              <Button
+                variant="ghost"
                 onClick={handleToggleAI}
                 className={`p-3 rounded-lg border text-left ${
                   aiConfig.enabled
@@ -347,12 +350,13 @@ export default function ApiServices(): JSX.Element {
                 <p className="text-xs text-neutral-textSecondary mt-1">
                   Toggle AI features on/off
                 </p>
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="ghost"
                 onClick={handleTestAI}
                 disabled={!aiConfig.enabled || isTesting}
-                className="p-3 rounded-lg border border-student-blue-200 bg-student-blue-50 text-left disabled:opacity-50"
+                className={`p-3 rounded-lg border border-student-blue-200 bg-student-blue-50 text-left disabled:opacity-50`}
               >
                 <div className="font-medium text-neutral-text">
                   {isTesting ? "Testing..." : "Test Connection"}
@@ -360,17 +364,18 @@ export default function ApiServices(): JSX.Element {
                 <p className="text-xs text-neutral-textSecondary mt-1">
                   Send a test request to Claude
                 </p>
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="ghost"
                 onClick={handleClearCache}
-                className="p-3 rounded-lg border border-neutral-border bg-neutral-backgroundDeep text-left"
+                className={`p-3 rounded-lg border border-neutral-border bg-neutral-backgroundDeep text-left`}
               >
                 <div className="font-medium text-neutral-text">Clear Cache</div>
                 <p className="text-xs text-neutral-textSecondary mt-1">
                   Remove cached AI responses
                 </p>
-              </button>
+              </Button>
             </div>
           )}
 
@@ -421,7 +426,9 @@ export default function ApiServices(): JSX.Element {
 
         <div className="space-y-4">
           {googleAuthStatus === "no_credentials" ? (
-            <div className="p-4 bg-status-warningLight border border-status-warning rounded-lg">
+            <div
+              className={`p-4 bg-status-warningLight border border-status-warning rounded-lg`}
+            >
               <p className="text-sm text-status-warningDark mb-3">
                 Google OAuth credentials are not configured. You'll need to
                 create a project in Google Cloud Console and enable the Calendar
@@ -436,7 +443,9 @@ export default function ApiServices(): JSX.Element {
               </Button>
             </div>
           ) : (
-            <div className="flex items-center justify-between p-3 bg-neutral-backgroundDeep rounded-lg">
+            <div
+              className={`flex items-center justify-between p-3 bg-neutral-backgroundDeep rounded-lg`}
+            >
               <div>
                 <span className="font-medium text-neutral-text">
                   Connection Status
@@ -522,7 +531,7 @@ export default function ApiServices(): JSX.Element {
         className="relative z-50"
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
+        <div className={`fixed inset-0 flex items-center justify-center p-4`}>
           <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <Dialog.Title className="text-lg font-semibold text-neutral-text mb-4">
               Configure Claude API Key
@@ -564,7 +573,7 @@ export default function ApiServices(): JSX.Element {
         className="relative z-50"
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
+        <div className={`fixed inset-0 flex items-center justify-center p-4`}>
           <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <Dialog.Title className="text-lg font-semibold text-neutral-text mb-4">
               Configure Google OAuth

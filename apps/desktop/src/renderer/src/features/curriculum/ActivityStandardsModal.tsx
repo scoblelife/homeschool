@@ -6,6 +6,7 @@ import type {
   Student,
 } from "../../../../shared/types";
 import { StandardsList } from "./StandardsList";
+import { Button } from "@/components/ui";
 
 interface Props {
   activity: Activity;
@@ -27,10 +28,18 @@ export function ActivityStandardsModal({
   // Load current standards for activity
   useEffect(() => {
     if (isOpen && activity) {
-      window.api.getActivityStandards(activity.id).then((standards) => {
-        setMappedStandardIds(standards.map((s) => s.id));
-        setIsDirty(false);
-      });
+      window.api
+        .getActivityStandards(activity.id)
+        .then((standards) => {
+          setMappedStandardIds(standards.map((s) => s.id));
+          setIsDirty(false);
+        })
+        .catch((error) => {
+          console.error(
+            "[ActivityStandardsModal] Failed to load activity standards:",
+            error,
+          );
+        });
     }
   }, [isOpen, activity]);
 
@@ -85,12 +94,14 @@ export function ActivityStandardsModal({
                   Activity: {activity.title}
                 </p>
               </div>
-              <button
+              <Button
                 onClick={onClose}
+                variant="ghost"
+                size="sm"
                 className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
               >
                 <CloseIcon />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -111,24 +122,17 @@ export function ActivityStandardsModal({
 
           {/* Footer */}
           <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700
-                rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            >
+            <Button onClick={onClose} variant="secondary">
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleSave}
               disabled={!isDirty || isSaving}
-              className={`px-4 py-2 rounded-lg font-medium text-white transition-colors ${
-                !isDirty || isSaving
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-fuchsia-500 hover:bg-fuchsia-600"
-              }`}
+              variant="primary"
+              loading={isSaving}
             >
               {isSaving ? "Saving..." : "Save"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

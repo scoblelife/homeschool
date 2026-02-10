@@ -468,29 +468,34 @@ export default function WeeklyPlanner(): JSX.Element {
                 <Button
                   variant="secondary"
                   onClick={handleClearWeek}
-                  className="text-red-600 hover:text-status-errorDark hover:border-status-error"
+                  className="text-status-error hover:text-status-errorDark hover:border-status-error"
                 >
                   Clear Week
                 </Button>
               )}
               {calendarId && (
                 <div className="relative">
-                  <button
+                  <Button
                     onClick={() => setShowSyncOptions(!showSyncOptions)}
                     disabled={isSyncing}
-                    className={`inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 bg-gray-100 hover:bg-gray-200 focus:ring-brand-primary active:scale-[0.98] ${syncRecords.length > 0 ? "text-status-success" : "text-gray-700"}`}
+                    variant="secondary"
+                    className={
+                      syncRecords.length > 0 ? "text-status-success" : ""
+                    }
                   >
                     {isSyncing
                       ? "Syncing..."
                       : syncRecords.length > 0
                         ? "Synced"
                         : "Sync to Calendar"}
-                  </button>
+                  </Button>
                   {showSyncOptions && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-4 z-10">
+                    <div
+                      className={`absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border p-4 z-10`}
+                    >
                       <div className="space-y-3">
                         <label className="flex items-center gap-2 text-sm">
-                          <input
+                          <Input
                             type="checkbox"
                             checked={syncAllDay}
                             onChange={async (e) => {
@@ -500,7 +505,6 @@ export default function WeeklyPlanner(): JSX.Element {
                                 String(e.target.checked),
                               );
                             }}
-                            className="rounded border-gray-300 text-student-blue-600"
                           />
                           <span>All-day events</span>
                         </label>
@@ -545,29 +549,20 @@ export default function WeeklyPlanner(): JSX.Element {
       {/* Week Navigation - hide on print */}
       <Card className="no-print mb-6">
         <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={() => navigateWeek("prev")}
-            className="text-brand-primary hover:text-brand-primaryDark font-medium"
-          >
+          <Button variant="ghost" onClick={() => navigateWeek("prev")}>
             &larr; Previous Week
-          </button>
+          </Button>
           <div className="text-center">
             <div className="text-lg font-semibold text-gray-900">
               {weekStartFormatted} - {weekEnd}
             </div>
-            <button
-              onClick={goToCurrentWeek}
-              className="text-sm text-brand-primary hover:underline"
-            >
+            <Button variant="ghost" size="sm" onClick={goToCurrentWeek}>
               Go to Current Week
-            </button>
+            </Button>
           </div>
-          <button
-            onClick={() => navigateWeek("next")}
-            className="text-brand-primary hover:text-brand-primaryDark font-medium"
-          >
+          <Button variant="ghost" onClick={() => navigateWeek("next")}>
             Next Week &rarr;
-          </button>
+          </Button>
         </div>
         {/* Week days strip */}
         <div className="grid grid-cols-7 gap-1 text-center text-sm">
@@ -622,7 +617,9 @@ export default function WeeklyPlanner(): JSX.Element {
       {/* Milestones List */}
       {milestonesLoading ? (
         <Card className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary mb-4"></div>
+          <div
+            className={`inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary mb-4`}
+          ></div>
           <p className="text-gray-500">Loading milestones...</p>
         </Card>
       ) : selectedMilestones.length === 0 ? (
@@ -672,11 +669,11 @@ export default function WeeklyPlanner(): JSX.Element {
                           }`}
                         >
                           <div className="flex items-start gap-3">
-                            <input
+                            <Input
                               type="checkbox"
                               checked={milestone.status === "completed"}
                               onChange={() => handleToggleComplete(milestone)}
-                              className="mt-1 h-5 w-5 rounded border-gray-300 text-brand-primary focus:ring-brand-primary"
+                              className="mt-1 h-5 w-5"
                             />
                             <div className="flex-1">
                               <h3
@@ -697,45 +694,52 @@ export default function WeeklyPlanner(): JSX.Element {
                                 {resources.map((resource) => (
                                   <div
                                     key={resource.id}
-                                    className="flex items-center gap-2 text-sm bg-white p-2 rounded border"
+                                    className={`flex items-center gap-2 text-sm bg-white p-2 rounded border`}
                                   >
                                     <span>
                                       {resource.type === "url" ? "🔗" : "📄"}
                                     </span>
-                                    <button
+                                    <Button
+                                      variant="ghost"
                                       onClick={() =>
                                         handleOpenResource(resource)
                                       }
                                       className="text-student-blue-600 hover:underline flex-1 text-left truncate"
                                     >
                                       {resource.title}
-                                    </button>
-                                    <button
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
                                       onClick={() =>
                                         handleDeleteResource(resource.id)
                                       }
                                       className="no-print text-status-error hover:text-status-error text-xs"
                                     >
                                       ×
-                                    </button>
+                                    </Button>
                                   </div>
                                 ))}
-                                <button
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
                                   onClick={() => openAddResource(milestone.id)}
                                   className="no-print text-xs text-brand-primary hover:text-brand-primaryDark mt-1"
                                 >
                                   + Add Resource
-                                </button>
+                                </Button>
                               </div>
                             </div>
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() =>
                                 handleRemoveMilestone(milestone.id)
                               }
-                              className="no-print text-status-error hover:text-status-errorDark text-sm"
+                              className="no-print text-status-error hover:text-status-errorDark"
                             >
                               Remove
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       );
@@ -777,8 +781,10 @@ export default function WeeklyPlanner(): JSX.Element {
         className="relative z-50"
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto">
+        <div className={`fixed inset-0 flex items-center justify-center p-4`}>
+          <Dialog.Panel
+            className={`bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto`}
+          >
             <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
               Add Milestone to Week
             </Dialog.Title>
@@ -792,13 +798,16 @@ export default function WeeklyPlanner(): JSX.Element {
                 {availableMilestones.map((milestone) => {
                   const subject = getSubjectById(milestone.subjectId);
                   return (
-                    <button
+                    <Button
                       key={milestone.id}
+                      variant="ghost"
                       onClick={() => handleAddMilestone(milestone.id)}
                       className="w-full text-left p-3 rounded-lg border hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-xs px-2 py-0.5 bg-brand-primaryLight text-brand-primary rounded-full">
+                        <span
+                          className={`text-xs px-2 py-0.5 bg-brand-primaryLight text-brand-primary rounded-full`}
+                        >
                           {subject?.name}
                         </span>
                         <span
@@ -816,7 +825,7 @@ export default function WeeklyPlanner(): JSX.Element {
                       <h3 className="font-medium text-gray-900 mt-1">
                         {milestone.title}
                       </h3>
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -840,8 +849,10 @@ export default function WeeklyPlanner(): JSX.Element {
         className="relative z-50"
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <div className={`fixed inset-0 flex items-center justify-center p-4`}>
+          <Dialog.Panel
+            className={`bg-white rounded-xl shadow-xl max-w-md w-full p-6`}
+          >
             <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
               Add Resource
             </Dialog.Title>

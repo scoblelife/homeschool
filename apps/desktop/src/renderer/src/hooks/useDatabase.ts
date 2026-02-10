@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useStore } from "../stores/useStore";
+import { validateApiArray } from "../services/validateApiResponse";
 import type {
+  Activity,
   CreateStudent,
   UpdateStudent,
   CreateSession,
@@ -134,7 +136,8 @@ export function useActivities(filters?: {
   const { activities, setActivities } = useStore();
 
   const loadActivities = useCallback(async () => {
-    const data = await window.api.getActivities(filters);
+    const dataRaw = await window.api.getActivities(filters);
+    const data = validateApiArray<Activity>(dataRaw, "LearningLog");
     setActivities(data);
   }, [filters, setActivities]);
 

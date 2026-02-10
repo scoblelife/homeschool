@@ -78,8 +78,8 @@ export default function OnboardingWelcome() {
   }
 
   const renderSlide = ({ item }: { item: Slide }) => (
-    <View style={styles.slide}>
-      <Text style={styles.emoji}>{item.emoji}</Text>
+    <View style={styles.slide} accessible accessibilityLabel={`${item.title}. ${item.description}`}>
+      <Text style={styles.emoji} accessibilityElementsHidden>{item.emoji}</Text>
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.description}>{item.description}</Text>
     </View>
@@ -89,7 +89,11 @@ export default function OnboardingWelcome() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.skipContainer}>
         {currentIndex < slides.length - 1 && (
-          <TouchableOpacity onPress={handleSkip}>
+          <TouchableOpacity
+            onPress={handleSkip}
+            accessibilityLabel="Skip onboarding"
+            accessibilityRole="button"
+          >
             <Text style={styles.skipText}>Skip</Text>
           </TouchableOpacity>
         )}
@@ -109,7 +113,12 @@ export default function OnboardingWelcome() {
       />
 
       <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
-        <View style={styles.pagination}>
+        <View
+          style={styles.pagination}
+          accessible
+          accessibilityLabel={`Slide ${currentIndex + 1} of ${slides.length}`}
+          accessibilityRole="adjustable"
+        >
           {slides.map((_, index) => (
             <View
               key={index}
@@ -121,7 +130,12 @@ export default function OnboardingWelcome() {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleNext}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleNext}
+          accessibilityLabel={currentIndex === slides.length - 1 ? 'Get Started' : 'Next slide'}
+          accessibilityRole="button"
+        >
           <Text style={styles.buttonText}>
             {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
           </Text>

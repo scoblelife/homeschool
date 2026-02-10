@@ -327,14 +327,14 @@ export default function VoiceInput({
   return (
     <>
       {/* Voice Input Button */}
-      {/* eslint-disable-next-line design-system/require-design-system-components */}
-      <button
+      <Button
+        variant="primary"
         onClick={handleOpen}
-        className="fixed bottom-6 right-24 w-14 h-14 bg-status-successDark hover:bg-status-success text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center text-2xl z-40"
+        className="fixed bottom-6 right-24 w-14 h-14 bg-status-successDark hover:bg-status-success text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center text-2xl z-40 p-0"
         title="Voice Input"
       >
         🎤
-      </button>
+      </Button>
 
       {/* Voice Input Modal */}
       <Transition appear show={isOpen} as={Fragment}>

@@ -38,8 +38,9 @@ const baseClasses =
 
 const stateClasses = {
   default:
-    "border-gray-300 hover:border-gray-400 focus:ring-fuchsia-500 focus:border-fuchsia-500",
-  error: "border-red-300 focus:ring-red-500 focus:border-red-500",
+    "border-gray-300 hover:border-gray-400 focus:ring-brand-primary focus:border-brand-primary",
+  error:
+    "border-status-error focus:ring-status-error focus:border-status-error",
 };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -138,7 +139,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
         {...props}
       >
         {children}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-status-error ml-1">*</span>}
       </label>
     );
   },
@@ -169,7 +170,7 @@ export function FormField({
         {label}
       </Label>
       {children}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-status-errorDark">{error}</p>}
       {hint && !error && <p className="text-sm text-gray-500">{hint}</p>}
     </div>
   );

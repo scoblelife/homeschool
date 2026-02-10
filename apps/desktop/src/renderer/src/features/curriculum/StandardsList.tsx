@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useCurriculumStore } from "./curriculumStore";
 import type { LearningStandard, GradeLevel } from "../../../../shared/types";
+import { Button, Input, Checkbox } from "@/components/ui";
 
 interface Props {
   gradeLevel: GradeLevel;
@@ -113,13 +114,11 @@ export function StandardsList({
 
         {/* Search */}
         <div className="flex-1 min-w-64">
-          <input
+          <Input
             type="text"
             placeholder="Search standards..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-              bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           />
         </div>
       </div>
@@ -144,10 +143,11 @@ export function StandardsList({
                 className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"
               >
                 {/* Domain Header */}
-                <button
+                <Button
                   onClick={() => toggleDomain(domain)}
+                  variant="ghost"
                   className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-700
-                  hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  hover:bg-gray-100 dark:hover:bg-gray-600 rounded-none"
                 >
                   <div className="flex items-center gap-3">
                     <ChevronIcon isExpanded={isExpanded} />
@@ -159,11 +159,11 @@ export function StandardsList({
                     </span>
                   </div>
                   {selectedCount > 0 && (
-                    <span className="px-2 py-0.5 text-xs bg-fuchsia-100 dark:bg-fuchsia-900 text-fuchsia-700 dark:text-fuchsia-300 rounded-full">
+                    <span className="px-2 py-0.5 text-xs bg-brand-primaryLight dark:bg-brand-primaryDark text-brand-primaryDark dark:text-brand-primaryLight rounded-full">
                       {selectedCount} mapped
                     </span>
                   )}
-                </button>
+                </Button>
 
                 {/* Standards in Domain */}
                 {isExpanded && (
@@ -177,19 +177,16 @@ export function StandardsList({
                           onClick={() => onSelectStandard?.(standard)}
                           className={`px-4 py-3 cursor-pointer transition-colors ${
                             isSelected
-                              ? "bg-fuchsia-50 dark:bg-fuchsia-900/30"
+                              ? "bg-brand-primaryLight dark:bg-brand-primaryDark/30"
                               : "hover:bg-gray-50 dark:hover:bg-gray-700"
                           }`}
                         >
                           <div className="flex items-start gap-3">
                             {onSelectStandard && (
                               <div className="mt-1">
-                                <input
-                                  type="checkbox"
+                                <Checkbox
                                   checked={isSelected}
                                   onChange={() => {}}
-                                  className="w-4 h-4 text-fuchsia-600 border-gray-300 rounded
-                                  focus:ring-fuchsia-500 dark:border-gray-600 dark:bg-gray-700"
                                 />
                               </div>
                             )}
@@ -199,7 +196,7 @@ export function StandardsList({
                                   {standard.code}
                                 </span>
                                 {standard.standardSet === "custom" && (
-                                  <span className="px-2 py-0.5 text-xs bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded">
+                                  <span className="px-2 py-0.5 text-xs bg-student-purple-100 dark:bg-student-purple-900 text-student-purple-700 dark:text-student-purple-300 rounded">
                                     Custom
                                   </span>
                                 )}

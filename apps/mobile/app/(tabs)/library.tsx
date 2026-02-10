@@ -14,6 +14,7 @@ import {
 import type { Book, BookWithProgress, CreateBook, ReadingStatus } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, Button, EmptyState, Modal, Input, ProgressBar } from '../../src/components/ui'
+import { useColors } from '../../src/theme/createStyles'
 
 type StatusFilter = 'all' | 'not_started' | 'in_progress' | 'completed'
 
@@ -36,6 +37,7 @@ function BookCard({
   onPress: () => void
   onUpdateStatus: (status: ReadingStatus) => void
 }) {
+  const colors = useColors()
   const progress = book.studentProgress
   const status = progress?.status || 'not_started'
   const currentPage = progress?.currentPage || 0
@@ -43,7 +45,12 @@ function BookCard({
   const progressPercent = book.totalPages ? Math.round((currentPage / book.totalPages) * 100) : 0
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      accessibilityLabel={`${book.title}${book.author ? ` by ${book.author}` : ''}, ${statusInfo.label}`}
+      accessibilityRole="button"
+    >
       <Card style={{ marginBottom: 12 }}>
         <View style={{ flexDirection: 'row', gap: 12 }}>
           {/* Book Cover Placeholder */}
@@ -56,17 +63,18 @@ function BookCard({
               justifyContent: 'center',
               alignItems: 'center',
             }}
+            accessibilityElementsHidden
           >
             <Text style={{ fontSize: 28 }}>📚</Text>
           </View>
 
           {/* Book Info */}
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }} numberOfLines={2}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }} numberOfLines={2}>
               {book.title}
             </Text>
             {book.author && (
-              <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 2 }}>by {book.author}</Text>
+              <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 2 }}>by {book.author}</Text>
             )}
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
@@ -86,10 +94,10 @@ function BookCard({
             {studentId && book.totalPages && (
               <View style={{ marginTop: 8 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <Text style={{ fontSize: 11, color: '#9ca3af' }}>Page {currentPage}</Text>
-                  <Text style={{ fontSize: 11, color: '#9ca3af' }}>{book.totalPages} pages</Text>
+                  <Text style={{ fontSize: 11, color: colors.textTertiary }}>Page {currentPage}</Text>
+                  <Text style={{ fontSize: 11, color: colors.textTertiary }}>{book.totalPages} pages</Text>
                 </View>
-                <ProgressBar progress={progressPercent} color={status === 'completed' ? '#10b981' : studentColor} height={4} />
+                <ProgressBar progress={progressPercent} color={status === 'completed' ? colors.success : studentColor} height={4} />
               </View>
             )}
           </View>
@@ -126,8 +134,10 @@ export default function LibraryScreen() {
     notes: '',
   })
 
+  const colors = useColors()
+
   const selectedStudent = getSelectedStudent()
-  const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
+  const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
 
   const loadBooks = useCallback(async () => {
     try {
@@ -287,7 +297,7 @@ export default function LibraryScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
       >
@@ -298,21 +308,21 @@ export default function LibraryScreen() {
           {selectedStudentId && (
             <Card style={{ marginTop: 16 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: '#1f2937' }}>{stats.total}</Text>
-                  <Text style={{ fontSize: 11, color: '#6b7280' }}>Total</Text>
+                <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${stats.total} total books`}>
+                  <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text }}>{stats.total}</Text>
+                  <Text style={{ fontSize: 11, color: colors.textSecondary }}>Total</Text>
                 </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: '#10b981' }}>{stats.finished}</Text>
-                  <Text style={{ fontSize: 11, color: '#6b7280' }}>Finished</Text>
+                <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${stats.finished} books finished`}>
+                  <Text style={{ fontSize: 20, fontWeight: '700', color: colors.success }}>{stats.finished}</Text>
+                  <Text style={{ fontSize: 11, color: colors.textSecondary }}>Finished</Text>
                 </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: '#3b82f6' }}>{stats.reading}</Text>
-                  <Text style={{ fontSize: 11, color: '#6b7280' }}>Reading</Text>
+                <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${stats.reading} books reading`}>
+                  <Text style={{ fontSize: 20, fontWeight: '700', color: colors.studentBlue }}>{stats.reading}</Text>
+                  <Text style={{ fontSize: 11, color: colors.textSecondary }}>Reading</Text>
                 </View>
-                <View style={{ alignItems: 'center' }}>
-                  <Text style={{ fontSize: 20, fontWeight: '700', color: '#9ca3af' }}>{stats.notStarted}</Text>
-                  <Text style={{ fontSize: 11, color: '#6b7280' }}>Not Started</Text>
+                <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${stats.notStarted} books not started`}>
+                  <Text style={{ fontSize: 20, fontWeight: '700', color: colors.textTertiary }}>{stats.notStarted}</Text>
+                  <Text style={{ fontSize: 11, color: colors.textSecondary }}>Not Started</Text>
                 </View>
               </View>
             </Card>
@@ -324,24 +334,26 @@ export default function LibraryScreen() {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                backgroundColor: '#fff',
+                backgroundColor: colors.surface,
                 borderRadius: 10,
                 paddingHorizontal: 12,
                 borderWidth: 1,
-                borderColor: '#e5e7eb',
+                borderColor: colors.border,
               }}
             >
-              <Ionicons name="search" size={18} color="#9ca3af" />
+              <Ionicons name="search" size={18} color={colors.textTertiary} />
               <TextInput
-                style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 8, fontSize: 15 }}
+                style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 8, fontSize: 15, color: colors.text }}
                 placeholder="Search books..."
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textTertiary}
+                accessibilityLabel="Search books"
+                accessibilityRole="search"
               />
               {searchQuery && (
-                <TouchableOpacity onPress={() => setSearchQuery('')}>
-                  <Ionicons name="close-circle" size={18} color="#9ca3af" />
+                <TouchableOpacity onPress={() => setSearchQuery('')} accessibilityLabel="Clear search">
+                  <Ionicons name="close-circle" size={18} color={colors.textTertiary} />
                 </TouchableOpacity>
               )}
             </View>
@@ -360,14 +372,17 @@ export default function LibraryScreen() {
                   <TouchableOpacity
                     key={item.key}
                     onPress={() => setFilter(item.key as StatusFilter)}
+                    accessibilityLabel={`Filter: ${item.label}${filter === item.key ? ', selected' : ''}`}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: filter === item.key }}
                     style={{
                       paddingHorizontal: 16,
                       paddingVertical: 8,
                       borderRadius: 20,
-                      backgroundColor: filter === item.key ? studentColor : '#f3f4f6',
+                      backgroundColor: filter === item.key ? studentColor : colors.surfaceSecondary,
                     }}
                   >
-                    <Text style={{ color: filter === item.key ? '#fff' : '#6b7280', fontWeight: '500' }}>
+                    <Text style={{ color: filter === item.key ? colors.textInverse : colors.textSecondary, fontWeight: '500' }}>
                       {item.label}
                     </Text>
                   </TouchableOpacity>
@@ -379,6 +394,8 @@ export default function LibraryScreen() {
           {/* Add Book Button */}
           <TouchableOpacity
             onPress={openAddModal}
+            accessibilityLabel="Add book"
+            accessibilityRole="button"
             style={{
               marginTop: 16,
               flexDirection: 'row',
@@ -390,8 +407,8 @@ export default function LibraryScreen() {
               gap: 8,
             }}
           >
-            <Ionicons name="add" size={20} color="#fff" />
-            <Text style={{ color: '#fff', fontWeight: '600', fontSize: 15 }}>Add Book</Text>
+            <Ionicons name="add" size={20} color={colors.textInverse} />
+            <Text style={{ color: colors.textInverse, fontWeight: '600', fontSize: 15 }}>Add Book</Text>
           </TouchableOpacity>
 
           {/* Books List */}
@@ -522,7 +539,7 @@ export default function LibraryScreen() {
                 <Button
                   variant="secondary"
                   onPress={() => handleDeleteBook(selectedBook)}
-                  style={{ flex: 1, backgroundColor: '#fef2f2' }}
+                  style={{ flex: 1, backgroundColor: colors.errorLight }}
                 >
                   Delete
                 </Button>
@@ -531,11 +548,11 @@ export default function LibraryScreen() {
           }
         >
           <View>
-            <Text style={{ fontSize: 20, fontWeight: '600', color: '#1f2937', marginBottom: 4 }}>
+            <Text style={{ fontSize: 20, fontWeight: '600', color: colors.text, marginBottom: 4 }}>
               {selectedBook.title}
             </Text>
             {selectedBook.author && (
-              <Text style={{ fontSize: 14, color: '#6b7280', marginBottom: 12 }}>by {selectedBook.author}</Text>
+              <Text style={{ fontSize: 14, color: colors.textSecondary, marginBottom: 12 }}>by {selectedBook.author}</Text>
             )}
 
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
@@ -549,7 +566,7 @@ export default function LibraryScreen() {
             {/* Reading Progress */}
             {selectedStudentId && (
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 }}>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 8 }}>
                   Reading Progress
                 </Text>
 
@@ -562,17 +579,20 @@ export default function LibraryScreen() {
                       <TouchableOpacity
                         key={status}
                         onPress={() => handleUpdateStatus(selectedBook, status)}
+                        accessibilityLabel={`${info.label}${isSelected ? ', selected' : ''}`}
+                        accessibilityRole="radio"
+                        accessibilityState={{ selected: isSelected }}
                         style={{
                           flex: 1,
                           paddingVertical: 8,
                           borderRadius: 8,
-                          backgroundColor: isSelected ? info.bgColor : '#f9fafb',
+                          backgroundColor: isSelected ? info.bgColor : colors.background,
                           borderWidth: 1,
-                          borderColor: isSelected ? info.color : '#e5e7eb',
+                          borderColor: isSelected ? info.color : colors.border,
                           alignItems: 'center',
                         }}
                       >
-                        <Text style={{ fontSize: 12, color: isSelected ? info.color : '#9ca3af', fontWeight: '500' }}>
+                        <Text style={{ fontSize: 12, color: isSelected ? info.color : colors.textTertiary, fontWeight: '500' }}>
                           {info.label}
                         </Text>
                       </TouchableOpacity>
@@ -584,16 +604,16 @@ export default function LibraryScreen() {
                 {selectedBook.totalPages && (
                   <View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <Text style={{ fontSize: 12, color: '#6b7280' }}>
+                      <Text style={{ fontSize: 12, color: colors.textSecondary }}>
                         Page {selectedBook.studentProgress?.currentPage || 0}
                       </Text>
-                      <Text style={{ fontSize: 12, color: '#6b7280' }}>{selectedBook.totalPages}</Text>
+                      <Text style={{ fontSize: 12, color: colors.textSecondary }}>{selectedBook.totalPages}</Text>
                     </View>
                     <ProgressBar
                       progress={
                         ((selectedBook.studentProgress?.currentPage || 0) / selectedBook.totalPages) * 100
                       }
-                      color={selectedBook.studentProgress?.status === 'completed' ? '#10b981' : studentColor}
+                      color={selectedBook.studentProgress?.status === 'completed' ? colors.success : studentColor}
                     />
                   </View>
                 )}
@@ -602,8 +622,8 @@ export default function LibraryScreen() {
 
             {selectedBook.notes && (
               <View>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Notes</Text>
-                <Text style={{ fontSize: 14, color: '#6b7280', lineHeight: 20 }}>{selectedBook.notes}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Notes</Text>
+                <Text style={{ fontSize: 14, color: colors.textSecondary, lineHeight: 20 }}>{selectedBook.notes}</Text>
               </View>
             )}
           </View>
@@ -630,8 +650,8 @@ export default function LibraryScreen() {
           }
         >
           <View style={{ gap: 12 }}>
-            <Text style={{ fontSize: 16, fontWeight: '500', color: '#1f2937' }}>{selectedBook.title}</Text>
-            <Text style={{ fontSize: 13, color: '#6b7280' }}>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: colors.text }}>{selectedBook.title}</Text>
+            <Text style={{ fontSize: 13, color: colors.textSecondary }}>
               Currently on page {selectedBook.studentProgress?.currentPage || 0}
               {selectedBook.totalPages && ` of ${selectedBook.totalPages}`}
             </Text>

@@ -7,6 +7,7 @@
 
 import { Component, ErrorInfo, ReactNode } from "react";
 import { errorReporting } from "../errorReporting";
+import { Button } from "./ui/Button";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -62,8 +63,8 @@ export class ErrorBoundary extends Component<
 
       // Default fallback UI
       return (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-center gap-2 text-red-700 mb-2">
+        <div className="p-4 bg-status-errorLight border border-status-errorLight rounded-lg">
+          <div className="flex items-center gap-2 text-status-errorDark mb-2">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -79,16 +80,18 @@ export class ErrorBoundary extends Component<
             </svg>
             <span className="font-medium">Something went wrong</span>
           </div>
-          <p className="text-sm text-red-600 mb-3">
+          <p className="text-sm text-status-errorDark mb-3">
             This component couldn't load properly. The rest of the app should
             still work.
           </p>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => this.setState({ hasError: false, error: null })}
-            className="text-sm text-red-700 hover:text-red-800 underline"
+            className="text-status-errorDark hover:text-status-errorDark underline"
           >
             Try again
-          </button>
+          </Button>
         </div>
       );
     }

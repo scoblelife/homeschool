@@ -1,0 +1,35 @@
+appId: com.scoblelife.homeschool
+name: Milestone Status Flow
+---
+
+# Navigate to Milestones via More tab
+- tapOn: "More"
+- tapOn: "Milestones"
+
+# Verify Milestones screen loaded
+- assertVisible: "Milestones"
+
+# Wait for milestones to load
+- extendedWaitUntil:
+    visible: "Not Started"
+    timeout: 5000
+
+# Tap on a milestone to view details
+- tapOn:
+    index: 0
+    text: "Not Started"
+
+# Change status to In Progress
+- tapOn: "In Progress"
+
+# Verify status changed
+- assertVisible: "In Progress"
+
+# Change status to Completed
+- tapOn: "Completed"
+
+# Verify completion
+- assertVisible: "Completed"
+
+# Navigate back
+- tapOn: "Milestones"

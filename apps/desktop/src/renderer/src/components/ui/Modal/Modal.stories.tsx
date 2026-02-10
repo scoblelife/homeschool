@@ -8,6 +8,7 @@ import {
   ModalActions,
 } from "./Modal";
 import { Button } from "../Button";
+import { Input, Textarea } from "../Input";
 
 const meta = {
   title: "UI/Modal",
@@ -140,21 +141,13 @@ export const WithComposedSections = {
                 <label className="block text-sm font-medium text-gray-700">
                   Email
                 </label>
-                <input
-                  type="email"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
-                  placeholder="you@example.com"
-                />
+                <Input type="email" placeholder="you@example.com" />
               </div>
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Message
                 </label>
-                <textarea
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
-                  rows={3}
-                  placeholder="Your message..."
-                />
+                <Textarea rows={3} placeholder="Your message..." />
               </div>
             </div>
           </ModalBody>
@@ -218,17 +211,13 @@ export const FormModal = {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Student Name
               </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
-                placeholder="Enter name"
-              />
+              <Input type="text" placeholder="Enter name" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Grade Level
               </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-fuchsia-500">
+              <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary">
                 <option>Pre-K</option>
                 <option>Kindergarten</option>
                 <option>1st Grade</option>
@@ -240,21 +229,25 @@ export const FormModal = {
                 Color
               </label>
               <div className="flex gap-2">
-                <button
+                <Button
                   type="button"
-                  className="w-8 h-8 rounded-full bg-student-fuchsia-500 ring-2 ring-offset-2 ring-student-fuchsia-500"
+                  variant="ghost"
+                  className="w-8 h-8 rounded-full bg-student-fuchsia-500 ring-2 ring-offset-2 ring-student-fuchsia-500 p-0"
                 />
-                <button
+                <Button
                   type="button"
-                  className="w-8 h-8 rounded-full bg-student-teal-500"
+                  variant="ghost"
+                  className="w-8 h-8 rounded-full bg-student-teal-500 p-0"
                 />
-                <button
+                <Button
                   type="button"
-                  className="w-8 h-8 rounded-full bg-student-blue-500"
+                  variant="ghost"
+                  className="w-8 h-8 rounded-full bg-student-blue-500 p-0"
                 />
-                <button
+                <Button
                   type="button"
-                  className="w-8 h-8 rounded-full bg-student-orange-500"
+                  variant="ghost"
+                  className="w-8 h-8 rounded-full bg-student-orange-500 p-0"
                 />
               </div>
             </div>

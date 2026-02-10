@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
+import { Button } from "./ui/Button";
 import type { Book, ScannerSession } from "../../../shared/types";
 
 interface ScannerModalProps {
@@ -75,20 +76,22 @@ export default function ScannerModal({
 
           {isLoading && (
             <div className="flex flex-col items-center py-8">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-fuchsia-500 mb-4" />
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-primary mb-4" />
               <p className="text-gray-500">Starting scanner...</p>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-              <p className="text-red-700 text-sm">{error}</p>
-              <button
+            <div className="bg-status-errorLight border border-status-errorLight rounded-lg p-4 mb-4">
+              <p className="text-status-errorDark text-sm">{error}</p>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={startScanner}
-                className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+                className="mt-2 text-status-error hover:text-status-errorDark underline p-0"
               >
                 Try again
-              </button>
+              </Button>
             </div>
           )}
 
@@ -112,11 +115,11 @@ export default function ScannerModal({
               </div>
 
               {/* Instructions */}
-              <div className="bg-fuchsia-50 rounded-lg p-4 mb-4">
-                <h4 className="font-medium text-fuchsia-900 text-sm mb-2">
+              <div className="bg-brand-primaryLight rounded-lg p-4 mb-4">
+                <h4 className="font-medium text-brand-primaryDark text-sm mb-2">
                   How it works:
                 </h4>
-                <ol className="text-sm text-fuchsia-700 space-y-1 list-decimal list-inside">
+                <ol className="text-sm text-brand-primaryDark space-y-1 list-decimal list-inside">
                   <li>Scan the QR code with your phone</li>
                   <li>Point your phone at book barcodes</li>
                   <li>Books appear here automatically!</li>
@@ -133,7 +136,7 @@ export default function ScannerModal({
                     {scannedBooks.map((book) => (
                       <div
                         key={book.id}
-                        className="flex items-center gap-3 p-2 bg-green-50 rounded-lg border border-green-200"
+                        className="flex items-center gap-3 p-2 bg-status-successLight rounded-lg border border-status-successLight"
                       >
                         <div className="w-8 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded flex items-center justify-center text-sm flex-shrink-0 overflow-hidden">
                           {book.coverImagePath ? (
@@ -160,7 +163,9 @@ export default function ScannerModal({
                             </p>
                           )}
                         </div>
-                        <span className="text-green-600 text-lg">✓</span>
+                        <span className="text-status-successDark text-lg">
+                          ✓
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -171,9 +176,9 @@ export default function ScannerModal({
 
           {/* Actions */}
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
-            <button onClick={handleClose} className="btn btn-primary">
+            <Button variant="primary" onClick={handleClose}>
               Done
-            </button>
+            </Button>
           </div>
         </Dialog.Panel>
       </div>

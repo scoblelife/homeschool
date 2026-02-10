@@ -390,8 +390,8 @@ export default function SyncSettings(): JSX.Element {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* eslint-disable-next-line design-system/require-design-system-components */}
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setShowCreateModal(true)}
               className="p-4 border-2 border-dashed border-neutral-border rounded-lg hover:border-brand-primary hover:bg-brand-primary/5 transition-colors text-left"
             >
@@ -400,10 +400,10 @@ export default function SyncSettings(): JSX.Element {
               <p className="text-sm text-neutral-textSecondary mt-1">
                 Start a new family sync group and invite others
               </p>
-            </button>
+            </Button>
 
-            {/* eslint-disable-next-line design-system/require-design-system-components */}
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setShowJoinModal(true)}
               className="p-4 border-2 border-dashed border-neutral-border rounded-lg hover:border-brand-primary hover:bg-brand-primary/5 transition-colors text-left"
             >
@@ -412,7 +412,7 @@ export default function SyncSettings(): JSX.Element {
               <p className="text-sm text-neutral-textSecondary mt-1">
                 Enter a code from another family device
               </p>
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
@@ -673,26 +673,40 @@ export default function SyncSettings(): JSX.Element {
                       Send invite via:
                     </p>
                     <div className="grid grid-cols-2 gap-3">
-                      {/* eslint-disable-next-line design-system/require-design-system-components */}
-                      <button
+                      <Button
+                        variant="ghost"
                         onClick={async () => {
-                          await window.api.syncShareInvite("email", qrData);
+                          try {
+                            await window.api.syncShareInvite("email", qrData);
+                          } catch (error) {
+                            console.error(
+                              "[SyncSettings] Failed to share invite via email:",
+                              error,
+                            );
+                          }
                         }}
                         className="flex items-center justify-center gap-2 px-4 py-3 bg-status-infoLight hover:bg-status-info/20 text-status-infoDark rounded-lg transition-colors"
                       >
                         <span className="text-xl">📧</span>
                         <span className="font-medium">Email</span>
-                      </button>
-                      {/* eslint-disable-next-line design-system/require-design-system-components */}
-                      <button
+                      </Button>
+                      <Button
+                        variant="ghost"
                         onClick={async () => {
-                          await window.api.syncShareInvite("sms", qrData);
+                          try {
+                            await window.api.syncShareInvite("sms", qrData);
+                          } catch (error) {
+                            console.error(
+                              "[SyncSettings] Failed to share invite via SMS:",
+                              error,
+                            );
+                          }
                         }}
                         className="flex items-center justify-center gap-2 px-4 py-3 bg-status-successLight hover:bg-status-success/20 text-status-successDark rounded-lg transition-colors"
                       >
                         <span className="text-xl">💬</span>
                         <span className="font-medium">Text</span>
-                      </button>
+                      </Button>
                     </div>
 
                     <div className="relative">
@@ -713,27 +727,37 @@ export default function SyncSettings(): JSX.Element {
                         className="font-mono text-xs pr-16"
                         rows={2}
                       />
-                      {/* eslint-disable-next-line design-system/require-design-system-components */}
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={async () => {
-                          const result =
-                            await window.api.syncGetInviteMessage(qrData);
-                          if (result.success) {
-                            await navigator.clipboard.writeText(result.message);
-                            // Show brief feedback
-                            const btn =
-                              document.activeElement as HTMLButtonElement;
-                            const originalText = btn.textContent;
-                            btn.textContent = "Copied!";
-                            setTimeout(() => {
-                              btn.textContent = originalText;
-                            }, 1500);
+                          try {
+                            const result =
+                              await window.api.syncGetInviteMessage(qrData);
+                            if (result.success) {
+                              await navigator.clipboard.writeText(
+                                result.message,
+                              );
+                              // Show brief feedback
+                              const btn =
+                                document.activeElement as HTMLButtonElement;
+                              const originalText = btn.textContent;
+                              btn.textContent = "Copied!";
+                              setTimeout(() => {
+                                btn.textContent = originalText;
+                              }, 1500);
+                            }
+                          } catch (error) {
+                            console.error(
+                              "[SyncSettings] Failed to copy invite message:",
+                              error,
+                            );
                           }
                         }}
                         className="absolute top-2 right-2 px-2 py-1 text-xs bg-brand-primary/10 text-brand-primaryDark rounded hover:bg-brand-primary/20 transition-colors"
                       >
                         Copy All
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -848,8 +872,8 @@ export default function SyncSettings(): JSX.Element {
                   <h3 className="font-medium text-neutral-text mb-2">
                     Recovery Options
                   </h3>
-                  {/* eslint-disable-next-line design-system/require-design-system-components */}
-                  <button
+                  <Button
+                    variant="ghost"
                     onClick={handleRecoverSync}
                     disabled={isProcessing}
                     className="w-full p-3 text-left border border-neutral-border rounded-lg hover:bg-status-infoLight transition-colors disabled:opacity-50"
@@ -865,7 +889,7 @@ export default function SyncSettings(): JSX.Element {
                         </div>
                       </div>
                     </div>
-                  </button>
+                  </Button>
                 </div>
               )}
 
@@ -889,14 +913,15 @@ export default function SyncSettings(): JSX.Element {
                             {backup.name}
                           </div>
                         </div>
-                        {/* eslint-disable-next-line design-system/require-design-system-components */}
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleRestoreBackup(backup.name)}
                           disabled={isProcessing}
                           className="text-xs px-2 py-1 text-status-info hover:bg-status-infoLight rounded transition-colors disabled:opacity-50"
                         >
                           Restore
-                        </button>
+                        </Button>
                       </div>
                     ))}
                   </div>
@@ -1065,8 +1090,9 @@ function PeerList({
                 )}
               </div>
               {isManager && !isCurrentDevice && (
-                /* eslint-disable-next-line design-system/require-design-system-components */
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() =>
                     onKickMember(
                       peer.peerId,
@@ -1078,7 +1104,7 @@ function PeerList({
                   title="Remove from family"
                 >
                   Remove
-                </button>
+                </Button>
               )}
             </div>
           </div>

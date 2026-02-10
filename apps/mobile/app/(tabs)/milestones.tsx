@@ -7,6 +7,7 @@ import { getMilestones, updateMilestone, createReward, getStudentStarTotals } fr
 import type { Milestone, UpdateMilestone } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, Button, EmptyState, FAB, Modal, Input, ProgressBar } from '../../src/components/ui'
+import { useColors } from '../../src/theme/createStyles'
 
 const statusOrder = ['in_progress', 'not_started', 'completed', 'cancelled'] as const
 
@@ -19,8 +20,10 @@ export default function MilestonesScreen() {
   const [starTotals, setStarTotals] = useState({ weeklyTotal: 0, allTimeTotal: 0 })
   const [filter, setFilter] = useState<'all' | 'not_started' | 'in_progress' | 'completed'>('all')
 
+  const colors = useColors()
+
   const selectedStudent = getSelectedStudent()
-  const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
+  const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
 
   const loadMilestones = useCallback(async () => {
     if (!selectedStudentId) return
@@ -105,7 +108,7 @@ export default function MilestonesScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
       >
@@ -115,8 +118,8 @@ export default function MilestonesScreen() {
           {/* Progress Overview */}
           <Card style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>Progress</Text>
-              <Text style={{ fontSize: 14, color: '#6b7280' }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }} accessibilityRole="header">Progress</Text>
+              <Text style={{ fontSize: 14, color: colors.textSecondary }}>
                 {completedCount} / {totalCount} completed
               </Text>
             </View>
@@ -126,24 +129,24 @@ export default function MilestonesScreen() {
           {/* Star Totals */}
           <Card style={{ marginTop: 12 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-              <View style={{ alignItems: 'center' }}>
+              <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${starTotals.weeklyTotal} stars this week`}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <Ionicons name="star" size={20} color="#fbbf24" />
+                  <Ionicons name="star" size={20} color={colors.warning} />
                   <Text style={{ fontSize: 20, fontWeight: '700', color: studentColor }}>
                     {starTotals.weeklyTotal}
                   </Text>
                 </View>
-                <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>This Week</Text>
+                <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>This Week</Text>
               </View>
-              <View style={{ width: 1, backgroundColor: '#e5e7eb' }} />
-              <View style={{ alignItems: 'center' }}>
+              <View style={{ width: 1, backgroundColor: colors.border }} />
+              <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${starTotals.allTimeTotal} stars all time`}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <Ionicons name="star" size={20} color="#fbbf24" />
+                  <Ionicons name="star" size={20} color={colors.warning} />
                   <Text style={{ fontSize: 20, fontWeight: '700', color: studentColor }}>
                     {starTotals.allTimeTotal}
                   </Text>
                 </View>
-                <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>All Time</Text>
+                <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>All Time</Text>
               </View>
             </View>
           </Card>
@@ -160,14 +163,17 @@ export default function MilestonesScreen() {
                 <TouchableOpacity
                   key={item.key}
                   onPress={() => setFilter(item.key as typeof filter)}
+                  accessibilityLabel={`Filter: ${item.label}${filter === item.key ? ', selected' : ''}`}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: filter === item.key }}
                   style={{
                     paddingHorizontal: 16,
                     paddingVertical: 8,
                     borderRadius: 20,
-                    backgroundColor: filter === item.key ? studentColor : '#f3f4f6',
+                    backgroundColor: filter === item.key ? studentColor : colors.surfaceSecondary,
                   }}
                 >
-                  <Text style={{ color: filter === item.key ? '#fff' : '#6b7280', fontWeight: '500' }}>
+                  <Text style={{ color: filter === item.key ? colors.textInverse : colors.textSecondary, fontWeight: '500' }}>
                     {item.label}
                   </Text>
                 </TouchableOpacity>
@@ -201,11 +207,13 @@ export default function MilestonesScreen() {
                       setModalVisible(true)
                     }}
                     activeOpacity={0.7}
+                    accessibilityLabel={`${milestone.title}, ${milestone.status.replace('_', ' ')}, ${milestone.starValue} stars`}
+                    accessibilityRole="button"
                   >
                     <Card style={{ marginBottom: 8 }}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <View style={{ flex: 1 }}>
-                          <Text style={{ fontSize: 15, fontWeight: '600', color: '#1f2937' }}>{milestone.title}</Text>
+                          <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text }}>{milestone.title}</Text>
                           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, flexWrap: 'wrap', gap: 6 }}>
                             {subject && <Badge variant="primary">{subject.name}</Badge>}
                             {milestone.category && <Badge variant="secondary">{milestone.category}</Badge>}
@@ -215,12 +223,12 @@ export default function MilestonesScreen() {
                           </View>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-                          <Ionicons name="star" size={14} color="#fbbf24" />
-                          <Text style={{ fontSize: 12, color: '#6b7280' }}>{milestone.starValue}</Text>
+                          <Ionicons name="star" size={14} color={colors.warning} />
+                          <Text style={{ fontSize: 12, color: colors.textSecondary }}>{milestone.starValue}</Text>
                         </View>
                       </View>
                       {milestone.description && (
-                        <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 8 }} numberOfLines={2}>
+                        <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 8 }} numberOfLines={2}>
                           {milestone.description}
                         </Text>
                       )}
@@ -257,7 +265,7 @@ export default function MilestonesScreen() {
                 {selectedMilestone.status === 'in_progress' && (
                   <Button
                     onPress={() => handleUpdateStatus(selectedMilestone, 'completed')}
-                    color="#10b981"
+                    color={colors.success}
                     fullWidth
                   >
                     Mark as Complete
@@ -268,7 +276,7 @@ export default function MilestonesScreen() {
           }
         >
           <View>
-            <Text style={{ fontSize: 20, fontWeight: '600', color: '#1f2937', marginBottom: 8 }}>
+            <Text style={{ fontSize: 20, fontWeight: '600', color: colors.text, marginBottom: 8 }}>
               {selectedMilestone.title}
             </Text>
 
@@ -277,9 +285,9 @@ export default function MilestonesScreen() {
                 <Badge variant="primary">{getSubjectById(selectedMilestone.subjectId)!.name}</Badge>
               )}
               {selectedMilestone.category && <Badge variant="secondary">{selectedMilestone.category}</Badge>}
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: '#fef3c7', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
-                <Ionicons name="star" size={12} color="#d97706" />
-                <Text style={{ fontSize: 12, color: '#d97706', fontWeight: '500' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.warningLight, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 }}>
+                <Ionicons name="star" size={12} color={colors.warning} />
+                <Text style={{ fontSize: 12, color: colors.warning, fontWeight: '500' }}>
                   {selectedMilestone.starValue} stars
                 </Text>
               </View>
@@ -287,29 +295,29 @@ export default function MilestonesScreen() {
 
             {selectedMilestone.description && (
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Description</Text>
-                <Text style={{ fontSize: 14, color: '#6b7280', lineHeight: 20 }}>{selectedMilestone.description}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Description</Text>
+                <Text style={{ fontSize: 14, color: colors.textSecondary, lineHeight: 20 }}>{selectedMilestone.description}</Text>
               </View>
             )}
 
             {selectedMilestone.evidenceNotes && (
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Evidence Notes</Text>
-                <Text style={{ fontSize: 14, color: '#6b7280', lineHeight: 20 }}>{selectedMilestone.evidenceNotes}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Evidence Notes</Text>
+                <Text style={{ fontSize: 14, color: colors.textSecondary, lineHeight: 20 }}>{selectedMilestone.evidenceNotes}</Text>
               </View>
             )}
 
             {selectedMilestone.targetDate && (
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Target Date</Text>
-                <Text style={{ fontSize: 14, color: '#6b7280' }}>{selectedMilestone.targetDate}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Target Date</Text>
+                <Text style={{ fontSize: 14, color: colors.textSecondary }}>{selectedMilestone.targetDate}</Text>
               </View>
             )}
 
             {selectedMilestone.completedDate && (
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Completed</Text>
-                <Text style={{ fontSize: 14, color: '#10b981' }}>{selectedMilestone.completedDate}</Text>
+                <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Completed</Text>
+                <Text style={{ fontSize: 14, color: colors.success }}>{selectedMilestone.completedDate}</Text>
               </View>
             )}
           </View>

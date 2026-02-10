@@ -237,9 +237,10 @@ export default function AnnualReport(): JSX.Element {
         action={
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setCurrentYear((y) => y - 1)}
-                className="p-2 hover:bg-neutral-backgroundDeep rounded-lg"
               >
                 <svg
                   className="w-5 h-5"
@@ -254,14 +255,15 @@ export default function AnnualReport(): JSX.Element {
                     d="M15 19l-7-7 7-7"
                   />
                 </svg>
-              </button>
+              </Button>
               <span className="text-lg font-semibold min-w-[60px] text-center">
                 {currentYear}
               </span>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setCurrentYear((y) => y + 1)}
                 disabled={currentYear >= new Date().getFullYear()}
-                className="p-2 hover:bg-neutral-backgroundDeep rounded-lg disabled:opacity-50"
               >
                 <svg
                   className="w-5 h-5"
@@ -276,7 +278,7 @@ export default function AnnualReport(): JSX.Element {
                     d="M9 5l7 7-7 7"
                   />
                 </svg>
-              </button>
+              </Button>
             </div>
             <Button variant="primary" onClick={handleExportReport}>
               Export Report
@@ -374,7 +376,9 @@ export default function AnnualReport(): JSX.Element {
                 );
               })}
             </div>
-            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-neutral-textSecondary">
+            <div
+              className={`flex items-center justify-center gap-6 mt-4 text-sm text-neutral-textSecondary`}
+            >
               <div className="flex items-center gap-2">
                 <div
                   className={`w-3 h-3 rounded ${getStudentColor(selectedStudent.color).bg}`}

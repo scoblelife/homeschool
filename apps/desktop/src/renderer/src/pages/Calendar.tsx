@@ -23,6 +23,7 @@ import type {
   FieldTrip,
 } from "../../../shared/types";
 
+import { validateApiArray } from "../services/validateApiResponse";
 import { Button } from "../components/ui/Button";
 import { Input, Textarea } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
@@ -169,46 +170,63 @@ export default function Calendar(): JSX.Element {
 
   useEffect(() => {
     async function loadMonthData(): Promise<void> {
-      const startDate = format(calendarStart, "yyyy-MM-dd");
-      const endDate = format(calendarEnd, "yyyy-MM-dd");
+      try {
+        const startDate = format(calendarStart, "yyyy-MM-dd");
+        const endDate = format(calendarEnd, "yyyy-MM-dd");
 
-      const [sessionsData, activitiesData, fieldTripsData] = await Promise.all([
-        window.api.getSessions({
-          studentId: selectedStudentId || undefined,
-          startDate,
-          endDate,
-        }),
-        window.api.getActivities({
-          studentId: selectedStudentId || undefined,
-          startDate,
-          endDate,
-        }),
-        window.api.getFieldTrips(
-          selectedStudentId ? { studentId: selectedStudentId } : undefined,
-        ),
-      ]);
+        const [sessionsRaw, activitiesRaw, fieldTripsRaw] = await Promise.all([
+          window.api.getSessions({
+            studentId: selectedStudentId || undefined,
+            startDate,
+            endDate,
+          }),
+          window.api.getActivities({
+            studentId: selectedStudentId || undefined,
+            startDate,
+            endDate,
+          }),
+          window.api.getFieldTrips(
+            selectedStudentId ? { studentId: selectedStudentId } : undefined,
+          ),
+        ]);
 
-      setSessions(sessionsData);
-      setActivities(activitiesData);
-      // Filter field trips to only show ones in the current date range
-      const filteredTrips = fieldTripsData.filter((trip) => {
-        return trip.date >= startDate && trip.date <= endDate;
-      });
-      setFieldTrips(filteredTrips);
-
-      // Fetch calendar events from iCal feeds
-      const selectedStudent = selectedStudentId
-        ? getStudentById(selectedStudentId)
-        : null;
-      if (selectedStudent?.calendarFeedUrl) {
-        const events = await window.api.fetchCalendarEvents(
-          selectedStudent.calendarFeedUrl,
-          startDate,
-          endDate,
+        const sessionsData = validateApiArray<Session>(sessionsRaw, "Calendar");
+        const activitiesData = validateApiArray<Activity>(
+          activitiesRaw,
+          "Calendar",
         );
-        setBusyEvents(events);
-      } else {
-        setBusyEvents([]);
+        const fieldTripsData = validateApiArray<FieldTrip>(
+          fieldTripsRaw,
+          "Calendar",
+        );
+        setSessions(sessionsData);
+        setActivities(activitiesData);
+        // Filter field trips to only show ones in the current date range
+        const filteredTrips = fieldTripsData.filter((trip) => {
+          return trip.date >= startDate && trip.date <= endDate;
+        });
+        setFieldTrips(filteredTrips);
+
+        // Fetch calendar events from iCal feeds
+        const selectedStudent = selectedStudentId
+          ? getStudentById(selectedStudentId)
+          : null;
+        if (selectedStudent?.calendarFeedUrl) {
+          const eventsRaw = await window.api.fetchCalendarEvents(
+            selectedStudent.calendarFeedUrl,
+            startDate,
+            endDate,
+          );
+          const events = validateApiArray<CalendarBusyEvent>(
+            eventsRaw,
+            "Calendar",
+          );
+          setBusyEvents(events);
+        } else {
+          setBusyEvents([]);
+        }
+      } catch (error) {
+        console.error("[Calendar] Failed to load month data:", error);
       }
     }
     loadMonthData();
@@ -271,27 +289,35 @@ export default function Calendar(): JSX.Element {
     )
       return;
 
-    const newActivity = await window.api.createActivity({
-      studentId: formData.studentId,
-      subjectId: formData.subjectId,
-      sessionId: null,
-      activityType: formData.activityType || "worksheet",
-      title: formData.title,
-      description: "",
-      dateCompleted: formData.dateCompleted,
-      durationMinutes: formData.durationMinutes || null,
-      grade: null,
-      maxGrade: null,
-      notes: formData.notes || "",
-    });
+    try {
+      const newActivity = await window.api.createActivity({
+        studentId: formData.studentId,
+        subjectId: formData.subjectId,
+        sessionId: null,
+        activityType: formData.activityType || "worksheet",
+        title: formData.title,
+        description: "",
+        dateCompleted: formData.dateCompleted,
+        durationMinutes: formData.durationMinutes || null,
+        grade: null,
+        maxGrade: null,
+        notes: formData.notes || "",
+      });
 
-    setActivities([...activities, newActivity]);
-    setShowAddActivity(false);
+      setActivities([...activities, newActivity]);
+      setShowAddActivity(false);
+    } catch (error) {
+      console.error("[Calendar] Failed to create activity:", error);
+    }
   };
 
   const handleDeleteActivity = async (id: string) => {
-    await window.api.deleteActivity(id);
-    setActivities(activities.filter((a) => a.id !== id));
+    try {
+      await window.api.deleteActivity(id);
+      setActivities(activities.filter((a) => a.id !== id));
+    } catch (error) {
+      console.error(`[Calendar] Failed to delete activity ${id}:`, error);
+    }
   };
 
   return (
@@ -407,7 +433,7 @@ export default function Calendar(): JSX.Element {
             </div>
 
             {/* Legend */}
-            {/* eslint-disable-next-line design-system/pages-use-components-only */}
+            {/* eslint-disable-next-line design-system/pages-use-components-only -- calendar legend layout */}
             <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-status-successLight0" />
@@ -565,13 +591,14 @@ export default function Calendar(): JSX.Element {
                               ` • ${activity.durationMinutes} min`}
                           </div>
                         </div>
-                        {/* eslint-disable-next-line design-system/require-design-system-components */}
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleDeleteActivity(activity.id)}
                           className="text-status-error hover:text-status-error text-sm"
                         >
                           ×
-                        </button>
+                        </Button>
                       </li>
                     );
                   })}

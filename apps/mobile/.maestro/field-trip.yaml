@@ -1,0 +1,47 @@
+appId: com.scoblelife.homeschool
+name: Field Trip Creation Flow
+---
+
+# Navigate to Field Trips via More tab
+- tapOn: "More"
+- tapOn: "Field Trips"
+
+# Verify Field Trips screen loaded
+- assertVisible: "Field Trips"
+
+# Create a new field trip
+- tapOn:
+    id: "add-field-trip"
+
+# Fill in trip details
+- tapOn: "Title"
+- inputText: "Museum of Natural History"
+
+- tapOn: "Location"
+- inputText: "900 Exposition Blvd"
+
+- tapOn: "Description"
+- inputText: "Visit the dinosaur exhibit and geological formations"
+
+# Set date (tap date picker)
+- tapOn:
+    id: "date-picker"
+
+# Confirm date selection
+- tapOn: "Confirm"
+
+# Save the field trip
+- tapOn: "Save"
+
+# Verify trip appears in list
+- assertVisible: "Museum of Natural History"
+
+# Tap on the trip to view details
+- tapOn: "Museum of Natural History"
+
+# Change status
+- tapOn: "Status"
+- tapOn: "Completed"
+
+# Verify status changed
+- assertVisible: "Completed"

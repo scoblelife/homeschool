@@ -7,6 +7,7 @@ import { getFieldTrips, createFieldTrip, updateFieldTrip, deleteFieldTrip } from
 import type { FieldTrip, CreateFieldTrip, UniversalStatus, EventCategory } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, Button, EmptyState, FAB, Modal, Input, TextArea, DatePicker, TimePicker } from '../../src/components/ui'
+import { useColors } from '../../src/theme/createStyles'
 
 const eventCategoryOptions: { value: EventCategory; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
   { value: 'educational', label: 'Educational', icon: 'school' },
@@ -44,8 +45,10 @@ export default function FieldTripsScreen() {
     subjectIds: [],
   })
 
+  const colors = useColors()
+
   const selectedStudent = getSelectedStudent()
-  const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
+  const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
 
   const loadFieldTrips = useCallback(async () => {
     try {
@@ -157,7 +160,7 @@ export default function FieldTripsScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
       >
@@ -176,14 +179,17 @@ export default function FieldTripsScreen() {
                 <TouchableOpacity
                   key={item.key}
                   onPress={() => setFilter(item.key as typeof filter)}
+                  accessibilityLabel={`Filter: ${item.label}${filter === item.key ? ', selected' : ''}`}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: filter === item.key }}
                   style={{
                     paddingHorizontal: 16,
                     paddingVertical: 8,
                     borderRadius: 20,
-                    backgroundColor: filter === item.key ? studentColor : '#f3f4f6',
+                    backgroundColor: filter === item.key ? studentColor : colors.surfaceSecondary,
                   }}
                 >
-                  <Text style={{ color: filter === item.key ? '#fff' : '#6b7280', fontWeight: '500' }}>
+                  <Text style={{ color: filter === item.key ? colors.textInverse : colors.textSecondary, fontWeight: '500' }}>
                     {item.label}
                   </Text>
                 </TouchableOpacity>
@@ -216,6 +222,8 @@ export default function FieldTripsScreen() {
                       setDetailModalVisible(true)
                     }}
                     activeOpacity={0.7}
+                    accessibilityLabel={`${trip.title} at ${trip.location}, ${statusLabels[trip.status]}`}
+                    accessibilityRole="button"
                   >
                     <Card style={{ marginBottom: 8 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
@@ -224,23 +232,23 @@ export default function FieldTripsScreen() {
                             width: 40,
                             height: 40,
                             borderRadius: 20,
-                            backgroundColor: '#f3e8ff',
+                            backgroundColor: colors.primaryLight,
                             justifyContent: 'center',
                             alignItems: 'center',
                             marginRight: 12,
                           }}
                         >
-                          <Ionicons name={categoryOption?.icon || 'calendar'} size={20} color="#d946ef" />
+                          <Ionicons name={categoryOption?.icon || 'calendar'} size={20} color={colors.primary} />
                         </View>
                         <View style={{ flex: 1 }}>
-                          <Text style={{ fontSize: 15, fontWeight: '600', color: '#1f2937' }}>{trip.title}</Text>
+                          <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text }}>{trip.title}</Text>
                           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 4 }}>
-                            <Ionicons name="location" size={14} color="#6b7280" />
-                            <Text style={{ fontSize: 13, color: '#6b7280' }}>{trip.location}</Text>
+                            <Ionicons name="location" size={14} color={colors.textSecondary} />
+                            <Text style={{ fontSize: 13, color: colors.textSecondary }}>{trip.location}</Text>
                           </View>
                           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4, gap: 4 }}>
-                            <Ionicons name="calendar" size={14} color="#6b7280" />
-                            <Text style={{ fontSize: 13, color: '#6b7280' }}>
+                            <Ionicons name="calendar" size={14} color={colors.textSecondary} />
+                            <Text style={{ fontSize: 13, color: colors.textSecondary }}>
                               {format(parseISO(trip.date), 'EEE, MMM d, yyyy')}
                               {trip.startTime && ` at ${trip.startTime}`}
                             </Text>
@@ -252,7 +260,7 @@ export default function FieldTripsScreen() {
                           <Badge variant="primary">{categoryOption?.label || 'Event'}</Badge>
                           <Badge variant={getStatusBadgeVariant(trip.status)}>{statusLabels[trip.status]}</Badge>
                         </View>
-                        {trip.cost && <Text style={{ fontSize: 12, color: '#6b7280' }}>${trip.cost.toFixed(2)}</Text>}
+                        {trip.cost && <Text style={{ fontSize: 12, color: colors.textSecondary }}>${trip.cost.toFixed(2)}</Text>}
                       </View>
                     </Card>
                   </TouchableOpacity>
@@ -315,13 +323,16 @@ export default function FieldTripsScreen() {
           </View>
         </View>
 
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Event Category</Text>
+        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 8 }}>Event Category</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {eventCategoryOptions.map((category) => (
               <TouchableOpacity
                 key={category.value}
                 onPress={() => setNewTrip({ ...newTrip, eventCategory: category.value })}
+                accessibilityLabel={`${category.label}${newTrip.eventCategory === category.value ? ', selected' : ''}`}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: newTrip.eventCategory === category.value }}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -329,15 +340,15 @@ export default function FieldTripsScreen() {
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                   borderRadius: 8,
-                  backgroundColor: newTrip.eventCategory === category.value ? studentColor : '#f3f4f6',
+                  backgroundColor: newTrip.eventCategory === category.value ? studentColor : colors.surfaceSecondary,
                 }}
               >
                 <Ionicons
                   name={category.icon}
                   size={16}
-                  color={newTrip.eventCategory === category.value ? '#fff' : '#6b7280'}
+                  color={newTrip.eventCategory === category.value ? colors.textInverse : colors.textSecondary}
                 />
-                <Text style={{ color: newTrip.eventCategory === category.value ? '#fff' : '#6b7280' }}>
+                <Text style={{ color: newTrip.eventCategory === category.value ? colors.textInverse : colors.textSecondary }}>
                   {category.label}
                 </Text>
               </TouchableOpacity>
@@ -391,7 +402,7 @@ export default function FieldTripsScreen() {
               {selectedTrip.status === 'not_started' && (
                 <Button
                   onPress={() => handleUpdateStatus(selectedTrip, 'completed')}
-                  color="#10b981"
+                  color={colors.success}
                   fullWidth
                 >
                   Mark as Completed
@@ -403,7 +414,7 @@ export default function FieldTripsScreen() {
             </View>
           }
         >
-          <Text style={{ fontSize: 20, fontWeight: '600', color: '#1f2937', marginBottom: 8 }}>
+          <Text style={{ fontSize: 20, fontWeight: '600', color: colors.text, marginBottom: 8 }}>
             {selectedTrip.title}
           </Text>
 
@@ -416,21 +427,21 @@ export default function FieldTripsScreen() {
 
           <View style={{ gap: 12, marginBottom: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Ionicons name="location" size={18} color="#6b7280" />
-              <Text style={{ fontSize: 14, color: '#374151' }}>{selectedTrip.location}</Text>
+              <Ionicons name="location" size={18} color={colors.textSecondary} />
+              <Text style={{ fontSize: 14, color: colors.text }}>{selectedTrip.location}</Text>
             </View>
 
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Ionicons name="calendar" size={18} color="#6b7280" />
-              <Text style={{ fontSize: 14, color: '#374151' }}>
+              <Ionicons name="calendar" size={18} color={colors.textSecondary} />
+              <Text style={{ fontSize: 14, color: colors.text }}>
                 {format(parseISO(selectedTrip.date), 'EEEE, MMMM d, yyyy')}
               </Text>
             </View>
 
             {(selectedTrip.startTime || selectedTrip.endTime) && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Ionicons name="time" size={18} color="#6b7280" />
-                <Text style={{ fontSize: 14, color: '#374151' }}>
+                <Ionicons name="time" size={18} color={colors.textSecondary} />
+                <Text style={{ fontSize: 14, color: colors.text }}>
                   {selectedTrip.startTime || 'TBD'} - {selectedTrip.endTime || 'TBD'}
                 </Text>
               </View>
@@ -438,8 +449,8 @@ export default function FieldTripsScreen() {
 
             {selectedTrip.cost && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <Ionicons name="cash" size={18} color="#6b7280" />
-                <Text style={{ fontSize: 14, color: '#374151' }}>${selectedTrip.cost.toFixed(2)}</Text>
+                <Ionicons name="cash" size={18} color={colors.textSecondary} />
+                <Text style={{ fontSize: 14, color: colors.text }}>${selectedTrip.cost.toFixed(2)}</Text>
               </View>
             )}
 
@@ -447,33 +458,35 @@ export default function FieldTripsScreen() {
               <TouchableOpacity
                 onPress={() => Linking.openURL(selectedTrip.websiteUrl!)}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+                accessibilityLabel="Visit website"
+                accessibilityRole="link"
               >
-                <Ionicons name="link" size={18} color="#2563eb" />
-                <Text style={{ fontSize: 14, color: '#2563eb' }}>Visit Website</Text>
+                <Ionicons name="link" size={18} color={colors.studentBlue} />
+                <Text style={{ fontSize: 14, color: colors.studentBlue }}>Visit Website</Text>
               </TouchableOpacity>
             )}
           </View>
 
           {selectedTrip.description && (
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Description</Text>
-              <Text style={{ fontSize: 14, color: '#6b7280', lineHeight: 20 }}>{selectedTrip.description}</Text>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Description</Text>
+              <Text style={{ fontSize: 14, color: colors.textSecondary, lineHeight: 20 }}>{selectedTrip.description}</Text>
             </View>
           )}
 
           {selectedTrip.learningOutcomes && (
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>
                 Learning Outcomes
               </Text>
-              <Text style={{ fontSize: 14, color: '#6b7280', lineHeight: 20 }}>{selectedTrip.learningOutcomes}</Text>
+              <Text style={{ fontSize: 14, color: colors.textSecondary, lineHeight: 20 }}>{selectedTrip.learningOutcomes}</Text>
             </View>
           )}
 
           {selectedTrip.notes && (
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>Notes</Text>
-              <Text style={{ fontSize: 14, color: '#6b7280', lineHeight: 20 }}>{selectedTrip.notes}</Text>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 4 }}>Notes</Text>
+              <Text style={{ fontSize: 14, color: colors.textSecondary, lineHeight: 20 }}>{selectedTrip.notes}</Text>
             </View>
           )}
         </Modal>

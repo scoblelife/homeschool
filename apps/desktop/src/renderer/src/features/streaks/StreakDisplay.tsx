@@ -7,12 +7,12 @@
 import { useState, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
 import { format, parseISO } from "date-fns";
+import { Button } from "../../components/ui/Button";
 import {
   useStreakStore,
   isStreakAtRisk,
   isStreakActive,
   type StreakData,
-  type Badge,
 } from "./streakStore";
 
 // Default streak data for students without any streak history
@@ -46,16 +46,18 @@ export function StreakDisplay({
   const atRisk = isStreakAtRisk(streakData);
 
   const flameColor = active
-    ? "text-orange-500"
+    ? "text-status-warning"
     : atRisk
-      ? "text-amber-400 animate-pulse"
+      ? "text-status-warningLight animate-pulse"
       : "text-gray-300";
 
   if (compact) {
     return (
-      <button
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => setShowBadgesModal(true)}
-        className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
+        className="gap-1.5 px-2 py-1 rounded-lg"
         title={`${studentName}'s streak`}
       >
         <FlameIcon className={`w-5 h-5 ${flameColor}`} />
@@ -69,7 +71,7 @@ export function StreakDisplay({
             {streakData.badges[streakData.badges.length - 1].icon}
           </span>
         )}
-      </button>
+      </Button>
     );
   }
 
@@ -81,12 +83,14 @@ export function StreakDisplay({
             {studentName}'s Streak
           </h3>
           {streakData.badges.length > 0 && (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setShowBadgesModal(true)}
-              className="text-sm text-fuchsia-600 hover:text-fuchsia-800"
+              className="text-brand-primary hover:text-brand-primaryDark"
             >
               View Badges ({streakData.badges.length})
-            </button>
+            </Button>
           )}
         </div>
 
@@ -112,7 +116,7 @@ export function StreakDisplay({
         </div>
 
         {atRisk && (
-          <div className="mt-3 text-sm text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+          <div className="mt-3 text-sm text-status-warningDark bg-status-warningLight rounded-lg px-3 py-2">
             Log an activity today to keep your streak!
           </div>
         )}
@@ -128,7 +132,7 @@ export function StreakDisplay({
             {streakData.badges.map((badge) => (
               <span
                 key={badge.id}
-                className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-800 rounded-full text-xs"
+                className="inline-flex items-center gap-1 px-2 py-1 bg-status-warningLight text-status-warningDark rounded-full text-xs"
                 title={badge.description}
               >
                 {badge.icon} {badge.name}
@@ -206,8 +210,14 @@ function BadgesModal({
     },
   ];
 
-  const earnedBadgeIds = new Set(streakData.badges.map((b) => b.id));
-  const earnedBadgesMap = new Map(streakData.badges.map((b) => [b.id, b]));
+  const earnedBadgeIds = useMemo(
+    () => new Set(streakData.badges.map((b) => b.id)),
+    [streakData.badges],
+  );
+  const earnedBadgesMap = useMemo(
+    () => new Map(streakData.badges.map((b) => [b.id, b])),
+    [streakData.badges],
+  );
 
   return (
     <Dialog open={open} onClose={onClose} className="relative z-50">
@@ -232,7 +242,7 @@ function BadgesModal({
                   key={badge.id}
                   className={`flex items-center gap-3 p-3 rounded-lg ${
                     earned
-                      ? "bg-amber-50 border border-amber-200"
+                      ? "bg-status-warningLight border border-status-warningLight"
                       : "bg-gray-50 border border-gray-100"
                   }`}
                 >
@@ -253,7 +263,7 @@ function BadgesModal({
                       {badge.description}
                     </div>
                     {earned && earnedBadge && (
-                      <div className="text-xs text-amber-600 mt-0.5">
+                      <div className="text-xs text-status-warningDark mt-0.5">
                         Earned{" "}
                         {format(
                           parseISO(earnedBadge.earnedDate),
@@ -275,9 +285,9 @@ function BadgesModal({
           </div>
 
           <div className="mt-6 flex justify-end">
-            <button onClick={onClose} className="btn btn-secondary">
+            <Button variant="secondary" onClick={onClose}>
               Close
-            </button>
+            </Button>
           </div>
         </Dialog.Panel>
       </div>

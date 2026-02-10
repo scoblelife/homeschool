@@ -30,7 +30,10 @@ export default function MainLayout(): JSX.Element {
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+      <aside
+        className="w-64 bg-white border-r border-gray-200 flex flex-col"
+        aria-label="Sidebar navigation"
+      >
         {/* Header */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
@@ -53,6 +56,7 @@ export default function MainLayout(): JSX.Element {
               setSelectedStudentId(e.target.value || null)
             }
             className="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+            aria-label="Select student"
           >
             <option value="">All Students</option>
             {students.map((student) => (
@@ -64,7 +68,7 @@ export default function MainLayout(): JSX.Element {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-1" aria-label="Main navigation">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
@@ -102,7 +106,7 @@ export default function MainLayout(): JSX.Element {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto" role="main">
         <Outlet />
       </main>
     </div>

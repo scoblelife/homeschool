@@ -7,6 +7,7 @@ import {
   isThisWeek,
   isThisMonth,
 } from "date-fns";
+import { Button, Input } from "@/components/ui";
 import type { CoopEvent } from "../../../../shared/types";
 
 type ExtendedCoopEvent = CoopEvent & {
@@ -125,12 +126,12 @@ export function FieldTripDiscovery() {
         <div className="flex-1">
           <div className="relative">
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
+            <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search events, locations..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
+              className="pl-10"
             />
           </div>
         </div>
@@ -224,7 +225,7 @@ function EventCard({ event }: { event: ExtendedCoopEvent }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-fuchsia-300 dark:hover:border-fuchsia-600 transition-colors">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-brand-primaryLight dark:hover:border-brand-primary transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           {/* Title and Group */}
@@ -232,7 +233,7 @@ function EventCard({ event }: { event: ExtendedCoopEvent }) {
             <h4 className="font-medium text-gray-900 dark:text-white truncate">
               {event.title}
             </h4>
-            <span className="px-2 py-0.5 text-xs bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-300 rounded-full whitespace-nowrap">
+            <span className="px-2 py-0.5 text-xs bg-brand-primaryLight dark:bg-brand-primaryDark/30 text-brand-primaryDark dark:text-brand-primaryLight rounded-full whitespace-nowrap">
               {event.groupName}
             </span>
           </div>
@@ -273,13 +274,15 @@ function EventCard({ event }: { event: ExtendedCoopEvent }) {
 
         {/* Actions */}
         <div className="ml-4 flex flex-col gap-2">
-          <button
+          <Button
             onClick={handleAddToCalendar}
-            className="p-2 text-gray-400 hover:text-fuchsia-500 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/30 rounded-lg transition-colors"
+            variant="ghost"
+            size="sm"
+            className="p-2 text-gray-400 hover:text-brand-primary hover:bg-brand-primaryLight dark:hover:bg-brand-primaryDark/30 rounded-lg"
             title="Add to calendar"
           >
             <CalendarPlusIcon className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>

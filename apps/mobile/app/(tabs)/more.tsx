@@ -82,17 +82,19 @@ export default function MoreScreen() {
   const colors = useColors()
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={{ padding: 16 }}>
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <TouchableOpacity
             key={item.route}
             onPress={() => router.push(item.route as any)}
             activeOpacity={0.7}
+            accessibilityLabel={`${item.title}: ${item.description}`}
+            accessibilityRole="button"
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: '#fff',
+              backgroundColor: colors.surface,
               borderRadius: 12,
               padding: 14,
               marginBottom: 8,
@@ -114,10 +116,10 @@ export default function MoreScreen() {
               <Ionicons name={item.icon} size={20} color={item.color} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, fontWeight: '600', color: '#1f2937' }}>{item.title}</Text>
-              <Text style={{ fontSize: 13, color: '#6b7280', marginTop: 1 }}>{item.description}</Text>
+              <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text }}>{item.title}</Text>
+              <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 1 }}>{item.description}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={18} color="#d1d5db" />
+            <Ionicons name="chevron-forward" size={18} color={colors.border} />
           </TouchableOpacity>
         ))}
       </View>

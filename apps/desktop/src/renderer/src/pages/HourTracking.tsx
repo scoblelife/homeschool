@@ -54,13 +54,14 @@ export default function HourTracking() {
       ) : (
         <>
           <div className="mb-4 print:hidden">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setShowPrintable(false)}
               className="text-brand-primary hover:text-brand-primaryDark flex items-center gap-2"
             >
               <BackIcon />
               Back to Hour Tracking
-            </button>
+            </Button>
           </div>
           <PrintableHourReport
             studentId={printStudentId}

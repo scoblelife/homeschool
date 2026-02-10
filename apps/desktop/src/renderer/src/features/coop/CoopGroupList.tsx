@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Dialog } from "@headlessui/react";
+import { Button, Input, Textarea } from "@/components/ui";
 import type {
   CoopGroup,
   CreateCoopGroup,
@@ -128,18 +129,12 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
           </p>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => setShowJoinModal(true)}
-            className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-          >
+          <Button variant="secondary" onClick={() => setShowJoinModal(true)}>
             Join Group
-          </button>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="px-4 py-2 text-sm bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 transition-colors"
-          >
+          </Button>
+          <Button variant="primary" onClick={() => setShowCreateModal(true)}>
             Create Group
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -157,14 +152,15 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {groups.map((group) => (
-            <button
+            <Button
               key={group.id}
+              variant="ghost"
               onClick={() => onSelectGroup(group)}
-              className="text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-fuchsia-500 hover:shadow-md transition-all"
+              className="text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-brand-primary hover:shadow-md transition-all h-auto items-start"
             >
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-fuchsia-100 dark:bg-fuchsia-900/30 rounded-lg">
-                  <GroupIcon className="w-6 h-6 text-fuchsia-600 dark:text-fuchsia-400" />
+              <div className="flex items-start gap-3 w-full">
+                <div className="p-2 bg-brand-primaryLight rounded-lg">
+                  <GroupIcon className="w-6 h-6 text-brand-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-gray-900 dark:text-white truncate">
@@ -181,7 +177,7 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
                 </div>
                 <ChevronRightIcon className="w-5 h-5 text-gray-400" />
               </div>
-            </button>
+            </Button>
           ))}
         </div>
       )}
@@ -201,35 +197,38 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
 
             <div className="space-y-4">
               <div>
-                <label className="label">Group Name *</label>
-                <input
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Group Name *
+                </label>
+                <Input
                   type="text"
                   value={newGroupName}
                   onChange={(e) => setNewGroupName(e.target.value)}
                   placeholder="e.g., Valley Homeschool Co-op"
-                  className="input"
                 />
               </div>
 
               <div>
-                <label className="label">Description</label>
-                <textarea
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Description
+                </label>
+                <Textarea
                   value={newGroupDescription}
                   onChange={(e) => setNewGroupDescription(e.target.value)}
                   placeholder="What's your group about?"
                   rows={3}
-                  className="input"
                 />
               </div>
 
               <div>
-                <label className="label">Your Family Name *</label>
-                <input
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Your Family Name *
+                </label>
+                <Input
                   type="text"
                   value={familyName}
                   onChange={(e) => setFamilyName(e.target.value)}
                   placeholder="e.g., The Smith Family"
-                  className="input"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   This is how other members will see you.
@@ -238,19 +237,16 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
             </div>
 
             <div className="flex justify-end gap-3 mt-6">
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
+              <Button variant="ghost" onClick={() => setShowCreateModal(false)}>
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
                 onClick={handleCreateGroup}
                 disabled={!newGroupName.trim() || !familyName.trim()}
-                className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Create Group
-              </button>
+              </Button>
             </div>
           </Dialog.Panel>
         </div>
@@ -271,52 +267,55 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
 
             <div className="space-y-4">
               <div>
-                <label className="label">Invite Code *</label>
-                <input
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Invite Code *
+                </label>
+                <Input
                   type="text"
                   value={joinCode}
                   onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                   placeholder="Enter 6-character code"
                   maxLength={6}
-                  className="input font-mono text-center text-lg tracking-widest"
+                  className="font-mono text-center text-lg tracking-widest"
                 />
               </div>
 
               <div>
-                <label className="label">Your Family Name *</label>
-                <input
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Your Family Name *
+                </label>
+                <Input
                   type="text"
                   value={familyName}
                   onChange={(e) => setFamilyName(e.target.value)}
                   placeholder="e.g., The Smith Family"
-                  className="input"
                 />
               </div>
 
               {joinError && (
-                <p className="text-sm text-red-600 dark:text-red-400">
+                <p className="text-sm text-status-error dark:text-status-error">
                   {joinError}
                 </p>
               )}
             </div>
 
             <div className="flex justify-end gap-3 mt-6">
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => {
                   setShowJoinModal(false);
                   setJoinError("");
                 }}
-                className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
                 onClick={handleJoinGroup}
                 disabled={joinCode.length !== 6 || !familyName.trim()}
-                className="px-4 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Join Group
-              </button>
+              </Button>
             </div>
           </Dialog.Panel>
         </div>

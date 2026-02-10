@@ -111,31 +111,11 @@ export default function Activities(): JSX.Element {
     e.preventDefault();
     if (!formData.subjectId || !formData.title) return;
 
-    if (editingActivity) {
-      // Update existing activity
-      await updateActivity(editingActivity.id, {
-        subjectId: formData.subjectId,
-        activityType: formData.activityType || "worksheet",
-        title: formData.title,
-        description: formData.description || "",
-        dateCompleted:
-          formData.dateCompleted || format(new Date(), "yyyy-MM-dd"),
-        durationMinutes: formData.durationMinutes || null,
-        grade: formData.grade || null,
-        maxGrade: formData.maxGrade || null,
-        notes: studentNotes[editingActivity.studentId] || "",
-        bookTitle: formData.bookTitle,
-        pagesRead: formData.pagesRead,
-        totalPages: formData.totalPages,
-      });
-    } else {
-      // Create new activity for each selected student
-      if (selectedStudentIds.length === 0) return;
-      for (const studentId of selectedStudentIds) {
-        await createActivity({
-          studentId,
+    try {
+      if (editingActivity) {
+        // Update existing activity
+        await updateActivity(editingActivity.id, {
           subjectId: formData.subjectId,
-          sessionId: null,
           activityType: formData.activityType || "worksheet",
           title: formData.title,
           description: formData.description || "",
@@ -144,16 +124,40 @@ export default function Activities(): JSX.Element {
           durationMinutes: formData.durationMinutes || null,
           grade: formData.grade || null,
           maxGrade: formData.maxGrade || null,
-          notes: studentNotes[studentId] || "",
+          notes: studentNotes[editingActivity.studentId] || "",
           bookTitle: formData.bookTitle,
           pagesRead: formData.pagesRead,
           totalPages: formData.totalPages,
         });
+      } else {
+        // Create new activity for each selected student
+        if (selectedStudentIds.length === 0) return;
+        for (const studentId of selectedStudentIds) {
+          await createActivity({
+            studentId,
+            subjectId: formData.subjectId,
+            sessionId: null,
+            activityType: formData.activityType || "worksheet",
+            title: formData.title,
+            description: formData.description || "",
+            dateCompleted:
+              formData.dateCompleted || format(new Date(), "yyyy-MM-dd"),
+            durationMinutes: formData.durationMinutes || null,
+            grade: formData.grade || null,
+            maxGrade: formData.maxGrade || null,
+            notes: studentNotes[studentId] || "",
+            bookTitle: formData.bookTitle,
+            pagesRead: formData.pagesRead,
+            totalPages: formData.totalPages,
+          });
+        }
       }
-    }
 
-    setIsModalOpen(false);
-    resetForm();
+      setIsModalOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error("[LearningLog] Failed to save activity:", error);
+    }
   };
 
   const resetForm = (): void => {

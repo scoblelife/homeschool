@@ -1,0 +1,45 @@
+appId: com.scoblelife.homeschool
+name: Library Reading Flow
+---
+
+# Navigate to Library via More tab
+- tapOn: "More"
+- tapOn: "Library"
+
+# Verify Library screen loaded
+- assertVisible: "Library"
+
+# Add a new book
+- tapOn:
+    id: "add-book-button"
+
+# Fill in book details
+- tapOn: "Title"
+- inputText: "Charlotte's Web"
+
+- tapOn: "Author"
+- inputText: "E.B. White"
+
+# Save the book
+- tapOn: "Save"
+
+# Verify book appears in library
+- assertVisible: "Charlotte's Web"
+
+# Tap on the book to view details
+- tapOn: "Charlotte's Web"
+
+# Log reading progress
+- tapOn: "Log Reading"
+- tapOn: "Pages read"
+- inputText: "25"
+- tapOn: "Save"
+
+# Mark as finished
+- scrollUntilVisible:
+    element: "Mark as Finished"
+    direction: DOWN
+- tapOn: "Mark as Finished"
+
+# Verify finished status
+- assertVisible: "Finished"

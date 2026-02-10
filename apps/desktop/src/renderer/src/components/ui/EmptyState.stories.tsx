@@ -174,7 +174,7 @@ export const ErrorState: Story = {
   args: {
     icon: (
       <svg
-        className="w-full h-full text-red-400"
+        className="w-full h-full text-status-error"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

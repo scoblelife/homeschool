@@ -64,7 +64,9 @@ export default function Attendance(): JSX.Element {
           </li>
         </ul>
 
-        <div className="mt-6 p-4 bg-status-warningLight rounded-lg border border-status-warning">
+        <div
+          className={`mt-6 p-4 bg-status-warningLight rounded-lg border border-status-warning`}
+        >
           <h3 className="font-medium text-status-warning mb-2">
             State Requirements
           </h3>

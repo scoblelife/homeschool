@@ -85,7 +85,7 @@ export default function Templates() {
 
       {/* Success Message */}
       {successMessage && (
-        /* eslint-disable-next-line design-system/pages-use-components-only */
+        /* eslint-disable-next-line design-system/pages-use-components-only -- success notification banner */
         <div className="mb-4 p-4 bg-status-successLight border border-status-success rounded-lg">
           <p className="text-status-successDark flex items-center gap-2">
             <CheckIcon className="w-5 h-5" />
@@ -101,9 +101,9 @@ export default function Templates() {
 
       {/* Add Activity Modal */}
       {showAddModal && selectedTemplate && (
-        /* eslint-disable-next-line design-system/pages-use-components-only */
+        /* eslint-disable-next-line design-system/pages-use-components-only -- modal overlay container */
         <div className="fixed inset-0 bg-neutral-overlay flex items-center justify-center z-50">
-          {/* eslint-disable-next-line design-system/pages-use-components-only */}
+          {/* eslint-disable-next-line design-system/pages-use-components-only -- modal dialog panel */}
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6">
               <h2 className="text-lg font-semibold text-neutral-text mb-2">

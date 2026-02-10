@@ -14,6 +14,7 @@ import {
   startOfYear,
   endOfYear,
 } from "date-fns";
+import { Button } from "@/components/ui";
 import { useAIInsightsStore } from "./aiInsightsStore";
 
 interface PredictionData {
@@ -189,8 +190,8 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
 
   const statusColors = {
     on_track: {
-      bg: "bg-green-100",
-      text: "text-green-700",
+      bg: "bg-status-successLight",
+      text: "text-status-successDark",
       icon: "✓",
       label: "On Track",
     },
@@ -201,23 +202,26 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
       label: "At Risk",
     },
     behind: {
-      bg: "bg-red-100",
-      text: "text-red-700",
+      bg: "bg-status-errorLight",
+      text: "text-status-errorDark",
       icon: "!",
       label: "Behind",
     },
   };
 
   return (
-    <div className="card bg-gradient-to-r from-amber-50 to-orange-50 border-amber-100">
-      <button
+    <div
+      className={`bg-gradient-to-r from-status-warningLight to-student-orange-50 border border-status-warningLight rounded-lg p-4`}
+    >
+      <Button
+        variant="ghost"
         onClick={() => setIsExpanded(!isExpanded)}
         disabled={isLoading || isGenerating}
-        className="w-full text-left"
+        className="w-full text-left h-auto p-0"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-full bg-status-warningLight flex items-center justify-center text-xl">
               📈
             </div>
             <div>
@@ -234,7 +238,7 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
           <div className="flex items-center gap-2">
             {isLoading || isGenerating ? (
               <svg
-                className="animate-spin h-5 w-5 text-amber-600"
+                className="animate-spin h-5 w-5 text-status-warningDark"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -262,7 +266,7 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
                   {statusColors[prediction.status].label}
                 </span>
                 <svg
-                  className={`w-5 h-5 text-amber-600 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                  className={`w-5 h-5 text-status-warningDark transition-transform ${isExpanded ? "rotate-180" : ""}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -278,7 +282,7 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
             ) : null}
           </div>
         </div>
-      </button>
+      </Button>
 
       {isExpanded && prediction && (
         <div className="mt-4 space-y-4">
@@ -296,10 +300,10 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
               <div
                 className={`h-full transition-all ${
                   prediction.status === "on_track"
-                    ? "bg-green-500"
+                    ? "bg-status-success"
                     : prediction.status === "at_risk"
                       ? "bg-yellow-500"
-                      : "bg-red-500"
+                      : "bg-status-error"
                 }`}
                 style={{
                   width: `${Math.min(100, (prediction.currentHours / prediction.requiredHours) * 100)}%`,
@@ -364,7 +368,7 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
                       key={index}
                       className="text-sm text-gray-600 flex items-start gap-2"
                     >
-                      <span className="text-amber-500 mt-0.5">•</span>
+                      <span className="text-status-warning mt-0.5">•</span>
                       {suggestion}
                     </li>
                   ))}
@@ -373,23 +377,25 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
             )}
 
           {/* Refresh */}
-          <div className="text-xs text-amber-600 text-right">
-            <button
+          <div className="text-xs text-status-warningDark text-right">
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 analyzeCompliance();
               }}
               disabled={isLoading || isGenerating}
-              className="hover:text-amber-800 underline"
+              className="hover:text-status-warningDark underline text-xs p-0 h-auto"
             >
               Refresh
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       {localError && (
-        <div className="mt-3 p-2 bg-red-50 border border-red-100 rounded text-sm text-red-600">
+        <div className="mt-3 p-2 bg-status-errorLight border border-status-errorLight rounded text-sm text-status-error">
           {localError}
         </div>
       )}

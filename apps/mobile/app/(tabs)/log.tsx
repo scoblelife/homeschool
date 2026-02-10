@@ -41,8 +41,8 @@ export default function LogScreen() {
   const [isLoading, setIsLoading] = useState(false)
 
   const studentColor = selectedStudentId
-    ? getStudentById(selectedStudentId)?.color === 'child2' ? '#14b8a6' : '#d946ef'
-    : '#d946ef'
+    ? getStudentById(selectedStudentId)?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
+    : colors.studentFuchsia
 
   // Default to all students selected
   useEffect(() => {
@@ -179,7 +179,7 @@ export default function LogScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#f9fafb' }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
@@ -192,7 +192,7 @@ export default function LogScreen() {
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
           {students.map((student) => {
             const isSelected = selectedStudentIds.includes(student.id)
-            const color = student.color === 'child2' ? '#14b8a6' : '#d946ef'
+            const color = student.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
             return (
               <TouchableOpacity
                 key={student.id}
@@ -202,16 +202,19 @@ export default function LogScreen() {
                   flex: 1,
                   paddingVertical: 10,
                   borderRadius: 12,
-                  backgroundColor: isSelected ? color : '#f3f4f6',
+                  backgroundColor: isSelected ? color : colors.surfaceSecondary,
                   alignItems: 'center',
                   borderWidth: isSelected ? 0 : 1,
-                  borderColor: '#e5e7eb',
+                  borderColor: colors.border,
                 }}
+                accessibilityLabel={`${student.name}${isSelected ? ', selected' : ''}`}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: isSelected }}
               >
                 <Text style={{
                   fontSize: 14,
                   fontWeight: '600',
-                  color: isSelected ? '#fff' : '#6b7280',
+                  color: isSelected ? colors.textInverse : colors.textSecondary,
                 }}>
                   {student.name}
                 </Text>
@@ -222,7 +225,7 @@ export default function LogScreen() {
 
         {/* Text Input - Primary logging method */}
         <View style={{
-          backgroundColor: '#fff',
+          backgroundColor: colors.surface,
           borderRadius: 16,
           padding: 16,
           shadowColor: '#000',
@@ -235,11 +238,11 @@ export default function LogScreen() {
             value={textInput}
             onChangeText={setTextInput}
             placeholder="What did you do? e.g., Math worksheet ch5 30min"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textTertiary}
             multiline
             style={{
               fontSize: 16,
-              color: '#1f2937',
+              color: colors.text,
               minHeight: 44,
               lineHeight: 22,
             }}
@@ -251,9 +254,11 @@ export default function LogScreen() {
             <TouchableOpacity
               onPress={() => setShowDetails(!showDetails)}
               style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+              accessibilityLabel={showDetails ? 'Hide activity details' : 'Show activity details'}
+              accessibilityRole="button"
             >
-              <Ionicons name={showDetails ? 'chevron-up' : 'chevron-down'} size={16} color="#6b7280" />
-              <Text style={{ fontSize: 13, color: '#6b7280' }}>
+              <Ionicons name={showDetails ? 'chevron-up' : 'chevron-down'} size={16} color={colors.textSecondary} />
+              <Text style={{ fontSize: 13, color: colors.textSecondary }}>
                 {showDetails ? 'Hide details' : 'Add details'}
               </Text>
             </TouchableOpacity>
@@ -266,13 +271,16 @@ export default function LogScreen() {
                 paddingHorizontal: 20,
                 paddingVertical: 10,
                 borderRadius: 10,
-                backgroundColor: (isLoading || !textInput.trim()) ? '#e5e7eb' : studentColor,
+                backgroundColor: (isLoading || !textInput.trim()) ? colors.border : studentColor,
               }}
+              accessibilityLabel={isLoading ? 'Logging activity' : 'Log activity'}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isLoading || !textInput.trim() }}
             >
               <Text style={{
                 fontSize: 15,
                 fontWeight: '600',
-                color: (isLoading || !textInput.trim()) ? '#9ca3af' : '#fff',
+                color: (isLoading || !textInput.trim()) ? colors.textTertiary : colors.textInverse,
               }}>
                 {isLoading ? 'Logging...' : 'Log'}
               </Text>
@@ -283,7 +291,7 @@ export default function LogScreen() {
         {/* Expandable Details */}
         {showDetails && (
           <View style={{
-            backgroundColor: '#fff',
+            backgroundColor: colors.surface,
             borderRadius: 16,
             padding: 16,
             marginBottom: 16,
@@ -293,7 +301,7 @@ export default function LogScreen() {
             elevation: 1,
           }}>
             {/* Activity Type Chips */}
-            <Text style={{ fontSize: 13, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Type</Text>
+            <Text style={{ fontSize: 13, fontWeight: '500', color: colors.text, marginBottom: 8 }}>Type</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
               {activityTypes.map((type) => (
                 <TouchableOpacity
@@ -306,13 +314,16 @@ export default function LogScreen() {
                     paddingHorizontal: 12,
                     paddingVertical: 7,
                     borderRadius: 8,
-                    backgroundColor: selectedType === type.value ? studentColor : '#f3f4f6',
+                    backgroundColor: selectedType === type.value ? studentColor : colors.surfaceSecondary,
                   }}
+                  accessibilityLabel={`${type.label} activity type${selectedType === type.value ? ', selected' : ''}`}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: selectedType === type.value }}
                 >
                   <Text style={{ fontSize: 14 }}>{type.icon}</Text>
                   <Text style={{
                     fontSize: 13,
-                    color: selectedType === type.value ? '#fff' : '#6b7280',
+                    color: selectedType === type.value ? colors.textInverse : colors.textSecondary,
                   }}>
                     {type.label}
                   </Text>
@@ -321,7 +332,7 @@ export default function LogScreen() {
             </View>
 
             {/* Subject */}
-            <Text style={{ fontSize: 13, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Subject</Text>
+            <Text style={{ fontSize: 13, fontWeight: '500', color: colors.text, marginBottom: 8 }}>Subject</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
               {subjects.map((subject) => (
                 <TouchableOpacity
@@ -331,12 +342,12 @@ export default function LogScreen() {
                     paddingHorizontal: 12,
                     paddingVertical: 7,
                     borderRadius: 8,
-                    backgroundColor: selectedSubjectId === subject.id ? studentColor : '#f3f4f6',
+                    backgroundColor: selectedSubjectId === subject.id ? studentColor : colors.surfaceSecondary,
                   }}
                 >
                   <Text style={{
                     fontSize: 13,
-                    color: selectedSubjectId === subject.id ? '#fff' : '#6b7280',
+                    color: selectedSubjectId === subject.id ? colors.textInverse : colors.textSecondary,
                   }}>
                     {subject.name}
                   </Text>
@@ -345,7 +356,7 @@ export default function LogScreen() {
             </View>
 
             {/* Duration */}
-            <Text style={{ fontSize: 13, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Duration</Text>
+            <Text style={{ fontSize: 13, fontWeight: '500', color: colors.text, marginBottom: 8 }}>Duration</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               {durationChips.map((mins) => (
                 <TouchableOpacity
@@ -355,12 +366,12 @@ export default function LogScreen() {
                     paddingHorizontal: 12,
                     paddingVertical: 7,
                     borderRadius: 8,
-                    backgroundColor: duration === mins ? studentColor : '#f3f4f6',
+                    backgroundColor: duration === mins ? studentColor : colors.surfaceSecondary,
                   }}
                 >
                   <Text style={{
                     fontSize: 13,
-                    color: duration === mins ? '#fff' : '#6b7280',
+                    color: duration === mins ? colors.textInverse : colors.textSecondary,
                   }}>
                     {mins} min
                   </Text>
@@ -373,7 +384,7 @@ export default function LogScreen() {
         {/* Recent Activities - One tap repeat */}
         {recentTemplates.length > 0 && (
           <View>
-            <Text style={{ fontSize: 14, fontWeight: '600', color: '#1f2937', marginBottom: 10 }}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 10 }}>
               Quick Repeat
             </Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -389,21 +400,21 @@ export default function LogScreen() {
                     style={{
                       width: '48%',
                       padding: 12,
-                      backgroundColor: '#fff',
+                      backgroundColor: colors.surface,
                       borderRadius: 12,
                       borderWidth: 1,
-                      borderColor: '#e5e7eb',
+                      borderColor: colors.border,
                       opacity: isLoading ? 0.5 : 1,
                     }}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 4 }}>
                       <Text style={{ fontSize: 14 }}>{typeInfo?.icon}</Text>
-                      <Text style={{ fontSize: 11, color: '#9ca3af' }}>{subject?.name}</Text>
+                      <Text style={{ fontSize: 11, color: colors.textTertiary }}>{subject?.name}</Text>
                     </View>
-                    <Text style={{ fontSize: 14, fontWeight: '500', color: '#1f2937' }} numberOfLines={1}>
+                    <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }} numberOfLines={1}>
                       {template.title}
                     </Text>
-                    <Text style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
+                    <Text style={{ fontSize: 11, color: colors.textTertiary, marginTop: 2 }}>
                       {template.count}x logged
                     </Text>
                   </TouchableOpacity>

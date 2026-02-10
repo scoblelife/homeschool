@@ -26,13 +26,13 @@ const gradeLevels: { value: GradeLevel; label: string }[] = [
   { value: '12th', label: '12th Grade' },
 ]
 
-const colorOptions = [
-  { value: 'fuchsia', label: 'Fuchsia', color: '#d946ef' },
-  { value: 'teal', label: 'Teal', color: '#14b8a6' },
-  { value: 'blue', label: 'Blue', color: '#3b82f6' },
-  { value: 'orange', label: 'Orange', color: '#f97316' },
-  { value: 'purple', label: 'Purple', color: '#a855f7' },
-  { value: 'green', label: 'Green', color: '#22c55e' },
+const COLOR_OPTION_VALUES = [
+  { value: 'fuchsia', label: 'Fuchsia', key: 'studentFuchsia' as const },
+  { value: 'teal', label: 'Teal', key: 'studentTeal' as const },
+  { value: 'blue', label: 'Blue', key: 'studentBlue' as const },
+  { value: 'orange', label: 'Orange', key: 'studentOrange' as const },
+  { value: 'purple', label: 'Purple', key: 'studentPurple' as const },
+  { value: 'green', label: 'Green', key: 'studentGreen' as const },
 ]
 
 export default function SettingsScreen() {
@@ -164,8 +164,13 @@ export default function SettingsScreen() {
     setModalVisible(true)
   }
 
+  const colorOptions = COLOR_OPTION_VALUES.map((opt) => ({
+    ...opt,
+    color: colors[opt.key],
+  }))
+
   const getStudentColor = (colorValue: string) => {
-    return colorOptions.find((c) => c.value === colorValue)?.color || '#d946ef'
+    return colorOptions.find((c) => c.value === colorValue)?.color || colors.primary
   }
 
   return (
@@ -235,7 +240,7 @@ export default function SettingsScreen() {
                 title="No Students Yet"
                 description="Add your first student to get started"
                 action={
-                  <Button onPress={openCreateModal} color="#d946ef">
+                  <Button onPress={openCreateModal} color={colors.primary}>
                     Add Student
                   </Button>
                 }
@@ -260,20 +265,20 @@ export default function SettingsScreen() {
                             marginRight: 12,
                           }}
                         >
-                          <Text style={{ fontSize: 20, fontWeight: '600', color: '#fff' }}>
+                          <Text style={{ fontSize: 20, fontWeight: '600', color: colors.textInverse }}>
                             {student.name.charAt(0).toUpperCase()}
                           </Text>
                         </View>
                         <View style={{ flex: 1 }}>
-                          <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>{student.name}</Text>
+                          <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>{student.name}</Text>
                           <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                             <Badge variant="primary">{gradeLabel || 'Unknown'}</Badge>
-                            <Text style={{ fontSize: 12, color: '#6b7280' }}>
+                            <Text style={{ fontSize: 12, color: colors.textSecondary }}>
                               Born {format(new Date(student.dateOfBirth), 'MMM d, yyyy')}
                             </Text>
                           </View>
                         </View>
-                        <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+                        <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
                       </View>
                     </Card>
                   </TouchableOpacity>
@@ -284,16 +289,16 @@ export default function SettingsScreen() {
 
           {/* Feedback Section */}
           <View style={{ marginBottom: 24 }}>
-            <Text style={{ fontSize: 18, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>Support</Text>
+            <Text style={{ fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: 12 }}>Support</Text>
             <FeedbackButton onPress={() => setFeedbackVisible(true)} />
           </View>
 
           {/* App Info */}
           <Card>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937', marginBottom: 8 }}>About</Text>
-            <Text style={{ fontSize: 14, color: '#6b7280' }}>Homeschool Mobile</Text>
-            <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>Version 0.1.0</Text>
-            <Text style={{ fontSize: 12, color: '#9ca3af', marginTop: 8 }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 8 }}>About</Text>
+            <Text style={{ fontSize: 14, color: colors.textSecondary }}>Homeschool Mobile</Text>
+            <Text style={{ fontSize: 12, color: colors.textTertiary, marginTop: 4 }}>Version 0.1.0</Text>
+            <Text style={{ fontSize: 12, color: colors.textTertiary, marginTop: 8 }}>
               Track activities, milestones, and plan events for your homeschool students.
             </Text>
           </Card>
@@ -313,7 +318,7 @@ export default function SettingsScreen() {
           <View style={{ gap: 8 }}>
             <Button
               onPress={editingStudent ? handleUpdateStudent : handleCreateStudent}
-              color="#d946ef"
+              color={colors.primary}
               fullWidth
             >
               {editingStudent ? 'Save Changes' : 'Add Student'}
@@ -340,7 +345,7 @@ export default function SettingsScreen() {
           placeholder="Select date of birth"
         />
 
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Grade Level</Text>
+        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 8 }}>Grade Level</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             {gradeLevels.slice(0, 6).map((grade) => (
@@ -351,10 +356,10 @@ export default function SettingsScreen() {
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                   borderRadius: 8,
-                  backgroundColor: newStudent.gradeLevel === grade.value ? '#d946ef' : '#f3f4f6',
+                  backgroundColor: newStudent.gradeLevel === grade.value ? colors.primary : colors.surfaceSecondary,
                 }}
               >
-                <Text style={{ color: newStudent.gradeLevel === grade.value ? '#fff' : '#6b7280' }}>
+                <Text style={{ color: newStudent.gradeLevel === grade.value ? colors.textInverse : colors.textSecondary }}>
                   {grade.label}
                 </Text>
               </TouchableOpacity>
@@ -362,7 +367,7 @@ export default function SettingsScreen() {
           </View>
         </ScrollView>
 
-        <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 }}>Color</Text>
+        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text, marginBottom: 8 }}>Color</Text>
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
           {colorOptions.map((option) => (
             <TouchableOpacity
@@ -376,7 +381,7 @@ export default function SettingsScreen() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderWidth: newStudent.color === option.value ? 3 : 0,
-                borderColor: '#1f2937',
+                borderColor: colors.text,
               }}
             >
               {newStudent.color === option.value && (

@@ -1,0 +1,28 @@
+appId: com.scoblelife.homeschool
+name: Student Management Flow
+---
+
+# Navigate to Settings via More tab
+- tapOn: "More"
+- tapOn: "Settings"
+
+# Verify Settings page loaded
+- assertVisible: "Settings"
+
+# Look for student management section
+- scrollUntilVisible:
+    element: "Students"
+    direction: DOWN
+
+# Test student selector on Today screen
+- tapOn: "Today"
+
+# Verify student selector is visible
+- assertVisible:
+    id: "student-selector"
+
+# Switch between students by tapping student names
+# The student toggle shows student names as selectable buttons
+- scrollUntilVisible:
+    element: "Test Student"
+    direction: UP

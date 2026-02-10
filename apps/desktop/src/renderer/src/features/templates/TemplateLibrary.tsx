@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTemplatesStore } from "./templatesStore";
 import { ActivityTemplate, getTemplateById } from "./templateData";
 import type { GradeLevel } from "../../../../shared/types";
+import { Button, Input } from "@/components/ui";
 
 interface Props {
   onSelectTemplate: (template: ActivityTemplate) => void;
@@ -86,13 +87,12 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
       {/* Search */}
       <div className="relative">
         <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
+        <Input
           type="text"
           placeholder="Search templates..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-            bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          className="pl-10"
         />
       </div>
 
@@ -147,14 +147,10 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
         </select>
 
         {hasFilters && (
-          <button
-            onClick={clearFilters}
-            className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900
-              dark:hover:text-white flex items-center gap-1"
-          >
+          <Button onClick={clearFilters} variant="ghost" size="sm">
             <XIcon className="w-4 h-4" />
             Clear filters
-          </button>
+          </Button>
         )}
       </div>
 
@@ -164,8 +160,8 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
           {selectedTags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-fuchsia-100 dark:bg-fuchsia-900
-                text-fuchsia-700 dark:text-fuchsia-300 rounded-full text-sm cursor-pointer"
+              className="inline-flex items-center gap-1 px-2 py-1 bg-brand-primaryLight dark:bg-brand-primaryDark
+                text-brand-primaryDark dark:text-brand-primaryLight rounded-full text-sm cursor-pointer"
               onClick={() => toggleTag(tag)}
             >
               {tag}
@@ -183,15 +179,15 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
           </h3>
           <div className="flex flex-wrap gap-2">
             {recentTemplates.map((template) => (
-              <button
+              <Button
                 key={template.id}
                 onClick={() => handleSelectTemplate(template)}
-                className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300
-                  rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 text-sm flex items-center gap-2"
+                variant="secondary"
+                size="sm"
               >
                 <ClockIcon className="w-4 h-4" />
                 {template.name}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -205,15 +201,16 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
           </h3>
           <div className="flex flex-wrap gap-2">
             {favoriteTemplates.map((template) => (
-              <button
+              <Button
                 key={template.id}
                 onClick={() => handleSelectTemplate(template)}
-                className="px-3 py-2 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300
-                  rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-sm flex items-center gap-2"
+                variant="ghost"
+                size="sm"
+                className="bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-900/50"
               >
                 <StarFilledIcon className="w-4 h-4" />
                 {template.name}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -298,11 +295,13 @@ function TemplateCard({
               {template.subjectName} • {template.durationMinutes} min
             </p>
           </div>
-          <button
+          <Button
             onClick={(e) => {
               e.stopPropagation();
               onToggleFavorite();
             }}
+            variant="ghost"
+            size="sm"
             className="p-1 text-gray-400 hover:text-yellow-500"
           >
             {isFavorite ? (
@@ -310,7 +309,7 @@ function TemplateCard({
             ) : (
               <StarIcon className="w-5 h-5" />
             )}
-          </button>
+          </Button>
         </div>
 
         {/* Description */}
@@ -333,17 +332,18 @@ function TemplateCard({
         {/* Tags */}
         <div className="flex flex-wrap gap-1 mb-3">
           {template.tags.slice(0, 3).map((tag) => (
-            <button
+            <Button
               key={tag}
               onClick={(e) => {
                 e.stopPropagation();
                 onTagClick(tag);
               }}
-              className="px-2 py-0.5 text-xs bg-gray-50 dark:bg-gray-700 text-gray-500
-                dark:text-gray-400 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
+              variant="ghost"
+              size="sm"
+              className="px-2 py-0.5 text-xs bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
             >
               #{tag}
-            </button>
+            </Button>
           ))}
           {template.tags.length > 3 && (
             <span className="px-2 py-0.5 text-xs text-gray-400">
@@ -382,21 +382,18 @@ function TemplateCard({
 
         {/* Actions */}
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-          <button
+          <Button
             onClick={onSelect}
-            className="flex-1 px-3 py-2 bg-fuchsia-500 text-white rounded-lg hover:bg-fuchsia-600
-              text-sm font-medium flex items-center justify-center gap-2"
+            variant="primary"
+            size="sm"
+            className="flex-1"
           >
             <PlusIcon className="w-4 h-4" />
             Add Activity
-          </button>
-          <button
-            onClick={onToggleExpand}
-            className="px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900
-              dark:hover:text-white text-sm"
-          >
+          </Button>
+          <Button onClick={onToggleExpand} variant="ghost" size="sm">
             {isExpanded ? "Less" : "More"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

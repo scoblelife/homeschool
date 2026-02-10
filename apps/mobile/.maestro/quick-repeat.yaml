@@ -1,0 +1,26 @@
+appId: com.scoblelife.homeschool
+name: Quick Repeat Flow
+---
+
+# Navigate to Log tab
+- tapOn: "Log"
+
+# Quick Repeat section should show after logging activities
+# First log an activity to create a template
+- tapOn: "What did you do?"
+- inputText: "Science experiment"
+- tapOn: "Log"
+- assertVisible: "Logged!"
+- tapOn: "OK"
+
+# Verify Quick Repeat section appears
+- scrollUntilVisible:
+    element: "Quick Repeat"
+    direction: DOWN
+
+# Tap a template to quick-log it
+- tapOn: "Science experiment"
+
+# Verify success
+- assertVisible: "Logged!"
+- tapOn: "OK"

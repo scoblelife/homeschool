@@ -63,11 +63,10 @@ module.exports = [
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
 
       // Design System Rules
-      // TODO: 380 pre-existing violations remain — fix incrementally, then promote to 'error'
-      'design-system/no-hardcoded-colors': 'warn',
-      'design-system/require-design-system-components': 'warn',
-      'design-system/no-legacy-classes': 'warn',
-      'design-system/pages-use-components-only': 'warn',
+      'design-system/no-hardcoded-colors': 'error',
+      'design-system/require-design-system-components': 'error',
+      'design-system/no-legacy-classes': 'error',
+      'design-system/pages-use-components-only': 'error',
     },
   },
   {

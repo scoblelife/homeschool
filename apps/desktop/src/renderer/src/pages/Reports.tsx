@@ -5,6 +5,7 @@ import { PortfolioExport } from "../features/portfolio";
 import { AssessmentList } from "../features/assessments";
 import type { ActivitySummary, DailySummary } from "../../../shared/types";
 
+import { validateApiArray } from "../services/validateApiResponse";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
@@ -34,7 +35,7 @@ export default function Reports(): JSX.Element {
 
       setIsLoading(true);
       try {
-        const [summary, daily] = await Promise.all([
+        const [summaryRaw, dailyRaw] = await Promise.all([
           window.api.getActivitySummary(
             selectedStudentId,
             dateRange.startDate,
@@ -46,8 +47,18 @@ export default function Reports(): JSX.Element {
             dateRange.endDate,
           ),
         ]);
+        const summary = validateApiArray<ActivitySummary>(
+          summaryRaw,
+          "Reports",
+        );
+        const daily = validateApiArray<DailySummary>(dailyRaw, "Reports");
         setActivitySummary(summary);
         setDailySummaries(daily);
+      } catch (error) {
+        console.error(
+          `[Reports] Failed to load reports for student ${selectedStudentId}:`,
+          error,
+        );
       } finally {
         setIsLoading(false);
       }

@@ -1,0 +1,43 @@
+appId: com.scoblelife.homeschool
+name: Log Activity Flow
+---
+
+# Navigate to Log tab
+- tapOn: "Log"
+
+# Verify Log screen elements
+- assertVisible: "What did you do?"
+
+# Type an activity using natural language
+- tapOn: "What did you do?"
+- inputText: "Math worksheet chapter 5 30min"
+
+# Tap Log button
+- tapOn: "Log"
+
+# Verify success alert
+- assertVisible: "Logged!"
+- tapOn: "OK"
+
+# Input field should be cleared after successful log
+- assertNotVisible: "Math worksheet chapter 5 30min"
+
+# Test with details expanded
+- tapOn: "What did you do?"
+- inputText: "Reading Charlotte's Web"
+
+# Expand details section
+- tapOn: "Add details"
+
+# Select activity type
+- tapOn: "Reading"
+
+# Select duration chip
+- tapOn: "45 min"
+
+# Submit
+- tapOn: "Log"
+
+# Verify success
+- assertVisible: "Logged!"
+- tapOn: "OK"

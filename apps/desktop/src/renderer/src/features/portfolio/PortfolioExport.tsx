@@ -38,7 +38,12 @@ export function PortfolioExport({ students }: Props) {
 
   // Load current school year on mount
   useEffect(() => {
-    window.api.getCurrentSchoolYear().then(setSchoolYear);
+    window.api
+      .getCurrentSchoolYear()
+      .then(setSchoolYear)
+      .catch((error) => {
+        console.error("[PortfolioExport] Failed to load school year:", error);
+      });
   }, []);
 
   // Auto-select first student

@@ -9,6 +9,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { format, subDays, parseISO } from "date-fns";
+import { Button } from "@/components/ui";
 import { useAIInsightsStore } from "./aiInsightsStore";
 
 interface PatternInsight {
@@ -267,17 +268,20 @@ Be specific with numbers. Make insights actionable. Return only valid JSON.`;
   };
 
   return (
-    <div className="card bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-100">
-      <button
+    <div
+      className={`bg-gradient-to-r from-status-infoLight to-cyan-50 border border-status-infoLight rounded-lg p-4`}
+    >
+      <Button
+        variant="ghost"
         onClick={() =>
           patterns.length > 0 ? setIsExpanded(!isExpanded) : analyzePatterns()
         }
         disabled={isLoading || isGenerating}
-        className="w-full text-left"
+        className="w-full text-left h-auto p-0"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-full bg-status-infoLight flex items-center justify-center text-xl">
               📊
             </div>
             <div>
@@ -292,7 +296,7 @@ Be specific with numbers. Make insights actionable. Return only valid JSON.`;
           <div className="flex items-center gap-2">
             {isLoading || isGenerating ? (
               <svg
-                className="animate-spin h-5 w-5 text-blue-600"
+                className="animate-spin h-5 w-5 text-status-infoDark"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -313,7 +317,7 @@ Be specific with numbers. Make insights actionable. Return only valid JSON.`;
               </svg>
             ) : patterns.length > 0 ? (
               <svg
-                className={`w-5 h-5 text-blue-600 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                className={`w-5 h-5 text-status-infoDark transition-transform ${isExpanded ? "rotate-180" : ""}`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -326,11 +330,13 @@ Be specific with numbers. Make insights actionable. Return only valid JSON.`;
                 />
               </svg>
             ) : (
-              <span className="text-sm text-blue-600 font-medium">Analyze</span>
+              <span className="text-sm text-status-infoDark font-medium">
+                Analyze
+              </span>
             )}
           </div>
         </div>
-      </button>
+      </Button>
 
       {isExpanded && patterns.length > 0 && (
         <div className="mt-4 space-y-3">
@@ -342,7 +348,7 @@ Be specific with numbers. Make insights actionable. Return only valid JSON.`;
                 </span>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-medium text-status-infoDark bg-status-infoLight px-2 py-0.5 rounded-full">
                       {pattern.category}
                     </span>
                   </div>
@@ -355,27 +361,29 @@ Be specific with numbers. Make insights actionable. Return only valid JSON.`;
             </div>
           ))}
 
-          <div className="flex items-center justify-between text-xs text-blue-600 pt-2">
+          <div className="flex items-center justify-between text-xs text-status-infoDark pt-2">
             <span>
               Analyzed by AI
               {lastAnalyzed ? ` • ${format(lastAnalyzed, "h:mm a")}` : ""}
             </span>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 analyzePatterns();
               }}
               disabled={isLoading || isGenerating}
-              className="hover:text-blue-800 underline"
+              className="hover:text-status-infoDark underline text-xs p-0 h-auto"
             >
               Refresh
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       {(error || localError) && (
-        <div className="mt-3 p-2 bg-red-50 border border-red-100 rounded text-sm text-red-600">
+        <div className="mt-3 p-2 bg-status-errorLight border border-status-errorLight rounded text-sm text-status-error">
           {localError || error}
         </div>
       )}

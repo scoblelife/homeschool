@@ -186,8 +186,8 @@ export function CoopGroupDetail({
           <p className="text-xs text-neutral-textSecondary dark:text-gray-400 mb-1">
             Invite Code
           </p>
-          {/* eslint-disable-next-line design-system/require-design-system-components */}
-          <button
+          <Button
+            variant="ghost"
             onClick={handleCopyCode}
             className="flex items-center gap-2 px-3 py-1.5 bg-neutral-backgroundSecondary dark:bg-gray-700 rounded-lg hover:bg-neutral-border dark:hover:bg-gray-600 transition-colors"
           >
@@ -199,7 +199,7 @@ export function CoopGroupDetail({
             ) : (
               <CopyIcon className="w-4 h-4 text-neutral-textSecondary" />
             )}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -324,14 +324,15 @@ export function CoopGroupDetail({
                   </div>
                 </div>
                 {member.role !== "organizer" && (
-                  /* eslint-disable-next-line design-system/require-design-system-components */
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => handleRemoveMember(member.id)}
-                    className="text-neutral-textTertiary hover:text-status-error transition-colors"
+                    className="text-neutral-textTertiary hover:text-status-error transition-colors p-1"
                     title="Remove member"
                   >
                     <XIcon className="w-5 h-5" />
-                  </button>
+                  </Button>
                 )}
               </div>
             ))}
@@ -602,14 +603,15 @@ function EventCard({
           )}
         </div>
         {!isPast && (
-          /* eslint-disable-next-line design-system/require-design-system-components */
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onDelete}
-            className="text-neutral-textTertiary hover:text-status-error transition-colors"
+            className="text-neutral-textTertiary hover:text-status-error transition-colors p-1"
             title="Delete event"
           >
             <TrashIcon className="w-4 h-4" />
-          </button>
+          </Button>
         )}
       </div>
     </div>

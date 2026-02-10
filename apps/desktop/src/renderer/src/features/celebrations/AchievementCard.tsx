@@ -4,7 +4,7 @@
  * Displays unlocked achievements and progress towards next milestones.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
 import { format, parseISO } from "date-fns";
 import { Button } from "../../components/ui/Button";
@@ -12,7 +12,6 @@ import {
   useAchievementStore,
   ACHIEVEMENT_DEFINITIONS,
   type Achievement,
-  type AchievementProgress,
 } from "./achievementStore";
 import { Confetti } from "./Confetti";
 
@@ -113,13 +112,14 @@ export function AchievementCard({
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Achievements</h3>
-          {/* eslint-disable-next-line design-system/require-design-system-components */}
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setShowModal(true)}
             className="text-sm text-brand-primary hover:text-brand-primaryDark"
           >
             View All ({unlocked.length}/{ACHIEVEMENT_DEFINITIONS.length})
-          </button>
+          </Button>
         </div>
 
         {/* Stats summary */}
@@ -190,8 +190,14 @@ function AchievementModal({
   unlocked,
   stats,
 }: AchievementModalProps): JSX.Element {
-  const unlockedIds = new Set(unlocked.map((a) => a.id));
-  const unlockedMap = new Map(unlocked.map((a) => [a.id, a]));
+  const unlockedIds = useMemo(
+    () => new Set(unlocked.map((a) => a.id)),
+    [unlocked],
+  );
+  const unlockedMap = useMemo(
+    () => new Map(unlocked.map((a) => [a.id, a])),
+    [unlocked],
+  );
 
   // Group by category
   const categories = [

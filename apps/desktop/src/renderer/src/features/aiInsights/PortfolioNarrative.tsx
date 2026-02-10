@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui";
 import { useAIInsightsStore } from "./aiInsightsStore";
 
 interface SubjectData {
@@ -200,49 +201,24 @@ The narrative should read as a cohesive educational summary suitable for inclusi
           </p>
         </div>
         {!narrative && (
-          <button
+          <Button
+            variant="primary"
             onClick={generateNarrative}
             disabled={isLoading || isGenerating || subjectData.length === 0}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              isLoading || isGenerating || subjectData.length === 0
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-fuchsia-500 text-white hover:bg-fuchsia-600"
-            }`}
+            loading={isLoading || isGenerating}
           >
-            {isLoading || isGenerating ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Generating...
-              </span>
-            ) : (
-              "Generate Narrative"
-            )}
-          </button>
+            {isLoading || isGenerating ? "Generating..." : "Generate Narrative"}
+          </Button>
         )}
       </div>
 
       {/* Data Summary */}
       {subjectData.length > 0 && !narrative && (
-        <div className="p-4 bg-fuchsia-50 rounded-lg">
-          <p className="text-sm text-fuchsia-700 mb-2">
+        <div className="p-4 bg-brand-primaryLight rounded-lg">
+          <p className="text-sm text-brand-primaryDark mb-2">
             Data available for narrative generation:
           </p>
-          <ul className="text-sm text-fuchsia-600 space-y-1">
+          <ul className="text-sm text-brand-primary space-y-1">
             <li>
               • {totalActivities} activities across {subjectData.length}{" "}
               subjects
@@ -267,21 +243,25 @@ The narrative should read as a cohesive educational summary suitable for inclusi
               Generated Narrative
             </span>
             <div className="flex items-center gap-2">
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   navigator.clipboard.writeText(narrative);
                 }}
-                className="text-xs text-fuchsia-600 hover:text-fuchsia-800"
+                className="text-xs text-brand-primary hover:text-brand-primaryDark p-0 h-auto"
               >
                 Copy
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={generateNarrative}
                 disabled={isLoading || isGenerating}
-                className="text-xs text-fuchsia-600 hover:text-fuchsia-800"
+                className="text-xs text-brand-primary hover:text-brand-primaryDark p-0 h-auto"
               >
                 Regenerate
-              </button>
+              </Button>
             </div>
           </div>
           <div className="p-4 bg-white prose prose-sm max-w-none">
@@ -302,8 +282,8 @@ The narrative should read as a cohesive educational summary suitable for inclusi
 
       {/* Error */}
       {(error || localError) && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{localError || error}</p>
+        <div className="p-3 bg-status-errorLight border border-status-error rounded-lg">
+          <p className="text-sm text-status-error">{localError || error}</p>
         </div>
       )}
     </div>

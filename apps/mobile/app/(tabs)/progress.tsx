@@ -11,6 +11,7 @@ import {
 } from '../../src/database'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, EmptyState, ProgressBar } from '../../src/components/ui'
+import { useColors } from '../../src/theme/createStyles'
 import type { Milestone, UniversalStatus } from '../../src/types'
 
 interface ActivitySummary {
@@ -35,9 +36,10 @@ export default function ProgressScreen() {
   const [milestones, setMilestones] = useState<Milestone[]>([])
   const [starTotals, setStarTotals] = useState({ weeklyTotal: 0, allTimeTotal: 0 })
   const [refreshing, setRefreshing] = useState(false)
+  const colors = useColors()
 
   const selectedStudent = getSelectedStudent()
-  const studentColor = selectedStudent?.color === 'child2' ? '#14b8a6' : '#d946ef'
+  const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia
 
   const today = format(new Date(), 'yyyy-MM-dd')
   const weekStart = format(startOfWeek(new Date(), { weekStartsOn: 0 }), 'yyyy-MM-dd')
@@ -86,7 +88,7 @@ export default function ProgressScreen() {
 
   // Compliance health
   const isOnTrack = weekStats.totalActivities >= 3 || weekStats.totalHours >= 2
-  const healthColor = isOnTrack ? '#10b981' : '#f59e0b'
+  const healthColor = isOnTrack ? colors.success : colors.warning
 
   // Milestone stats
   const milestoneStats = useMemo(() => {
@@ -117,7 +119,7 @@ export default function ProgressScreen() {
 
   if (!selectedStudentId) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={{ padding: 16 }}>
           <StudentSelector />
         </View>
@@ -133,7 +135,7 @@ export default function ProgressScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={studentColor} />}
       >
@@ -141,15 +143,19 @@ export default function ProgressScreen() {
           <StudentSelector />
 
           {/* Compliance Health Bar */}
-          <View style={{
-            marginTop: 16,
-            backgroundColor: healthColor + '15',
-            borderRadius: 12,
-            padding: 14,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 10,
-          }}>
+          <View
+            style={{
+              marginTop: 16,
+              backgroundColor: healthColor + '15',
+              borderRadius: 12,
+              padding: 14,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 10,
+            }}
+            accessible
+            accessibilityLabel={`Compliance status: ${isOnTrack ? 'On track this week' : 'Light week so far'}`}
+          >
             <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: healthColor }} />
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 14, fontWeight: '600', color: healthColor }}>
@@ -164,16 +170,16 @@ export default function ProgressScreen() {
           {/* This Week Stats */}
           <View style={{ flexDirection: 'row', gap: 8, marginTop: 16 }}>
             <Card style={{ flex: 1, alignItems: 'center' }}>
-              <Text style={{ fontSize: 22, fontWeight: '700', color: '#1f2937' }}>{weekStats.totalActivities}</Text>
-              <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>Activities</Text>
+              <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text }}>{weekStats.totalActivities}</Text>
+              <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Activities</Text>
             </Card>
             <Card style={{ flex: 1, alignItems: 'center' }}>
-              <Text style={{ fontSize: 22, fontWeight: '700', color: '#1f2937' }}>{weekStats.totalHours}</Text>
-              <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>Hours</Text>
+              <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text }}>{weekStats.totalHours}</Text>
+              <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Hours</Text>
             </Card>
             <Card style={{ flex: 1, alignItems: 'center' }}>
-              <Text style={{ fontSize: 22, fontWeight: '700', color: '#1f2937' }}>{weekStats.activeDays}</Text>
-              <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>Days</Text>
+              <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text }}>{weekStats.activeDays}</Text>
+              <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>Days</Text>
             </Card>
           </View>
 
@@ -181,13 +187,13 @@ export default function ProgressScreen() {
           {weeklyWins.length > 0 && (
             <Card style={{ marginTop: 16 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                <Ionicons name="trophy" size={18} color="#f59e0b" />
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>Weekly Wins</Text>
+                <Ionicons name="trophy" size={18} color={colors.warning} />
+                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }} accessibilityRole="header">Weekly Wins</Text>
               </View>
               {weeklyWins.map((win, i) => (
                 <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                  <Ionicons name="checkmark-circle" size={16} color="#10b981" />
-                  <Text style={{ fontSize: 14, color: '#374151' }}>{win}</Text>
+                  <Ionicons name="checkmark-circle" size={16} color={colors.success} />
+                  <Text style={{ fontSize: 14, color: colors.text }}>{win}</Text>
                 </View>
               ))}
             </Card>
@@ -196,20 +202,20 @@ export default function ProgressScreen() {
           {/* Stars */}
           <Card style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-              <View style={{ alignItems: 'center' }}>
+              <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${starTotals.weeklyTotal} stars this week`}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <Ionicons name="star" size={20} color="#fbbf24" />
+                  <Ionicons name="star" size={20} color={colors.warning} />
                   <Text style={{ fontSize: 22, fontWeight: '700', color: studentColor }}>{starTotals.weeklyTotal}</Text>
                 </View>
-                <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>This Week</Text>
+                <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>This Week</Text>
               </View>
-              <View style={{ width: 1, backgroundColor: '#e5e7eb' }} />
-              <View style={{ alignItems: 'center' }}>
+              <View style={{ width: 1, backgroundColor: colors.border }} />
+              <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`${starTotals.allTimeTotal} stars all time`}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  <Ionicons name="star" size={20} color="#fbbf24" />
+                  <Ionicons name="star" size={20} color={colors.warning} />
                   <Text style={{ fontSize: 22, fontWeight: '700', color: studentColor }}>{starTotals.allTimeTotal}</Text>
                 </View>
-                <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>All Time</Text>
+                <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>All Time</Text>
               </View>
             </View>
           </Card>
@@ -217,8 +223,8 @@ export default function ProgressScreen() {
           {/* Milestone Progress */}
           <Card style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937' }}>Milestones</Text>
-              <Text style={{ fontSize: 12, color: '#6b7280' }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }} accessibilityRole="header">Milestones</Text>
+              <Text style={{ fontSize: 12, color: colors.textSecondary }}>
                 {milestoneStats.completed}/{milestoneStats.total} completed
               </Text>
             </View>
@@ -226,7 +232,7 @@ export default function ProgressScreen() {
 
             {milestoneStats.inProgress > 0 && (
               <View style={{ marginTop: 12 }}>
-                <Text style={{ fontSize: 13, fontWeight: '500', color: '#6b7280', marginBottom: 6 }}>In Progress</Text>
+                <Text style={{ fontSize: 13, fontWeight: '500', color: colors.textSecondary, marginBottom: 6 }}>In Progress</Text>
                 {milestones
                   .filter((m) => m.status === 'in_progress')
                   .slice(0, 5)
@@ -239,12 +245,12 @@ export default function ProgressScreen() {
                         gap: 8,
                         paddingVertical: 6,
                         borderBottomWidth: 1,
-                        borderBottomColor: '#f3f4f6',
+                        borderBottomColor: colors.surfaceSecondary,
                       }}>
                         <Ionicons name="ellipse" size={6} color={studentColor} />
-                        <Text style={{ fontSize: 13, color: '#374151', flex: 1 }} numberOfLines={1}>{milestone.title}</Text>
+                        <Text style={{ fontSize: 13, color: colors.text, flex: 1 }} numberOfLines={1}>{milestone.title}</Text>
                         {subject && (
-                          <Text style={{ fontSize: 11, color: '#9ca3af' }}>{subject.name}</Text>
+                          <Text style={{ fontSize: 11, color: colors.textTertiary }}>{subject.name}</Text>
                         )}
                       </View>
                     )
@@ -257,7 +263,7 @@ export default function ProgressScreen() {
           {/* Subject Breakdown (last 30 days) */}
           {activitySummary.length > 0 && (
             <Card style={{ marginTop: 16 }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>By Subject (This Week)</Text>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 12 }} accessibilityRole="header">By Subject (This Week)</Text>
               <View style={{ gap: 14 }}>
                 {activitySummary.map((summary) => {
                   const percentage = weekStats.totalMinutes > 0 ? (summary.totalMinutes / weekStats.totalMinutes) * 100 : 0
@@ -266,8 +272,8 @@ export default function ProgressScreen() {
                   return (
                     <View key={summary.subjectId}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <Text style={{ fontSize: 14, fontWeight: '500', color: '#1f2937' }}>{summary.subjectName}</Text>
-                        <Text style={{ fontSize: 12, color: '#6b7280' }}>
+                        <Text style={{ fontSize: 14, fontWeight: '500', color: colors.text }}>{summary.subjectName}</Text>
+                        <Text style={{ fontSize: 12, color: colors.textSecondary }}>
                           {summary.totalActivities} · {hours} hrs
                         </Text>
                       </View>
@@ -282,7 +288,7 @@ export default function ProgressScreen() {
           {/* Daily Activity (last 7 days) */}
           {dailySummaries.length > 0 && (
             <Card style={{ marginTop: 16, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '600', color: '#1f2937', marginBottom: 12 }}>Recent Days</Text>
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 12 }} accessibilityRole="header">Recent Days</Text>
               <View style={{ gap: 8 }}>
                 {dailySummaries.slice(0, 7).map((day) => (
                   <View
@@ -291,16 +297,16 @@ export default function ProgressScreen() {
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      backgroundColor: '#f9fafb',
+                      backgroundColor: colors.background,
                       padding: 10,
                       borderRadius: 8,
                     }}
                   >
-                    <Text style={{ fontSize: 13, fontWeight: '500', color: '#1f2937' }}>
+                    <Text style={{ fontSize: 13, fontWeight: '500', color: colors.text }}>
                       {format(new Date(day.date + 'T12:00:00'), 'EEE, MMM d')}
                     </Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                      <Text style={{ fontSize: 12, color: '#6b7280' }}>
+                      <Text style={{ fontSize: 12, color: colors.textSecondary }}>
                         {day.activitiesCount} · {day.totalMinutes} min
                       </Text>
                       <View style={{ flexDirection: 'row', gap: 2 }}>

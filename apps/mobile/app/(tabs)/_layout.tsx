@@ -1,9 +1,11 @@
 import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useDeviceType } from '../../src/hooks/useDeviceType'
+import { useColors } from '../../src/theme/ThemeContext'
 
 export default function TabLayout() {
   const { isTablet } = useDeviceType()
+  const colors = useColors()
 
   const tabBarHeight = isTablet ? 64 : 50
   const labelFontSize = isTablet ? 12 : 10
@@ -11,11 +13,11 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#d946ef',
-        tabBarInactiveTintColor: '#9ca3af',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textTertiary,
         tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopColor: '#e5e7eb',
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
           height: tabBarHeight,
           paddingBottom: isTablet ? 8 : 4,
           paddingTop: isTablet ? 8 : 4,
@@ -24,10 +26,10 @@ export default function TabLayout() {
           fontSize: labelFontSize,
         },
         headerStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: colors.surface,
           ...(isTablet && { height: 64 }),
         },
-        headerTintColor: '#1f2937',
+        headerTintColor: colors.text,
         headerTitleStyle: {
           fontWeight: '600',
           fontSize: isTablet ? 20 : 17,

@@ -18,10 +18,12 @@ import {
 import { useFocusEffect } from '@react-navigation/native'
 import { SyncManager, SyncPeer, SyncStatus } from '../../src/sync'
 import { QRScanner, QRCodeDisplay } from '../../src/components/sync'
+import { useColors } from '../../src/theme/createStyles'
 
 type ViewMode = 'main' | 'scanner' | 'qrcode' | 'create' | 'join'
 
 export default function SyncScreen() {
+  const colors = useColors()
   const [syncManager] = useState(() => SyncManager.getInstance())
   const [status, setStatus] = useState<SyncStatus | null>(null)
   const [peers, setPeers] = useState<SyncPeer[]>([])
@@ -168,10 +170,12 @@ export default function SyncScreen() {
     )
   }
 
+  const themed = useThemedStyles()
+
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#d946ef" />
+      <View style={themed.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     )
   }
@@ -200,40 +204,40 @@ export default function SyncScreen() {
   // Create Family Screen
   if (viewMode === 'create') {
     return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Create Family</Text>
+      <View style={themed.container}>
+        <View style={themed.header}>
+          <Text style={themed.title}>Create Family</Text>
         </View>
         <ScrollView style={styles.content}>
-          <Text style={styles.sectionTitle}>Device Name</Text>
+          <Text style={themed.sectionTitle}>Device Name</Text>
           <TextInput
-            style={styles.input}
+            style={themed.input}
             value={deviceName}
             onChangeText={setDeviceName}
             placeholder="e.g., Mom's iPhone"
             autoCapitalize="words"
           />
-          <Text style={styles.helpText}>
+          <Text style={themed.helpText}>
             This name will be visible to other family members when you sync.
           </Text>
 
           <TouchableOpacity
-            style={[styles.primaryButton, creating && styles.buttonDisabled]}
+            style={[themed.primaryButton, creating && styles.buttonDisabled]}
             onPress={handleCreateFamily}
             disabled={creating}
           >
             {creating ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.primaryButtonText}>Create Family</Text>
+              <Text style={themed.primaryButtonText}>Create Family</Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.secondaryButton}
+            style={themed.secondaryButton}
             onPress={() => setViewMode('main')}
           >
-            <Text style={styles.secondaryButtonText}>Cancel</Text>
+            <Text style={themed.secondaryButtonText}>Cancel</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -243,36 +247,36 @@ export default function SyncScreen() {
   // Join Family Screen (for entering device name before scanning)
   if (viewMode === 'join') {
     return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Join Family</Text>
+      <View style={themed.container}>
+        <View style={themed.header}>
+          <Text style={themed.title}>Join Family</Text>
         </View>
         <ScrollView style={styles.content}>
-          <Text style={styles.sectionTitle}>Device Name</Text>
+          <Text style={themed.sectionTitle}>Device Name</Text>
           <TextInput
-            style={styles.input}
+            style={themed.input}
             value={deviceName}
             onChangeText={setDeviceName}
             placeholder="e.g., Dad's Phone"
             autoCapitalize="words"
           />
-          <Text style={styles.helpText}>
+          <Text style={themed.helpText}>
             Enter a name for this device, then scan the family QR code.
           </Text>
 
           <TouchableOpacity
-            style={[styles.primaryButton, !deviceName.trim() && styles.buttonDisabled]}
+            style={[themed.primaryButton, !deviceName.trim() && styles.buttonDisabled]}
             onPress={() => setViewMode('scanner')}
             disabled={!deviceName.trim()}
           >
-            <Text style={styles.primaryButtonText}>Scan QR Code</Text>
+            <Text style={themed.primaryButtonText}>Scan QR Code</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.secondaryButton}
+            style={themed.secondaryButton}
             onPress={() => setViewMode('main')}
           >
-            <Text style={styles.secondaryButtonText}>Cancel</Text>
+            <Text style={themed.secondaryButtonText}>Cancel</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -281,9 +285,9 @@ export default function SyncScreen() {
 
   // Main Sync Screen
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Family Sync</Text>
+    <View style={themed.container}>
+      <View style={themed.header}>
+        <Text style={themed.title}>Family Sync</Text>
       </View>
 
       <ScrollView
@@ -295,9 +299,9 @@ export default function SyncScreen() {
         {!status?.enabled ? (
           // Not synced - show setup options
           <View>
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Sync with Family</Text>
-              <Text style={styles.cardDescription}>
+            <View style={themed.card}>
+              <Text style={themed.cardTitle}>Sync with Family</Text>
+              <Text style={themed.cardDescription}>
                 Keep your homeschool data in sync across multiple devices. All
                 family members can view and update activities, milestones, and
                 more.
@@ -305,31 +309,31 @@ export default function SyncScreen() {
             </View>
 
             <TouchableOpacity
-              style={styles.primaryButton}
+              style={themed.primaryButton}
               onPress={() => setViewMode('create')}
             >
-              <Text style={styles.primaryButtonText}>Create New Family</Text>
+              <Text style={themed.primaryButtonText}>Create New Family</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.outlineButton}
+              style={themed.outlineButton}
               onPress={() => setViewMode('join')}
             >
-              <Text style={styles.outlineButtonText}>Join Existing Family</Text>
+              <Text style={themed.outlineButtonText}>Join Existing Family</Text>
             </TouchableOpacity>
           </View>
         ) : (
           // Synced - show status and peers
           <View>
-            <View style={styles.statusCard}>
+            <View style={themed.statusCard}>
               <View style={styles.statusRow}>
                 <View
                   style={[
                     styles.statusDot,
-                    status.connected ? styles.statusOnline : styles.statusOffline,
+                    status.connected ? themed.statusOnline : themed.statusOffline,
                   ]}
                 />
-                <Text style={styles.statusText}>
+                <Text style={themed.statusText}>
                   {status.connected ? 'Connected' : 'Not Connected'}
                 </Text>
               </View>
@@ -344,7 +348,7 @@ export default function SyncScreen() {
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Family Members</Text>
+              <Text style={themed.sectionTitle}>Family Members</Text>
               {peers.length === 0 ? (
                 <Text style={styles.emptyText}>
                   No other devices connected. Share your invite code to add
@@ -362,7 +366,7 @@ export default function SyncScreen() {
                     <View
                       style={[
                         styles.peerDot,
-                        peer.isOnline ? styles.statusOnline : styles.statusOffline,
+                        peer.isOnline ? themed.statusOnline : themed.statusOffline,
                       ]}
                     />
                   </View>
@@ -371,7 +375,7 @@ export default function SyncScreen() {
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Actions</Text>
+              <Text style={themed.sectionTitle}>Actions</Text>
               <TouchableOpacity
                 style={styles.actionButton}
                 onPress={handleShowQRCode}
@@ -402,65 +406,9 @@ export default function SyncScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9fafb',
-  },
-  header: {
-    backgroundColor: '#fff',
-    paddingTop: 60,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1f2937',
-  },
   content: {
     flex: 1,
     padding: 20,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 8,
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: '#6b7280',
-    lineHeight: 20,
-  },
-  statusCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   statusRow: {
     flexDirection: 'row',
@@ -473,150 +421,56 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 8,
   },
-  statusOnline: {
-    backgroundColor: '#10b981',
-  },
-  statusOffline: {
-    backgroundColor: '#9ca3af',
-  },
-  statusText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#374151',
-  },
-  deviceName: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  managerBadge: {
-    backgroundColor: '#fdf4ff',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-    marginTop: 8,
-  },
-  managerBadgeText: {
-    fontSize: 12,
-    color: '#d946ef',
-    fontWeight: '500',
-  },
   section: {
     marginBottom: 24,
   },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#9ca3af',
-    textAlign: 'center',
-    padding: 20,
-  },
-  peerCard: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   peerInfo: {
     flex: 1,
-  },
-  peerName: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#1f2937',
-  },
-  peerStatus: {
-    fontSize: 13,
-    color: '#6b7280',
-    marginTop: 2,
   },
   peerDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
   },
-  primaryButton: {
-    backgroundColor: '#d946ef',
-    borderRadius: 10,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  primaryButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  outlineButton: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#d946ef',
-  },
-  outlineButtonText: {
-    color: '#d946ef',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  secondaryButton: {
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: '#6b7280',
-    fontSize: 16,
-  },
-  actionButton: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    marginBottom: 8,
-  },
-  actionButtonText: {
-    color: '#374151',
-    fontSize: 15,
-    fontWeight: '500',
-  },
-  dangerButton: {
-    backgroundColor: '#fef2f2',
-  },
-  dangerText: {
-    color: '#dc2626',
-  },
   buttonDisabled: {
     opacity: 0.6,
   },
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  helpText: {
-    fontSize: 13,
-    color: '#6b7280',
-    marginBottom: 24,
-  },
-  lastSync: {
-    fontSize: 12,
-    color: '#9ca3af',
-    textAlign: 'center',
-    marginTop: 20,
-  },
 })
+
+function useThemedStyles() {
+  const colors = useColors()
+  return {
+    container: { flex: 1, backgroundColor: colors.background } as const,
+    loadingContainer: { flex: 1, justifyContent: 'center' as const, alignItems: 'center' as const, backgroundColor: colors.background },
+    header: { backgroundColor: colors.surface, paddingTop: 60, paddingBottom: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: colors.border },
+    title: { fontSize: 28, fontWeight: 'bold' as const, color: colors.text },
+    card: { backgroundColor: colors.surface, borderRadius: 12, padding: 20, marginBottom: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
+    cardTitle: { fontSize: 18, fontWeight: '600' as const, color: colors.text, marginBottom: 8 },
+    cardDescription: { fontSize: 14, color: colors.textSecondary, lineHeight: 20 },
+    statusCard: { backgroundColor: colors.surface, borderRadius: 12, padding: 16, marginBottom: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
+    statusOnline: { backgroundColor: colors.success },
+    statusOffline: { backgroundColor: colors.textTertiary },
+    statusText: { fontSize: 16, fontWeight: '500' as const, color: colors.text },
+    deviceName: { fontSize: 14, color: colors.textSecondary },
+    managerBadge: { backgroundColor: colors.primaryLight, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12, alignSelf: 'flex-start' as const, marginTop: 8 },
+    managerBadgeText: { fontSize: 12, color: colors.primary, fontWeight: '500' as const },
+    sectionTitle: { fontSize: 16, fontWeight: '600' as const, color: colors.text, marginBottom: 12 },
+    emptyText: { fontSize: 14, color: colors.textTertiary, textAlign: 'center' as const, padding: 20 },
+    peerCard: { backgroundColor: colors.surface, borderRadius: 8, padding: 14, marginBottom: 8, flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const },
+    peerName: { fontSize: 15, fontWeight: '500' as const, color: colors.text },
+    peerStatus: { fontSize: 13, color: colors.textSecondary, marginTop: 2 },
+    primaryButton: { backgroundColor: colors.primary, borderRadius: 10, paddingVertical: 16, alignItems: 'center' as const, marginBottom: 12 },
+    primaryButtonText: { color: colors.textInverse, fontSize: 16, fontWeight: '600' as const },
+    outlineButton: { backgroundColor: colors.surface, borderRadius: 10, paddingVertical: 16, alignItems: 'center' as const, marginBottom: 12, borderWidth: 1, borderColor: colors.primary },
+    outlineButtonText: { color: colors.primary, fontSize: 16, fontWeight: '600' as const },
+    secondaryButton: { paddingVertical: 16, alignItems: 'center' as const },
+    secondaryButtonText: { color: colors.textSecondary, fontSize: 16 },
+    actionButton: { backgroundColor: colors.surface, borderRadius: 8, paddingVertical: 14, paddingHorizontal: 16, marginBottom: 8 },
+    actionButtonText: { color: colors.text, fontSize: 15, fontWeight: '500' as const },
+    dangerButton: { backgroundColor: colors.errorLight },
+    dangerText: { color: colors.error },
+    input: { backgroundColor: colors.surface, borderRadius: 8, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, marginBottom: 8, color: colors.text },
+    helpText: { fontSize: 13, color: colors.textSecondary, marginBottom: 24 },
+    lastSync: { fontSize: 12, color: colors.textTertiary, textAlign: 'center' as const, marginTop: 20 },
+  }
+}

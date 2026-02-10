@@ -90,7 +90,9 @@ export const PaddingNone: Story = {
   args: {
     padding: "none",
     children: (
-      <div className="p-4 bg-fuchsia-50">Content with no card padding</div>
+      <div className="p-4 bg-brand-primaryLight">
+        Content with no card padding
+      </div>
     ),
   },
 };
@@ -162,9 +164,9 @@ export const ActivityCard: Story = {
     <Card className="max-w-md">
       <CardContent>
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-lg bg-fuchsia-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-brand-primaryLight flex items-center justify-center">
             <svg
-              className="w-5 h-5 text-fuchsia-600"
+              className="w-5 h-5 text-brand-primary"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

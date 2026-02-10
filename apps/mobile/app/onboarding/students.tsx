@@ -139,7 +139,11 @@ export default function OnboardingStudents() {
             <View style={styles.cardHeader}>
               <Text style={styles.cardTitle}>Student {index + 1}</Text>
               {students.length > 1 && (
-                <TouchableOpacity onPress={() => removeStudent(index)}>
+                <TouchableOpacity
+                  onPress={() => removeStudent(index)}
+                  accessibilityLabel={`Remove student ${index + 1}`}
+                  accessibilityRole="button"
+                >
                   <Text style={styles.removeText}>Remove</Text>
                 </TouchableOpacity>
               )}
@@ -168,6 +172,9 @@ export default function OnboardingStudents() {
                     student.gradeLevel === grade.value && styles.gradeChipSelected,
                   ]}
                   onPress={() => updateStudent(index, 'gradeLevel', grade.value)}
+                  accessibilityLabel={`${grade.label}${student.gradeLevel === grade.value ? ', selected' : ''}`}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: student.gradeLevel === grade.value }}
                 >
                   <Text
                     style={[
@@ -192,13 +199,22 @@ export default function OnboardingStudents() {
                     student.color === color.value && styles.colorCircleSelected,
                   ]}
                   onPress={() => updateStudent(index, 'color', color.value)}
+                  accessibilityLabel={`${color.name} color${student.color === color.value ? ', selected' : ''}`}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: student.color === color.value }}
+                  testID={`color-${color.name}`}
                 />
               ))}
             </View>
           </View>
         ))}
 
-        <TouchableOpacity style={styles.addButton} onPress={addStudent}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={addStudent}
+          accessibilityLabel="Add another student"
+          accessibilityRole="button"
+        >
           <Text style={styles.addButtonText}>+ Add Another Student</Text>
         </TouchableOpacity>
 
@@ -210,6 +226,9 @@ export default function OnboardingStudents() {
           style={[styles.button, isSubmitting && styles.buttonDisabled]}
           onPress={handleSubmit}
           disabled={isSubmitting}
+          accessibilityLabel={isSubmitting ? 'Saving students' : 'Continue to state selection'}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: isSubmitting }}
         >
           <Text style={styles.buttonText}>
             {isSubmitting ? 'Saving...' : 'Continue'}
@@ -309,9 +328,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   colorCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
   },
   colorCircleSelected: {
     borderWidth: 3,

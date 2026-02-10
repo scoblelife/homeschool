@@ -11,7 +11,7 @@ import type {
 } from "../../../shared/types";
 
 import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
+import { Input, Textarea } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
@@ -64,9 +64,13 @@ function BookCard({
     : 0;
 
   return (
-    <div className="group rounded-xl bg-white border border-gray-200 hover:border-brand-primary hover:shadow-lg transition-all duration-200 overflow-hidden">
+    <div
+      className={`group rounded-xl bg-white border border-gray-200 hover:border-brand-primary hover:shadow-lg transition-all duration-200 overflow-hidden`}
+    >
       {/* Cover Image Section */}
-      <div className="relative aspect-[3/4] bg-gradient-to-br from-brand-primaryLight via-student-purple-50 to-student-fuchsia-100">
+      <div
+        className={`relative aspect-[3/4] bg-gradient-to-br from-brand-primaryLight via-student-purple-50 to-student-fuchsia-100`}
+      >
         {book.coverImagePath ? (
           <img
             src={`file://${book.coverImagePath}`}
@@ -83,7 +87,7 @@ function BookCard({
           />
         ) : null}
         <div
-          className="cover-fallback absolute inset-0 items-center justify-center text-5xl"
+          className={`cover-fallback absolute inset-0 items-center justify-center text-5xl`}
           style={{ display: book.coverImagePath ? "none" : "flex" }}
         >
           📚
@@ -97,19 +101,25 @@ function BookCard({
         </div>
 
         {/* Quick Actions Overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
+        <div
+          className={`absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100`}
+        >
           <div className="flex gap-2">
             {studentId && status !== "completed" && book.totalPages && (
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={onLogReading}
-                className="px-3 py-2 bg-white rounded-lg text-sm font-medium text-gray-900 hover:bg-gray-100 transition-colors shadow-lg"
+                className="shadow-lg"
               >
                 Log Reading
-              </button>
+              </Button>
             )}
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={onEdit}
-              className="p-2 bg-white rounded-lg text-gray-600 hover:bg-gray-100 transition-colors shadow-lg"
+              className="p-2 shadow-lg"
               title="Edit"
             >
               <svg
@@ -125,13 +135,15 @@ function BookCard({
                   d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                 />
               </svg>
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Progress Ring for books being read */}
         {studentId && status === "in_progress" && book.totalPages && (
-          <div className="absolute bottom-2 left-2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
+          <div
+            className={`absolute bottom-2 left-2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center`}
+          >
             <svg className="w-8 h-8 -rotate-90">
               <circle
                 cx="16"
@@ -186,7 +198,9 @@ function BookCard({
             <span className="text-xs text-gray-400">{book.genre}</span>
           )}
           {book.readingLevel && (
-            <span className="text-xs px-1.5 py-0.5 bg-brand-primaryLight text-brand-primary rounded">
+            <span
+              className={`text-xs px-1.5 py-0.5 bg-brand-primaryLight text-brand-primary rounded`}
+            >
               {book.readingLevel}
             </span>
           )}
@@ -229,9 +243,11 @@ function BookCard({
 
               {/* More Menu */}
               <div className="relative">
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setShowMenu(!showMenu)}
-                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-1.5"
                 >
                   <svg
                     className="w-4 h-4"
@@ -240,15 +256,19 @@ function BookCard({
                   >
                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                   </svg>
-                </button>
+                </Button>
                 {showMenu && (
                   <>
                     <div
                       className="fixed inset-0 z-10"
                       onClick={() => setShowMenu(false)}
                     />
-                    <div className="absolute right-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[120px]">
-                      <button
+                    <div
+                      className={`absolute right-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[120px]`}
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => {
                           onEdit();
                           setShowMenu(false);
@@ -256,7 +276,7 @@ function BookCard({
                         className="w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50"
                       >
                         Edit
-                      </button>
+                      </Button>
                       <a
                         href={
                           book.isbn
@@ -283,7 +303,9 @@ function BookCard({
                           />
                         </svg>
                       </a>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => {
                           onDelete();
                           setShowMenu(false);
@@ -291,7 +313,7 @@ function BookCard({
                         className="w-full px-3 py-1.5 text-left text-sm text-status-error hover:bg-status-errorLight"
                       >
                         Delete
-                      </button>
+                      </Button>
                     </div>
                   </>
                 )}
@@ -539,14 +561,11 @@ export default function Library(): JSX.Element {
                 "completed",
               ] as StatusFilter[]
             ).map((status) => (
-              <button
+              <Button
                 key={status}
+                variant={filterStatus === status ? "primary" : "ghost"}
+                size="sm"
                 onClick={() => setFilterStatus(status)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  filterStatus === status
-                    ? "bg-brand-primaryLight text-brand-primary"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
               >
                 {status === "all"
                   ? "All"
@@ -555,7 +574,7 @@ export default function Library(): JSX.Element {
                     : status === "in_progress"
                       ? "Reading"
                       : "Finished"}
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -594,8 +613,10 @@ export default function Library(): JSX.Element {
         className="relative z-50"
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <div className={`fixed inset-0 flex items-center justify-center p-4`}>
+          <Dialog.Panel
+            className={`bg-white rounded-xl shadow-xl max-w-md w-full p-6`}
+          >
             <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
               {editingBook ? "Edit Book" : "Add Book"}
             </Dialog.Title>
@@ -696,12 +717,11 @@ export default function Library(): JSX.Element {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Notes
                 </label>
-                <textarea
+                <Textarea
                   value={formData.notes}
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
                   rows={2}
                 />
               </div>
@@ -732,8 +752,10 @@ export default function Library(): JSX.Element {
         className="relative z-50"
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <div className={`fixed inset-0 flex items-center justify-center p-4`}>
+          <Dialog.Panel
+            className={`bg-white rounded-xl shadow-xl max-w-md w-full p-6`}
+          >
             <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
               Log Reading
             </Dialog.Title>
@@ -769,10 +791,9 @@ export default function Library(): JSX.Element {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Notes (optional)
                   </label>
-                  <textarea
+                  <Textarea
                     value={logNotes}
                     onChange={(e) => setLogNotes(e.target.value)}
-                    className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
                     rows={2}
                     placeholder="What happened in the story? New words learned?"
                   />
