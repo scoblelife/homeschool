@@ -227,7 +227,7 @@ export default function SyncScreen() {
             disabled={creating}
           >
             {creating ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.textInverse} />
             ) : (
               <Text style={themed.primaryButtonText}>Create Family</Text>
             )}
@@ -337,12 +337,12 @@ export default function SyncScreen() {
                   {status.connected ? 'Connected' : 'Not Connected'}
                 </Text>
               </View>
-              <Text style={styles.deviceName}>
+              <Text style={themed.deviceName}>
                 This device: {syncManager.getDeviceName()}
               </Text>
               {syncManager.isManager() && (
-                <View style={styles.managerBadge}>
-                  <Text style={styles.managerBadgeText}>Family Manager</Text>
+                <View style={themed.managerBadge}>
+                  <Text style={themed.managerBadgeText}>Family Manager</Text>
                 </View>
               )}
             </View>
@@ -350,16 +350,16 @@ export default function SyncScreen() {
             <View style={styles.section}>
               <Text style={themed.sectionTitle}>Family Members</Text>
               {peers.length === 0 ? (
-                <Text style={styles.emptyText}>
+                <Text style={themed.emptyText}>
                   No other devices connected. Share your invite code to add
                   family members.
                 </Text>
               ) : (
                 peers.map((peer) => (
-                  <View key={peer.deviceId} style={styles.peerCard}>
+                  <View key={peer.deviceId} style={themed.peerCard}>
                     <View style={styles.peerInfo}>
-                      <Text style={styles.peerName}>{peer.deviceName}</Text>
-                      <Text style={styles.peerStatus}>
+                      <Text style={themed.peerName}>{peer.deviceName}</Text>
+                      <Text style={themed.peerStatus}>
                         {peer.isOnline ? 'Online' : 'Offline'}
                       </Text>
                     </View>
@@ -377,24 +377,24 @@ export default function SyncScreen() {
             <View style={styles.section}>
               <Text style={themed.sectionTitle}>Actions</Text>
               <TouchableOpacity
-                style={styles.actionButton}
+                style={themed.actionButton}
                 onPress={handleShowQRCode}
               >
-                <Text style={styles.actionButtonText}>Show Invite QR Code</Text>
+                <Text style={themed.actionButtonText}>Show Invite QR Code</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.actionButton, styles.dangerButton]}
+                style={[themed.actionButton, themed.dangerButton]}
                 onPress={handleLeaveFamily}
               >
-                <Text style={[styles.actionButtonText, styles.dangerText]}>
+                <Text style={[themed.actionButtonText, themed.dangerText]}>
                   Leave Family
                 </Text>
               </TouchableOpacity>
             </View>
 
             {status.lastSyncTime && (
-              <Text style={styles.lastSync}>
+              <Text style={themed.lastSync}>
                 Last synced: {new Date(status.lastSyncTime).toLocaleString()}
               </Text>
             )}

@@ -148,18 +148,24 @@ export default function ReportsScreen() {
           {/* Summary Stats */}
           <View style={{ marginTop: 16 }}>
             <View style={{ flexDirection: 'row', gap: 8 }}>
-              <Card style={{ flex: 1 }} accessibilityLabel={`${stats.totalActivities} total activities`}>
-                <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 4 }}>Activities</Text>
-                <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>{stats.totalActivities}</Text>
-              </Card>
-              <Card style={{ flex: 1 }} accessibilityLabel={`${stats.totalHours} total hours`}>
-                <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 4 }}>Hours</Text>
-                <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>{stats.totalHours}</Text>
-              </Card>
-              <Card style={{ flex: 1 }} accessibilityLabel={`${stats.activeDays} active days`}>
-                <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 4 }}>Active Days</Text>
-                <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>{stats.activeDays}</Text>
-              </Card>
+              <View accessible accessibilityLabel={`${stats.totalActivities} total activities`} style={{ flex: 1 }}>
+                <Card>
+                  <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 4 }}>Activities</Text>
+                  <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>{stats.totalActivities}</Text>
+                </Card>
+              </View>
+              <View accessible accessibilityLabel={`${stats.totalHours} total hours`} style={{ flex: 1 }}>
+                <Card>
+                  <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 4 }}>Hours</Text>
+                  <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>{stats.totalHours}</Text>
+                </Card>
+              </View>
+              <View accessible accessibilityLabel={`${stats.activeDays} active days`} style={{ flex: 1 }}>
+                <Card>
+                  <Text style={{ fontSize: 11, color: colors.textSecondary, marginBottom: 4 }}>Active Days</Text>
+                  <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>{stats.activeDays}</Text>
+                </Card>
+              </View>
             </View>
           </View>
 
