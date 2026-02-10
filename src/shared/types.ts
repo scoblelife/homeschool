@@ -940,6 +940,10 @@ export interface DatabaseAPI {
   getCurrentSchoolYear: () => Promise<string>
   openPortfolioFile: (filePath: string) => Promise<void>
 
+  // Data Export
+  exportDataJSON: () => Promise<{ success: boolean; filePath?: string; error?: string }>
+  exportActivitiesCSV: () => Promise<{ success: boolean; filePath?: string; error?: string }>
+
   // Curriculum Mapping
   getAllStandards: (gradeLevel?: GradeLevel) => Promise<LearningStandard[]>
   getStandard: (id: string) => Promise<LearningStandard | null>

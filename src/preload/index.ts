@@ -442,6 +442,12 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
   openPortfolioFile: (filePath: string) =>
     ipcRenderer.invoke('portfolio:openFile', filePath) as Promise<void>,
 
+  // Data Export
+  exportDataJSON: () =>
+    ipcRenderer.invoke('data:exportJSON') as Promise<{ success: boolean; filePath?: string; error?: string }>,
+  exportActivitiesCSV: () =>
+    ipcRenderer.invoke('data:exportActivitiesCSV') as Promise<{ success: boolean; filePath?: string; error?: string }>,
+
   // Curriculum Mapping
   getAllStandards: (gradeLevel?: GradeLevel) =>
     ipcRenderer.invoke('curriculum:getAllStandards', gradeLevel) as Promise<LearningStandard[]>,

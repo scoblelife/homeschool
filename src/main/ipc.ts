@@ -1363,6 +1363,90 @@ export function registerIpcHandlers(): void {
   ipcMain.handle('umbrella:markReportSubmitted', async (_, id: string) => {
     return umbrellaRepo.markReportSubmitted(id)
   })
+
+  // ============================================================================
+  // Data Export
+  // ============================================================================
+
+  ipcMain.handle('data:exportJSON', async () => {
+    try {
+      const [students, activities, books, assessments] = await Promise.all([
+        studentsRepo.getStudents(),
+        activitiesRepo.getActivities({}),
+        booksRepo.getBooks(),
+        assessmentsRepo.getAssessments(),
+      ])
+
+      // Collect per-student data
+      const milestones = (await Promise.all(
+        students.map(s => milestonesRepo.getMilestones(s.id))
+      )).flat()
+
+      const exportData = {
+        exportDate: new Date().toISOString(),
+        version: '1.0',
+        students,
+        activities,
+        milestones,
+        books,
+        assessments,
+      }
+
+      const { filePath, canceled } = await dialog.showSaveDialog({
+        title: 'Export Data',
+        defaultPath: `homeschool-export-${new Date().toISOString().split('T')[0]}.json`,
+        filters: [{ name: 'JSON', extensions: ['json'] }],
+      })
+
+      if (canceled || !filePath) return { success: false, error: 'Cancelled' }
+
+      await writeFile(filePath, JSON.stringify(exportData, null, 2))
+      return { success: true, filePath }
+    } catch (err) {
+      return { success: false, error: (err as Error).message }
+    }
+  })
+
+  ipcMain.handle('data:exportActivitiesCSV', async () => {
+    try {
+      const [students, subjects, activities] = await Promise.all([
+        studentsRepo.getStudents(),
+        subjectsRepo.getSubjects(),
+        activitiesRepo.getActivities({}),
+      ])
+
+      const studentMap = new Map(students.map(s => [s.id, s.name]))
+      const subjectMap = new Map(subjects.map(s => [s.id, s.name]))
+
+      const headers = ['Date', 'Student', 'Subject', 'Type', 'Title', 'Duration (min)', 'Notes', 'Grade', 'Max Grade']
+      const rows = activities.map(a => [
+        a.dateCompleted,
+        studentMap.get(a.studentId) || a.studentId,
+        subjectMap.get(a.subjectId) || a.subjectId,
+        a.activityType,
+        `"${(a.title || '').replace(/"/g, '""')}"`,
+        a.durationMinutes?.toString() || '',
+        `"${(a.notes || '').replace(/"/g, '""')}"`,
+        a.grade?.toString() || '',
+        a.maxGrade?.toString() || '',
+      ])
+
+      const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+
+      const { filePath, canceled } = await dialog.showSaveDialog({
+        title: 'Export Activities CSV',
+        defaultPath: `activities-${new Date().toISOString().split('T')[0]}.csv`,
+        filters: [{ name: 'CSV', extensions: ['csv'] }],
+      })
+
+      if (canceled || !filePath) return { success: false, error: 'Cancelled' }
+
+      await writeFile(filePath, csv)
+      return { success: true, filePath }
+    } catch (err) {
+      return { success: false, error: (err as Error).message }
+    }
+  })
 }
 
 // Helper to get MIME type from extension

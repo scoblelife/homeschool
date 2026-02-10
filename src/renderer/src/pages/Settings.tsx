@@ -1075,6 +1075,8 @@ export default function Settings(): JSX.Element {
           </div>
         </div>
       </Card>
+      {/* Data Management Section */}
+      <DataManagement />
       {/* Support Section */}
       <Card className="mb-8">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Support</h2>
@@ -1238,5 +1240,104 @@ export default function Settings(): JSX.Element {
         />
       )}
     </PageContainer>
+  );
+}
+
+function DataManagement() {
+  const [exportStatus, setExportStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportJSON = async () => {
+    setIsExporting(true);
+    setExportStatus(null);
+    try {
+      const result = await window.api.exportDataJSON();
+      if (result.success) {
+        setExportStatus({
+          type: "success",
+          message: `Data exported to ${result.filePath}`,
+        });
+      } else if (result.error !== "Cancelled") {
+        setExportStatus({
+          type: "error",
+          message: result.error || "Export failed",
+        });
+      }
+    } catch {
+      setExportStatus({ type: "error", message: "Export failed" });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    setIsExporting(true);
+    setExportStatus(null);
+    try {
+      const result = await window.api.exportActivitiesCSV();
+      if (result.success) {
+        setExportStatus({
+          type: "success",
+          message: `Activities exported to ${result.filePath}`,
+        });
+      } else if (result.error !== "Cancelled") {
+        setExportStatus({
+          type: "error",
+          message: result.error || "Export failed",
+        });
+      }
+    } catch {
+      setExportStatus({ type: "error", message: "Export failed" });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  return (
+    <Card className="mb-8">
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">
+        Data Management
+      </h2>
+      <p className="text-sm text-gray-600 mb-4">
+        Export your data for backup or use in other applications.
+      </p>
+
+      {exportStatus && (
+        <div
+          className={`p-3 rounded-lg mb-4 text-sm ${
+            exportStatus.type === "success"
+              ? "bg-status-successLight text-status-successDark"
+              : "bg-status-errorLight text-status-errorDark"
+          }`}
+        >
+          {exportStatus.message}
+        </div>
+      )}
+
+      <div className="flex gap-3">
+        <Button
+          variant="secondary"
+          onClick={handleExportJSON}
+          disabled={isExporting}
+        >
+          Export All Data (JSON)
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={handleExportCSV}
+          disabled={isExporting}
+        >
+          Export Activities (CSV)
+        </Button>
+      </div>
+      <p className="text-xs text-gray-500 mt-3">
+        JSON export includes students, activities, milestones, books,
+        assessments, and attendance. CSV export includes activities with student
+        and subject names for use in spreadsheets.
+      </p>
+    </Card>
   );
 }
