@@ -56,7 +56,7 @@ export async function getUpcomingAssessments(studentId?: string): Promise<Assess
   const db = await getDatabase()
   const today = new Date().toISOString().split('T')[0]
 
-  let query = `SELECT * FROM assessments WHERE date >= ? AND status = 'scheduled'`
+  let query = `SELECT * FROM assessments WHERE date >= ? AND status = 'not_started'`
   const params: string[] = [today]
 
   if (studentId) {
