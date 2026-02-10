@@ -1,0 +1,19 @@
+{
+  "name": "@homeschool/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Design tokens for the Homeschool app - generates platform-specific tokens",
+  "type": "module",
+  "exports": {
+    ".": "./generated/index.ts",
+    "./tailwind": "./src/tailwind-tokens.ts",
+    "./css": "./generated/theme.css",
+    "./mobile": "./generated/mobile-tokens.ts"
+  },
+  "scripts": {
+    "build": "style-dictionary build --config config.json"
+  },
+  "devDependencies": {
+    "style-dictionary": "^5.1.4"
+  }
+}

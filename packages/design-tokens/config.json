@@ -1,0 +1,45 @@
+{
+  "source": ["design-tokens.json"],
+  "platforms": {
+    "tailwind": {
+      "transformGroup": "js",
+      "buildPath": "generated/",
+      "files": [
+        {
+          "destination": "index.ts",
+          "format": "javascript/es6",
+          "options": {
+            "outputReferences": true
+          }
+        }
+      ]
+    },
+    "css": {
+      "transformGroup": "css",
+      "buildPath": "generated/",
+      "files": [
+        {
+          "destination": "theme.css",
+          "format": "css/variables",
+          "options": {
+            "selector": ":root",
+            "outputReferences": true
+          }
+        }
+      ]
+    },
+    "reactNative": {
+      "transformGroup": "js",
+      "buildPath": "generated/",
+      "files": [
+        {
+          "destination": "mobile-tokens.ts",
+          "format": "javascript/es6",
+          "options": {
+            "outputReferences": true
+          }
+        }
+      ]
+    }
+  }
+}

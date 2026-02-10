@@ -18,11 +18,15 @@ on:
   push:
     branches: [main]
     paths:
-      - 'mobile/**'
+      - 'apps/mobile/**'
+      - 'packages/shared-types/**'
+      - 'packages/design-tokens/**'
   pull_request:
     branches: [main]
     paths:
-      - 'mobile/**'
+      - 'apps/mobile/**'
+      - 'packages/shared-types/**'
+      - 'packages/design-tokens/**'
   workflow_dispatch:
     inputs:
       platform:
@@ -60,20 +64,20 @@ jobs:
   # ──────────────────────────────────────────────────
   typecheck:
     runs-on: depot-ubuntu-latest
-    defaults:
-      run:
-        working-directory: mobile
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: mobile/package-lock.json
+          cache: pnpm
 
-      - run: npm ci
-      - run: npm run typecheck
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @homeschool/mobile typecheck
 
   # ──────────────────────────────────────────────────
   # Android build — Depot Linux, eas build --local
@@ -86,15 +90,18 @@ jobs:
     runs-on: depot-ubuntu-latest
     defaults:
       run:
-        working-directory: mobile
+        working-directory: apps/mobile
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: mobile/package-lock.json
+          cache: pnpm
 
       - uses: actions/setup-java@v4
         with:
@@ -106,7 +113,8 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
+        working-directory: .
 
       - name: Build Android locally
         run: eas build --platform android --profile ${{ env.BUILD_PROFILE }} --local --non-interactive --output ./build-android.apk
@@ -116,7 +124,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: android-${{ env.BUILD_PROFILE }}
-          path: mobile/build-android.apk
+          path: apps/mobile/build-android.apk
 
   # ──────────────────────────────────────────────────
   # iOS build — macOS runner, eas build --local
@@ -131,22 +139,26 @@ jobs:
     runs-on: macos-latest
     defaults:
       run:
-        working-directory: mobile
+        working-directory: apps/mobile
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: mobile/package-lock.json
+          cache: pnpm
 
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
+        working-directory: .
 
       - name: Build iOS locally
         run: eas build --platform ios --profile ${{ env.BUILD_PROFILE }} --local --non-interactive --output ./build-ios.ipa
@@ -156,7 +168,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ios-${{ env.BUILD_PROFILE }}
-          path: mobile/build-ios.ipa
+          path: apps/mobile/build-ios.ipa
 
   # ──────────────────────────────────────────────────
   # Store submission — EAS only (what only Expo can do)
@@ -168,7 +180,7 @@ jobs:
     runs-on: depot-ubuntu-latest
     defaults:
       run:
-        working-directory: mobile
+        working-directory: apps/mobile
     steps:
       - uses: actions/checkout@v4
 
@@ -184,7 +196,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ios-${{ env.BUILD_PROFILE }}
-          path: mobile/
+          path: apps/mobile/
 
       - name: Submit to TestFlight
         run: eas submit --platform ios --path ./build-ios.ipa --non-interactive
@@ -195,7 +207,7 @@ jobs:
     runs-on: depot-ubuntu-latest
     defaults:
       run:
-        working-directory: mobile
+        working-directory: apps/mobile
     steps:
       - uses: actions/checkout@v4
 
@@ -211,7 +223,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: android-${{ env.BUILD_PROFILE }}
-          path: mobile/
+          path: apps/mobile/
 
       - name: Submit to Play Store
         run: eas submit --platform android --path ./build-android.apk --non-interactive

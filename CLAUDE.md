@@ -1,339 +1,127 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
 
-Homeschool management desktop application for tracking two children's education (Pre-K and 1st Grade). See `PRD.md` for full requirements.
+Homeschool management app — Electron desktop, React Native mobile, TanStack Start web, admin panel, WebSocket relay. See `PRD.md` for requirements, `DESIGN_SYSTEM.md` for design guide.
 
-## Technical Stack
+## Monorepo Structure
 
-- **Platform**: Electron (via electron-vite)
-- **Frontend**: React 18 + TypeScript
-- **Database**: DuckDB with local file storage
-- **UI**: Tailwind CSS + Headless UI
-- **State Management**: Zustand
-- **Dev Environment**: Flox (Nix-based)
+pnpm (v10) workspaces. `shamefully-hoist=true` for Electron/Expo compatibility.
 
-## Design System
-
-The app uses a comprehensive design system with:
-
-- **Design Tokens**: Semantic colors, spacing, typography generated from `design-tokens.json`
-- **Component Library**: 13 UI components + 5 layout components in `src/renderer/src/components/`
-- **ESLint Enforcement**: Custom rules prevent design system violations (set to 'error' severity)
-- **Cross-Platform**: Shared tokens for desktop (Tailwind) and mobile (React Native)
-- **Documentation**: See `DESIGN_SYSTEM.md` for full guide
-
-### Quick Reference
-
-```tsx
-// ✅ Always use design system components
-import { Button, Card, Input } from "@/components/ui";
-import { PageContainer, PageHeader } from "@/components/layout";
-
-// ✅ Use semantic design tokens
-className = "bg-brand-primary text-status-success border-neutral-border";
-
-// ❌ Never hardcode colors or use legacy classes
-className = "bg-red-500"; // ❌ Use bg-status-error instead
-className = "input label"; // ❌ Legacy classes removed
+```
+apps/desktop/        # Electron + React 18 + DuckDB + Zustand
+apps/mobile/         # React Native Expo + expo-sqlite
+apps/web/            # TanStack Start + Drizzle ORM + PostgreSQL
+apps/admin-panel/    # Convex admin dashboard
+apps/relay/          # WebSocket relay server
+packages/shared-types/  # Domain types (raw TS, no build step)
+packages/ui/            # React + Tailwind + Headless UI components (zero Electron coupling)
+packages/design-tokens/ # style-dictionary → Tailwind / CSS vars / React Native
+signaling/           # Rust Axum signaling server (outside pnpm workspace)
 ```
 
 ## Commands
 
 ```bash
-# Activate dev environment
-flox activate
-
-# Install dependencies
-npm install
-
-# Run in development
-npm run dev
-
-# Build for production
-npm run build
-
-# Type checking
-npm run typecheck
+flox activate                              # Dev environment
+pnpm install                               # Install deps
+pnpm tokens:build                          # Build design tokens (required first run)
+pnpm dev                                   # Desktop dev
+pnpm build:mac | build:win | build:linux   # Desktop installers → apps/desktop/dist/
+pnpm mobile                                # Expo dev server
+pnpm mobile:ios | mobile:android           # Mobile simulators
+pnpm --filter @homeschool/web dev          # Web dev server
+pnpm typecheck                             # Type check all packages
+pnpm test                                  # Desktop tests
+pnpm lint                                  # Desktop lint
+pnpm storybook                             # Storybook
 ```
 
-## Architecture
+## Key Domain Concepts
 
-```
-src/
-├── main/           # Electron main process
-│   ├── index.ts    # App entry, window creation
-│   └── ipc.ts      # IPC handlers for database operations
-├── preload/        # Electron preload (context bridge)
-│   └── index.ts    # Exposes window.api to renderer
-├── renderer/       # React frontend
-│   └── src/
-│       ├── pages/      # Route components
-│       ├── layouts/    # MainLayout with sidebar
-│       ├── components/ # Reusable UI components
-│       ├── stores/     # Zustand state management
-│       └── hooks/      # Custom hooks (useDatabase, etc.)
-├── database/       # DuckDB operations
-│   ├── connection.ts   # DB connection singleton
-│   ├── schema.ts       # Table definitions + seed data
-│   └── repositories/   # CRUD operations per entity
-└── shared/
-    └── types.ts    # TypeScript types shared between processes
-```
+- **Session**: Teaching/learning event with start/end time
+- **Activity**: Completed item — 6 types: `worksheet`, `video`, `reading`, `writing`, `hands_on`, `interactive`
+  - `writing` consolidates print/cursive via optional `activitySubType`
+  - `interactive` consolidates games/assessments/events via optional `activitySubType`
+- **Universal Status**: `not_started | in_progress | completed | cancelled`
+- **Event Categories**: `educational | social | coop`
+- **Desktop storage**: DuckDB at `~/.homeschool/homeschool.db`, Parquet exports at `~/.homeschool/parquet/`
+- **Web storage**: PostgreSQL via Drizzle ORM (Railway)
+- **IPC**: Renderer uses `window.api.*` (getStudents, createSession, getActivities, etc.)
+- Two children: fuchsia (child1), teal (child2). Nevada homeschool requirements.
+- Preload script outputs as `.cjs` due to `"type": "module"` in package.json.
 
-## Key Concepts
+---
 
-- **Session**: A teaching/learning event with start/end time
-- **Activity**: Individual completed item (worksheet, video, reading, writing practice, etc.)
-- **Activity Types** (6 types - reduced from 9 for better UX):
-  - Core types: `worksheet`, `video`, `reading`, `writing`, `hands_on`, `interactive`
-  - **writing** consolidates print/cursive (stored in optional `activitySubType` field)
-  - **interactive** consolidates games/assessments/events (stored in optional `activitySubType` field)
-- **Universal Status**: Unified status system across all entities
-  - Values: `not_started`, `in_progress`, `completed`, `cancelled`
-  - Used by: Milestones, Field Trips, Assessments, Reading progress
-- **Event Categories** (field trips): `educational`, `social`, `coop`
+## Coding Standards: NASA Power of Ten + TigerStyle
 
-## Data Storage
+Mandatory rules. Priority: **Safety > Performance > Developer Experience**.
 
-DuckDB database stored in `~/.homeschool/homeschool.db`. Parquet exports go to `~/.homeschool/parquet/`.
+### 10 Rules
 
-## IPC Communication
+1. **Simple Control Flow** — No recursion. No `eval()`. No complex nested ternaries. Use early returns, `if/else`, `switch`, `for...of`.
 
-Renderer communicates with main process via `window.api`:
+2. **Fixed Loop Bounds** — Every loop must have a provable finite limit. No `while (true)`. Polling/retries need explicit max counts and timeouts. Array methods on finite collections are fine.
 
-- `window.api.getStudents()`, `createStudent()`, etc.
-- `window.api.getSessions()`, `createSession()`, etc.
-- `window.api.getActivities()`, `createActivity()`, etc.
-- `window.api.getActivitySummary()`, `getDailySummaries()` for reports
+3. **No Allocation in Hot Paths** — Pre-allocate at init. No object/array/closure creation in render loops or high-frequency handlers. Use `useMemo`/`useCallback` in React.
 
-## Building for Distribution
+4. **70-Line Function Limit** — Includes React component bodies. Extract sub-components or hooks when approaching limit.
 
-### Mac (from macOS)
+5. **Validate Inputs and Outputs** — Every function accepting external data (IPC, API, user input, DB results) must validate. Average 2+ validations per non-trivial function. Assert both positive space (what must be true) and negative space (what must not be true).
 
-```bash
-npm run build:mac
-```
+6. **Smallest Possible Scope** — Declare variables at narrowest scope. Calculate/check values close to usage. Temporal gaps between declaration and use are where bugs hide.
 
-Creates DMG installers in `dist/`:
+7. **Handle All Errors** — Every `await` needs error handling. Every `.then()` needs `.catch()`. Never silently swallow. Log with context: `[ComponentName] what failed: error`. 92% of catastrophic distributed system failures come from mishandled non-fatal errors.
 
-- `Homeschool-{version}-x64.dmg` - Intel Macs
-- `Homeschool-{version}-arm64.dmg` - Apple Silicon Macs
+8. **Minimal Abstraction** — No wrappers that just forward args. No indirection "for future flexibility." Abstract only when pattern repeats 3+ times and maps cleanly to the domain.
 
-**Note**: First build takes 15-30 minutes (DuckDB compiles from source). Subsequent builds are faster.
+9. **Max 3 Nesting Levels** — Use early returns, guard clauses, and extracted helpers to flatten. Push `if`s up and `for`s down.
 
-**Code signing**: For distribution outside your machine, you need an Apple Developer certificate. Without signing, users must right-click → Open to bypass Gatekeeper.
+10. **Strict Compiler, Zero Warnings** — TypeScript strict mode. ESLint rules at `error`. Zero `@ts-ignore`/`eslint-disable` without a justifying comment.
 
-### Windows (from Windows)
+### Naming (TigerStyle for TypeScript)
 
-```bash
-npm run build:win
-```
+- **camelCase** but append qualifiers/units last, sorted by significance: `connectionDelayMs`, `retryCountMax`, `sessionDurationMinutes` — not `maxRetries`, `delay`, `duration`.
+- **Never abbreviate**: `student` not `stu`, `activity` not `act`. Exceptions: `id`, `url`, `db`.
+- **Match character count** for related names: `source`/`target` not `src`/`destination`.
+- **Booleans state positively**: `isVisible`, `hasAccess`, `canEdit`.
+- **Nouns for data, verbs for actions**: `studentList`, `fetchStudents`, `isLoading`.
 
-Creates NSIS installer in `dist/`:
+### Error Philosophy
 
-- `Homeschool-{version}-Setup.exe`
+- Test error paths, not just happy paths.
+- Error messages include context: what was being done, what went wrong, what values were involved.
+- Fail fast and loud in dev. Validate exhaustively at system boundaries (IPC, API, DB). Trust types inside pure business logic.
 
-**Requirements**:
+### Performance
 
-- Windows 10/11 with Node.js 18+
-- Run `npm install` first to get Windows-native DuckDB bindings
+- Design for performance upfront — 1000x wins happen in design, not profiling.
+- Back-of-envelope: how many students/sessions/activities? What's the bottleneck?
+- Batch: one query returning 100 rows beats 100 queries.
+- Separate control plane (UI, routing, state) from data plane (DB, sync, file I/O).
 
-### Linux (from Linux)
-
-```bash
-npm run build:linux
-```
-
-Creates AppImage and .deb in `dist/`.
-
-### Cross-Platform Builds
-
-You cannot build Windows from Mac or vice versa due to native DuckDB bindings. Options:
-
-1. Build on each target platform
-2. Use GitHub Actions CI for automated builds (see below)
-3. Use a Windows VM for Windows builds
-
-### GitHub Actions (Automated)
-
-The `.github/workflows/build.yml` workflow automatically builds for all platforms:
-
-**Triggers:**
-
-- Push to `main` branch
-- Pull requests to `main`
-- Git tags starting with `v` (e.g., `v1.0.0`)
-- Manual trigger via GitHub UI
-
-**To create a release:**
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
-```
-
-This builds Mac, Windows, and Linux versions and creates a draft GitHub Release with all installers attached.
-
-**Artifacts** (available on every build):
-
-- `Homeschool-mac` - DMG files for Intel and Apple Silicon
-- `Homeschool-windows` - Setup.exe installer
-- `Homeschool-linux` - AppImage and .deb
-
-## Development Notes
-
-- Two children with different grade levels - UI uses colors (fuchsia for child1, teal for child2)
-- Preload script must be CJS format (outputs as `.cjs`) due to "type": "module" in package.json
-- Nevada has minimal homeschool reporting requirements but app generates portfolio-ready documentation
+---
 
 ## Design System
 
-The application uses a **token-based design system** with a single source of truth (`design-tokens.json`) that generates platform-specific code for both desktop and mobile.
-
-### Key Principles
-
-1. **Use design system components** - Don't create custom styled components
-2. **Use design tokens** - Don't hardcode colors, spacing, or typography values
-3. **Follow naming conventions** - Use semantic names (brand-primary, not fuchsia-500)
-4. **Cross-platform consistency** - Desktop and mobile share identical design values
-
-### Component Usage (Desktop)
-
-Always use components from the UI library:
+Tokens from `packages/design-tokens/design-tokens.json`. Components from `packages/ui/`. Cross-platform: desktop/web (Tailwind) + mobile (React Native).
 
 ```tsx
-import { Button, Card, Badge, Input, Modal, Alert } from '@/components/ui'
-import { PageHeader, PageContainer, PageGrid } from '@/components/layout'
-
-// ✅ Good - uses design system
-<Button variant="primary">Save</Button>
-<Card><p>Content</p></Card>
-
-// ❌ Bad - custom styling
-<button className="bg-fuchsia-500 px-4 py-2 rounded-lg">Save</button>
+import { Button, Card, Input } from "@homeschool/ui";
+import { PageContainer, PageHeader } from "@homeschool/ui/layout";
+className = "bg-brand-primary text-status-success border-neutral-border";
+// NEVER: bg-red-500, bg-[#d946ef], .btn-*, .card, .input, .label
 ```
 
-### Color Tokens (Desktop/Tailwind)
+ESLint enforces: `no-hardcoded-colors`, `require-design-system-components`, `no-legacy-classes`, `pages-use-components-only`.
 
-```tsx
-// ✅ Use design system tokens
-<div className="bg-brand-primary text-neutral-text">
-<button className="bg-status-success hover:bg-status-successDark">
-<span className="text-student-fuchsia-500">
+## CI/CD
 
-// ❌ Don't use hardcoded colors
-<div className="bg-fuchsia-500 text-gray-900">
-<div className="bg-[#d946ef]">
-```
+- `build.yml` — Desktop builds on `v*` tags (Mac/Win/Linux)
+- `mobile-build.yml` — Mobile builds on `apps/mobile/**` changes
+- `web-deploy.yml` — Railway deploy on `apps/web/**` or `packages/**` changes
+- `typecheck.yml` — Full typecheck on all PRs
 
-### Theme System (Mobile)
+## Deployment
 
-```tsx
-import { useColors } from "@/theme/ThemeContext";
-
-function MyComponent() {
-  const colors = useColors();
-  return (
-    <View style={{ backgroundColor: colors.primary }}>
-      <Text style={{ color: colors.text }}>Hello</Text>
-    </View>
-  );
-}
-```
-
-### Design Token Generation
-
-Design tokens are automatically generated from `design-tokens.json`:
-
-```bash
-# Tokens are generated during build
-npm run build
-
-# Desktop: design-tokens.json → src/renderer/src/design/tokens/
-# Mobile: design-tokens.json → mobile/src/theme/tokens.ts
-```
-
-### ESLint Rules
-
-The codebase enforces design system usage with custom ESLint rules:
-
-- `design-system/no-hardcoded-colors` - Prevents hardcoded color classes
-- `design-system/require-design-system-components` - Warns against custom styled elements
-- `design-system/no-legacy-classes` - Flags deprecated CSS classes
-- `design-system/pages-use-components-only` - Prevents complex inline styling in pages
-
-### Deprecated Patterns
-
-**Legacy CSS classes are deprecated:**
-
-- `.btn-*`, `.card`, `.badge-*`, `.input`, `.label` - Use UI components instead
-
-See `src/renderer/src/components/ui/DesignSystem.mdx` for full documentation.
-
-## Mobile App (iOS & Android)
-
-The `mobile/` directory contains a React Native Expo app for iOS and Android.
-
-### Mobile Tech Stack
-
-- **Framework**: React Native with Expo
-- **Navigation**: Expo Router (file-based)
-- **Database**: expo-sqlite (SQLite)
-- **State Management**: Zustand
-- **UI**: Custom mobile-first component library
-
-### Mobile Commands
-
-```bash
-# Install mobile dependencies
-npm run mobile:install
-
-# Start Expo development server
-npm run mobile
-
-# Run on iOS simulator
-npm run mobile:ios
-
-# Run on Android emulator
-npm run mobile:android
-
-# Build for iOS (requires EAS CLI)
-npm run mobile:build:ios
-
-# Build for Android
-npm run mobile:build:android
-```
-
-### Mobile Architecture
-
-```
-mobile/
-├── app/                    # Expo Router pages
-│   ├── _layout.tsx        # Root layout with initialization
-│   └── (tabs)/            # Tab navigation screens
-│       ├── index.tsx      # Dashboard
-│       ├── activities.tsx # Activity logging
-│       ├── milestones.tsx # Milestone tracking
-│       ├── field-trips.tsx# Event planning
-│       └── settings.tsx   # Student management
-├── src/
-│   ├── components/        # Reusable components
-│   │   └── ui/           # Design system (Button, Card, etc.)
-│   ├── database/          # SQLite layer (mirrors desktop)
-│   ├── stores/            # Zustand state
-│   └── types/             # TypeScript types
-├── app.json              # Expo configuration
-└── eas.json              # EAS Build configuration
-```
-
-### Mobile Features
-
-- Dashboard with today's activities, stars, and upcoming events
-- Quick activity logging with subject selection
-- Milestone tracking with star rewards
-- Field trip and event planning
-- Student management with customizable colors
-- Offline-first with local SQLite database
+All on Railway: signaling (`signaling/railway.toml`), web (`apps/web/railway.toml`), relay (`apps/relay/railway.toml`).

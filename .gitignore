@@ -36,3 +36,6 @@ storybook-static
 # Personal planning docs
 *.pdf
 session-plans/
+
+# pnpm
+pnpm-debug.log*
