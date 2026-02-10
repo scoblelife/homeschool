@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { format, parseISO, subDays, startOfMonth } from "date-fns";
 import { useStore } from "../stores/useStore";
 import { PortfolioExport } from "../features/portfolio";
+import { AssessmentList } from "../features/assessments";
 import type { ActivitySummary, DailySummary } from "../../../shared/types";
 
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Card } from "../components/ui/Card";
+import { Badge } from "../components/ui/Badge";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
 
@@ -217,12 +219,9 @@ export default function Reports(): JSX.Element {
                               ([type, count]) => {
                                 if (count === 0) return null;
                                 return (
-                                  <span
-                                    key={type}
-                                    className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-600"
-                                  >
+                                  <Badge key={type} size="sm">
                                     {type.replace("_", " ")}: {count}
-                                  </span>
+                                  </Badge>
                                 );
                               },
                             )}
@@ -246,9 +245,10 @@ export default function Reports(): JSX.Element {
                 ) : (
                   <div className="space-y-2">
                     {dailySummaries.slice(0, 14).map((day) => (
+                      /* eslint-disable-next-line design-system/pages-use-components-only -- simple data row layout */
                       <div
                         key={day.date}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-neutral-backgroundSecondary rounded-lg"
                       >
                         <div>
                           <div className="font-medium text-gray-900">
@@ -274,6 +274,13 @@ export default function Reports(): JSX.Element {
                   </div>
                 )}
               </Card>
+
+              {/* Assessments */}
+              {selectedStudent && (
+                <Card className="mt-8">
+                  <AssessmentList student={selectedStudent} />
+                </Card>
+              )}
 
               {/* Portfolio Export */}
               <div className="mt-8">

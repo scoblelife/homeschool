@@ -19,6 +19,7 @@ import { Modal } from "../components/ui/Modal";
 import { MarkdownContent } from "../components/ui/MarkdownContent";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
+import { ActivityAttachments } from "../features/attachments/ActivityAttachments";
 
 const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
   { value: "worksheet", label: "Worksheet", icon: "📝" },
@@ -293,6 +294,9 @@ export default function Activities(): JSX.Element {
                       {activity.notes}
                     </MarkdownContent>
                   )}
+                  <div className="mt-3">
+                    <ActivityAttachments activityId={activity.id} />
+                  </div>
                 </div>
                 <div className="flex flex-col gap-2">
                   <Button
