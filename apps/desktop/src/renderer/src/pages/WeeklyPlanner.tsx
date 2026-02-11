@@ -469,6 +469,7 @@ export default function WeeklyPlanner(): JSX.Element {
                   variant="secondary"
                   onClick={handleClearWeek}
                   className="text-status-error hover:text-status-errorDark hover:border-status-error"
+                  aria-label="Clear all milestones from this week"
                 >
                   Clear Week
                 </Button>
@@ -547,7 +548,7 @@ export default function WeeklyPlanner(): JSX.Element {
         />
       </div>
       {/* Week Navigation - hide on print */}
-      <Card className="no-print mb-6">
+      <Card className="no-print mb-6" aria-label="Week navigation">
         <div className="flex items-center justify-between mb-4">
           <Button variant="ghost" onClick={() => navigateWeek("prev")}>
             &larr; Previous Week
@@ -591,13 +592,15 @@ export default function WeeklyPlanner(): JSX.Element {
       {/* Stats */}
       <Card className="mb-6">
         <div className="grid grid-cols-3 gap-4 text-center text-sm">
-          <div>
+          <div aria-label={`${selectedMilestones.length} milestones this week`}>
             <div className="text-2xl font-bold text-brand-primary">
               {selectedMilestones.length}
             </div>
             <div className="text-gray-500">Milestones This Week</div>
           </div>
-          <div>
+          <div
+            aria-label={`${selectedMilestones.filter((m) => m.status === "completed").length} milestones completed`}
+          >
             <div className="text-2xl font-bold text-status-success">
               {
                 selectedMilestones.filter((m) => m.status === "completed")
@@ -606,7 +609,7 @@ export default function WeeklyPlanner(): JSX.Element {
             </div>
             <div className="text-gray-500">Completed</div>
           </div>
-          <div>
+          <div aria-label={`${totalResources} resources`}>
             <div className="text-2xl font-bold text-student-blue-600">
               {totalResources}
             </div>
@@ -647,7 +650,7 @@ export default function WeeklyPlanner(): JSX.Element {
           </div>
         </Card>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-6" aria-live="polite">
           {Object.entries(groupedMilestones).map(
             ([subjectId, subjectMilestones]) => {
               const subject = getSubjectById(subjectId);
@@ -715,6 +718,7 @@ export default function WeeklyPlanner(): JSX.Element {
                                         handleDeleteResource(resource.id)
                                       }
                                       className="no-print text-status-error hover:text-status-error text-xs"
+                                      aria-label={`Delete resource: ${resource.title}`}
                                     >
                                       ×
                                     </Button>
@@ -737,6 +741,7 @@ export default function WeeklyPlanner(): JSX.Element {
                                 handleRemoveMilestone(milestone.id)
                               }
                               className="no-print text-status-error hover:text-status-errorDark"
+                              aria-label={`Remove milestone: ${milestone.title}`}
                             >
                               Remove
                             </Button>

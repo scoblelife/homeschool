@@ -11,6 +11,7 @@ function CalendarDaysIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -29,6 +30,7 @@ function AcademicCapIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -47,6 +49,7 @@ function ExclamationCircleIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -65,6 +68,7 @@ function CheckCircleIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -232,7 +236,14 @@ export function AttendanceStats({ students }: Props) {
             {displayStats.percentage}%
           </span>
         </div>
-        <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div
+          className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
+          role="progressbar"
+          aria-valuenow={displayStats.percentage}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Attendance progress"
+        >
           <div
             className={`h-full rounded-full transition-all duration-500 ${
               displayStats.percentage >= 90
@@ -249,6 +260,7 @@ export function AttendanceStats({ students }: Props) {
       {/* State requirement notice */}
       <div
         className={`mt-6 p-4 bg-status-infoLight dark:bg-status-infoDark/20 rounded-lg`}
+        role="status"
       >
         <p
           className={`text-sm text-status-infoDark dark:text-status-infoLight`}

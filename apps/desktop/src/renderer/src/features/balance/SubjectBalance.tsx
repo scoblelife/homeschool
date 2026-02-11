@@ -105,9 +105,17 @@ export function SubjectBalance({
           <>
             {/* Alerts for under-target subjects */}
             {underTargetSubjects.length > 0 && (
-              <div className="mb-4 p-3 bg-status-warningLight border border-status-warning rounded-lg">
+              <div
+                className="mb-4 p-3 bg-status-warningLight border border-status-warning rounded-lg"
+                role="alert"
+              >
                 <div className="flex items-start gap-2">
-                  <span className="text-status-warning text-lg">⚠️</span>
+                  <span
+                    className="text-status-warning text-lg"
+                    aria-hidden="true"
+                  >
+                    ⚠️
+                  </span>
                   <div className="flex-1">
                     <div className="font-medium text-status-warningDark">
                       Subjects Need Attention
@@ -172,7 +180,14 @@ function BalanceBar({ data }: BalanceBarProps): JSX.Element {
           {formatMinutes(data.targetMinutes)}
         </span>
       </div>
-      <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div
+        className="relative h-2 bg-gray-100 rounded-full overflow-hidden"
+        role="progressbar"
+        aria-valuenow={Math.round(data.percentageOfTarget)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`${data.subjectName} progress`}
+      >
         <div
           className={`absolute h-full ${barColor} rounded-full transition-all duration-300`}
           style={{ width: `${Math.min(percentage, 100)}%` }}
@@ -365,9 +380,14 @@ export function SubjectBalanceAlert({
   if (underTargetSubjects.length === 0) return null;
 
   return (
-    <div className="p-3 bg-status-warningLight border border-status-warning rounded-lg">
+    <div
+      className="p-3 bg-status-warningLight border border-status-warning rounded-lg"
+      role="alert"
+    >
       <div className="flex items-start gap-2">
-        <span className="text-status-warning">⚠️</span>
+        <span className="text-status-warning" aria-hidden="true">
+          ⚠️
+        </span>
         <div className="text-sm">
           <span className="font-medium text-status-warningDark">
             Behind on:{" "}

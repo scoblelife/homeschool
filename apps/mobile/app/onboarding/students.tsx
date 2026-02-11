@@ -15,6 +15,7 @@ import { createStudent } from '../../src/database'
 import { useStore } from '../../src/stores/useStore'
 import type { GradeLevel } from '../../src/types'
 import { analytics } from '../../src/analytics'
+import { useColors } from '../../src/theme/createStyles'
 
 const COLORS = [
   { name: 'Fuchsia', value: '#d946ef' },
@@ -52,6 +53,7 @@ export default function OnboardingStudents() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const { setStudents, setSelectedStudentId } = useStore()
+  const themed = useThemedStyles()
 
   const [students, setLocalStudents] = useState<StudentForm[]>([
     { name: '', gradeLevel: '', color: COLORS[0].value },
@@ -121,7 +123,7 @@ export default function OnboardingStudents() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={themed.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
@@ -129,36 +131,36 @@ export default function OnboardingStudents() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.title}>Add Your Students</Text>
-        <Text style={styles.subtitle}>
+        <Text style={themed.title}>Add Your Students</Text>
+        <Text style={themed.subtitle}>
           Who will you be tracking? You can always add more later.
         </Text>
 
         {students.map((student, index) => (
-          <View key={index} style={styles.studentCard}>
+          <View key={index} style={themed.studentCard}>
             <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Student {index + 1}</Text>
+              <Text style={themed.cardTitle}>Student {index + 1}</Text>
               {students.length > 1 && (
                 <TouchableOpacity
                   onPress={() => removeStudent(index)}
                   accessibilityLabel={`Remove student ${index + 1}`}
                   accessibilityRole="button"
                 >
-                  <Text style={styles.removeText}>Remove</Text>
+                  <Text style={themed.removeText}>Remove</Text>
                 </TouchableOpacity>
               )}
             </View>
 
-            <Text style={styles.label}>Name</Text>
+            <Text style={themed.label}>Name</Text>
             <TextInput
-              style={styles.input}
+              style={themed.input}
               placeholder="Student's name"
               value={student.name}
               onChangeText={(value) => updateStudent(index, 'name', value)}
               autoCapitalize="words"
             />
 
-            <Text style={styles.label}>Grade Level</Text>
+            <Text style={themed.label}>Grade Level</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -168,8 +170,8 @@ export default function OnboardingStudents() {
                 <TouchableOpacity
                   key={grade.value}
                   style={[
-                    styles.gradeChip,
-                    student.gradeLevel === grade.value && styles.gradeChipSelected,
+                    themed.gradeChip,
+                    student.gradeLevel === grade.value && themed.gradeChipSelected,
                   ]}
                   onPress={() => updateStudent(index, 'gradeLevel', grade.value)}
                   accessibilityLabel={`${grade.label}${student.gradeLevel === grade.value ? ', selected' : ''}`}
@@ -178,8 +180,8 @@ export default function OnboardingStudents() {
                 >
                   <Text
                     style={[
-                      styles.gradeChipText,
-                      student.gradeLevel === grade.value && styles.gradeChipTextSelected,
+                      themed.gradeChipText,
+                      student.gradeLevel === grade.value && themed.gradeChipTextSelected,
                     ]}
                   >
                     {grade.label}
@@ -188,7 +190,7 @@ export default function OnboardingStudents() {
               ))}
             </ScrollView>
 
-            <Text style={styles.label}>Color</Text>
+            <Text style={themed.label}>Color</Text>
             <View style={styles.colorRow}>
               {COLORS.map((color) => (
                 <TouchableOpacity
@@ -196,7 +198,7 @@ export default function OnboardingStudents() {
                   style={[
                     styles.colorCircle,
                     { backgroundColor: color.value },
-                    student.color === color.value && styles.colorCircleSelected,
+                    student.color === color.value && themed.colorCircleSelected,
                   ]}
                   onPress={() => updateStudent(index, 'color', color.value)}
                   accessibilityLabel={`${color.name} color${student.color === color.value ? ', selected' : ''}`}
@@ -215,22 +217,22 @@ export default function OnboardingStudents() {
           accessibilityLabel="Add another student"
           accessibilityRole="button"
         >
-          <Text style={styles.addButtonText}>+ Add Another Student</Text>
+          <Text style={themed.addButtonText}>+ Add Another Student</Text>
         </TouchableOpacity>
 
-        {error && <Text style={styles.error}>{error}</Text>}
+        {error && <Text style={themed.error}>{error}</Text>}
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
+      <View style={[themed.footer, { paddingBottom: insets.bottom + 20 }]}>
         <TouchableOpacity
-          style={[styles.button, isSubmitting && styles.buttonDisabled]}
+          style={[themed.button, isSubmitting && styles.buttonDisabled]}
           onPress={handleSubmit}
           disabled={isSubmitting}
           accessibilityLabel={isSubmitting ? 'Saving students' : 'Continue to state selection'}
           accessibilityRole="button"
           accessibilityState={{ disabled: isSubmitting }}
         >
-          <Text style={styles.buttonText}>
+          <Text style={themed.buttonText}>
             {isSubmitting ? 'Saving...' : 'Continue'}
           </Text>
         </TouchableOpacity>
@@ -240,10 +242,6 @@ export default function OnboardingStudents() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
   scroll: {
     flex: 1,
   },
@@ -251,77 +249,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-    marginBottom: 24,
-  },
-  studentCard: {
-    backgroundColor: '#f9fafb',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  removeText: {
-    fontSize: 14,
-    color: '#ef4444',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
-    marginBottom: 16,
-  },
   gradeScroll: {
     marginBottom: 16,
-  },
-  gradeChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    marginRight: 8,
-  },
-  gradeChipSelected: {
-    backgroundColor: '#d946ef',
-    borderColor: '#d946ef',
-  },
-  gradeChipText: {
-    fontSize: 14,
-    color: '#374151',
-  },
-  gradeChipTextSelected: {
-    color: '#fff',
-    fontWeight: '500',
   },
   colorRow: {
     flexDirection: 'row',
@@ -332,43 +267,35 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
   },
-  colorCircleSelected: {
-    borderWidth: 3,
-    borderColor: '#1f2937',
-  },
   addButton: {
     paddingVertical: 16,
-    alignItems: 'center',
-  },
-  addButtonText: {
-    fontSize: 16,
-    color: '#d946ef',
-    fontWeight: '600',
-  },
-  error: {
-    fontSize: 14,
-    color: '#ef4444',
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  footer: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
-  },
-  button: {
-    backgroundColor: '#d946ef',
-    paddingVertical: 16,
-    borderRadius: 12,
     alignItems: 'center',
   },
   buttonDisabled: {
     opacity: 0.6,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
 })
+
+function useThemedStyles() {
+  const colors = useColors()
+  return {
+    container: { flex: 1, backgroundColor: colors.background } as const,
+    title: { fontSize: 28, fontWeight: '700' as const, color: colors.text, marginBottom: 8 },
+    subtitle: { fontSize: 16, color: colors.textSecondary, marginBottom: 24 },
+    studentCard: { backgroundColor: colors.surface, borderRadius: 12, padding: 16, marginBottom: 16 },
+    cardTitle: { fontSize: 18, fontWeight: '600' as const, color: colors.text },
+    removeText: { fontSize: 14, color: colors.error },
+    label: { fontSize: 14, fontWeight: '500' as const, color: colors.text, marginBottom: 8 },
+    input: { backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 12, fontSize: 16, marginBottom: 16, color: colors.text },
+    gradeChip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border, marginRight: 8 },
+    gradeChipSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
+    gradeChipText: { fontSize: 14, color: colors.text },
+    gradeChipTextSelected: { color: colors.textInverse, fontWeight: '500' as const },
+    colorCircleSelected: { borderWidth: 3, borderColor: colors.text },
+    addButtonText: { fontSize: 16, color: colors.primary, fontWeight: '600' as const },
+    error: { fontSize: 14, color: colors.error, textAlign: 'center' as const, marginTop: 8 },
+    footer: { paddingHorizontal: 20, paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.surface },
+    button: { backgroundColor: colors.primary, paddingVertical: 16, borderRadius: 12, alignItems: 'center' as const },
+    buttonText: { color: colors.textInverse, fontSize: 18, fontWeight: '600' as const },
+  }
+}

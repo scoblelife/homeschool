@@ -209,7 +209,11 @@ export default function WeeklySummary(): JSX.Element {
         }
       />
       {isLoading ? (
-        <div className="text-center py-12 text-gray-500">
+        <div
+          className="text-center py-12 text-gray-500"
+          aria-live="polite"
+          aria-busy="true"
+        >
           Loading weekly summary...
         </div>
       ) : students.length === 0 ? (
@@ -293,6 +297,7 @@ export default function WeeklySummary(): JSX.Element {
                 <div
                   key={student.id}
                   className={`bg-white rounded-xl border border-neutral-border shadow-sm p-6 border-l-4 ${colors.border}`}
+                  aria-label={`Weekly summary for ${student.name}`}
                 >
                   {/* Student Header */}
                   <div className="flex items-center gap-3 mb-4">
@@ -376,6 +381,7 @@ export default function WeeklySummary(): JSX.Element {
                             key={dayStr}
                             className="flex-1 text-center"
                             title={`${format(day, "EEEE")}: ${count} activities`}
+                            aria-label={`${format(day, "EEEE")}: ${count} activities`}
                           >
                             <div
                               className={`h-8 rounded ${intensityColors[intensity]}`}
@@ -413,7 +419,14 @@ export default function WeeklySummary(): JSX.Element {
                                   {Math.round(activity.totalMinutes)} min
                                 </span>
                               </div>
-                              <div className="h-1.5 bg-gray-200 rounded-full">
+                              <div
+                                className="h-1.5 bg-gray-200 rounded-full"
+                                role="progressbar"
+                                aria-valuenow={Math.round(percentage)}
+                                aria-valuemin={0}
+                                aria-valuemax={100}
+                                aria-label={`${activity.subjectName}: ${Math.round(percentage)}% of total time`}
+                              >
                                 <div
                                   className={`h-1.5 rounded-full ${colors.bg}`}
                                   style={{ width: `${percentage}%` }}
@@ -519,7 +532,14 @@ export default function WeeklySummary(): JSX.Element {
                             {Math.round(percentage)}%)
                           </span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="w-full bg-gray-200 rounded-full h-2"
+                          role="progressbar"
+                          aria-valuenow={Math.round(percentage)}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-label={`${subject.name}: ${Math.round(percentage)}% of total time`}
+                        >
                           <div
                             className="bg-brand-primary h-2 rounded-full transition-all"
                             style={{ width: `${percentage}%` }}

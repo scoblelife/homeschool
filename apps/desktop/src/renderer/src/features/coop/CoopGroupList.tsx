@@ -109,7 +109,11 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-48">
+      <div
+        className="flex items-center justify-center h-48"
+        role="status"
+        aria-busy="true"
+      >
         <div className="text-gray-500">Loading groups...</div>
       </div>
     );
@@ -303,7 +307,10 @@ export function CoopGroupList({ onSelectGroup }: CoopGroupListProps) {
               </div>
 
               {joinError && (
-                <p className="text-sm text-status-error dark:text-status-error">
+                <p
+                  role="alert"
+                  className="text-sm text-status-error dark:text-status-error"
+                >
                   {joinError}
                 </p>
               )}
@@ -342,6 +349,7 @@ function GroupIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -360,6 +368,7 @@ function ChevronRightIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"

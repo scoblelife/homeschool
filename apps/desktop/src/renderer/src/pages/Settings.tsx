@@ -1073,6 +1073,8 @@ function EmailStatusAlert({
           ? "bg-status-successLight text-status-successDark border border-status-success"
           : "bg-status-errorLight text-status-errorDark border border-status-error"
       }`}
+      role="alert"
+      aria-live="polite"
     >
       {emailStatus.message}
     </div>
@@ -1411,6 +1413,7 @@ function ChoreRow({
         onBlur={onSave}
         className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand-primary focus:border-brand-primary"
         placeholder="Skylight chore name..."
+        aria-label={`Chore name for ${subject.name}`}
       />
       <span className="text-yellow-500">⭐</span>
       <input
@@ -1426,6 +1429,7 @@ function ChoreRow({
         }
         onBlur={onSave}
         className="w-16 px-2 py-2 border border-gray-300 rounded-lg text-center focus:ring-brand-primary focus:border-brand-primary"
+        aria-label={`Stars for ${subject.name}`}
       />
       {hasMapping && <span className="text-status-success text-sm">✓</span>}
     </div>
@@ -1491,6 +1495,8 @@ function SponsoredContentCard({
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
               showSponsoredContent ? "bg-brand-primary" : "bg-gray-200"
             }`}
+            role="switch"
+            aria-checked={showSponsoredContent}
             aria-label="Toggle sponsored content"
           >
             <span
@@ -1737,6 +1743,8 @@ function ColorPicker({
                 ? `ring-2 ${color.ring} ${color.bgLight}`
                 : "bg-gray-50 hover:bg-gray-100"
             }`}
+            aria-label={`Select ${color.name} color`}
+            aria-pressed={isSelected}
           >
             <div className={`w-5 h-5 rounded-full ${color.bg}`} />
             <span className="text-sm">{color.name}</span>
@@ -1762,6 +1770,8 @@ function StatusMessage({ status }: StatusMessageProps): JSX.Element | null {
           ? "bg-status-successLight text-status-successDark"
           : "bg-status-errorLight text-status-errorDark"
       }`}
+      role="alert"
+      aria-live="polite"
     >
       {status.message}
     </div>

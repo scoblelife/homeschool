@@ -15,18 +15,22 @@ export default function Attendance(): JSX.Element {
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Calendar takes 2 columns */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2" aria-live="polite">
           <AttendanceCalendar students={students} />
         </div>
 
         {/* Stats sidebar */}
-        <div>
+        <div aria-live="polite">
           <AttendanceStats students={students} />
         </div>
       </div>
 
       {/* Instructions */}
-      <div className="mt-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+      <div
+        className="mt-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-6"
+        role="region"
+        aria-label="How to use attendance tracking"
+      >
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           How to use
         </h2>
@@ -66,6 +70,8 @@ export default function Attendance(): JSX.Element {
 
         <div
           className={`mt-6 p-4 bg-status-warningLight rounded-lg border border-status-warning`}
+          role="note"
+          aria-label="State attendance requirements"
         >
           <h3 className="font-medium text-status-warning mb-2">
             State Requirements

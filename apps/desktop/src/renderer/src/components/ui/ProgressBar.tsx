@@ -122,8 +122,12 @@ export function CircularProgress({
         "relative inline-flex items-center justify-center",
         className,
       )}
+      role="progressbar"
+      aria-valuenow={value}
+      aria-valuemin={0}
+      aria-valuemax={max}
     >
-      <svg width={size} height={size} className="-rotate-90">
+      <svg width={size} height={size} className="-rotate-90" aria-hidden="true">
         {/* Background circle */}
         <circle
           cx={size / 2}

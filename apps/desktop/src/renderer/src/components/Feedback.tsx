@@ -117,8 +117,10 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                 </Dialog.Title>
 
                 {submitStatus === "success" ? (
-                  <div className="text-center py-8">
-                    <div className="text-4xl mb-4">✓</div>
+                  <div className="text-center py-8" role="status">
+                    <div className="text-4xl mb-4" aria-hidden="true">
+                      ✓
+                    </div>
                     <p className="text-gray-600">Thanks for your feedback!</p>
                   </div>
                 ) : (
@@ -137,6 +139,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                                 ? "primary"
                                 : "outline"
                             }
+                            aria-pressed={formData.category === category.value}
                             onClick={() =>
                               setFormData({
                                 ...formData,
@@ -200,7 +203,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                     </div>
 
                     {submitStatus === "error" && (
-                      <p className="text-sm text-status-error">
+                      <p className="text-sm text-status-error" role="alert">
                         Something went wrong. Please try again.
                       </p>
                     )}
@@ -257,6 +260,7 @@ export function FeedbackButton({ className = "" }: FeedbackButtonProps) {
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"

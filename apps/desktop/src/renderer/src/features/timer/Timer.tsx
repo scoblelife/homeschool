@@ -150,6 +150,8 @@ export function Timer({ onSessionSaved }: TimerProps) {
         <h3 className="text-lg font-semibold text-gray-900">Session Timer</h3>
         {activeSession && (
           <span
+            role="status"
+            aria-live="polite"
             className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
               isPaused
                 ? "bg-yellow-100 text-yellow-800"
@@ -165,7 +167,11 @@ export function Timer({ onSessionSaved }: TimerProps) {
         <div className="space-y-4">
           {/* Timer Display */}
           <div className="text-center">
-            <div className="text-5xl font-mono font-bold text-gray-900 tabular-nums">
+            <div
+              className="text-5xl font-mono font-bold text-gray-900 tabular-nums"
+              aria-live="polite"
+              aria-label={`Elapsed time: ${displayTime}`}
+            >
               {displayTime}
             </div>
             <div className="mt-2 text-sm text-gray-500">
@@ -190,6 +196,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                   className="w-5 h-5 mr-2"
                   fill="currentColor"
                   viewBox="0 0 20 20"
+                  aria-hidden="true"
                 >
                   <path
                     fillRule="evenodd"
@@ -209,6 +216,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                   className="w-5 h-5 mr-2"
                   fill="currentColor"
                   viewBox="0 0 20 20"
+                  aria-hidden="true"
                 >
                   <path
                     fillRule="evenodd"
@@ -224,6 +232,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                 className="w-5 h-5 mr-2"
                 fill="currentColor"
                 viewBox="0 0 20 20"
+                aria-hidden="true"
               >
                 <path
                   fillRule="evenodd"
@@ -253,6 +262,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
               className="w-5 h-5 mr-2"
               fill="currentColor"
               viewBox="0 0 20 20"
+              aria-hidden="true"
             >
               <path
                 fillRule="evenodd"
@@ -486,6 +496,7 @@ export function Timer({ onSessionSaved }: TimerProps) {
                       variant="primary"
                       onClick={handleSave}
                       disabled={saving}
+                      aria-busy={saving}
                     >
                       {saving ? "Saving..." : "Save Activity"}
                     </Button>

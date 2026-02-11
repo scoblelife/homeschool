@@ -389,6 +389,7 @@ function FieldTripCardHeader({
           href={trip.websiteUrl}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={`Visit website for ${trip.title} (opens in new tab)`}
           className="inline-block mt-2 text-sm text-student-blue-600 hover:underline"
           onClick={(e) => e.stopPropagation()}
         >
@@ -541,6 +542,7 @@ function FieldTripTaskProgressButton({
     <Button
       variant="ghost"
       onClick={onToggleExpand}
+      aria-expanded={isExpanded}
       className="mt-3 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
     >
       <span>{isExpanded ? "▼" : "▶"}</span>
@@ -576,6 +578,7 @@ function FieldTripCardActions({
       <select
         value={trip.status}
         onChange={(e) => onStatusChange(e.target.value as UniversalStatus)}
+        aria-label={`Status for ${trip.title}`}
         className="text-sm border border-gray-300 rounded-lg px-2 py-1"
       >
         <option value="not_started">Planned</option>
@@ -603,6 +606,7 @@ function FieldTripCardActions({
         variant="ghost"
         size="sm"
         onClick={onDelete}
+        aria-label={`Delete activity: ${trip.title}`}
         className="text-status-error hover:text-status-errorDark text-sm"
       >
         Delete
@@ -638,6 +642,7 @@ function FieldTripTaskPhaseGroup({
               type="checkbox"
               checked={!!task.completedAt}
               onChange={() => onToggleTask(task.id)}
+              aria-label={`Mark task "${task.title}" as ${task.completedAt ? "incomplete" : "complete"}`}
               className="w-4 h-4 rounded border-gray-300"
             />
             <span
@@ -649,6 +654,7 @@ function FieldTripTaskPhaseGroup({
               variant="ghost"
               size="sm"
               onClick={() => onDeleteTask(task.id)}
+              aria-label={`Delete task: ${task.title}`}
               className="text-gray-400 hover:text-status-error text-xs"
             >
               ✕
@@ -826,6 +832,7 @@ function FieldTripContactItem({
           variant="ghost"
           size="sm"
           onClick={() => onDeleteContact(contact.id)}
+          aria-label={`Delete contact: ${contact.name}`}
           className="text-gray-400 hover:text-status-error text-xs"
         >
           ✕
@@ -839,6 +846,7 @@ function FieldTripContactItem({
               role: e.target.value as ContactRole,
             })
           }
+          aria-label={`Role for contact ${contact.name}`}
           className="text-xs border border-gray-200 rounded px-1.5 py-0.5 bg-white"
         >
           {(Object.entries(contactRoleLabels) as [ContactRole, string][]).map(
@@ -882,6 +890,7 @@ function FieldTripContactItem({
                   href={contact.notes}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={`Visit ${contact.name} website (opens in new tab)`}
                   className="hover:text-brand-primary"
                 >
                   {contact.notes}
@@ -1021,6 +1030,7 @@ function FieldTripRSVPItem({
         <select
           value={rsvp.status}
           onChange={(e) => onUpdateRSVP(rsvp.id, e.target.value as RSVPStatus)}
+          aria-label={`RSVP status for ${rsvp.familyName}`}
           className={`text-xs rounded px-2 py-1 border-0 ${rsvpStatusInfo.bg} ${rsvpStatusInfo.color}`}
         >
           {(
@@ -1038,6 +1048,7 @@ function FieldTripRSVPItem({
           variant="ghost"
           size="sm"
           onClick={() => onDeleteRSVP(rsvp.id)}
+          aria-label={`Delete RSVP: ${rsvp.familyName}`}
           className="text-gray-400 hover:text-status-error text-xs"
         >
           ✕
@@ -1209,6 +1220,7 @@ function FieldTripExpenseItem({
             variant="ghost"
             size="sm"
             onClick={() => onDeleteExpense(expense.id)}
+            aria-label={`Delete expense: ${expense.description}`}
             className="text-gray-400 hover:text-status-error text-xs"
           >
             ✕
@@ -1223,6 +1235,7 @@ function FieldTripExpenseItem({
               category: e.target.value as ExpenseCategory,
             })
           }
+          aria-label={`Category for expense: ${expense.description}`}
           className="text-xs border border-gray-200 rounded px-1.5 py-0.5 bg-white"
         >
           {(
@@ -1469,6 +1482,7 @@ function FieldTripFilters({
           <button
             key={status}
             onClick={() => onFilterChange(status)}
+            aria-pressed={filterStatus === status}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filterStatus === status
                 ? "bg-brand-primaryLight text-brand-primaryDark"
@@ -1505,6 +1519,7 @@ function FieldTripFormCategoryPicker({
             key={category}
             type="button"
             onClick={() => onCategoryChange(category)}
+            aria-pressed={eventCategory === category}
             className={`p-2 rounded-lg text-center transition-all ${
               eventCategory === category
                 ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
@@ -1720,6 +1735,7 @@ function FieldTripFormStudentPicker({
             key={student.id}
             type="button"
             onClick={() => toggleStudentSelection(student.id)}
+            aria-pressed={selectedStudentIds.includes(student.id)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               selectedStudentIds.includes(student.id)
                 ? "bg-student-purple-100 text-student-purple-700 ring-2 ring-student-purple-500"
@@ -1756,6 +1772,7 @@ function FieldTripFormSubjectPicker({
             key={subject.id}
             type="button"
             onClick={() => toggleSubjectSelection(subject.id)}
+            aria-pressed={selectedSubjectIds.includes(subject.id)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               selectedSubjectIds.includes(subject.id)
                 ? "bg-brand-primaryLight text-brand-primaryDark ring-2 ring-brand-primary"
@@ -2500,7 +2517,7 @@ function FieldTripCardList({
   handlers,
 }: FieldTripCardListProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" aria-live="polite">
       {trips.map((trip) => (
         <FieldTripCardListItem
           key={trip.id}

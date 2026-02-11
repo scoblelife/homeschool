@@ -594,7 +594,11 @@ export function MentorMatching() {
 
   if (data.loading) {
     return (
-      <div className="flex items-center justify-center h-48">
+      <div
+        className="flex items-center justify-center h-48"
+        role="status"
+        aria-busy="true"
+      >
         <div className="text-gray-500 dark:text-gray-400">
           Loading mentors...
         </div>
@@ -727,10 +731,16 @@ function MentorMatchingTabs({
   const requestBadgeCount = pendingRequestCount + myPendingRequestCount;
 
   return (
-    <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700 mb-6">
+    <div
+      className="flex gap-4 border-b border-gray-200 dark:border-gray-700 mb-6"
+      role="tablist"
+      aria-label="Mentor matching sections"
+    >
       <Button
         variant="ghost"
         onClick={() => onTabChange("find")}
+        role="tab"
+        aria-selected={activeTab === "find"}
         className={`pb-3 text-sm font-medium border-b-2 transition-colors rounded-none ${
           activeTab === "find"
             ? "border-brand-primary text-brand-primary"
@@ -742,6 +752,8 @@ function MentorMatchingTabs({
       <Button
         variant="ghost"
         onClick={() => onTabChange("requests")}
+        role="tab"
+        aria-selected={activeTab === "requests"}
         className={`pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 rounded-none ${
           activeTab === "requests"
             ? "border-brand-primary text-brand-primary"
@@ -759,6 +771,8 @@ function MentorMatchingTabs({
         <Button
           variant="ghost"
           onClick={() => onTabChange("my-profile")}
+          role="tab"
+          aria-selected={activeTab === "my-profile"}
           className={`pb-3 text-sm font-medium border-b-2 transition-colors rounded-none ${
             activeTab === "my-profile"
               ? "border-brand-primary text-brand-primary"
@@ -831,6 +845,7 @@ function FindMentorsFilters({
               onSearchQueryChange(e.target.value)
             }
             placeholder="Search mentors..."
+            aria-label="Search mentors"
             className="pl-10"
           />
         </div>
@@ -841,6 +856,7 @@ function FindMentorsFilters({
         onChange={(e) =>
           onExpertiseFilterChange(e.target.value as MentorExpertise | "all")
         }
+        aria-label="Filter by expertise"
         className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
       >
         <option value="all">All expertise</option>
@@ -1492,6 +1508,7 @@ function ExpertiseToggleList({
           variant="ghost"
           size="sm"
           onClick={() => onToggle(key)}
+          aria-pressed={expertise.includes(key)}
           className={`rounded-full ${
             expertise.includes(key)
               ? `${config.bg} ${config.color}`
@@ -1970,6 +1987,7 @@ function SearchIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -1988,6 +2006,7 @@ function UsersIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"

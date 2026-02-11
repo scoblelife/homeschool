@@ -176,7 +176,11 @@ export function HourReport({ studentId }: Props) {
       </div>
 
       {isLoading ? (
-        <div className="text-center text-gray-500 py-8">
+        <div
+          className="text-center text-gray-500 py-8"
+          role="status"
+          aria-busy="true"
+        >
           Loading hour data...
         </div>
       ) : !summary ? (
@@ -271,7 +275,14 @@ export function HourReport({ studentId }: Props) {
                   {summary.totalHours} / {summary.targetHours} hours
                 </span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+              <div
+                className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4"
+                role="progressbar"
+                aria-valuenow={summary.percentComplete!}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="Overall hour tracking progress"
+              >
                 <div
                   className={`h-4 rounded-full transition-all ${getProgressColor(summary.percentComplete!, true)}`}
                   style={{
@@ -281,7 +292,10 @@ export function HourReport({ studentId }: Props) {
               </div>
               {summary.percentComplete !== null &&
                 summary.percentComplete < 50 && (
-                  <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <div
+                    className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg"
+                    role="alert"
+                  >
                     <p className="text-sm text-yellow-700 dark:text-yellow-300">
                       <AlertIcon /> You're behind schedule. Consider logging
                       more instructional hours to meet the {summary.targetHours}{" "}
@@ -308,7 +322,16 @@ export function HourReport({ studentId }: Props) {
                       {Math.round((subject.actualMinutes / 60) * 10) / 10} hrs
                     </span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div
+                    className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"
+                    role="progressbar"
+                    aria-valuenow={Math.round(
+                      (subject.actualMinutes / summary.totalMinutes) * 100,
+                    )}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${subject.subjectName} hours`}
+                  >
                     <div
                       className="h-2 rounded-full bg-brand-primary transition-all"
                       style={{
@@ -341,6 +364,7 @@ function AlertIcon() {
       className="w-4 h-4 inline mr-1"
       fill="currentColor"
       viewBox="0 0 20 20"
+      aria-hidden="true"
     >
       <path
         fillRule="evenodd"

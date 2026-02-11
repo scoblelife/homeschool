@@ -203,11 +203,20 @@ export function FieldTripShare({
                 className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
               >
                 {copied ? (
-                  <CheckIcon className="w-6 h-6 text-status-successDark" />
+                  <CheckIcon
+                    className="w-6 h-6 text-status-successDark"
+                    aria-hidden="true"
+                  />
                 ) : (
-                  <ClipboardIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                  <ClipboardIcon
+                    className="w-6 h-6 text-gray-600 dark:text-gray-300"
+                    aria-hidden="true"
+                  />
                 )}
-                <span className="text-sm text-gray-700 dark:text-gray-200">
+                <span
+                  className="text-sm text-gray-700 dark:text-gray-200"
+                  aria-live="polite"
+                >
                   {copied ? "Copied!" : "Copy Text"}
                 </span>
               </Button>
@@ -217,7 +226,10 @@ export function FieldTripShare({
                 variant="ghost"
                 className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
               >
-                <CalendarIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                <CalendarIcon
+                  className="w-6 h-6 text-gray-600 dark:text-gray-300"
+                  aria-hidden="true"
+                />
                 <span className="text-sm text-gray-700 dark:text-gray-200">
                   Calendar
                 </span>
@@ -228,7 +240,10 @@ export function FieldTripShare({
                 variant="ghost"
                 className="flex flex-col items-center gap-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600"
               >
-                <EmailIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                <EmailIcon
+                  className="w-6 h-6 text-gray-600 dark:text-gray-300"
+                  aria-hidden="true"
+                />
                 <span className="text-sm text-gray-700 dark:text-gray-200">
                   Email
                 </span>
@@ -252,8 +267,9 @@ export function FieldTripShare({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-status-infoDark hover:text-status-infoDark text-sm"
+                aria-label="View location on Google Maps (opens in new tab)"
               >
-                <MapIcon className="w-4 h-4" />
+                <MapIcon className="w-4 h-4" aria-hidden="true" />
                 View location on Google Maps
               </a>
             </div>
@@ -380,8 +396,9 @@ export function ShareButton({ trip, students, subjects }: ShareButtonProps) {
         size="sm"
         className="p-1.5 text-gray-500 hover:text-status-infoDark hover:bg-status-infoLight rounded"
         title="Share field trip"
+        aria-label="Share field trip"
       >
-        <ShareIcon className="w-4 h-4" />
+        <ShareIcon className="w-4 h-4" aria-hidden="true" />
       </Button>
 
       <FieldTripShare

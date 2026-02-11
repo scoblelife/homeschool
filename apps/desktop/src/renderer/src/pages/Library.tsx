@@ -121,6 +121,7 @@ function BookCard({
               onClick={onEdit}
               className="p-2 shadow-lg"
               title="Edit"
+              aria-label={`Edit book: ${book.title}`}
             >
               <svg
                 className="w-4 h-4"
@@ -234,6 +235,7 @@ function BookCard({
                 onChange={(e) =>
                   onUpdateProgress({ status: e.target.value as ReadingStatus })
                 }
+                aria-label={`Reading status for ${book.title}`}
                 className="text-xs border-0 bg-gray-100 rounded-lg px-2 py-1.5 text-gray-700 focus:ring-2 focus:ring-brand-primary"
               >
                 <option value="not_started">Not Started</option>
@@ -247,6 +249,8 @@ function BookCard({
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowMenu(!showMenu)}
+                  aria-label={`More options for ${book.title}`}
+                  aria-expanded={showMenu}
                   className="p-1.5"
                 >
                   <svg
@@ -286,6 +290,7 @@ function BookCard({
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => setShowMenu(false)}
+                        aria-label={`Look up ${book.title} on Goodreads (opens in new tab)`}
                         className="w-full px-3 py-1.5 text-left text-sm text-brand-primary hover:bg-brand-primaryLight flex items-center gap-1"
                       >
                         Goodreads
@@ -310,6 +315,7 @@ function BookCard({
                           onDelete();
                           setShowMenu(false);
                         }}
+                        aria-label={`Delete book: ${book.title}`}
                         className="w-full px-3 py-1.5 text-left text-sm text-status-error hover:bg-status-errorLight"
                       >
                         Delete
@@ -548,6 +554,7 @@ export default function Library(): JSX.Element {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search books..."
+            aria-label="Search books by title, author, or genre"
           />
         </div>
 
@@ -566,6 +573,7 @@ export default function Library(): JSX.Element {
                 variant={filterStatus === status ? "primary" : "ghost"}
                 size="sm"
                 onClick={() => setFilterStatus(status)}
+                aria-pressed={filterStatus === status}
               >
                 {status === "all"
                   ? "All"
@@ -589,7 +597,10 @@ export default function Library(): JSX.Element {
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          aria-live="polite"
+        >
           {filteredBooks.map((book) => (
             <BookCard
               key={book.id}

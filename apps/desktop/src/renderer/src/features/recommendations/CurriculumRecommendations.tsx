@@ -98,7 +98,10 @@ export function CurriculumRecommendations() {
     <div className="space-y-6">
       {/* Search */}
       <div className="relative">
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <SearchIcon
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+          aria-hidden="true"
+        />
         <Input
           type="text"
           placeholder="Search curricula..."
@@ -107,6 +110,7 @@ export function CurriculumRecommendations() {
             setSearchQuery(e.target.value)
           }
           className="pl-10"
+          aria-label="Search curricula"
         />
       </div>
 
@@ -117,6 +121,7 @@ export function CurriculumRecommendations() {
           onChange={(e) => setSelectedSubject(e.target.value || null)}
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+          aria-label="Filter by subject"
         >
           <option value="">All Subjects</option>
           {allSubjects.map((s) => (
@@ -133,6 +138,7 @@ export function CurriculumRecommendations() {
           }
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+          aria-label="Filter by grade level"
         >
           <option value="">All Grades</option>
           {grades.map((g) => (
@@ -151,6 +157,7 @@ export function CurriculumRecommendations() {
           }
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+          aria-label="Filter by curriculum type"
         >
           <option value="">All Types</option>
           {categoryOptions.map((c) => (
@@ -169,6 +176,7 @@ export function CurriculumRecommendations() {
           }
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+          aria-label="Filter by teaching style"
         >
           <option value="">All Styles</option>
           {allStyles.map((s) => (
@@ -188,6 +196,7 @@ export function CurriculumRecommendations() {
           }
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+          aria-label="Filter by price range"
         >
           <option value="">All Prices</option>
           {priceOptions.map((p) => (
@@ -198,15 +207,23 @@ export function CurriculumRecommendations() {
         </select>
 
         {hasFilters && (
-          <Button onClick={clearFilters} variant="ghost" size="sm">
-            <XIcon className="w-4 h-4" />
+          <Button
+            onClick={clearFilters}
+            variant="ghost"
+            size="sm"
+            aria-label="Clear all filters"
+          >
+            <XIcon className="w-4 h-4" aria-hidden="true" />
             Clear
           </Button>
         )}
       </div>
 
       {/* Results count */}
-      <div className="text-sm text-gray-500 dark:text-gray-400">
+      <div
+        className="text-sm text-gray-500 dark:text-gray-400"
+        aria-live="polite"
+      >
         {filteredRecommendations.length} curriculum
         {filteredRecommendations.length !== 1 ? "s" : ""} found
       </div>
@@ -309,11 +326,16 @@ function RecommendationCard({
             size="sm"
             className="p-1 text-gray-400 hover:text-status-error"
             title={isSaved ? "Remove from saved" : "Save for later"}
+            aria-label={isSaved ? "Remove from saved" : "Save for later"}
+            aria-pressed={isSaved}
           >
             {isSaved ? (
-              <HeartFilledIcon className="w-5 h-5 text-status-error" />
+              <HeartFilledIcon
+                className="w-5 h-5 text-status-error"
+                aria-hidden="true"
+              />
             ) : (
-              <HeartIcon className="w-5 h-5" />
+              <HeartIcon className="w-5 h-5" aria-hidden="true" />
             )}
           </Button>
         </div>
@@ -429,11 +451,17 @@ function RecommendationCard({
             rel="noopener noreferrer"
             className="flex-1 px-3 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primaryDark
               text-sm font-medium flex items-center justify-center gap-2"
+            aria-label={`Visit ${recommendation.name} website (opens in new tab)`}
           >
-            <ExternalLinkIcon className="w-4 h-4" />
+            <ExternalLinkIcon className="w-4 h-4" aria-hidden="true" />
             Visit Website
           </a>
-          <Button onClick={onToggleExpand} variant="outline" size="sm">
+          <Button
+            onClick={onToggleExpand}
+            variant="outline"
+            size="sm"
+            aria-expanded={isExpanded}
+          >
             {isExpanded ? "Less" : "Details"}
           </Button>
         </div>

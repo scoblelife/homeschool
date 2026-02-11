@@ -149,7 +149,11 @@ export function ComplianceDeadlines({
 
   if (isLoading) {
     return (
-      <div className={`${className} animate-pulse`}>
+      <div
+        className={`${className} animate-pulse`}
+        aria-busy="true"
+        role="status"
+      >
         <div className="h-4 bg-gray-200 rounded w-1/3 mb-2"></div>
         <div className="h-20 bg-gray-200 rounded"></div>
       </div>
@@ -279,12 +283,15 @@ export function ComplianceDeadlines({
                       ? "bg-status-success border-status-success text-white"
                       : "border-gray-300 hover:border-gray-400"
                   }`}
+                  aria-label={`Mark "${deadline.name}" as ${isCompleted ? "incomplete" : "complete"}`}
+                  aria-pressed={isCompleted}
                 >
                   {isCompleted && (
                     <svg
                       className="w-3 h-3"
                       fill="currentColor"
                       viewBox="0 0 20 20"
+                      aria-hidden="true"
                     >
                       <path
                         fillRule="evenodd"

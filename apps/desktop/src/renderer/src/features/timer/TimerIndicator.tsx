@@ -77,6 +77,7 @@ export function TimerIndicator({ onClick }: TimerIndicatorProps) {
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
+        aria-hidden="true"
       >
         <path
           strokeLinecap="round"
@@ -87,7 +88,13 @@ export function TimerIndicator({ onClick }: TimerIndicatorProps) {
       </svg>
 
       {/* Time display */}
-      <span className="font-mono tabular-nums">{displayTime}</span>
+      <span
+        className="font-mono tabular-nums"
+        aria-live="polite"
+        aria-label={`Timer: ${displayTime}`}
+      >
+        {displayTime}
+      </span>
 
       {/* Subject badge */}
       <span className="text-xs opacity-75 hidden sm:inline">
@@ -103,9 +110,15 @@ export function TimerIndicator({ onClick }: TimerIndicatorProps) {
           isPaused ? "hover:bg-yellow-300" : "hover:bg-status-success"
         }`}
         title={isPaused ? "Resume" : "Pause"}
+        aria-label={isPaused ? "Resume timer" : "Pause timer"}
       >
         {isPaused ? (
-          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            className="w-3 h-3"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
             <path
               fillRule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
@@ -113,7 +126,12 @@ export function TimerIndicator({ onClick }: TimerIndicatorProps) {
             />
           </svg>
         ) : (
-          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            className="w-3 h-3"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
             <path
               fillRule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
@@ -125,7 +143,7 @@ export function TimerIndicator({ onClick }: TimerIndicatorProps) {
 
       {/* Pulsing dot when running */}
       {!isPaused && (
-        <span className="relative flex h-2 w-2">
+        <span className="relative flex h-2 w-2" aria-hidden="true">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-warning opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
         </span>

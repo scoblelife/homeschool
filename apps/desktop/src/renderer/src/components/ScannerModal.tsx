@@ -75,14 +75,22 @@ export default function ScannerModal({
           </Dialog.Title>
 
           {isLoading && (
-            <div className="flex flex-col items-center py-8">
-              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-primary mb-4" />
-              <p className="text-gray-500">Starting scanner...</p>
+            <div className="flex flex-col items-center py-8" aria-busy="true">
+              <div
+                className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-primary mb-4"
+                aria-hidden="true"
+              />
+              <p className="text-gray-500" role="status">
+                Starting scanner...
+              </p>
             </div>
           )}
 
           {error && (
-            <div className="bg-status-errorLight border border-status-errorLight rounded-lg p-4 mb-4">
+            <div
+              className="bg-status-errorLight border border-status-errorLight rounded-lg p-4 mb-4"
+              role="alert"
+            >
               <p className="text-status-errorDark text-sm">{error}</p>
               <Button
                 variant="ghost"
@@ -128,7 +136,7 @@ export default function ScannerModal({
 
               {/* Scanned Books List */}
               {scannedBooks.length > 0 && (
-                <div className="border-t pt-4">
+                <div className="border-t pt-4" aria-live="polite">
                   <h4 className="font-medium text-gray-900 text-sm mb-2">
                     Recently Added ({scannedBooks.length})
                   </h4>
@@ -163,7 +171,10 @@ export default function ScannerModal({
                             </p>
                           )}
                         </div>
-                        <span className="text-status-successDark text-lg">
+                        <span
+                          className="text-status-successDark text-lg"
+                          aria-hidden="true"
+                        >
                           ✓
                         </span>
                       </div>

@@ -121,7 +121,11 @@ export default function Reports(): JSX.Element {
                   className="w-auto"
                 />
               </div>
-              <div className="flex gap-2 ml-auto">
+              <div
+                className="flex gap-2 ml-auto"
+                role="group"
+                aria-label="Quick date range filters"
+              >
                 {quickRanges.map((range) => (
                   <Button
                     variant="secondary"
@@ -151,8 +155,13 @@ export default function Reports(): JSX.Element {
           ) : (
             <>
               {/* Summary Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <Card>
+              <div
+                className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+                aria-live="polite"
+              >
+                <Card
+                  aria-label={`Student: ${selectedStudent?.name}, ${selectedStudent?.gradeLevel}`}
+                >
                   <div className="text-sm font-medium text-gray-500">
                     Student
                   </div>
@@ -163,7 +172,7 @@ export default function Reports(): JSX.Element {
                     {selectedStudent?.gradeLevel}
                   </div>
                 </Card>
-                <Card>
+                <Card aria-label={`${totalActivities} total activities`}>
                   <div className="text-sm font-medium text-gray-500">
                     Total Activities
                   </div>
@@ -171,7 +180,7 @@ export default function Reports(): JSX.Element {
                     {totalActivities}
                   </div>
                 </Card>
-                <Card>
+                <Card aria-label={`${totalHours} total hours`}>
                   <div className="text-sm font-medium text-gray-500">
                     Total Hours
                   </div>
@@ -179,7 +188,7 @@ export default function Reports(): JSX.Element {
                     {totalHours}
                   </div>
                 </Card>
-                <Card>
+                <Card aria-label={`${dailySummaries.length} active days`}>
                   <div className="text-sm font-medium text-gray-500">
                     Active Days
                   </div>
@@ -190,7 +199,7 @@ export default function Reports(): JSX.Element {
               </div>
 
               {/* Subject Breakdown */}
-              <Card className="mb-8">
+              <Card className="mb-8" aria-live="polite">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   By Subject
                 </h2>
@@ -218,7 +227,14 @@ export default function Reports(): JSX.Element {
                               hrs
                             </span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="w-full bg-gray-200 rounded-full h-2"
+                            role="progressbar"
+                            aria-valuenow={Math.round(percentage)}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-label={`${summary.subjectName}: ${Math.round(percentage)}% of total time`}
+                          >
                             <div
                               className="bg-brand-primary h-2 rounded-full transition-all"
                               style={{ width: `${percentage}%` }}
@@ -245,7 +261,7 @@ export default function Reports(): JSX.Element {
               </Card>
 
               {/* Recent Daily Activity */}
-              <Card>
+              <Card aria-live="polite">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Daily Activity
                 </h2>

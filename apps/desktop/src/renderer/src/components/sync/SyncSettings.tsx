@@ -320,7 +320,13 @@ export default function SyncSettings(): JSX.Element {
         <h2 className="text-lg font-semibold text-neutral-text mb-4">
           Family Sync
         </h2>
-        <div className="text-neutral-textSecondary">Loading...</div>
+        <div
+          className="text-neutral-textSecondary"
+          role="status"
+          aria-busy="true"
+        >
+          Loading...
+        </div>
       </Card>
     );
   }
@@ -343,6 +349,7 @@ export default function SyncSettings(): JSX.Element {
                 ? "bg-status-successLight text-status-successDark"
                 : "bg-status-warningLight text-status-warningDark"
             }`}
+            role="status"
           >
             <span
               className={`w-2 h-2 rounded-full ${
@@ -350,6 +357,7 @@ export default function SyncSettings(): JSX.Element {
                   ? "bg-status-success"
                   : "bg-status-warning"
               }`}
+              aria-hidden="true"
             />
             {syncStatus.isConnected ? "Connected" : "Waiting for peers"}
           </div>
@@ -357,7 +365,10 @@ export default function SyncSettings(): JSX.Element {
       </div>
 
       {error && (
-        <div className="bg-status-errorLight border border-status-error/20 rounded-lg p-3 mb-4">
+        <div
+          className="bg-status-errorLight border border-status-error/20 rounded-lg p-3 mb-4"
+          role="alert"
+        >
           <p className="text-sm text-status-errorDark">{error}</p>
           <Button
             variant="ghost"
@@ -486,8 +497,13 @@ export default function SyncSettings(): JSX.Element {
             />
 
             {syncStatus.pendingEvents > 0 && (
-              <div className="mt-3 text-sm text-status-warning flex items-center gap-2">
-                <span className="animate-pulse">●</span>
+              <div
+                className="mt-3 text-sm text-status-warning flex items-center gap-2"
+                role="status"
+              >
+                <span className="animate-pulse" aria-hidden="true">
+                  ●
+                </span>
                 {syncStatus.pendingEvents} event
                 {syncStatus.pendingEvents !== 1 ? "s" : ""} waiting to sync
               </div>
@@ -796,7 +812,13 @@ export default function SyncSettings(): JSX.Element {
                   Sync Health
                 </h3>
                 {isCheckingHealth ? (
-                  <div className="text-neutral-textSecondary">Checking...</div>
+                  <div
+                    className="text-neutral-textSecondary"
+                    role="status"
+                    aria-busy="true"
+                  >
+                    Checking...
+                  </div>
                 ) : healthStatus ? (
                   <div
                     className={`p-3 rounded-lg ${
@@ -804,6 +826,7 @@ export default function SyncSettings(): JSX.Element {
                         ? "bg-status-errorLight border border-status-error/20"
                         : "bg-status-successLight border border-status-success/20"
                     }`}
+                    role="status"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-xl">
@@ -848,6 +871,7 @@ export default function SyncSettings(): JSX.Element {
                       ? "bg-status-successLight border border-status-success/20"
                       : "bg-status-errorLight border border-status-error/20"
                   }`}
+                  role="status"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-xl">
@@ -1067,6 +1091,7 @@ function PeerList({
               className={`w-3 h-3 rounded-full ${
                 peer.isOnline ? "bg-status-success" : "bg-neutral-border"
               }`}
+              aria-hidden="true"
             />
             <div className="flex-1">
               <div className="font-medium text-neutral-text">
@@ -1102,6 +1127,7 @@ function PeerList({
                   disabled={isProcessing}
                   className="text-xs px-2 py-1 text-status-error hover:bg-status-errorLight rounded transition-colors disabled:opacity-50"
                   title="Remove from family"
+                  aria-label={`Remove ${peer.deviceName || "Unknown Device"} from family`}
                 >
                   Remove
                 </Button>

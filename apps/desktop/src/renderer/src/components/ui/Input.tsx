@@ -170,7 +170,11 @@ export function FormField({
         {label}
       </Label>
       {children}
-      {error && <p className="text-sm text-status-errorDark">{error}</p>}
+      {error && (
+        <p className="text-sm text-status-errorDark" role="alert">
+          {error}
+        </p>
+      )}
       {hint && !error && <p className="text-sm text-gray-500">{hint}</p>}
     </div>
   );

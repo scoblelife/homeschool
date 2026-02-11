@@ -75,6 +75,7 @@ export function ActivityStandardsModal({
       <div
         className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Modal */}
@@ -82,6 +83,8 @@ export function ActivityStandardsModal({
         <div
           className="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800
           text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl"
+          role="dialog"
+          aria-label="Map Learning Standards"
         >
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -99,6 +102,7 @@ export function ActivityStandardsModal({
                 variant="ghost"
                 size="sm"
                 className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                aria-label="Close dialog"
               >
                 <CloseIcon />
               </Button>
@@ -147,6 +151,7 @@ function CloseIcon() {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"

@@ -261,10 +261,12 @@ export default function ApiServices(): JSX.Element {
           <div
             key={service.name}
             className={`rounded-lg border p-4 ${getStatusColor(service.status)}`}
+            aria-label={`${service.name}: ${service.status}${service.message ? ` - ${service.message}` : ""}`}
           >
             <div className="flex items-center gap-2 mb-2">
               <div
                 className={`w-2.5 h-2.5 rounded-full ${getStatusDot(service.status)}`}
+                aria-hidden="true"
               />
               <span className="font-medium">{service.name}</span>
             </div>
@@ -293,6 +295,7 @@ export default function ApiServices(): JSX.Element {
                   ? "bg-status-successLight text-status-successDark"
                   : "bg-neutral-backgroundDeep text-neutral-textSecondary"
               }`}
+              aria-label={`AI service is ${aiConfig.enabled ? "enabled" : "disabled"}`}
             >
               {aiConfig.enabled ? "Enabled" : "Disabled"}
             </span>
@@ -387,6 +390,8 @@ export default function ApiServices(): JSX.Element {
                   ? "bg-status-successLight border border-status-success"
                   : "bg-status-errorLight border border-status-error"
               }`}
+              role="alert"
+              aria-live="polite"
             >
               <p
                 className={`text-sm ${aiTestResult.success ? "text-status-successDark" : "text-status-errorDark"}`}
@@ -415,6 +420,7 @@ export default function ApiServices(): JSX.Element {
                 ? "bg-status-successLight text-status-successDark"
                 : "bg-neutral-backgroundDeep text-neutral-textSecondary"
             }`}
+            aria-label={`Google Calendar is ${googleAuthStatus === "connected" ? "connected" : googleAuthStatus === "disconnected" ? "not connected" : "not configured"}`}
           >
             {googleAuthStatus === "connected"
               ? "Connected"

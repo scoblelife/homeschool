@@ -39,7 +39,7 @@ export function MapLink({
       className={`inline-flex items-center gap-1 text-status-infoDark hover:text-status-infoDark hover:underline ${className}`}
       title={`Open "${location}" in Google Maps`}
     >
-      {showIcon && <MapPinIcon className="w-4 h-4" />}
+      {showIcon && <MapPinIcon className="w-4 h-4" aria-hidden="true" />}
       <span>{location}</span>
     </Button>
   );
@@ -89,8 +89,9 @@ export function MapButton({ location }: { location: string }) {
       size="sm"
       className="p-1.5 text-gray-500 hover:text-status-infoDark hover:bg-status-infoLight rounded"
       title={`View "${location}" on map`}
+      aria-label={`View "${location}" on map`}
     >
-      <MapPinIcon className="w-4 h-4" />
+      <MapPinIcon className="w-4 h-4" aria-hidden="true" />
     </Button>
   );
 }

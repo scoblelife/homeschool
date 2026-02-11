@@ -173,6 +173,7 @@ export function GradeCertificate({ student, isOpen, onClose }: Props) {
                 variant="primary"
                 onClick={handlePrint}
                 disabled={isPrinting}
+                aria-busy={isPrinting}
               >
                 {isPrinting ? "Preparing..." : "Print Certificate"}
               </Button>

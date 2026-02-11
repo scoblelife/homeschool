@@ -13,6 +13,7 @@ function ChevronLeftIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
+      aria-hidden="true"
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
     </svg>
@@ -27,6 +28,7 @@ function ChevronRightIcon({ className }: { className?: string }) {
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
+      aria-hidden="true"
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
     </svg>
@@ -204,6 +206,7 @@ export function AttendanceCalendar({ students }: Props) {
               <button
                 key={student.id}
                 onClick={() => setSelectedStudentId(student.id)}
+                aria-pressed={selectedStudentId === student.id}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedStudentId === student.id
                     ? `bg-${student.color}-100 text-${student.color}-700 dark:bg-${student.color}-900 dark:text-${student.color}-300 ring-2 ring-${student.color}-500`
@@ -232,6 +235,7 @@ export function AttendanceCalendar({ students }: Props) {
         <button
           onClick={handlePrevMonth}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          aria-label="Previous month"
         >
           <ChevronLeftIcon className="w-5 h-5" />
         </button>
@@ -247,6 +251,7 @@ export function AttendanceCalendar({ students }: Props) {
         <button
           onClick={handleNextMonth}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+          aria-label="Next month"
         >
           <ChevronRightIcon className="w-5 h-5" />
         </button>
@@ -303,6 +308,7 @@ export function AttendanceCalendar({ students }: Props) {
                 <div
                   className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full ${STATUS_COLORS[record.status]}`}
                   title={STATUS_LABELS[record.status]}
+                  aria-hidden="true"
                 />
               )}
             </button>
@@ -311,10 +317,16 @@ export function AttendanceCalendar({ students }: Props) {
       </div>
 
       {/* Legend */}
-      <div className="mt-6 flex flex-wrap gap-4 justify-center">
+      <div
+        className="mt-6 flex flex-wrap gap-4 justify-center"
+        aria-label="Attendance legend"
+      >
         {ALL_STATUSES.map((status) => (
           <div key={status} className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${STATUS_COLORS[status]}`} />
+            <div
+              className={`w-3 h-3 rounded-full ${STATUS_COLORS[status]}`}
+              aria-hidden="true"
+            />
             <span className="text-sm text-gray-600 dark:text-gray-400">
               {STATUS_LABELS[status]}
             </span>
@@ -354,6 +366,7 @@ export function AttendanceCalendar({ students }: Props) {
                   <button
                     key={status}
                     onClick={() => handleStatusSelect(status)}
+                    aria-pressed={currentRecord?.status === status}
                     className={`
                       w-full flex items-center gap-3 p-3 rounded-lg border transition-colors
                       ${
@@ -365,6 +378,7 @@ export function AttendanceCalendar({ students }: Props) {
                   >
                     <div
                       className={`w-4 h-4 rounded-full ${STATUS_COLORS[status]}`}
+                      aria-hidden="true"
                     />
                     <span className="font-medium text-gray-900 dark:text-white">
                       {STATUS_LABELS[status]}

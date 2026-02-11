@@ -174,7 +174,10 @@ The narrative should read as a cohesive educational summary suitable for inclusi
   // Don't show if AI not available
   if (isInitialized && !isAvailable) {
     return (
-      <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div
+        className="p-4 bg-gray-50 rounded-lg border border-gray-200"
+        role="status"
+      >
         <p className="text-sm text-gray-500">
           AI narrative generation requires an API key. Configure in Settings to
           enable this feature.
@@ -185,7 +188,11 @@ The narrative should read as a cohesive educational summary suitable for inclusi
 
   if (!isInitialized) {
     return (
-      <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div
+        className="p-4 bg-gray-50 rounded-lg border border-gray-200"
+        role="status"
+        aria-busy="true"
+      >
         <p className="text-sm text-gray-500">Initializing AI...</p>
       </div>
     );
@@ -237,7 +244,10 @@ The narrative should read as a cohesive educational summary suitable for inclusi
 
       {/* Generated Narrative */}
       {narrative && (
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div
+          className="border border-gray-200 rounded-lg overflow-hidden"
+          aria-live="polite"
+        >
           <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">
               Generated Narrative
@@ -249,6 +259,7 @@ The narrative should read as a cohesive educational summary suitable for inclusi
                 onClick={() => {
                   navigator.clipboard.writeText(narrative);
                 }}
+                aria-label="Copy narrative to clipboard"
                 className="text-xs text-brand-primary hover:text-brand-primaryDark p-0 h-auto"
               >
                 Copy
@@ -282,7 +293,10 @@ The narrative should read as a cohesive educational summary suitable for inclusi
 
       {/* Error */}
       {(error || localError) && (
-        <div className="p-3 bg-status-errorLight border border-status-error rounded-lg">
+        <div
+          role="alert"
+          className="p-3 bg-status-errorLight border border-status-error rounded-lg"
+        >
           <p className="text-sm text-status-error">{localError || error}</p>
         </div>
       )}

@@ -332,6 +332,7 @@ export default function VoiceInput({
         onClick={handleOpen}
         className="fixed bottom-6 right-24 w-14 h-14 bg-status-successDark hover:bg-status-success text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center text-2xl z-40 p-0"
         title="Voice Input"
+        aria-label="Voice Input"
       >
         🎤
       </Button>
@@ -376,7 +377,10 @@ export default function VoiceInput({
                   <div className="p-6">
                     {/* Error Message */}
                     {error && (
-                      <div className="mb-4 p-3 bg-status-errorLight border border-status-error/20 rounded-lg text-status-error text-sm">
+                      <div
+                        role="alert"
+                        className="mb-4 p-3 bg-status-errorLight border border-status-error/20 rounded-lg text-status-error text-sm"
+                      >
                         {error}
                       </div>
                     )}
@@ -386,6 +390,10 @@ export default function VoiceInput({
                       {}
                       <button
                         onClick={isListening ? stopListening : startListening}
+                        aria-label={
+                          isListening ? "Stop listening" : "Start listening"
+                        }
+                        aria-pressed={isListening}
                         className={`w-20 h-20 rounded-full flex items-center justify-center text-4xl transition-all ${
                           isListening
                             ? "bg-status-error hover:bg-status-errorDark animate-pulse"
@@ -403,7 +411,10 @@ export default function VoiceInput({
 
                     {/* Transcript Display */}
                     {transcript && (
-                      <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <div
+                        className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                        aria-live="polite"
+                      >
                         <div className="text-xs text-gray-500 mb-1">
                           You said:
                         </div>
@@ -486,7 +497,16 @@ export default function VoiceInput({
                             <span className="text-xs text-gray-500">
                               Confidence:
                             </span>
-                            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden"
+                              role="progressbar"
+                              aria-valuenow={Math.round(
+                                parsedActivity.confidence * 100,
+                              )}
+                              aria-valuemin={0}
+                              aria-valuemax={100}
+                              aria-label="Confidence level"
+                            >
                               <div
                                 className={`h-full transition-all ${
                                   parsedActivity.confidence >= 0.75
@@ -527,6 +547,7 @@ export default function VoiceInput({
                           isProcessing
                         }
                         className="flex-1 bg-status-successDark hover:bg-status-success"
+                        aria-busy={isProcessing}
                       >
                         {isProcessing ? "Saving..." : "Log Activity"}
                       </Button>

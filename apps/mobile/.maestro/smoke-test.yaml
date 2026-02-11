@@ -1,0 +1,61 @@
+appId: com.scoblelife.homeschool
+---
+# Smoke Test: navigate all tabs and More menu items
+# Verifies no crashes on any screen
+
+- launchApp
+
+# Tab 1: Today
+- tapOn: "Today"
+- assertVisible: "Today"
+
+# Tab 2: Log
+- tapOn: "Log"
+- assertVisible: "What did you do?"
+
+# Tab 3: Progress
+- tapOn: "Progress"
+
+# Tab 4: More - navigate to each sub-screen
+- tapOn: "More"
+- assertVisible: "Calendar"
+
+# Calendar
+- tapOn: "Calendar"
+- assertVisible: "Sun"
+- back
+
+# Events & Field Trips
+- tapOn: "Events & Field Trips"
+- back
+
+# Library
+- tapOn: "Library"
+- assertVisible: "Library"
+- back
+
+# Milestones
+- tapOn: "Milestones"
+- back
+
+# Weekly Planner
+- tapOn: "Weekly Planner"
+- back
+
+# Reports
+- tapOn: "Reports"
+- back
+
+# Sync
+- tapOn: "Sync"
+- assertVisible: "Family Sync"
+- back
+
+# Settings
+- tapOn: "Settings"
+- assertVisible: "Settings"
+- back
+
+# Return to Today
+- tapOn: "Today"
+- assertVisible: "Today"

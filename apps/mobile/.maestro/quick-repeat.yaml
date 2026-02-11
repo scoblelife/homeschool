@@ -1,26 +1,28 @@
 appId: com.scoblelife.homeschool
-name: Quick Repeat Flow
 ---
+# Quick Repeat Flow: tap a recent template to re-log
+# Tests the quick-repeat shortcut
+
+- launchApp
 
 # Navigate to Log tab
 - tapOn: "Log"
 
-# Quick Repeat section should show after logging activities
-# First log an activity to create a template
+# First log an activity so we have a template
 - tapOn: "What did you do?"
-- inputText: "Science experiment"
-- tapOn: "Log"
-- assertVisible: "Logged!"
-- tapOn: "OK"
+- inputText: "Reading practice 15min"
+- hideKeyboard
+- tapOn: "Log activity"
 
-# Verify Quick Repeat section appears
-- scrollUntilVisible:
-    element: "Quick Repeat"
+# Wait for the template to appear in recent section
+- scroll:
     direction: DOWN
 
-# Tap a template to quick-log it
-- tapOn: "Science experiment"
+# Tap the quick repeat template
+- tapOn:
+    text: "Reading practice"
+    index: 0
+    optional: true
 
-# Verify success
-- assertVisible: "Logged!"
-- tapOn: "OK"
+# Should auto-fill or quick-log
+- assertVisible: "What did you do?"

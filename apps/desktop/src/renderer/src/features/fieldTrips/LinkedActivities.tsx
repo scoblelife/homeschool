@@ -102,7 +102,7 @@ export function LinkedActivities({
     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between mb-3">
         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-          <LinkIcon className="w-4 h-4" />
+          <LinkIcon className="w-4 h-4" aria-hidden="true" />
           Linked Activities
         </h4>
         <Button
@@ -111,7 +111,7 @@ export function LinkedActivities({
           size="sm"
           className="text-xs text-status-infoDark hover:text-status-infoDark"
         >
-          <PlusIcon className="w-3 h-3" />
+          <PlusIcon className="w-3 h-3" aria-hidden="true" />
           Link Activity
         </Button>
       </div>
@@ -144,8 +144,9 @@ export function LinkedActivities({
                 size="sm"
                 className="ml-2 p-1 text-gray-400 hover:text-status-error transition-colors"
                 title="Unlink activity"
+                aria-label="Unlink activity"
               >
-                <XIcon className="w-4 h-4" />
+                <XIcon className="w-4 h-4" aria-hidden="true" />
               </Button>
             </li>
           ))}
@@ -307,7 +308,7 @@ export function LinkedCountBadge({ fieldTripId }: LinkedCountBadgeProps) {
       className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-status-infoLight text-status-infoDark dark:bg-status-infoDark/30 dark:text-status-infoLight rounded-full"
       title={`${count} linked ${count === 1 ? "activity" : "activities"}`}
     >
-      <LinkIcon className="w-3 h-3" />
+      <LinkIcon className="w-3 h-3" aria-hidden="true" />
       {count}
     </span>
   );

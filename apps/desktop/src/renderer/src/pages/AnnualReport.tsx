@@ -241,12 +241,14 @@ export default function AnnualReport(): JSX.Element {
                 variant="ghost"
                 size="sm"
                 onClick={() => setCurrentYear((y) => y - 1)}
+                aria-label="Previous year"
               >
                 <svg
                   className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -264,12 +266,14 @@ export default function AnnualReport(): JSX.Element {
                 size="sm"
                 onClick={() => setCurrentYear((y) => y + 1)}
                 disabled={currentYear >= new Date().getFullYear()}
+                aria-label="Next year"
               >
                 <svg
                   className="w-5 h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -293,7 +297,10 @@ export default function AnnualReport(): JSX.Element {
       ) : currentYearStats ? (
         <>
           {/* Year Overview Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div
+            className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+            aria-live="polite"
+          >
             <StatCard
               title="Total Activities"
               value={currentYearStats.totalActivities}
@@ -339,7 +346,11 @@ export default function AnnualReport(): JSX.Element {
             <h2 className="text-lg font-semibold text-neutral-text mb-4">
               Monthly Activity
             </h2>
-            <div className="flex items-end gap-2 h-48">
+            <div
+              className="flex items-end gap-2 h-48"
+              role="img"
+              aria-label="Monthly activity bar chart comparing current and previous year"
+            >
               {currentYearStats.monthlyData.map((month, i) => {
                 const height = (month.activities / maxMonthlyActivities) * 100;
                 const previousMonth = previousYearStats?.monthlyData[i];
@@ -419,7 +430,21 @@ export default function AnnualReport(): JSX.Element {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-4 bg-neutral-backgroundDeep rounded-full overflow-hidden">
+                        <div
+                          className="flex-1 h-4 bg-neutral-backgroundDeep rounded-full overflow-hidden"
+                          role="progressbar"
+                          aria-valuenow={Math.round(
+                            Math.min(
+                              (current.minutes /
+                                Math.max(currentYearStats.totalMinutes, 1)) *
+                                100,
+                              100,
+                            ),
+                          )}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-label={`${subject.name}: ${formatHours(current.minutes)}`}
+                        >
                           <div
                             className={`h-full ${getStudentColor(selectedStudent.color).bg} transition-all`}
                             style={{
@@ -545,7 +570,10 @@ function StatCard({
   const isPositive = change >= 0;
 
   return (
-    <Card className="bg-gradient-to-br from-white to-neutral-backgroundDeep">
+    <Card
+      className="bg-gradient-to-br from-white to-neutral-backgroundDeep"
+      aria-label={`${title}: ${formatValue(value)}`}
+    >
       <div className="text-sm font-medium text-neutral-textSecondary">
         {title}
       </div>

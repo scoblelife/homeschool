@@ -1,45 +1,63 @@
 appId: com.scoblelife.homeschool
-name: Library Reading Flow
 ---
+# Library Flow: add book → log reading → mark finished
+# Tests reading tracking lifecycle
 
-# Navigate to Library via More tab
+- launchApp
+
+# Navigate to Library via More menu
 - tapOn: "More"
 - tapOn: "Library"
-
-# Verify Library screen loaded
 - assertVisible: "Library"
 
 # Add a new book
-- tapOn:
-    id: "add-book-button"
+- tapOn: "Add Book"
 
 # Fill in book details
-- tapOn: "Title"
+- tapOn:
+    text: "Title"
+    optional: true
 - inputText: "Charlotte's Web"
+- hideKeyboard
 
-- tapOn: "Author"
+- tapOn:
+    text: "Author"
+    optional: true
 - inputText: "E.B. White"
+- hideKeyboard
+
+- tapOn:
+    text: "Total Pages"
+    optional: true
+- inputText: "184"
+- hideKeyboard
 
 # Save the book
-- tapOn: "Save"
+- tapOn: "Add"
 
-# Verify book appears in library
+# Verify book appears in list
 - assertVisible: "Charlotte's Web"
 
-# Tap on the book to view details
+# Tap on the book to see details
 - tapOn: "Charlotte's Web"
 
-# Log reading progress
+# Change status to Reading
+- tapOn: "Reading"
+
+# Log some reading progress
 - tapOn: "Log Reading"
-- tapOn: "Pages read"
-- inputText: "25"
-- tapOn: "Save"
+- tapOn: "How many pages"
+- inputText: "45"
+- hideKeyboard
+- tapOn: "Log"
 
 # Mark as finished
-- scrollUntilVisible:
-    element: "Mark as Finished"
-    direction: DOWN
-- tapOn: "Mark as Finished"
+- tapOn: "Completed"
 
-# Verify finished status
-- assertVisible: "Finished"
+# Go back to library list
+- back:
+    optional: true
+
+# Verify with Finished filter
+- tapOn: "Finished"
+- assertVisible: "Charlotte's Web"

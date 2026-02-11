@@ -213,10 +213,16 @@ export default function Activities(): JSX.Element {
         }
       />
       {/* Filter by type */}
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div
+        className="mb-6 flex flex-wrap gap-2"
+        role="radiogroup"
+        aria-label="Filter by activity type"
+      >
         {}
         <button
           onClick={() => setFilterType("")}
+          role="radio"
+          aria-checked={filterType === ""}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             filterType === ""
               ? "bg-brand-primaryLight text-brand-primaryDark"
@@ -229,6 +235,8 @@ export default function Activities(): JSX.Element {
           <button
             key={type.value}
             onClick={() => setFilterType(type.value)}
+            role="radio"
+            aria-checked={filterType === type.value}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
               filterType === type.value
                 ? "bg-brand-primaryLight text-brand-primaryDark"
@@ -251,7 +259,7 @@ export default function Activities(): JSX.Element {
           </Button>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4" aria-live="polite">
           {filteredActivities.map((activity) => {
             const student = getStudentById(activity.studentId);
             const subject = getSubjectById(activity.subjectId);
@@ -315,6 +323,7 @@ export default function Activities(): JSX.Element {
                     variant="ghost"
                     size="sm"
                     className="text-status-error hover:text-status-errorDark"
+                    aria-label={`Delete activity: ${activity.title}`}
                   >
                     Delete
                   </Button>
@@ -368,11 +377,17 @@ export default function Activities(): JSX.Element {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Activity Type
             </label>
-            <div className="grid grid-cols-4 gap-2">
+            <div
+              className="grid grid-cols-4 gap-2"
+              role="radiogroup"
+              aria-label="Activity type"
+            >
               {activityTypes.map((type) => (
                 <button
                   key={type.value}
                   type="button"
+                  role="radio"
+                  aria-checked={formData.activityType === type.value}
                   onClick={() =>
                     setFormData({ ...formData, activityType: type.value })
                   }
@@ -403,11 +418,16 @@ export default function Activities(): JSX.Element {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Students *
               </label>
-              <div className="flex flex-wrap gap-2">
+              <div
+                className="flex flex-wrap gap-2"
+                role="group"
+                aria-label="Select students"
+              >
                 {students.map((s) => (
                   <button
                     key={s.id}
                     type="button"
+                    aria-pressed={selectedStudentIds.includes(s.id)}
                     onClick={() => {
                       if (selectedStudentIds.includes(s.id)) {
                         setSelectedStudentIds(

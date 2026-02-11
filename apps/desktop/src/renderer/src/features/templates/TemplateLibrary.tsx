@@ -86,7 +86,10 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
     <div className="space-y-6">
       {/* Search */}
       <div className="relative">
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <SearchIcon
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+          aria-hidden="true"
+        />
         <Input
           type="text"
           placeholder="Search templates..."
@@ -95,6 +98,7 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
             setSearchQuery(e.target.value)
           }
           className="pl-10"
+          aria-label="Search templates"
         />
       </div>
 
@@ -105,6 +109,7 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
           onChange={(e) => setSelectedSubject(e.target.value || null)}
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          aria-label="Filter by subject"
         >
           <option value="">All Subjects</option>
           {allSubjects.map((s) => (
@@ -121,6 +126,7 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
           }
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          aria-label="Filter by grade level"
         >
           <option value="">All Grades</option>
           {grades.slice(0, 5).map((g) => (
@@ -139,6 +145,7 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
           }
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          aria-label="Filter by category"
         >
           <option value="">All Categories</option>
           {categories.map((c) => (
@@ -149,8 +156,13 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
         </select>
 
         {hasFilters && (
-          <Button onClick={clearFilters} variant="ghost" size="sm">
-            <XIcon className="w-4 h-4" />
+          <Button
+            onClick={clearFilters}
+            variant="ghost"
+            size="sm"
+            aria-label="Clear all filters"
+          >
+            <XIcon className="w-4 h-4" aria-hidden="true" />
             Clear filters
           </Button>
         )}
@@ -187,7 +199,7 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
                 variant="secondary"
                 size="sm"
               >
-                <ClockIcon className="w-4 h-4" />
+                <ClockIcon className="w-4 h-4" aria-hidden="true" />
                 {template.name}
               </Button>
             ))}
@@ -210,7 +222,7 @@ export function TemplateLibrary({ onSelectTemplate, studentGrade }: Props) {
                 size="sm"
                 className="bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-900/50"
               >
-                <StarFilledIcon className="w-4 h-4" />
+                <StarFilledIcon className="w-4 h-4" aria-hidden="true" />
                 {template.name}
               </Button>
             ))}
@@ -305,11 +317,18 @@ function TemplateCard({
             variant="ghost"
             size="sm"
             className="p-1 text-gray-400 hover:text-yellow-500"
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
+            aria-pressed={isFavorite}
           >
             {isFavorite ? (
-              <StarFilledIcon className="w-5 h-5 text-yellow-500" />
+              <StarFilledIcon
+                className="w-5 h-5 text-yellow-500"
+                aria-hidden="true"
+              />
             ) : (
-              <StarIcon className="w-5 h-5" />
+              <StarIcon className="w-5 h-5" aria-hidden="true" />
             )}
           </Button>
         </div>
@@ -390,10 +409,15 @@ function TemplateCard({
             size="sm"
             className="flex-1"
           >
-            <PlusIcon className="w-4 h-4" />
+            <PlusIcon className="w-4 h-4" aria-hidden="true" />
             Add Activity
           </Button>
-          <Button onClick={onToggleExpand} variant="ghost" size="sm">
+          <Button
+            onClick={onToggleExpand}
+            variant="ghost"
+            size="sm"
+            aria-expanded={isExpanded}
+          >
             {isExpanded ? "Less" : "More"}
           </Button>
         </div>

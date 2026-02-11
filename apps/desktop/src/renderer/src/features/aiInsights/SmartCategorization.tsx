@@ -327,8 +327,16 @@ export function SubjectSuggestions({
   return (
     <div className="mt-2">
       {isLoading ? (
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+        <div
+          className="flex items-center gap-2 text-sm text-gray-500"
+          role="status"
+          aria-busy="true"
+        >
+          <svg
+            className="animate-spin h-4 w-4"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
             <circle
               className="opacity-25"
               cx="12"
@@ -347,17 +355,22 @@ export function SubjectSuggestions({
           Analyzing activity...
         </div>
       ) : suggestions.length > 0 ? (
-        <div>
+        <div aria-live="polite">
           <div className="text-xs text-gray-500 mb-1.5 flex items-center gap-1">
-            <span>✨</span> AI Suggestions:
+            <span aria-hidden="true">✨</span> AI Suggestions:
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div
+            className="flex flex-wrap gap-2"
+            role="group"
+            aria-label="Subject suggestions"
+          >
             {suggestions.map((suggestion) => (
               <Button
                 key={suggestion.subjectId}
                 onClick={() => onSelect(suggestion.subjectId)}
                 variant="ghost"
                 size="sm"
+                aria-pressed={selectedSubjectId === suggestion.subjectId}
                 className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
                   selectedSubjectId === suggestion.subjectId
                     ? "bg-brand-primaryLight border-brand-primaryLight text-brand-primaryDark"
@@ -375,7 +388,11 @@ export function SubjectSuggestions({
         </div>
       ) : null}
 
-      {error && <div className="text-xs text-status-error mt-1">{error}</div>}
+      {error && (
+        <div role="alert" className="text-xs text-status-error mt-1">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

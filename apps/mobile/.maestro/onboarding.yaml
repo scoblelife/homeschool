@@ -1,48 +1,60 @@
 appId: com.scoblelife.homeschool
-name: Onboarding Flow
 ---
+# Onboarding Flow: carousel → add student → select state
+# Verifies complete first-run experience
 
-# Onboarding carousel → Add student → Select state
+- launchApp
 
-# Welcome carousel - slide 1
+# Slide 1: Welcome
 - assertVisible: "Welcome to Homeschool"
-- assertVisible: "Skip"
-
-# Swipe through carousel slides
 - tapOn: "Next"
+
+# Slide 2: Log Learning
 - assertVisible: "Log Learning Instantly"
-
 - tapOn: "Next"
+
+# Slide 3: Celebrate Progress
 - assertVisible: "Celebrate Progress"
-
 - tapOn: "Next"
-- assertVisible: "Stay Compliant"
 
-# Final slide shows "Get Started"
+# Slide 4: Stay Compliant - final slide
+- assertVisible: "Stay Compliant"
 - tapOn: "Get Started"
 
-# Student setup screen
+# Student Setup Screen
 - assertVisible: "Add Your Students"
-- assertVisible: "Student 1"
 
-# Fill in student name
+# Fill in first student name
 - tapOn: "Student's name"
-- inputText: "Test Student"
+- inputText: "Alice"
+- hideKeyboard
 
-# Select grade level
-- scrollUntilVisible:
-    element: "3rd Grade"
-    direction: RIGHT
+# Select grade
 - tapOn: "3rd Grade"
 
-# Select a color (tap Teal)
+# Select color (fuchsia is default, select teal for visibility)
 - tapOn:
     id: "color-Teal"
 
-# Submit
+# Add second student
+- tapOn: "Add another student"
+
+# Fill second student
+- scrollUntilVisible:
+    element: "Student's name"
+    direction: DOWN
+- tapOn:
+    text: "Student's name"
+    index: 1
+- inputText: "Bob"
+- hideKeyboard
+
+- tapOn: "5th Grade"
+
+# Continue to state selection
 - tapOn: "Continue"
 
-# State selection screen
+# State Selection Screen
 - assertVisible: "Select Your State"
 
 # Search for Nevada
@@ -55,5 +67,5 @@ name: Onboarding Flow
 # Finish setup
 - tapOn: "Finish Setup"
 
-# Verify we land on Today tab
-- assertVisible: "Today's Activities"
+# Should land on Today tab
+- assertVisible: "Today"

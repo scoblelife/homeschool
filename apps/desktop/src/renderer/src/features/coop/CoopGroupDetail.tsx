@@ -189,6 +189,7 @@ export function CoopGroupDetail({
           <Button
             variant="ghost"
             onClick={handleCopyCode}
+            aria-label={copiedCode ? "Invite code copied" : "Copy invite code"}
             className="flex items-center gap-2 px-3 py-1.5 bg-neutral-backgroundSecondary dark:bg-gray-700 rounded-lg hover:bg-neutral-border dark:hover:bg-gray-600 transition-colors"
           >
             <span className="font-mono text-lg tracking-widest text-neutral-text dark:text-white">
@@ -204,10 +205,17 @@ export function CoopGroupDetail({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-neutral-border dark:border-gray-700 mb-6">
+      <div
+        className="flex gap-4 border-b border-neutral-border dark:border-gray-700 mb-6"
+        role="tablist"
+        aria-label="Group sections"
+      >
         {}
         <button
           onClick={() => setActiveTab("events")}
+          role="tab"
+          aria-selected={activeTab === "events"}
+          aria-controls="tabpanel-events"
           className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
             activeTab === "events"
               ? "border-brand-primary text-brand-primaryDark"
@@ -219,6 +227,9 @@ export function CoopGroupDetail({
         {}
         <button
           onClick={() => setActiveTab("members")}
+          role="tab"
+          aria-selected={activeTab === "members"}
+          aria-controls="tabpanel-members"
           className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
             activeTab === "members"
               ? "border-brand-primary text-brand-primaryDark"
@@ -230,6 +241,9 @@ export function CoopGroupDetail({
         {}
         <button
           onClick={() => setActiveTab("sharing")}
+          role="tab"
+          aria-selected={activeTab === "sharing"}
+          aria-controls="tabpanel-sharing"
           className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
             activeTab === "sharing"
               ? "border-brand-primary text-brand-primaryDark"
@@ -242,7 +256,7 @@ export function CoopGroupDetail({
 
       {/* Events Tab */}
       {activeTab === "events" && (
-        <div>
+        <div id="tabpanel-events" role="tabpanel" aria-label="Events">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-medium text-neutral-text dark:text-white">
               Upcoming Events
@@ -299,7 +313,7 @@ export function CoopGroupDetail({
 
       {/* Members Tab */}
       {activeTab === "members" && (
-        <div>
+        <div id="tabpanel-members" role="tabpanel" aria-label="Members">
           <div className="space-y-3">
             {members.map((member) => (
               <div
@@ -329,6 +343,7 @@ export function CoopGroupDetail({
                     size="sm"
                     onClick={() => handleRemoveMember(member.id)}
                     className="text-neutral-textTertiary hover:text-status-error transition-colors p-1"
+                    aria-label={`Remove ${member.familyName}`}
                     title="Remove member"
                   >
                     <XIcon className="w-5 h-5" />
@@ -353,7 +368,7 @@ export function CoopGroupDetail({
 
       {/* Sharing Tab */}
       {activeTab === "sharing" && (
-        <div>
+        <div id="tabpanel-sharing" role="tabpanel" aria-label="Sharing">
           <div className="bg-status-infoLight border border-status-info/20 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-3">
               <ShieldIcon className="w-5 h-5 text-status-info mt-0.5" />
@@ -608,6 +623,7 @@ function EventCard({
             size="sm"
             onClick={onDelete}
             className="text-neutral-textTertiary hover:text-status-error transition-colors p-1"
+            aria-label={`Delete event: ${event.title}`}
             title="Delete event"
           >
             <TrashIcon className="w-4 h-4" />
@@ -626,6 +642,7 @@ function ChevronLeftIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -644,6 +661,7 @@ function CheckIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -662,6 +680,7 @@ function CopyIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -680,6 +699,7 @@ function CalendarIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -698,6 +718,7 @@ function UserIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -716,6 +737,7 @@ function XIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -734,6 +756,7 @@ function TrashIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -752,6 +775,7 @@ function ShieldIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -786,6 +810,9 @@ function SharingToggle({
       {}
       <button
         onClick={() => onChange(!enabled)}
+        role="switch"
+        aria-checked={enabled}
+        aria-label={label}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
           enabled ? "bg-brand-primary" : "bg-neutral-border dark:bg-gray-600"
         }`}

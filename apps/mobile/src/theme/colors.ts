@@ -31,6 +31,7 @@ export interface ColorTheme {
   successLight: string;
   warning: string;
   warningLight: string;
+  warningDark: string;
   error: string;
   errorLight: string;
 
@@ -72,6 +73,7 @@ export const lightColors: ColorTheme = {
   successLight: tokens.ColorsStatusSuccessLight,
   warning: tokens.ColorsStatusWarning,
   warningLight: tokens.ColorsStatusWarningLight,
+  warningDark: tokens.ColorsStatusWarningDark,
   error: tokens.ColorsStatusError,
   errorLight: tokens.ColorsStatusErrorLight,
 
@@ -113,6 +115,7 @@ export const darkColors: ColorTheme = {
   successLight: "#14532d",
   warning: "#fbbf24",
   warningLight: "#422006",
+  warningDark: "#92400e",
   error: "#f87171",
   errorLight: "#450a0a",
 

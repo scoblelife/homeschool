@@ -93,6 +93,7 @@ export function AIWeeklySummary({
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -122,6 +123,8 @@ export function AIWeeklySummary({
           <Button
             variant="ghost"
             onClick={() => setIsExpanded(!isExpanded)}
+            aria-expanded={isExpanded}
+            aria-label="AI Weekly Summary"
             className="w-full px-4 py-3 flex items-center justify-between hover:bg-student-purple-100/50 transition-colors rounded-none h-auto"
           >
             <div className="flex items-center gap-2">
@@ -135,6 +138,7 @@ export function AIWeeklySummary({
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -176,7 +180,11 @@ export function AIWeeklySummary({
           disabled={isGenerating || weekData.totalActivities === 0}
           className={`w-full p-3 bg-gradient-to-r from-student-purple-50 to-brand-primaryLight rounded-lg border border-student-purple-100 hover:from-student-purple-100 hover:to-brand-primaryLight transition-colors h-auto`}
         >
-          <div className="flex items-center justify-center gap-2">
+          <div
+            className="flex items-center justify-center gap-2"
+            aria-live="polite"
+            aria-busy={isGenerating}
+          >
             {isGenerating ? (
               <>
                 <svg
@@ -184,6 +192,7 @@ export function AIWeeklySummary({
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <circle
                     className="opacity-25"
@@ -223,7 +232,10 @@ export function AIWeeklySummary({
       )}
 
       {(error || localError) && (
-        <div className="mt-2 p-2 bg-status-errorLight border border-status-errorLight rounded text-sm text-status-error">
+        <div
+          role="alert"
+          className="mt-2 p-2 bg-status-errorLight border border-status-errorLight rounded text-sm text-status-error"
+        >
           {localError || error}
         </div>
       )}

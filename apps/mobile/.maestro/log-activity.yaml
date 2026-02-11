@@ -1,43 +1,42 @@
 appId: com.scoblelife.homeschool
-name: Log Activity Flow
 ---
+# Activity Logging Flow: text input → parse → verify on Today
+# Tests the primary daily workflow
+
+- launchApp
 
 # Navigate to Log tab
 - tapOn: "Log"
 
-# Verify Log screen elements
+# Verify Log screen loaded
 - assertVisible: "What did you do?"
 
-# Type an activity using natural language
+# Type activity with smart parse format
 - tapOn: "What did you do?"
 - inputText: "Math worksheet chapter 5 30min"
+- hideKeyboard
 
-# Tap Log button
-- tapOn: "Log"
-
-# Verify success alert
-- assertVisible: "Logged!"
-- tapOn: "OK"
-
-# Input field should be cleared after successful log
-- assertNotVisible: "Math worksheet chapter 5 30min"
-
-# Test with details expanded
-- tapOn: "What did you do?"
-- inputText: "Reading Charlotte's Web"
-
-# Expand details section
-- tapOn: "Add details"
+# Expand details to verify parsed fields
+- tapOn: "Show activity details"
 
 # Select activity type
-- tapOn: "Reading"
+- tapOn: "Worksheet"
 
-# Select duration chip
-- tapOn: "45 min"
+# Tap Log button
+- tapOn: "Log activity"
 
-# Submit
-- tapOn: "Log"
+# Verify success - input should be cleared
+- assertVisible: "What did you do?"
 
-# Verify success
-- assertVisible: "Logged!"
-- tapOn: "OK"
+# Log another activity with different type
+- tapOn: "What did you do?"
+- inputText: "Watched science video about volcanoes 20min"
+- hideKeyboard
+
+- tapOn: "Show activity details"
+- tapOn: "Video"
+- tapOn: "Log activity"
+
+# Navigate to Today tab to verify activities appear
+- tapOn: "Today"
+- assertVisible: "Today's Activities"

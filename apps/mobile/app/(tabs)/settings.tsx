@@ -385,7 +385,7 @@ export default function SettingsScreen() {
               }}
             >
               {newStudent.color === option.value && (
-                <Ionicons name="checkmark" size={20} color="#fff" />
+                <Ionicons name="checkmark" size={20} color={colors.textInverse} />
               )}
             </TouchableOpacity>
           ))}

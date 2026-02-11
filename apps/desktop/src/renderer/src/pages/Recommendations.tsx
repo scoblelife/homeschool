@@ -17,7 +17,7 @@ export default function Recommendations() {
             Discover popular homeschool curricula organized by subject, grade
             level, teaching style, and price.
             {savedRecommendations.length > 0 && (
-              <span className="ml-2 text-brand-primary">
+              <span className="ml-2 text-brand-primary" aria-live="polite">
                 {savedRecommendations.length} saved
               </span>
             )}
@@ -28,6 +28,8 @@ export default function Recommendations() {
       {/* Quick Help */}
       <div
         className={`mb-6 p-4 bg-student-blue-50 border border-student-blue-200 rounded-lg`}
+        role="note"
+        aria-label="Finding the right curriculum tips"
       >
         <h3 className="font-medium text-student-blue-900 mb-2">
           Finding the Right Curriculum

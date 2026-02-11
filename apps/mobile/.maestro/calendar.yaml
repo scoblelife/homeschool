@@ -1,30 +1,42 @@
 appId: com.scoblelife.homeschool
-name: Calendar Navigation Flow
 ---
+# Calendar Flow: month navigation, date selection, day details
+# Tests calendar browsing and activity viewing
 
-# Navigate to Calendar via More tab
+- launchApp
+
+# Navigate to Calendar via More menu
 - tapOn: "More"
 - tapOn: "Calendar"
 
-# Verify Calendar screen loaded
+# Verify calendar screen loaded with day headers
+- assertVisible: "Sun"
+- assertVisible: "Mon"
+- assertVisible: "Tue"
+- assertVisible: "Wed"
+- assertVisible: "Thu"
+- assertVisible: "Fri"
+- assertVisible: "Sat"
+
+# Navigate to previous month
+- tapOn: "Previous month"
+
+# Navigate forward twice to next month
+- tapOn: "Next month"
+- tapOn: "Next month"
+
+# Navigate back to current month
+- tapOn: "Previous month"
+
+# Tap a date in the middle of the calendar
+- tapOn:
+    text: "15"
+    optional: true
+
+# Scroll down to see day details
+- scroll:
+    direction: DOWN
+
+# Navigate back via More
+- tapOn: "More"
 - assertVisible: "Calendar"
-
-# Navigate to next month
-- tapOn:
-    id: "next-month"
-
-# Navigate back to previous month
-- tapOn:
-    id: "prev-month"
-
-# Tap on today's date (should show activities)
-- tapOn:
-    id: "today-date"
-
-# Verify day details appear
-- extendedWaitUntil:
-    visible: "Activities"
-    timeout: 3000
-
-# Navigate back to calendar view
-- back

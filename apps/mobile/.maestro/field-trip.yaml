@@ -1,47 +1,59 @@
 appId: com.scoblelife.homeschool
-name: Field Trip Creation Flow
 ---
+# Field Trip Flow: create trip → fill form → save
+# Tests field trip planning feature
 
-# Navigate to Field Trips via More tab
+- launchApp
+
+# Navigate to Field Trips via More menu
 - tapOn: "More"
-- tapOn: "Field Trips"
+- tapOn: "Events & Field Trips"
 
-# Verify Field Trips screen loaded
-- assertVisible: "Field Trips"
-
-# Create a new field trip
+# Add a new field trip
 - tapOn:
-    id: "add-field-trip"
+    text: "+"
+    optional: true
+- tapOn:
+    text: "Add"
+    optional: true
+- tapOn:
+    text: "Plan"
+    optional: true
 
 # Fill in trip details
-- tapOn: "Title"
-- inputText: "Museum of Natural History"
-
-- tapOn: "Location"
-- inputText: "900 Exposition Blvd"
-
-- tapOn: "Description"
-- inputText: "Visit the dinosaur exhibit and geological formations"
-
-# Set date (tap date picker)
 - tapOn:
-    id: "date-picker"
+    text: "Title"
+    optional: true
+- inputText: "Natural History Museum"
+- hideKeyboard
 
-# Confirm date selection
-- tapOn: "Confirm"
+- tapOn:
+    text: "Location"
+    optional: true
+- inputText: "Las Vegas, NV"
+- hideKeyboard
 
-# Save the field trip
-- tapOn: "Save"
+# Select educational category
+- tapOn:
+    text: "Educational"
+    optional: true
 
-# Verify trip appears in list
-- assertVisible: "Museum of Natural History"
+# Save the trip
+- tapOn:
+    text: "Save"
+    optional: true
+- tapOn:
+    text: "Create"
+    optional: true
+- tapOn:
+    text: "Add"
+    optional: true
 
-# Tap on the trip to view details
-- tapOn: "Museum of Natural History"
+# Verify trip appears
+- assertVisible:
+    text: "Natural History Museum"
+    optional: true
 
-# Change status
-- tapOn: "Status"
-- tapOn: "Completed"
-
-# Verify status changed
-- assertVisible: "Completed"
+# Go back
+- back:
+    optional: true

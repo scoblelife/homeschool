@@ -130,7 +130,11 @@ export function ResourceSharing() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-48">
+      <div
+        className="flex items-center justify-center h-48"
+        role="status"
+        aria-busy="true"
+      >
         <div className="text-gray-500 dark:text-gray-400">
           Loading resources...
         </div>
@@ -174,6 +178,7 @@ export function ResourceSharing() {
                 setSearchQuery(e.target.value)
               }
               placeholder="Search resources..."
+              aria-label="Search resources"
               className="pl-10"
             />
           </div>
@@ -185,6 +190,7 @@ export function ResourceSharing() {
           onChange={(e) =>
             setTypeFilter(e.target.value as SharedResourceType | "all")
           }
+          aria-label="Filter by resource type"
           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
         >
           <option value="all">All types</option>
@@ -200,6 +206,7 @@ export function ResourceSharing() {
           <select
             value={groupFilter}
             onChange={(e) => setGroupFilter(e.target.value)}
+            aria-label="Filter by group"
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
           >
             <option value="all">All groups</option>
@@ -439,6 +446,8 @@ function AddResourceModal({
                     type="button"
                     variant="ghost"
                     onClick={() => setResourceType(type)}
+                    aria-pressed={resourceType === type}
+                    aria-label={config.label}
                     className={`p-2 rounded-lg text-center transition-all flex-col ${
                       resourceType === type
                         ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
@@ -614,6 +623,7 @@ function ResourceDetailModal({
                   href={resource.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={`Open resource link: ${resource.url} (opens in new tab)`}
                   className="text-status-infoDark hover:underline truncate"
                 >
                   {resource.url}
@@ -668,7 +678,13 @@ function ResourceDetailModal({
 
           {/* Reviews */}
           {loadingRatings ? (
-            <div className="text-sm text-gray-500">Loading reviews...</div>
+            <div
+              className="text-sm text-gray-500"
+              role="status"
+              aria-busy="true"
+            >
+              Loading reviews...
+            </div>
           ) : (
             ratings.length > 0 && (
               <div className="mb-4">
@@ -721,6 +737,7 @@ function ResourceDetailModal({
               }}
               variant="danger"
               size="sm"
+              aria-label={`Delete resource: ${resource.title}`}
             >
               Delete
             </Button>
@@ -742,6 +759,7 @@ function SearchIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -760,6 +778,7 @@ function FolderIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -773,7 +792,12 @@ function FolderIcon({ className }: { className?: string }) {
 
 function StarFilledIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
     </svg>
   );
@@ -786,6 +810,7 @@ function LinkIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -804,6 +829,7 @@ function BookIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -822,6 +848,7 @@ function AcademicCapIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"

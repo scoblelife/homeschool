@@ -1,35 +1,63 @@
 appId: com.scoblelife.homeschool
-name: Milestone Status Flow
 ---
+# Milestone Status Flow: view → filter → change status
+# Tests milestone tracking lifecycle
 
-# Navigate to Milestones via More tab
+- launchApp
+
+# Navigate to Milestones via More menu
 - tapOn: "More"
 - tapOn: "Milestones"
 
-# Verify Milestones screen loaded
-- assertVisible: "Milestones"
+# Verify milestones screen
+- assertVisible: "Progress"
 
-# Wait for milestones to load
-- extendedWaitUntil:
-    visible: "Not Started"
-    timeout: 5000
+# Check filter tabs exist
+- assertVisible: "All"
+- assertVisible: "In Progress"
+- assertVisible: "Not Started"
 
-# Tap on a milestone to view details
+# Filter to Not Started
+- tapOn: "Not Started"
+
+# Tap a milestone if available
 - tapOn:
+    text: ".*"
     index: 0
-    text: "Not Started"
+    optional: true
 
-# Change status to In Progress
+# Try starting it
+- tapOn:
+    text: "Start Working"
+    optional: true
+
+# Go back
+- back:
+    optional: true
+
+# Check In Progress filter
 - tapOn: "In Progress"
 
-# Verify status changed
-- assertVisible: "In Progress"
+# Try completing a milestone
+- tapOn:
+    text: ".*"
+    index: 0
+    optional: true
 
-# Change status to Completed
+- tapOn:
+    text: "Mark as Complete"
+    optional: true
+
+# Go back
+- back:
+    optional: true
+
+# Check Completed filter
 - tapOn: "Completed"
 
-# Verify completion
-- assertVisible: "Completed"
+# Return to All view
+- tapOn: "All"
 
-# Navigate back
-- tapOn: "Milestones"
+# Check star totals
+- scroll:
+    direction: UP

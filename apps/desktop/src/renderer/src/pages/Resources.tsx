@@ -107,18 +107,20 @@ export default function Resources() {
       />
 
       {/* Success Message */}
-      {successMessage && (
-        <Alert
-          variant="success"
-          style="subtle"
-          icon={<CheckIcon className="w-5 h-5" />}
-          dismissible
-          onDismiss={() => setSuccessMessage(null)}
-          className="mb-4"
-        >
-          {successMessage}
-        </Alert>
-      )}
+      <div aria-live="polite">
+        {successMessage && (
+          <Alert
+            variant="success"
+            style="subtle"
+            icon={<CheckIcon className="w-5 h-5" />}
+            dismissible
+            onDismiss={() => setSuccessMessage(null)}
+            className="mb-4"
+          >
+            {successMessage}
+          </Alert>
+        )}
+      </div>
 
       {/* Info box */}
       <Alert
@@ -134,7 +136,10 @@ export default function Resources() {
 
       {/* Featured Educational Partners */}
       {showSponsoredContent && sponsoredResources.length > 0 && (
-        <Card className="mb-6 bg-gradient-to-r from-student-blue-50 to-student-purple-50 border-student-blue-200">
+        <Card
+          className="mb-6 bg-gradient-to-r from-student-blue-50 to-student-purple-50 border-student-blue-200"
+          aria-label="Featured educational partners - sponsored content"
+        >
           <div className="flex items-center justify-between mb-3">
             <div>
               <h3 className="font-medium text-student-blue-700 flex items-center gap-2">

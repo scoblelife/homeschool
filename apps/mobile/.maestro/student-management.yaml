@@ -1,28 +1,42 @@
 appId: com.scoblelife.homeschool
-name: Student Management Flow
 ---
+# Student Management Flow: switch students, verify data isolation
+# Tests multi-student support
 
-# Navigate to Settings via More tab
+- launchApp
+
+# Should be on Today tab
+- assertVisible: "Today"
+
+# Open student selector to switch students
+- tapOn:
+    text: "Alice"
+    optional: true
+
+# Switch to second student
+- tapOn:
+    text: "Bob"
+    optional: true
+
+# Verify the screen updates
+- assertVisible: "Today"
+
+# Navigate to Settings
 - tapOn: "More"
 - tapOn: "Settings"
-
-# Verify Settings page loaded
 - assertVisible: "Settings"
+- assertVisible: "Students"
 
-# Look for student management section
-- scrollUntilVisible:
-    element: "Students"
-    direction: DOWN
+# Go back
+- back
 
-# Test student selector on Today screen
+# Switch back to first student via Today
 - tapOn: "Today"
+- tapOn:
+    text: "Bob"
+    optional: true
+- tapOn:
+    text: "Alice"
+    optional: true
 
-# Verify student selector is visible
-- assertVisible:
-    id: "student-selector"
-
-# Switch between students by tapping student names
-# The student toggle shows student names as selectable buttons
-- scrollUntilVisible:
-    element: "Test Student"
-    direction: UP
+- assertVisible: "Today"

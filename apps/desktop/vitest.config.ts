@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     testTimeout: 30000,
-    exclude: ['node_modules', 'dist', 'out', 'mobile'],
+    exclude: ['node_modules', 'dist', 'out', 'mobile', 'e2e'],
     // Use jsdom for React component tests, node for sync tests
     environmentMatchGlobs: [
       ['src/renderer/**/*.{test,spec}.tsx', 'jsdom'],

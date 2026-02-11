@@ -229,6 +229,8 @@ Only return the JSON array, no other text.`;
             : generateSuggestions()
         }
         disabled={isLoading || isGenerating}
+        aria-expanded={suggestions.length > 0 ? isExpanded : undefined}
+        aria-label="AI Activity Suggestions"
         className="w-full text-left h-auto p-0"
       >
         <div className="flex items-center justify-between">
@@ -256,6 +258,7 @@ Only return the JSON array, no other text.`;
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <circle
                   className="opacity-25"
@@ -277,6 +280,7 @@ Only return the JSON array, no other text.`;
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -295,7 +299,7 @@ Only return the JSON array, no other text.`;
       </Button>
 
       {isExpanded && suggestions.length > 0 && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-4 space-y-4" aria-live="polite">
           {suggestions.map((suggestion, index) => (
             <div key={index} className="bg-white/60 rounded-lg p-4">
               <div className="flex items-start gap-3">
@@ -345,7 +349,10 @@ Only return the JSON array, no other text.`;
       )}
 
       {(error || localError) && (
-        <div className="mt-3 p-2 bg-status-errorLight border border-status-errorLight rounded text-sm text-status-error">
+        <div
+          role="alert"
+          className="mt-3 p-2 bg-status-errorLight border border-status-errorLight rounded text-sm text-status-error"
+        >
           {localError || error}
         </div>
       )}

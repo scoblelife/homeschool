@@ -35,10 +35,16 @@ export default function HourTracking() {
             subtitle="Track instructional hours and generate official reports"
           />
 
-          <HourReport studentId={selectedStudentId || undefined} />
+          <div aria-live="polite">
+            <HourReport studentId={selectedStudentId || undefined} />
+          </div>
 
           {/* Generate Official Report Section */}
-          <div className="mt-8 bg-neutral-surface rounded-lg shadow p-6">
+          <div
+            className="mt-8 bg-neutral-surface rounded-lg shadow p-6"
+            role="region"
+            aria-label="Generate official hour report"
+          >
             <h2 className="text-lg font-semibold text-neutral-text mb-4">
               Generate Official Hour Report
             </h2>
@@ -185,6 +191,7 @@ function BackIcon() {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -203,6 +210,7 @@ function DocumentIcon() {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"

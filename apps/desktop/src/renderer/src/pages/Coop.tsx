@@ -26,7 +26,11 @@ export default function Coop() {
 
       {/* Tabs - only show when not viewing a group detail */}
       {!selectedGroup && (
-        <div className="flex gap-4 border-b border-neutral-border mb-6">
+        <div
+          className="flex gap-4 border-b border-neutral-border mb-6"
+          role="tablist"
+          aria-label="Co-op sections"
+        >
           <button
             onClick={() => setActiveTab("groups")}
             className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
@@ -34,6 +38,9 @@ export default function Coop() {
                 ? "border-brand-primary text-brand-primary"
                 : "border-transparent text-neutral-textSecondary hover:text-neutral-text"
             }`}
+            role="tab"
+            aria-selected={activeTab === "groups"}
+            aria-controls="tabpanel-groups"
           >
             My Groups
           </button>
@@ -44,6 +51,9 @@ export default function Coop() {
                 ? "border-brand-primary text-brand-primary"
                 : "border-transparent text-neutral-textSecondary hover:text-neutral-text"
             }`}
+            role="tab"
+            aria-selected={activeTab === "discover"}
+            aria-controls="tabpanel-discover"
           >
             Discover Events
           </button>
@@ -54,6 +64,9 @@ export default function Coop() {
                 ? "border-brand-primary text-brand-primary"
                 : "border-transparent text-neutral-textSecondary hover:text-neutral-text"
             }`}
+            role="tab"
+            aria-selected={activeTab === "resources"}
+            aria-controls="tabpanel-resources"
           >
             Shared Resources
           </button>
@@ -64,6 +77,9 @@ export default function Coop() {
                 ? "border-brand-primary text-brand-primary"
                 : "border-transparent text-neutral-textSecondary hover:text-neutral-text"
             }`}
+            role="tab"
+            aria-selected={activeTab === "mentors"}
+            aria-controls="tabpanel-mentors"
           >
             Mentors
           </button>
@@ -78,7 +94,7 @@ export default function Coop() {
           onGroupDeleted={handleGroupDeleted}
         />
       ) : activeTab === "groups" ? (
-        <>
+        <div role="tabpanel" id="tabpanel-groups" aria-label="My Groups">
           {/* Info box */}
           <div
             className={`mb-6 p-4 bg-student-blue-50 border border-student-blue-200 rounded-lg`}
@@ -94,13 +110,27 @@ export default function Coop() {
             </p>
           </div>
           <CoopGroupList onSelectGroup={setSelectedGroup} />
-        </>
+        </div>
       ) : activeTab === "discover" ? (
-        <FieldTripDiscovery />
+        <div
+          role="tabpanel"
+          id="tabpanel-discover"
+          aria-label="Discover Events"
+        >
+          <FieldTripDiscovery />
+        </div>
       ) : activeTab === "resources" ? (
-        <ResourceSharing />
+        <div
+          role="tabpanel"
+          id="tabpanel-resources"
+          aria-label="Shared Resources"
+        >
+          <ResourceSharing />
+        </div>
       ) : (
-        <MentorMatching />
+        <div role="tabpanel" id="tabpanel-mentors" aria-label="Mentors">
+          <MentorMatching />
+        </div>
       )}
     </PageContainer>
   );

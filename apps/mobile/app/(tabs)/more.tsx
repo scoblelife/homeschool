@@ -11,75 +11,79 @@ interface MenuItem {
   color: string
 }
 
-const menuItems: MenuItem[] = [
-  {
-    title: 'Calendar',
-    description: 'Monthly view of activities and events',
-    icon: 'calendar',
-    route: '/(tabs)/calendar',
-    color: '#3b82f6',
-  },
-  {
-    title: 'Events & Field Trips',
-    description: 'Plan and track outings and events',
-    icon: 'map',
-    route: '/(tabs)/field-trips',
-    color: '#f59e0b',
-  },
-  {
-    title: 'Activities',
-    description: 'Browse and manage all logged activities',
-    icon: 'list',
-    route: '/(tabs)/activities',
-    color: '#10b981',
-  },
-  {
-    title: 'Library',
-    description: 'Track books and reading progress',
-    icon: 'book',
-    route: '/(tabs)/library',
-    color: '#8b5cf6',
-  },
-  {
-    title: 'Milestones',
-    description: 'View and manage learning milestones',
-    icon: 'flag',
-    route: '/(tabs)/milestones',
-    color: '#ec4899',
-  },
-  {
-    title: 'Weekly Planner',
-    description: 'Plan milestones for the week',
-    icon: 'clipboard',
-    route: '/(tabs)/planner',
-    color: '#06b6d4',
-  },
-  {
-    title: 'Reports',
-    description: 'Detailed activity reports and analytics',
-    icon: 'bar-chart',
-    route: '/(tabs)/reports',
-    color: '#6366f1',
-  },
-  {
-    title: 'Sync',
-    description: 'Family sync across devices',
-    icon: 'sync',
-    route: '/(tabs)/sync',
-    color: '#14b8a6',
-  },
-  {
-    title: 'Settings',
-    description: 'Manage students and preferences',
-    icon: 'settings',
-    route: '/(tabs)/settings',
-    color: '#6b7280',
-  },
-]
+function useMenuItems(): MenuItem[] {
+  const colors = useColors()
+  return [
+    {
+      title: 'Calendar',
+      description: 'Monthly view of activities and events',
+      icon: 'calendar',
+      route: '/(tabs)/calendar',
+      color: colors.studentBlue,
+    },
+    {
+      title: 'Events & Field Trips',
+      description: 'Plan and track outings and events',
+      icon: 'map',
+      route: '/(tabs)/field-trips',
+      color: colors.warning,
+    },
+    {
+      title: 'Activities',
+      description: 'Browse and manage all logged activities',
+      icon: 'list',
+      route: '/(tabs)/activities',
+      color: colors.success,
+    },
+    {
+      title: 'Library',
+      description: 'Track books and reading progress',
+      icon: 'book',
+      route: '/(tabs)/library',
+      color: colors.studentPurple,
+    },
+    {
+      title: 'Milestones',
+      description: 'View and manage learning milestones',
+      icon: 'flag',
+      route: '/(tabs)/milestones',
+      color: colors.studentFuchsia,
+    },
+    {
+      title: 'Weekly Planner',
+      description: 'Plan milestones for the week',
+      icon: 'clipboard',
+      route: '/(tabs)/planner',
+      color: colors.studentTeal,
+    },
+    {
+      title: 'Reports',
+      description: 'Detailed activity reports and analytics',
+      icon: 'bar-chart',
+      route: '/(tabs)/reports',
+      color: colors.studentPurple,
+    },
+    {
+      title: 'Sync',
+      description: 'Family sync across devices',
+      icon: 'sync',
+      route: '/(tabs)/sync',
+      color: colors.studentTeal,
+    },
+    {
+      title: 'Settings',
+      description: 'Manage students and preferences',
+      icon: 'settings',
+      route: '/(tabs)/settings',
+      color: colors.textSecondary,
+    },
+  ]
+}
 
 export default function MoreScreen() {
   const router = useRouter()
   const colors = useColors()
+  const menuItems = useMenuItems()
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>

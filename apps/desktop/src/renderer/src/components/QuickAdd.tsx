@@ -216,6 +216,7 @@ export default function QuickAdd({
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg hover:shadow-xl text-2xl z-40"
         title="Quick Add Activity"
+        aria-label="Quick Add Activity"
       >
         +
       </Button>
@@ -393,6 +394,9 @@ export default function QuickAdd({
                                     : "secondary"
                                 }
                                 size="sm"
+                                aria-pressed={selectedStudentIds.includes(
+                                  student.id,
+                                )}
                                 onClick={() => {
                                   if (selectedStudentIds.includes(student.id)) {
                                     setSelectedStudentIds(
@@ -434,6 +438,7 @@ export default function QuickAdd({
                                     : "secondary"
                                 }
                                 size="sm"
+                                aria-pressed={selectedSubjectId === subject.id}
                                 onClick={() => setSelectedSubjectId(subject.id)}
                                 className={`rounded-full ${
                                   selectedSubjectId === subject.id
@@ -483,6 +488,7 @@ export default function QuickAdd({
                                   duration === mins ? "primary" : "secondary"
                                 }
                                 size="sm"
+                                aria-pressed={duration === mins}
                                 onClick={() =>
                                   setDuration(duration === mins ? null : mins)
                                 }

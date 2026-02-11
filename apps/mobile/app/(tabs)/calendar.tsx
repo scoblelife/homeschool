@@ -29,10 +29,13 @@ const activityTypeIcons: Record<string, string> = {
   interactive: '',
 }
 
-const eventCategoryColors: Record<EventCategory, { bg: string; color: string; icon: string }> = {
-  educational: { bg: '#fef3c7', color: '#f59e0b', icon: '' },
-  social: { bg: '#dcfce7', color: '#22c55e', icon: '' },
-  coop: { bg: '#dbeafe', color: '#3b82f6', icon: '' },
+function useEventCategoryColors(): Record<EventCategory, { bg: string; color: string; icon: string }> {
+  const colors = useColors()
+  return {
+    educational: { bg: colors.warningLight, color: colors.warning, icon: '' },
+    social: { bg: colors.successLight, color: colors.studentGreen, icon: '' },
+    coop: { bg: colors.primaryLight, color: colors.studentBlue, icon: '' },
+  }
 }
 
 const statusLabels: Record<UniversalStatus, string> = {
@@ -51,6 +54,7 @@ export default function CalendarScreen() {
   const [refreshing, setRefreshing] = useState(false)
 
   const colors = useColors()
+  const eventCategoryColors = useEventCategoryColors()
 
   const selectedStudent = getSelectedStudent()
   const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia

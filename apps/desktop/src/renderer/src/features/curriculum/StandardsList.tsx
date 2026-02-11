@@ -85,7 +85,13 @@ export function StandardsList({
 
   if (isLoading) {
     return (
-      <div className="text-center text-gray-500 py-8">Loading standards...</div>
+      <div
+        className="text-center text-gray-500 py-8"
+        role="status"
+        aria-busy="true"
+      >
+        Loading standards...
+      </div>
     );
   }
 
@@ -100,6 +106,7 @@ export function StandardsList({
             onChange={(e) => setSelectedSubject(e.target.value || null)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
               bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            aria-label="Filter by subject"
           >
             <option value="">All Subjects</option>
             {subjects.map((subjectId) => (
@@ -118,6 +125,7 @@ export function StandardsList({
             type="text"
             placeholder="Search standards..."
             value={searchQuery}
+            aria-label="Search standards"
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setSearchQuery(e.target.value)
             }
@@ -126,7 +134,10 @@ export function StandardsList({
       </div>
 
       {/* Standards Count */}
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p
+        className="text-sm text-gray-500 dark:text-gray-400"
+        aria-live="polite"
+      >
         Showing {filteredStandards.length} standards
       </p>
 
@@ -150,6 +161,7 @@ export function StandardsList({
                   variant="ghost"
                   className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-700
                   hover:bg-gray-100 dark:hover:bg-gray-600 rounded-none"
+                  aria-expanded={isExpanded}
                 >
                   <div className="flex items-center gap-3">
                     <ChevronIcon isExpanded={isExpanded} />
@@ -239,6 +251,7 @@ function ChevronIcon({ isExpanded }: { isExpanded: boolean }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"

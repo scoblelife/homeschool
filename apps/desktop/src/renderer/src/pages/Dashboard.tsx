@@ -187,7 +187,10 @@ export default function Dashboard(): JSX.Element {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card className="hover:shadow-md transition-shadow">
+        <Card
+          className="hover:shadow-md transition-shadow"
+          aria-label={`${todaySessions.length} sessions today`}
+        >
           <div className="flex items-center gap-3">
             <IconBadge icon="📚" variant="blue" />
             <div>
@@ -200,7 +203,10 @@ export default function Dashboard(): JSX.Element {
             </div>
           </div>
         </Card>
-        <Card className="hover:shadow-md transition-shadow">
+        <Card
+          className="hover:shadow-md transition-shadow"
+          aria-label={`${recentActivities.length} recent activities`}
+        >
           <div className="flex items-center gap-3">
             <IconBadge icon="✏️" variant="success" />
             <div>
@@ -213,7 +219,10 @@ export default function Dashboard(): JSX.Element {
             </div>
           </div>
         </Card>
-        <Card className="hover:shadow-md transition-shadow">
+        <Card
+          className="hover:shadow-md transition-shadow"
+          aria-label={`${subjects.length} subjects`}
+        >
           <div className="flex items-center gap-3">
             <IconBadge icon="🎯" variant="purple" />
             <div>
@@ -275,19 +284,28 @@ export default function Dashboard(): JSX.Element {
             <ProgressBar percentage={milestoneStats.percentage} />
           </div>
           <div className="grid grid-cols-3 gap-4 text-center text-sm">
-            <div className="bg-white/60 rounded-lg p-2">
+            <div
+              className="bg-white/60 rounded-lg p-2"
+              aria-label={`${milestoneStats.completed} milestones completed`}
+            >
               <div className="text-xl font-bold text-status-success">
                 {milestoneStats.completed}
               </div>
               <div className="text-gray-500 text-xs">Completed</div>
             </div>
-            <div className="bg-white/60 rounded-lg p-2">
+            <div
+              className="bg-white/60 rounded-lg p-2"
+              aria-label={`${milestoneStats.inProgress} milestones in progress`}
+            >
               <div className="text-xl font-bold text-status-warning">
                 {milestoneStats.inProgress}
               </div>
               <div className="text-gray-500 text-xs">In Progress</div>
             </div>
-            <div className="bg-white/60 rounded-lg p-2">
+            <div
+              className="bg-white/60 rounded-lg p-2"
+              aria-label={`${milestoneStats.total - milestoneStats.completed - milestoneStats.inProgress} milestones not started`}
+            >
               <div className="text-xl font-bold text-gray-400">
                 {milestoneStats.total -
                   milestoneStats.completed -
@@ -376,7 +394,7 @@ export default function Dashboard(): JSX.Element {
               No sessions scheduled for today.
             </p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-3" aria-live="polite">
               {todaySessions.map((session) => {
                 const student = getStudentById(session.studentId);
                 const subject = getSubjectById(session.subjectId);
@@ -422,7 +440,7 @@ export default function Dashboard(): JSX.Element {
           {recentActivities.length === 0 ? (
             <p className="text-gray-500 text-sm">No activities recorded yet.</p>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-3" aria-live="polite">
               {recentActivities.map((activity) => {
                 const student = getStudentById(activity.studentId);
                 const subject = getSubjectById(activity.subjectId);

@@ -18,10 +18,13 @@ import { useColors } from '../../src/theme/createStyles'
 
 type StatusFilter = 'all' | 'not_started' | 'in_progress' | 'completed'
 
-const statusLabels: Record<ReadingStatus, { label: string; color: string; bgColor: string }> = {
-  not_started: { label: 'Not Started', color: '#6b7280', bgColor: '#f3f4f6' },
-  in_progress: { label: 'Reading', color: '#3b82f6', bgColor: '#dbeafe' },
-  completed: { label: 'Finished', color: '#10b981', bgColor: '#d1fae5' },
+function useStatusLabels(): Record<ReadingStatus, { label: string; color: string; bgColor: string }> {
+  const colors = useColors()
+  return {
+    not_started: { label: 'Not Started', color: colors.textTertiary, bgColor: colors.surfaceSecondary },
+    in_progress: { label: 'Reading', color: colors.studentBlue, bgColor: colors.primaryLight },
+    completed: { label: 'Finished', color: colors.success, bgColor: colors.successLight },
+  }
 }
 
 function BookCard({
@@ -38,6 +41,7 @@ function BookCard({
   onUpdateStatus: (status: ReadingStatus) => void
 }) {
   const colors = useColors()
+  const statusLabels = useStatusLabels()
   const progress = book.studentProgress
   const status = progress?.status || 'not_started'
   const currentPage = progress?.currentPage || 0
@@ -59,7 +63,7 @@ function BookCard({
               width: 60,
               height: 80,
               borderRadius: 6,
-              backgroundColor: '#e0e7ff',
+              backgroundColor: colors.primaryLight,
               justifyContent: 'center',
               alignItems: 'center',
             }}
@@ -135,6 +139,7 @@ export default function LibraryScreen() {
   })
 
   const colors = useColors()
+  const statusLabels = useStatusLabels()
 
   const selectedStudent = getSelectedStudent()
   const studentColor = selectedStudent?.color === 'child2' ? colors.studentTeal : colors.studentFuchsia

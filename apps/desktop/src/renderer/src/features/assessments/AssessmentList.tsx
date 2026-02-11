@@ -201,8 +201,16 @@ export function AssessmentList({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary" />
+      <div
+        className="flex items-center justify-center p-8"
+        role="status"
+        aria-busy="true"
+      >
+        <div
+          className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"
+          aria-hidden="true"
+        />
+        <span className="sr-only">Loading assessments...</span>
       </div>
     );
   }
@@ -509,12 +517,14 @@ export function AssessmentList({
                     onClick={() => handleEdit(assessment)}
                     className="p-2 text-gray-400 hover:text-gray-600"
                     title="Edit"
+                    aria-label={`Edit ${assessment.name}`}
                   >
                     <svg
                       className="w-4 h-4"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"
@@ -530,12 +540,14 @@ export function AssessmentList({
                     onClick={() => handleDelete(assessment.id)}
                     className="p-2 text-gray-400 hover:text-status-error"
                     title="Delete"
+                    aria-label={`Delete ${assessment.name}`}
                   >
                     <svg
                       className="w-4 h-4"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
+                      aria-hidden="true"
                     >
                       <path
                         strokeLinecap="round"

@@ -86,7 +86,11 @@ export default function Templates() {
       {/* Success Message */}
       {successMessage && (
         /* eslint-disable-next-line design-system/pages-use-components-only -- success notification banner */
-        <div className="mb-4 p-4 bg-status-successLight border border-status-success rounded-lg">
+        <div
+          className="mb-4 p-4 bg-status-successLight border border-status-success rounded-lg"
+          role="status"
+          aria-live="polite"
+        >
           <p className="text-status-successDark flex items-center gap-2">
             <CheckIcon className="w-5 h-5" />
             {successMessage}
@@ -102,7 +106,12 @@ export default function Templates() {
       {/* Add Activity Modal */}
       {showAddModal && selectedTemplate && (
         /* eslint-disable-next-line design-system/pages-use-components-only -- modal overlay container */
-        <div className="fixed inset-0 bg-neutral-overlay flex items-center justify-center z-50">
+        <div
+          className="fixed inset-0 bg-neutral-overlay flex items-center justify-center z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Add activity from template"
+        >
           {/* eslint-disable-next-line design-system/pages-use-components-only -- modal dialog panel */}
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
             <div className="p-6">
@@ -167,6 +176,7 @@ function CheckIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -185,6 +195,7 @@ function PlusIcon({ className }: { className?: string }) {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"

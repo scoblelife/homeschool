@@ -116,7 +116,10 @@ export function StreakDisplay({
         </div>
 
         {atRisk && (
-          <div className="mt-3 text-sm text-status-warningDark bg-status-warningLight rounded-lg px-3 py-2">
+          <div
+            className="mt-3 text-sm text-status-warningDark bg-status-warningLight rounded-lg px-3 py-2"
+            role="alert"
+          >
             Log an activity today to keep your streak!
           </div>
         )}
@@ -302,6 +305,7 @@ function FlameIcon({ className }: { className?: string }): JSX.Element {
       viewBox="0 0 24 24"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
     >
       <path d="M12 23c-4.97 0-9-4.03-9-9 0-3.57 1.88-6.75 4.75-8.5.45-.28 1.03-.11 1.29.37.2.36.13.8-.16 1.08C7.1 8.67 6 10.98 6 14c0 3.31 2.69 6 6 6s6-2.69 6-6c0-2.11-.66-4.08-1.87-5.71l-.14-.19c-.24-.33-.19-.78.11-1.05.3-.27.75-.26 1.03.03C19.07 9.09 21 11.88 21 14c0 4.97-4.03 9-9 9zM12 4c.55 0 1 .45 1 1v2c0 .55-.45 1-1 1s-1-.45-1-1V5c0-.55.45-1 1-1zm0 6c-2.21 0-4 1.79-4 4 0 2.21 1.79 4 4 4s4-1.79 4-4c0-2.21-1.79-4-4-4z" />
     </svg>

@@ -94,7 +94,11 @@ export function AchievementCard({
 
       {/* Achievement unlock notification */}
       {recentlyUnlocked && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 animate-bounce">
+        <div
+          className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 animate-bounce"
+          role="alert"
+          aria-live="polite"
+        >
           <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-xl shadow-xl">
             <div className="flex items-center gap-3">
               <span className="text-3xl">{recentlyUnlocked.icon}</span>
@@ -277,7 +281,14 @@ function AchievementModal({
                             </div>
                             {!isUnlocked && (
                               <div className="mt-1">
-                                <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                <div
+                                  className="h-1.5 bg-gray-200 rounded-full overflow-hidden"
+                                  role="progressbar"
+                                  aria-valuenow={Math.round(progress)}
+                                  aria-valuemin={0}
+                                  aria-valuemax={100}
+                                  aria-label={`${achievement.name} progress`}
+                                >
                                   <div
                                     className="h-full bg-brand-primary rounded-full transition-all"
                                     style={{ width: `${progress}%` }}

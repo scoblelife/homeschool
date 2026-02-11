@@ -153,14 +153,14 @@ export default function TodayScreen() {
             >
               <Ionicons name="calendar" size={20} color={colors.warning} />
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 13, fontWeight: '600', color: '#92400e' }}>{upcomingTrip.title}</Text>
-                <Text style={{ fontSize: 12, color: '#b45309' }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: colors.warningDark }}>{upcomingTrip.title}</Text>
+                <Text style={{ fontSize: 12, color: colors.warning }}>
                   {upcomingTrip.date === today ? 'Today' : format(new Date(upcomingTrip.date + 'T12:00:00'), 'EEE, MMM d')}
                   {upcomingTrip.startTime && ` at ${upcomingTrip.startTime}`}
                   {upcomingTrip.location && ` · ${upcomingTrip.location}`}
                 </Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color="#b45309" />
+              <Ionicons name="chevron-forward" size={16} color={colors.warning} />
             </TouchableOpacity>
           )}
 

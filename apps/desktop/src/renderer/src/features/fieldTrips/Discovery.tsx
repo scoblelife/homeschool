@@ -106,8 +106,8 @@ export function FieldTripDiscovery() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-48">
-        <div className="text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-center h-48" aria-busy="true">
+        <div className="text-gray-500 dark:text-gray-400" role="status">
           Loading events...
         </div>
       </div>
@@ -131,7 +131,10 @@ export function FieldTripDiscovery() {
         {/* Search */}
         <div className="flex-1">
           <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <SearchIcon
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+              aria-hidden="true"
+            />
             <Input
               type="text"
               value={searchQuery}
@@ -140,6 +143,7 @@ export function FieldTripDiscovery() {
               }
               placeholder="Search events, locations..."
               className="pl-10"
+              aria-label="Search events and locations"
             />
           </div>
         </div>
@@ -149,6 +153,7 @@ export function FieldTripDiscovery() {
           value={timeFilter}
           onChange={(e) => setTimeFilter(e.target.value as TimeFilter)}
           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
+          aria-label="Filter by time period"
         >
           <option value="all">All upcoming</option>
           <option value="today">Today</option>
@@ -162,6 +167,7 @@ export function FieldTripDiscovery() {
             value={selectedGroup}
             onChange={(e) => setSelectedGroup(e.target.value)}
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-fuchsia-500 focus:border-transparent"
+            aria-label="Filter by co-op group"
           >
             <option value="all">All groups</option>
             {groupNames.map((name) => (
@@ -176,7 +182,10 @@ export function FieldTripDiscovery() {
       {/* Events */}
       {filteredEvents.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <CalendarIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <CalendarIcon
+            className="w-12 h-12 text-gray-400 mx-auto mb-4"
+            aria-hidden="true"
+          />
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
             {events.length === 0 ? "No upcoming events" : "No matching events"}
           </h3>
@@ -205,7 +214,10 @@ export function FieldTripDiscovery() {
 
       {/* Stats */}
       {filteredEvents.length > 0 && (
-        <div className="mt-6 text-sm text-gray-500 dark:text-gray-400">
+        <div
+          className="mt-6 text-sm text-gray-500 dark:text-gray-400"
+          aria-live="polite"
+        >
           Showing {filteredEvents.length} of {events.length} events
         </div>
       )}
@@ -249,13 +261,13 @@ function EventCard({ event }: { event: ExtendedCoopEvent }) {
           {/* Time */}
           <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
             <span className="flex items-center gap-1">
-              <ClockIcon className="w-4 h-4" />
+              <ClockIcon className="w-4 h-4" aria-hidden="true" />
               {event.startTime || "Time TBD"}
               {event.endTime && ` - ${event.endTime}`}
             </span>
             {event.maxAttendees && (
               <span className="flex items-center gap-1">
-                <UsersIcon className="w-4 h-4" />
+                <UsersIcon className="w-4 h-4" aria-hidden="true" />
                 Max {event.maxAttendees}
               </span>
             )}
@@ -263,7 +275,7 @@ function EventCard({ event }: { event: ExtendedCoopEvent }) {
 
           {/* Location */}
           <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mt-1">
-            <MapPinIcon className="w-4 h-4 flex-shrink-0" />
+            <MapPinIcon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
             <span className="truncate">{event.location}</span>
           </div>
 
@@ -288,8 +300,9 @@ function EventCard({ event }: { event: ExtendedCoopEvent }) {
             size="sm"
             className="p-2 text-gray-400 hover:text-brand-primary hover:bg-brand-primaryLight dark:hover:bg-brand-primaryDark/30 rounded-lg"
             title="Add to calendar"
+            aria-label="Add to calendar"
           >
-            <CalendarPlusIcon className="w-5 h-5" />
+            <CalendarPlusIcon className="w-5 h-5" aria-hidden="true" />
           </Button>
         </div>
       </div>

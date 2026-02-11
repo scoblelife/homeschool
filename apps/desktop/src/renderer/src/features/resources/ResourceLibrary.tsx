@@ -114,7 +114,10 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
     <div className="space-y-6">
       {/* Search */}
       <div className="relative">
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <SearchIcon
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+          aria-hidden="true"
+        />
         <Input
           type="text"
           placeholder="Search resources..."
@@ -123,6 +126,7 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
             setSearchQuery(e.target.value)
           }
           className="pl-10"
+          aria-label="Search resources"
         />
       </div>
 
@@ -133,6 +137,7 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
           onChange={(e) => setSelectedSubject(e.target.value || null)}
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+          aria-label="Filter by subject"
         >
           <option value="">All Subjects</option>
           {allSubjects.map((s) => (
@@ -149,6 +154,7 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
           }
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+          aria-label="Filter by grade level"
         >
           <option value="">All Grades</option>
           {grades.map((g) => (
@@ -167,6 +173,7 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
           }
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+          aria-label="Filter by resource type"
         >
           <option value="">All Types</option>
           {allCategories.map((c) => (
@@ -191,7 +198,7 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
             onClick={clearFilters}
             className="flex items-center gap-1"
           >
-            <XIcon className="w-4 h-4" />
+            <XIcon className="w-4 h-4" aria-hidden="true" />
             Clear
           </Button>
         )}
@@ -244,7 +251,10 @@ export function ResourceLibrary({ onLogActivity, students }: Props) {
       )}
 
       {/* Results count */}
-      <div className="text-sm text-gray-500 dark:text-gray-400">
+      <div
+        className="text-sm text-gray-500 dark:text-gray-400"
+        aria-live="polite"
+      >
         {filteredResources.length} resource
         {filteredResources.length !== 1 ? "s" : ""} found
       </div>
@@ -352,11 +362,16 @@ function ResourceCard({
             onToggleFavorite();
           }}
           className="p-1 text-gray-400 hover:text-yellow-500"
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+          aria-pressed={isFavorite}
         >
           {isFavorite ? (
-            <StarFilledIcon className="w-5 h-5 text-yellow-500" />
+            <StarFilledIcon
+              className="w-5 h-5 text-yellow-500"
+              aria-hidden="true"
+            />
           ) : (
-            <StarIcon className="w-5 h-5" />
+            <StarIcon className="w-5 h-5" aria-hidden="true" />
           )}
         </Button>
       </div>
@@ -403,7 +418,7 @@ function ResourceCard({
           onClick={onOpen}
           className="flex-1 flex items-center justify-center gap-2"
         >
-          <ExternalLinkIcon className="w-4 h-4" />
+          <ExternalLinkIcon className="w-4 h-4" aria-hidden="true" />
           Open
         </Button>
         {onLogActivity && (
@@ -414,7 +429,7 @@ function ResourceCard({
             className="flex items-center gap-1"
             title="Log as activity"
           >
-            <PlusIcon className="w-4 h-4" />
+            <PlusIcon className="w-4 h-4" aria-hidden="true" />
             Log
           </Button>
         )}
@@ -450,7 +465,11 @@ function LogActivityModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+      <div
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4 p-6"
+        role="dialog"
+        aria-label="Log Activity"
+      >
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           Log Activity
         </h2>

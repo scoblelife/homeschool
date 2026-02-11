@@ -11,6 +11,7 @@ import { useRouter, Href } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { analytics } from '../../src/analytics'
+import { useColors } from '../../src/theme/createStyles'
 
 const US_STATES = [
   { code: 'AL', name: 'Alabama' },
@@ -71,6 +72,7 @@ const USER_STATE_KEY = '@homeschool/user_state'
 export default function OnboardingState() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
+  const themed = useThemedStyles()
   const [selectedState, setSelectedState] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -114,17 +116,17 @@ export default function OnboardingState() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+    <View style={[themed.container, { paddingTop: insets.top + 20 }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Select Your State</Text>
-        <Text style={styles.subtitle}>
+        <Text style={themed.title}>Select Your State</Text>
+        <Text style={themed.subtitle}>
           This helps us show relevant compliance info. You can change this later in Settings.
         </Text>
       </View>
 
       <View style={styles.searchContainer}>
         <TextInput
-          style={styles.searchInput}
+          style={themed.searchInput}
           placeholder="Search states..."
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -145,7 +147,7 @@ export default function OnboardingState() {
             key={state.code}
             style={[
               styles.stateRow,
-              selectedState === state.code && styles.stateRowSelected,
+              selectedState === state.code && themed.stateRowSelected,
             ]}
             onPress={() => setSelectedState(state.code)}
             accessibilityLabel={`${state.name}${selectedState === state.code ? ', selected' : ''}`}
@@ -154,16 +156,16 @@ export default function OnboardingState() {
           >
             <Text
               style={[
-                styles.stateName,
-                selectedState === state.code && styles.stateNameSelected,
+                themed.stateName,
+                selectedState === state.code && themed.stateNameSelected,
               ]}
             >
               {state.name}
             </Text>
             <Text
               style={[
-                styles.stateCode,
-                selectedState === state.code && styles.stateCodeSelected,
+                themed.stateCode,
+                selectedState === state.code && themed.stateCodeSelected,
               ]}
             >
               {state.code}
@@ -172,19 +174,19 @@ export default function OnboardingState() {
         ))}
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
+      <View style={[themed.footer, { paddingBottom: insets.bottom + 20 }]}>
         <TouchableOpacity
           style={styles.skipButton}
           onPress={handleSkip}
           accessibilityLabel="Skip state selection"
           accessibilityRole="button"
         >
-          <Text style={styles.skipButtonText}>Skip for now</Text>
+          <Text style={themed.skipButtonText}>Skip for now</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[
-            styles.button,
+            themed.button,
             !selectedState && styles.buttonDisabled,
             isSubmitting && styles.buttonDisabled,
           ]}
@@ -194,7 +196,7 @@ export default function OnboardingState() {
           accessibilityRole="button"
           accessibilityState={{ disabled: !selectedState || isSubmitting }}
         >
-          <Text style={styles.buttonText}>
+          <Text style={themed.buttonText}>
             {isSubmitting ? 'Finishing...' : 'Finish Setup'}
           </Text>
         </TouchableOpacity>
@@ -204,34 +206,13 @@ export default function OnboardingState() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
   header: {
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1f2937',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#6b7280',
-  },
   searchContainer: {
     paddingHorizontal: 20,
     marginBottom: 16,
-  },
-  searchInput: {
-    backgroundColor: '#f3f4f6',
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
   },
   stateList: {
     flex: 1,
@@ -248,51 +229,31 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 4,
   },
-  stateRowSelected: {
-    backgroundColor: '#fdf4ff',
-  },
-  stateName: {
-    fontSize: 16,
-    color: '#1f2937',
-  },
-  stateNameSelected: {
-    color: '#d946ef',
-    fontWeight: '600',
-  },
-  stateCode: {
-    fontSize: 14,
-    color: '#9ca3af',
-  },
-  stateCodeSelected: {
-    color: '#d946ef',
-  },
-  footer: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
-  },
   skipButton: {
     paddingVertical: 12,
     alignItems: 'center',
     marginBottom: 8,
   },
-  skipButtonText: {
-    fontSize: 16,
-    color: '#6b7280',
-  },
-  button: {
-    backgroundColor: '#d946ef',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
   buttonDisabled: {
     opacity: 0.6,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
 })
+
+function useThemedStyles() {
+  const colors = useColors()
+  return {
+    container: { flex: 1, backgroundColor: colors.background } as const,
+    title: { fontSize: 28, fontWeight: '700' as const, color: colors.text, marginBottom: 8 },
+    subtitle: { fontSize: 16, color: colors.textSecondary },
+    searchInput: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16, color: colors.text },
+    stateRowSelected: { backgroundColor: colors.primaryLight },
+    stateName: { fontSize: 16, color: colors.text },
+    stateNameSelected: { color: colors.primary, fontWeight: '600' as const },
+    stateCode: { fontSize: 14, color: colors.textTertiary },
+    stateCodeSelected: { color: colors.primary },
+    footer: { paddingHorizontal: 20, paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.surface },
+    skipButtonText: { fontSize: 16, color: colors.textSecondary },
+    button: { backgroundColor: colors.primary, paddingVertical: 16, borderRadius: 12, alignItems: 'center' as const },
+    buttonText: { color: colors.textInverse, fontSize: 18, fontWeight: '600' as const },
+  }
+}

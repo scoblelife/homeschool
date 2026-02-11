@@ -207,6 +207,7 @@ function MilestoneCard({
                         size="sm"
                         onClick={() => handleDeleteResource(resource.id)}
                         className="text-status-error hover:text-status-errorDark text-xs"
+                        aria-label={`Delete resource: ${resource.title}`}
                       >
                         Delete
                       </Button>
@@ -540,26 +541,33 @@ export default function Milestones(): JSX.Element {
             {stats.percentage}%
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+        <div
+          className="w-full bg-gray-200 rounded-full h-3 mb-4"
+          role="progressbar"
+          aria-valuenow={stats.percentage}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`Overall progress: ${stats.percentage}%`}
+        >
           <div
             className={`bg-gradient-to-r from-brand-primary to-student-purple-500 h-3 rounded-full transition-all duration-500`}
             style={{ width: `${stats.percentage}%` }}
           />
         </div>
         <div className="grid grid-cols-3 gap-4 text-center text-sm">
-          <div>
+          <div aria-label={`${stats.completed} milestones completed`}>
             <div className="text-2xl font-bold text-status-success">
               {stats.completed}
             </div>
             <div className="text-gray-500">Completed</div>
           </div>
-          <div>
+          <div aria-label={`${stats.inProgress} milestones in progress`}>
             <div className="text-2xl font-bold text-status-warning">
               {stats.inProgress}
             </div>
             <div className="text-gray-500">In Progress</div>
           </div>
-          <div>
+          <div aria-label={`${stats.notStarted} milestones not started`}>
             <div className="text-2xl font-bold text-gray-400">
               {stats.notStarted}
             </div>
@@ -591,7 +599,11 @@ export default function Milestones(): JSX.Element {
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Status
           </label>
-          <div className="flex gap-1">
+          <div
+            className="flex gap-1"
+            role="radiogroup"
+            aria-label="Filter by status"
+          >
             {(
               [
                 "all",
@@ -605,6 +617,8 @@ export default function Milestones(): JSX.Element {
                 variant={filterStatus === status ? "primary" : "ghost"}
                 size="sm"
                 onClick={() => setFilterStatus(status)}
+                role="radio"
+                aria-checked={filterStatus === status}
               >
                 {status === "all"
                   ? "All"
@@ -619,7 +633,7 @@ export default function Milestones(): JSX.Element {
         </div>
       </div>
       {/* Milestones by Subject */}
-      <div className="space-y-6">
+      <div className="space-y-6" aria-live="polite">
         {Object.entries(groupedMilestones).map(
           ([subjectId, subjectMilestones]) => {
             const subject = getSubjectById(subjectId);

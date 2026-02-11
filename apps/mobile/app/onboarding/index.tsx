@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { useRouter, Href } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useColors } from '../../src/theme/createStyles'
 
 const { width } = Dimensions.get('window')
 
@@ -50,6 +51,7 @@ const slides: Slide[] = [
 export default function OnboardingWelcome() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
+  const themed = useThemedStyles()
   const [currentIndex, setCurrentIndex] = useState(0)
   const flatListRef = useRef<FlatList>(null)
 
@@ -80,13 +82,13 @@ export default function OnboardingWelcome() {
   const renderSlide = ({ item }: { item: Slide }) => (
     <View style={styles.slide} accessible accessibilityLabel={`${item.title}. ${item.description}`}>
       <Text style={styles.emoji} accessibilityElementsHidden>{item.emoji}</Text>
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.description}>{item.description}</Text>
+      <Text style={themed.title}>{item.title}</Text>
+      <Text style={themed.description}>{item.description}</Text>
     </View>
   )
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[themed.container, { paddingTop: insets.top }]}>
       <View style={styles.skipContainer}>
         {currentIndex < slides.length - 1 && (
           <TouchableOpacity
@@ -94,7 +96,7 @@ export default function OnboardingWelcome() {
             accessibilityLabel="Skip onboarding"
             accessibilityRole="button"
           >
-            <Text style={styles.skipText}>Skip</Text>
+            <Text style={themed.skipText}>Skip</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -123,20 +125,20 @@ export default function OnboardingWelcome() {
             <View
               key={index}
               style={[
-                styles.dot,
-                index === currentIndex && styles.dotActive,
+                themed.dot,
+                index === currentIndex && themed.dotActive,
               ]}
             />
           ))}
         </View>
 
         <TouchableOpacity
-          style={styles.button}
+          style={themed.button}
           onPress={handleNext}
           accessibilityLabel={currentIndex === slides.length - 1 ? 'Get Started' : 'Next slide'}
           accessibilityRole="button"
         >
-          <Text style={styles.buttonText}>
+          <Text style={themed.buttonText}>
             {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
           </Text>
         </TouchableOpacity>
@@ -146,19 +148,11 @@ export default function OnboardingWelcome() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
   skipContainer: {
     alignItems: 'flex-end',
     paddingHorizontal: 20,
     paddingVertical: 10,
     minHeight: 44,
-  },
-  skipText: {
-    fontSize: 16,
-    color: '#6b7280',
   },
   slide: {
     width,
@@ -171,19 +165,6 @@ const styles = StyleSheet.create({
     fontSize: 80,
     marginBottom: 30,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1f2937',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  description: {
-    fontSize: 17,
-    color: '#6b7280',
-    textAlign: 'center',
-    lineHeight: 26,
-  },
   footer: {
     paddingHorizontal: 20,
   },
@@ -192,26 +173,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 30,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#e5e7eb',
-    marginHorizontal: 4,
-  },
-  dotActive: {
-    backgroundColor: '#d946ef',
-    width: 24,
-  },
-  button: {
-    backgroundColor: '#d946ef',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
 })
+
+function useThemedStyles() {
+  const colors = useColors()
+  return {
+    container: { flex: 1, backgroundColor: colors.background } as const,
+    skipText: { fontSize: 16, color: colors.textSecondary } as const,
+    title: { fontSize: 28, fontWeight: '700' as const, color: colors.text, textAlign: 'center' as const, marginBottom: 16 },
+    description: { fontSize: 17, color: colors.textSecondary, textAlign: 'center' as const, lineHeight: 26 },
+    dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.border, marginHorizontal: 4 },
+    dotActive: { backgroundColor: colors.primary, width: 24 },
+    button: { backgroundColor: colors.primary, paddingVertical: 16, borderRadius: 12, alignItems: 'center' as const },
+    buttonText: { color: colors.textInverse, fontSize: 18, fontWeight: '600' as const },
+  }
+}

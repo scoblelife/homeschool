@@ -217,6 +217,8 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
         variant="ghost"
         onClick={() => setIsExpanded(!isExpanded)}
         disabled={isLoading || isGenerating}
+        aria-expanded={isExpanded}
+        aria-label="Compliance Tracking"
         className="w-full text-left h-auto p-0"
       >
         <div className="flex items-center justify-between w-full">
@@ -242,6 +244,7 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <circle
                   className="opacity-25"
@@ -270,6 +273,7 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"
@@ -296,7 +300,16 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
                 Goal: {prediction.requiredHours} hrs
               </span>
             </div>
-            <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className="h-4 bg-gray-200 rounded-full overflow-hidden"
+              role="progressbar"
+              aria-valuenow={Math.round(
+                (prediction.currentHours / prediction.requiredHours) * 100,
+              )}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Compliance progress: ${Math.round((prediction.currentHours / prediction.requiredHours) * 100)}%`}
+            >
               <div
                 className={`h-full transition-all ${
                   prediction.status === "on_track"
@@ -343,6 +356,7 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
           {/* Prediction Message */}
           <div
             className={`p-3 rounded-lg ${statusColors[prediction.status].bg}`}
+            role="status"
           >
             <p
               className={`text-sm font-medium ${statusColors[prediction.status].text}`}
@@ -395,7 +409,10 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
       )}
 
       {localError && (
-        <div className="mt-3 p-2 bg-status-errorLight border border-status-errorLight rounded text-sm text-status-error">
+        <div
+          role="alert"
+          className="mt-3 p-2 bg-status-errorLight border border-status-errorLight rounded text-sm text-status-error"
+        >
           {localError}
         </div>
       )}

@@ -329,6 +329,7 @@ export default function Calendar(): JSX.Element {
             <Button
               variant="secondary"
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+              aria-label="Previous month"
             >
               ← Prev
             </Button>
@@ -338,6 +339,7 @@ export default function Calendar(): JSX.Element {
             <Button
               variant="secondary"
               onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+              aria-label="Next month"
             >
               Next →
             </Button>
@@ -364,7 +366,11 @@ export default function Calendar(): JSX.Element {
             </div>
 
             {/* Calendar days */}
-            <div className="grid grid-cols-7 gap-1">
+            <div
+              className="grid grid-cols-7 gap-1"
+              role="grid"
+              aria-label={`Calendar for ${format(currentMonth, "MMMM yyyy")}`}
+            >
               {calendarDays.map((day) => {
                 const events = getEventsForDay(day);
                 const dayBusy = getBusyEventsForDay(day);
@@ -386,6 +392,9 @@ export default function Calendar(): JSX.Element {
                   <button
                     key={day.toISOString()}
                     onClick={() => handleSelectDate(day)}
+                    aria-label={format(day, "EEEE, MMMM d, yyyy")}
+                    aria-selected={!!isSelected}
+                    aria-current={isToday ? "date" : undefined}
                     className={`aspect-square p-2 rounded-lg text-left transition-colors ${
                       !isCurrentMonth ? "text-gray-300" : "text-gray-900"
                     } ${isSelected ? "bg-brand-primaryLight ring-2 ring-brand-primary" : "hover:bg-gray-50"} ${
@@ -468,7 +477,7 @@ export default function Calendar(): JSX.Element {
         </div>
 
         {/* Selected Day Details */}
-        <Card>
+        <Card aria-live="polite">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">
               {format(selectedDate, "EEEE, MMMM d")}
@@ -596,6 +605,7 @@ export default function Calendar(): JSX.Element {
                           size="sm"
                           onClick={() => handleDeleteActivity(activity.id)}
                           className="text-status-error hover:text-status-error text-sm"
+                          aria-label={`Delete activity ${activity.title}`}
                         >
                           ×
                         </Button>
@@ -620,11 +630,17 @@ export default function Calendar(): JSX.Element {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Activity Type
             </label>
-            <div className="grid grid-cols-4 gap-2">
+            <div
+              className="grid grid-cols-4 gap-2"
+              role="radiogroup"
+              aria-label="Activity type"
+            >
               {activityTypes.map((type) => (
                 <button
                   key={type.value}
                   type="button"
+                  role="radio"
+                  aria-checked={formData.activityType === type.value}
                   onClick={() =>
                     setFormData({ ...formData, activityType: type.value })
                   }

@@ -75,12 +75,18 @@ export default function Curriculum(): JSX.Element {
       />
       {/* Tabs */}
       <div className="border-b border-neutral-border mb-6">
-        <nav className="-mb-px flex gap-6">
+        <nav
+          className="-mb-px flex gap-6"
+          role="tablist"
+          aria-label="Curriculum sections"
+        >
           {tabs.map((tab) => (
             <Button
               key={tab.id}
               variant="ghost"
               onClick={() => setActiveTab(tab.id)}
+              role="tab"
+              aria-selected={activeTab === tab.id}
               className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === tab.id
                   ? "border-brand-primary text-brand-primary"
@@ -94,7 +100,11 @@ export default function Curriculum(): JSX.Element {
       </div>
       {/* Tab Content */}
       {activeTab === "packages" && (
-        <div className="bg-neutral-surface rounded-lg shadow p-6">
+        <div
+          className="bg-neutral-surface rounded-lg shadow p-6"
+          role="tabpanel"
+          aria-label="Packages"
+        >
           <CurriculumPackages />
         </div>
       )}
@@ -114,7 +124,11 @@ export default function Curriculum(): JSX.Element {
           )}
 
           {activeTab === "standards" && selectedStudent && (
-            <div className="bg-neutral-surface rounded-lg shadow p-6">
+            <div
+              className="bg-neutral-surface rounded-lg shadow p-6"
+              role="tabpanel"
+              aria-label="Browse Standards"
+            >
               <StandardsList
                 gradeLevel={selectedStudent.gradeLevel as GradeLevel}
               />
@@ -122,7 +136,11 @@ export default function Curriculum(): JSX.Element {
           )}
 
           {activeTab === "custom" && selectedStudent && (
-            <div className="space-y-6">
+            <div
+              className="space-y-6"
+              role="tabpanel"
+              aria-label="Map Activities"
+            >
               {/* Instructions */}
               <div
                 className={`bg-student-blue-50 border border-student-blue-200 rounded-lg p-4`}
@@ -145,7 +163,10 @@ export default function Curriculum(): JSX.Element {
                   </p>
                 </div>
 
-                <div className="divide-y divide-neutral-border max-h-96 overflow-y-auto">
+                <div
+                  className="divide-y divide-neutral-border max-h-96 overflow-y-auto"
+                  aria-live="polite"
+                >
                   {recentActivities.length === 0 ? (
                     <div className="px-6 py-8 text-center text-gray-500">
                       No recent activities found.
@@ -251,6 +272,7 @@ function ChevronRightIcon() {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
+      aria-hidden="true"
     >
       <path
         strokeLinecap="round"

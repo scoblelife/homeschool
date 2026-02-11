@@ -246,14 +246,20 @@ export function PortfolioExport({ students }: Props) {
 
         {/* Error Message */}
         {error && (
-          <div className="p-4 bg-status-errorLight border border-status-error/30 rounded-lg">
+          <div
+            className="p-4 bg-status-errorLight border border-status-error/30 rounded-lg"
+            role="alert"
+          >
             <p className="text-sm text-status-errorDark">{error}</p>
           </div>
         )}
 
         {/* Success Message */}
         {successPath && (
-          <div className="p-4 bg-status-successLight border border-status-success/30 rounded-lg">
+          <div
+            className="p-4 bg-status-successLight border border-status-success/30 rounded-lg"
+            role="status"
+          >
             <p className="text-sm text-status-successDark mb-2">
               Portfolio generated successfully!
             </p>
@@ -278,6 +284,7 @@ export function PortfolioExport({ students }: Props) {
           variant="primary"
           loading={isGenerating}
           className="w-full"
+          aria-busy={isGenerating}
         >
           {isGenerating ? "Generating PDF..." : "Generate Portfolio PDF"}
         </Button>
