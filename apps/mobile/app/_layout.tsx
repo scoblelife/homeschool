@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Stack, useRouter, useSegments, Href } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import { View, Text, ActivityIndicator, NativeModules } from 'react-native'
+import { View, Text, ActivityIndicator } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { initializeSchema, getStudents, getSubjects } from '../src/database'
 import { useStore } from '../src/stores/useStore'
 import { SyncManager } from '../src/sync'
-import { FamilyManager } from '../src/sync/family'
 import { analytics } from '../src/analytics'
 import { errorReporting } from '../src/errorReporting'
 import { notifications } from '../src/notifications'
@@ -14,72 +13,23 @@ import { ThemeProvider, useTheme } from '../src/theme'
 
 const ONBOARDING_COMPLETE_KEY = '@homeschool/onboarding_complete'
 
-console.log('[App] RootLayout module loaded')
-console.log('[App] HyperswarmModule available:', !!NativeModules.HyperswarmModule)
-
-// Desktop's family invite code for testing - same family as desktop app (~/.homeschool/sync/family.json)
-const DESKTOP_FAMILY_INVITE = 'REDACTED_INVITE_TOKEN'
-const DESKTOP_FAMILY_ID = 'REDACTED_FAMILY_ID'
-
-// Ensure iOS is configured with the same family as desktop for testing
-async function ensureTestFamily() {
-  try {
-    const familyManager = FamilyManager.getInstance()
-    await familyManager.initialize()
-
-    const currentFamilyId = familyManager.getFamilyId()
-    console.log('[App] Current family ID:', currentFamilyId)
-
-    if (currentFamilyId !== DESKTOP_FAMILY_ID) {
-      console.log('[App] Joining desktop family for testing...')
-      // Leave current family if any
-      if (currentFamilyId) {
-        await familyManager.leaveFamily()
-      }
-      // Join desktop's family
-      await familyManager.joinFamily(DESKTOP_FAMILY_INVITE, 'iPhone Simulator')
-      console.log('[App] Joined desktop family:', DESKTOP_FAMILY_ID)
-    } else {
-      console.log('[App] Already on desktop family')
-    }
-  } catch (error) {
-    console.error('[App] Error configuring test family:', error)
-  }
-}
-
-// Auto-connect sync for testing
+// Auto-connect sync if family is already configured
 async function autoConnectSync() {
   try {
-    // First ensure we're on the same family as desktop
-    await ensureTestFamily()
-
-    console.log('[App] Auto-connecting sync for testing...')
-    console.log('[App] HyperswarmModule present:', !!NativeModules.HyperswarmModule)
-    console.log('[App] HyperswarmModule methods:', NativeModules.HyperswarmModule ? Object.keys(NativeModules.HyperswarmModule) : 'N/A')
     const syncManager = SyncManager.getInstance()
     await syncManager.initialize()
     const status = syncManager.getStatus()
-    console.log('[App] Sync status:', JSON.stringify(status))
     if (status.enabled && !status.connected) {
-      console.log('[App] Attempting to connect via native Hyperswarm...')
       await syncManager.connect()
-      console.log('[App] Sync connect completed')
-    } else if (!status.enabled) {
-      console.log('[App] Sync NOT enabled - family not configured on this device')
-      console.log('[App] Go to Settings tab and create/join a family to enable sync')
-    } else if (status.connected) {
-      console.log('[App] Already connected')
     }
   } catch (error) {
     console.error('[App] Auto-connect error:', error)
   }
 }
 
-// Call auto-connect after a delay
 setTimeout(autoConnectSync, 3000)
 
 export default function RootLayout() {
-  console.log('[App] RootLayout rendering')
   const router = useRouter()
   const segments = useSegments()
   const [isInitializing, setIsInitializing] = useState(true)

@@ -4,19 +4,26 @@
  * This script simulates a second device joining the family and verifies
  * that events sync correctly between devices.
  *
- * Usage: node scripts/test-sync.mjs
+ * Usage: FAMILY_ID=<id> PUBLIC_KEY=<hex> SECRET_KEY=<hex> node scripts/test-sync.mjs
+ *
+ * Get these values from ~/.homeschool/sync/family.json
  */
 
 import WebSocket from 'ws'
 import crypto from 'crypto'
 
-const RELAY_URL = 'ws://localhost:9090'
+const RELAY_URL = process.env.RELAY_URL || 'ws://localhost:9090'
 
-// Get family config from first instance
 const familyConfig = {
-  familyId: "REDACTED_FAMILY_ID",
-  publicKey: "302a300506032b65700321008643436c95418b8ae3cbba2f6b515e94e7a111f465edba4ed4234352ffbdb924",
-  secretKey: "REDACTED_SECRET_KEY"
+  familyId: process.env.FAMILY_ID,
+  publicKey: process.env.PUBLIC_KEY,
+  secretKey: process.env.SECRET_KEY,
+}
+
+if (!familyConfig.familyId || !familyConfig.publicKey || !familyConfig.secretKey) {
+  console.error('Missing required environment variables: FAMILY_ID, PUBLIC_KEY, SECRET_KEY')
+  console.error('Get these from ~/.homeschool/sync/family.json')
+  process.exit(1)
 }
 
 // Simulated second device

@@ -7,13 +7,13 @@ Your admin panel is **almost ready**! The React components are updated to use Co
 Open a terminal and run:
 
 ```bash
-cd /Users/sscoble/Projects/homeschool/admin-panel
+cd apps/admin-panel
 npx convex dev
 ```
 
 **What will happen:**
 
-1. It will detect your existing deployment: `REDACTED_CONVEX_URL`
+1. It will detect your existing Convex deployment
 2. It will ask: **"What would you like to configure?"**
    - Choose: **"Use existing project"** or just press Enter
 3. It will deploy your schema and functions (sponsors, resources, analytics)
@@ -35,7 +35,7 @@ You should see:
 
 ```
 ✓ Synced types
-✓ Deployed your Convex functions to https://REDACTED_CONVEX_URL
+✓ Deployed your Convex functions to https://<your-deployment>.convex.cloud
 ```
 
 Once you see that, your admin panel will work perfectly with:

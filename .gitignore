@@ -28,6 +28,9 @@ npm-debug.log*
 # Environment
 .env.local
 .env.*.local
+
+# Convex deployment state (contains deployment-specific URLs)
+.convex/deployment_url
 native/hyperswarm-mobile/target/
 
 *storybook.log

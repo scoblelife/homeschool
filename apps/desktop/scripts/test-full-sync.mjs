@@ -8,16 +8,22 @@
  * 4. Creates a new student on the "mobile" device
  * 5. Verifies the desktop receives the event
  *
- * Usage: node scripts/test-full-sync.mjs
+ * Usage: FAMILY_ID=<id> node scripts/test-full-sync.mjs
+ *
+ * Get the family ID from ~/.homeschool/sync/family.json
  */
 
 import WebSocket from 'ws'
 import crypto from 'crypto'
 
-const RELAY_URL = 'ws://localhost:9090'
+const RELAY_URL = process.env.RELAY_URL || 'ws://localhost:9090'
 
-// Family config from the desktop app
-const FAMILY_ID = "REDACTED_FAMILY_ID"
+const FAMILY_ID = process.env.FAMILY_ID
+if (!FAMILY_ID) {
+  console.error('Missing required FAMILY_ID environment variable')
+  console.error('Get it from ~/.homeschool/sync/family.json')
+  process.exit(1)
+}
 
 // Simulated mobile device
 const mobileDevice = {
