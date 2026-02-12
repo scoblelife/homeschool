@@ -20,7 +20,7 @@ import { SyncManager, SyncPeer, SyncStatus } from '../../src/sync'
 import { QRScanner, QRCodeDisplay } from '../../src/components/sync'
 import { useColors } from '../../src/theme/createStyles'
 
-type ViewMode = 'main' | 'scanner' | 'qrcode' | 'create' | 'join'
+type ViewMode = 'main' | 'scanner' | 'qrcode' | 'create' | 'join' | 'joining'
 
 export default function SyncScreen() {
   const colors = useColors()
@@ -38,6 +38,9 @@ export default function SyncScreen() {
   // Invite code for sharing
   const [inviteCode, setInviteCode] = useState('')
   const [inviteMessage, setInviteMessage] = useState('')
+
+  // Join progress state
+  const [joinProgress, setJoinProgress] = useState('')
 
   const loadData = useCallback(async () => {
     try {
@@ -87,6 +90,13 @@ export default function SyncScreen() {
     }
   }, [syncManager])
 
+  // Clean up invite polling when leaving QR screen
+  useEffect(() => {
+    if (viewMode !== 'qrcode') {
+      syncManager.stopInvitePolling()
+    }
+  }, [viewMode, syncManager])
+
   const handleRefresh = () => {
     setRefreshing(true)
     loadData()
@@ -120,28 +130,33 @@ export default function SyncScreen() {
       return
     }
 
+    setViewMode('joining')
+    setJoinProgress('Starting...')
+
     try {
-      await syncManager.joinFamily(code, deviceName.trim())
+      await syncManager.joinFamily(code, deviceName.trim(), (progressStatus) => {
+        setJoinProgress(progressStatus)
+      })
       await syncManager.connect()
       await loadData()
       setViewMode('main')
       Alert.alert('Success', 'Joined family successfully!')
     } catch (error) {
       console.error('Error joining family:', error)
-      Alert.alert('Error', 'Invalid invite code. Please try again.')
+      Alert.alert('Error', 'Failed to join family. Please try again.')
       setViewMode('main')
     }
   }
 
-  const handleShowQRCode = () => {
+  const handleShowQRCode = async () => {
     try {
-      const code = syncManager.getInviteCode()
-      const message = syncManager.getInviteMessage()
-      setInviteCode(code)
+      const { qrData } = await syncManager.createInvite()
+      const message = `Join my Homeschool family!\n\nOpen the Homeschool app and scan this QR code to join.`
+      setInviteCode(qrData)
       setInviteMessage(message)
       setViewMode('qrcode')
     } catch (error) {
-      console.error('Error getting invite code:', error)
+      console.error('Error creating invite:', error)
       Alert.alert('Error', 'Failed to generate invite code')
     }
   }
@@ -198,6 +213,24 @@ export default function SyncScreen() {
         inviteMessage={inviteMessage}
         onClose={() => setViewMode('main')}
       />
+    )
+  }
+
+  // Joining Progress Screen
+  if (viewMode === 'joining') {
+    return (
+      <View style={themed.container}>
+        <View style={themed.header}>
+          <Text style={themed.title}>Joining Family</Text>
+        </View>
+        <View style={styles.joiningContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={themed.joiningText}>{joinProgress}</Text>
+          <Text style={themed.joiningHint}>
+            Please keep the app open while joining...
+          </Text>
+        </View>
+      </View>
     )
   }
 
@@ -435,6 +468,12 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.6,
   },
+  joiningContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
 })
 
 function useThemedStyles() {
@@ -472,5 +511,7 @@ function useThemedStyles() {
     input: { backgroundColor: colors.surface, borderRadius: 8, borderWidth: 1, borderColor: colors.border, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, marginBottom: 8, color: colors.text },
     helpText: { fontSize: 13, color: colors.textSecondary, marginBottom: 24 },
     lastSync: { fontSize: 12, color: colors.textTertiary, textAlign: 'center' as const, marginTop: 20 },
+    joiningText: { fontSize: 18, fontWeight: '500' as const, color: colors.text, marginTop: 24, textAlign: 'center' as const },
+    joiningHint: { fontSize: 14, color: colors.textSecondary, marginTop: 8, textAlign: 'center' as const },
   }
 }

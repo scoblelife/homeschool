@@ -5,7 +5,7 @@
 import { SyncEvent, createSyncEvent, EventType, HLCTimestamp } from "./events";
 import { HybridLogicalClock } from "./hlc";
 import { EventLog } from "./eventLog";
-import { FamilyManager } from "./family";
+import { FamilyManager, type InvitePayload, type FamilyMember } from "./family";
 import { EventProjector } from "./projector";
 import {
   Hyperswarm,
@@ -13,11 +13,17 @@ import {
   EventType as SwarmEventType,
 } from "./hyperswarm";
 import { WorkerSignalingProvider } from "./workerSignaling";
+import { getSignalingClient } from "./signalingClient";
 import { WORKER_URL } from "./config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HLC_STATE_KEY = "@homeschool/hlc_state";
 const SYNC_STATE_KEY = "@homeschool/sync_state";
+
+const JOIN_POLL_INTERVAL_MS = 1000;
+const JOIN_POLL_ATTEMPTS_MAX = 120;
+const INVITE_POLL_INTERVAL_MS = 2000;
+const INVITE_POLL_ATTEMPTS_MAX = 900; // 30 minutes
 
 export interface SyncPeer {
   deviceId: string;
@@ -59,6 +65,7 @@ export class SyncManager {
   private swarmEventCleanup: (() => void) | null = null;
 
   private initialized = false;
+  private invitePollingAbort: AbortController | null = null;
 
   // Accumulator for chunked sync responses
   private syncChunks: Map<
@@ -119,7 +126,7 @@ export class SyncManager {
       enabled: this.familyManager.isSyncEnabled(),
       connected: this.connected,
       peerCount: this.peers.size,
-      pendingEvents: 0, // Will be calculated
+      pendingEvents: 0,
       lastSyncTime: this.lastSyncTime,
     };
   }
@@ -137,7 +144,6 @@ export class SyncManager {
   async createFamily(deviceName: string): Promise<void> {
     await this.familyManager.createFamily(deviceName);
 
-    // Reset HLC with new node ID
     this.hlc = new HybridLogicalClock(
       this.familyManager.getDeviceId() || undefined,
     );
@@ -145,40 +151,125 @@ export class SyncManager {
   }
 
   /**
-   * Join an existing family
+   * Create invite and start polling for join requests (v2 OAuth flow)
+   *
+   * Returns the invite payload. Starts a background polling loop
+   * that auto-approves incoming join requests via the signaling server.
    */
-  async joinFamily(qrData: string, deviceName: string): Promise<void> {
-    await this.familyManager.joinFamily(qrData, deviceName);
+  async createInvite(): Promise<{
+    invite: InvitePayload;
+    qrData: string;
+  }> {
+    const invite = await this.familyManager.createInvite();
+    const qrData = this.familyManager.getInviteQRData(invite);
+
+    // Start polling for join requests in background
+    this.startInvitePolling(invite);
+
+    return { invite, qrData };
+  }
+
+  /**
+   * Stop invite polling (e.g., when user closes QR screen)
+   */
+  stopInvitePolling(): void {
+    if (this.invitePollingAbort) {
+      this.invitePollingAbort.abort();
+      this.invitePollingAbort = null;
+    }
+  }
+
+  /**
+   * Join an existing family via v2 invite QR data (async OAuth flow)
+   */
+  async joinFamily(
+    qrData: string,
+    deviceName: string,
+    onProgress?: (status: string) => void,
+  ): Promise<void> {
+    onProgress?.("Parsing invite...");
+
+    const invite = FamilyManager.parseInviteQRData(qrData);
+    const validation = this.familyManager.validateInvite(invite);
+    if (!validation.valid) {
+      throw new Error(`[SyncManager] Invalid invite: ${validation.error}`);
+    }
+
+    onProgress?.("Creating join request...");
+
+    const { request, keyPair, deviceId } = this.familyManager.createJoinRequest(
+      invite,
+      deviceName,
+    );
+
+    // Post offer to signaling server
+    onProgress?.("Sending join request...");
+    const signalingClient = getSignalingClient();
+
+    await signalingClient.postOffer(invite.topic, {
+      nonce: request.nonce,
+      newPubKey: request.newPubKey,
+      newDeviceId: request.newDeviceId,
+      newDeviceName: request.newDeviceName,
+      offer: request.encryptedOffer,
+      iceCandidates: request.encryptedIceCandidates,
+    });
+
+    // Poll for answer from inviting device
+    onProgress?.("Waiting for approval...");
+
+    let answer = null;
+    for (let attempt = 0; attempt < JOIN_POLL_ATTEMPTS_MAX; attempt++) {
+      answer = await signalingClient.getAnswer(invite.topic);
+      if (answer) break;
+
+      await this.delay(JOIN_POLL_INTERVAL_MS);
+    }
+
+    if (!answer) {
+      throw new Error(
+        "[SyncManager] Join timed out: no response from inviting device",
+      );
+    }
+
+    // Complete the join
+    onProgress?.("Completing join...");
+
+    const joinResponse = {
+      approved: true,
+      encryptedAnswer: answer.answer,
+      encryptedIceCandidates: answer.iceCandidates,
+      encryptedFamilyData: answer.familyData,
+      trustedPubKey: answer.trustedPubKey,
+      trustedDeviceId: answer.trustedDeviceId,
+    };
+
+    await this.familyManager.completeJoin(
+      invite,
+      joinResponse,
+      keyPair,
+      deviceId,
+      deviceName,
+    );
 
     // Reset HLC with new node ID
     this.hlc = new HybridLogicalClock(
       this.familyManager.getDeviceId() || undefined,
     );
     await this.saveHLCState();
+
+    onProgress?.("Joined successfully!");
   }
 
   /**
    * Leave the current family
    */
   async leaveFamily(): Promise<void> {
+    this.stopInvitePolling();
     this.disconnect();
     await this.familyManager.leaveFamily();
     this.peers.clear();
     this.lastSyncTime = null;
-  }
-
-  /**
-   * Get invite code for sharing
-   */
-  getInviteCode(): string {
-    return this.familyManager.getInviteCode();
-  }
-
-  /**
-   * Get invite message for sharing
-   */
-  getInviteMessage(): string {
-    return this.familyManager.getInviteMessage();
   }
 
   /**
@@ -219,14 +310,10 @@ export class SyncManager {
     const timestamp = this.hlc.now();
     const event = createSyncEvent(type, data, deviceId, timestamp);
 
-    // Store in event log
     await this.eventLog.append(event);
     await this.saveHLCState();
 
-    // Broadcast to peers (if connected)
     this.broadcastEvent(event);
-
-    // Notify local handlers
     this.notifyEventHandlers(event);
   }
 
@@ -236,26 +323,19 @@ export class SyncManager {
   async receiveEvent(event: SyncEvent): Promise<void> {
     if (!this.hlc) return;
 
-    // Check if we already have this event
     if (await this.eventLog.hasEvent(event.id)) {
       return;
     }
 
-    // Update HLC
     this.hlc.receive(event.timestamp);
     await this.saveHLCState();
 
-    // Store event
     await this.eventLog.append(event);
-
-    // Process event
     await this.projector.applyEvent(event);
     await this.eventLog.markProcessed(event.id);
 
-    // Notify handlers
     this.notifyEventHandlers(event);
 
-    // Update last sync time
     this.lastSyncTime = Date.now();
     await this.saveSyncState();
   }
@@ -277,7 +357,6 @@ export class SyncManager {
       return;
     }
 
-    // Use WebRTC P2P via Hyperswarm wrapper
     await this.connectWebRTC(deviceId, familyId);
   }
 
@@ -293,7 +372,6 @@ export class SyncManager {
     console.log("[SyncManager] familyId:", familyId);
     console.log("[SyncManager] WORKER_URL:", WORKER_URL);
 
-    // Get the public key for presence
     const pubKey = this.familyManager.getPubKey();
     if (!pubKey) {
       console.error("[SyncManager] No public key available");
@@ -304,7 +382,6 @@ export class SyncManager {
       console.log("[SyncManager] Creating Hyperswarm instance");
       this.swarm = new Hyperswarm();
 
-      // Create Worker signaling provider for WebRTC
       const signaling = new WorkerSignalingProvider({
         pubKey,
         workerUrl: WORKER_URL,
@@ -314,7 +391,6 @@ export class SyncManager {
       await this.swarm.create({ deviceId, signaling });
       console.log("[SyncManager] swarm.create() completed");
 
-      // Set up event handlers
       this.swarmEventCleanup = this.swarm.onAny((event) => {
         this.handleSwarmEvent(event);
       });
@@ -323,7 +399,6 @@ export class SyncManager {
       await this.swarm.start();
       console.log("[SyncManager] swarm.start() completed");
 
-      // Join the family topic
       this.currentTopic = createTopic(familyId);
       console.log(
         "[SyncManager] Calling swarm.join() with topic:",
@@ -347,7 +422,6 @@ export class SyncManager {
    * Disconnect from sync network
    */
   async disconnect(): Promise<void> {
-    // Clean up Hyperswarm/WebRTC
     if (this.swarmEventCleanup) {
       this.swarmEventCleanup();
       this.swarmEventCleanup = null;
@@ -372,9 +446,95 @@ export class SyncManager {
     console.log("[SyncManager] Disconnected from sync network");
   }
 
-  /**
-   * Handle events from the WebRTC/Hyperswarm network
-   */
+  // ============= Invite Polling (Inviting Device) =============
+
+  private startInvitePolling(invite: InvitePayload): void {
+    this.stopInvitePolling();
+    this.invitePollingAbort = new AbortController();
+    const signal = this.invitePollingAbort.signal;
+
+    const poll = async (): Promise<void> => {
+      const signalingClient = getSignalingClient();
+
+      for (let attempt = 0; attempt < INVITE_POLL_ATTEMPTS_MAX; attempt++) {
+        if (signal.aborted) return;
+
+        try {
+          const offer = await signalingClient.getOffer(invite.topic);
+          if (!offer) {
+            await this.delay(INVITE_POLL_INTERVAL_MS);
+            continue;
+          }
+
+          // Convert signaling offer to JoinRequest
+          const joinRequest = {
+            nonce: offer.nonce,
+            newPubKey: offer.newPubKey,
+            newDeviceId: offer.newDeviceId,
+            newDeviceName: offer.newDeviceName,
+            encryptedOffer: offer.offer,
+            encryptedIceCandidates: offer.iceCandidates,
+          };
+
+          // Validate the join request
+          const validation = this.familyManager.validateJoinRequest(
+            joinRequest,
+            invite,
+          );
+
+          if (!validation.valid) {
+            console.log(
+              "[SyncManager] Invalid join request:",
+              validation.error,
+            );
+            continue;
+          }
+
+          // Auto-approve: create and post response
+          const response = this.familyManager.createJoinResponse(joinRequest);
+
+          await signalingClient.postAnswer(invite.topic, {
+            trustedPubKey: response.trustedPubKey,
+            trustedDeviceId: response.trustedDeviceId,
+            answer: response.encryptedAnswer ?? "",
+            iceCandidates: response.encryptedIceCandidates ?? "",
+            familyData: response.encryptedFamilyData,
+          });
+
+          // Add new member to our family config
+          const newMember: FamilyMember = {
+            deviceId: offer.newDeviceId,
+            deviceName: offer.newDeviceName,
+            pubKey: offer.newPubKey,
+            addedAt: new Date().toISOString(),
+            addedBy: this.familyManager.getDeviceId() ?? "unknown",
+            isManager: false,
+          };
+          await this.familyManager.addMember(newMember);
+
+          console.log("[SyncManager] Approved join for:", offer.newDeviceName);
+
+          // Clean up invite
+          this.familyManager.removePendingInvite(invite.topic);
+          return;
+        } catch (error) {
+          console.error("[SyncManager] Invite polling error:", error);
+          await this.delay(INVITE_POLL_INTERVAL_MS);
+        }
+      }
+
+      console.log("[SyncManager] Invite polling timed out");
+    };
+
+    poll().catch((error) => {
+      if (!signal.aborted) {
+        console.error("[SyncManager] Invite polling failed:", error);
+      }
+    });
+  }
+
+  // ============= Swarm Event Handling =============
+
   private handleSwarmEvent(event: {
     type: SwarmEventType;
     peerId?: string;
@@ -383,7 +543,6 @@ export class SyncManager {
     switch (event.type) {
       case SwarmEventType.Ready:
         console.log("[SyncManager] Swarm ready");
-        // Request sync from any existing peers
         this.requestSync();
         break;
 
@@ -398,8 +557,6 @@ export class SyncManager {
           this.peers.set(event.peerId, peer);
           this.notifyPeerConnected(peer);
           console.log("[SyncManager] Peer connected:", event.peerId);
-
-          // Request sync from new peer
           this.sendSyncRequest(event.peerId);
         }
         break;
@@ -418,10 +575,8 @@ export class SyncManager {
 
       case SwarmEventType.Data:
         if (event.data && event.peerId) {
-          // Native Hyperswarm sends data as base64, decode it
           let decodedData = event.data;
           try {
-            // Check if it looks like base64 (no { at start means it's encoded)
             if (!event.data.startsWith("{")) {
               decodedData = Buffer.from(event.data, "base64").toString("utf-8");
             }
@@ -447,22 +602,18 @@ export class SyncManager {
 
       switch (message.type) {
         case "sync_request":
-          // Peer is requesting events after a certain timestamp
           await this.handleSyncRequest(peerId, message.afterTimestamp);
           break;
 
         case "sync_response":
-          // Peer is sending events in response to our request (possibly chunked)
           await this.handleSyncResponse(peerId, message);
           break;
 
         case "event":
-          // Single event from peer
           await this.receiveEvent(message.event);
           break;
 
         case "device_info": {
-          // Update peer device name
           const peer = this.peers.get(peerId);
           if (peer) {
             peer.deviceName = message.deviceName;
@@ -471,7 +622,6 @@ export class SyncManager {
               peerId,
               message.deviceName,
             );
-            // Notify UI of the update
             this.notifyPeersUpdate();
           }
           break;
@@ -504,7 +654,6 @@ export class SyncManager {
         "[SyncManager] sendSyncRequest: sync_request sent successfully",
       );
 
-      // Also send our device info
       const deviceName = this.familyManager.getDeviceName();
       if (deviceName) {
         await this.swarm.send(
@@ -537,7 +686,6 @@ export class SyncManager {
   ): Promise<void> {
     const { events, chunkIndex, totalChunks, done } = message;
 
-    // If no chunk info, treat as single non-chunked response (backwards compatible)
     if (chunkIndex === undefined || totalChunks === undefined) {
       console.log(
         "[SyncManager] Received sync response:",
@@ -550,20 +698,16 @@ export class SyncManager {
       return;
     }
 
-    // Get or create accumulator for this peer
     let accumulator = this.syncChunks.get(peerId);
     if (!accumulator || chunkIndex === 0) {
-      // Start fresh for first chunk
       accumulator = { events: [], receivedChunks: 0, totalChunks };
       this.syncChunks.set(peerId, accumulator);
       console.log("[SyncManager] Receiving sync in", totalChunks, "chunks");
     }
 
-    // Add events from this chunk
     accumulator.events.push(...events);
     accumulator.receivedChunks++;
 
-    // If we've received all chunks, process them
     if (accumulator.receivedChunks >= totalChunks || done) {
       console.log(
         "[SyncManager] Sync complete:",
@@ -572,12 +716,10 @@ export class SyncManager {
         peerId.substring(0, 8),
       );
 
-      // Process all accumulated events
       for (const event of accumulator.events) {
         await this.receiveEvent(event);
       }
 
-      // Clear accumulator
       this.syncChunks.delete(peerId);
     }
   }
@@ -591,7 +733,6 @@ export class SyncManager {
   ): Promise<void> {
     if (!this.swarm) return;
 
-    // Get events after the requested timestamp
     const events = await this.eventLog.getEventsAfter(afterTimestamp);
 
     const message = {
@@ -601,7 +742,6 @@ export class SyncManager {
 
     await this.swarm.send(peerId, JSON.stringify(message));
 
-    // Also send our device info so the peer knows our name
     const deviceName = this.familyManager.getDeviceName();
     if (deviceName) {
       await this.swarm.send(
@@ -621,8 +761,6 @@ export class SyncManager {
     if (!this.connected) return;
 
     const latestTimestamp = await this.eventLog.getLatestTimestamp();
-
-    // In production, would send SYNC_REQUEST to peers
     console.log("Requesting sync after timestamp:", latestTimestamp);
   }
 
@@ -649,6 +787,10 @@ export class SyncManager {
   }
 
   // Private methods
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   private async saveHLCState(): Promise<void> {
     if (this.hlc) {

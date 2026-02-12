@@ -18,6 +18,7 @@ interface AppState {
   selectedStudentId: string | null;
   isLoading: boolean;
   isInitialized: boolean;
+  onboardingComplete: boolean;
 
   // Actions
   setStudents: (students: Student[]) => void;
@@ -27,6 +28,7 @@ interface AppState {
   setSelectedStudentId: (id: string | null) => void;
   setIsLoading: (loading: boolean) => void;
   setIsInitialized: (initialized: boolean) => void;
+  setOnboardingComplete: (complete: boolean) => void;
 
   // Helpers
   getStudentById: (id: string) => Student | undefined;
@@ -45,6 +47,7 @@ export const useStore = create<AppState>((set, get) => ({
   selectedStudentId: null,
   isLoading: false,
   isInitialized: false,
+  onboardingComplete: false,
 
   // Actions
   setStudents: (students) => set({ students }),
@@ -54,6 +57,7 @@ export const useStore = create<AppState>((set, get) => ({
   setSelectedStudentId: (id) => set({ selectedStudentId: id }),
   setIsLoading: (loading) => set({ isLoading: loading }),
   setIsInitialized: (initialized) => set({ isInitialized: initialized }),
+  setOnboardingComplete: (complete) => set({ onboardingComplete: complete }),
 
   // Helpers
   getStudentById: (id) => get().students.find((s) => s.id === id),

@@ -1,3 +1,14 @@
+// Polyfill crypto.getRandomValues for uuid and other libraries (must be first import)
+import 'expo-crypto'
+import { getRandomValues } from 'expo-crypto'
+if (typeof global.crypto === 'undefined') {
+  // @ts-expect-error — polyfill for uuid's crypto requirement
+  global.crypto = { getRandomValues }
+} else if (typeof global.crypto.getRandomValues === 'undefined') {
+  // @ts-expect-error — expo-crypto's getRandomValues has narrower typed-array signature than Web Crypto
+  global.crypto.getRandomValues = getRandomValues
+}
+
 import { useEffect, useState } from 'react'
 import { Stack, useRouter, useSegments, Href } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
@@ -34,8 +45,7 @@ export default function RootLayout() {
   const segments = useSegments()
   const [isInitializing, setIsInitializing] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null)
-  const { setStudents, setSubjects, setIsInitialized, setSelectedStudentId, students } = useStore()
+  const { onboardingComplete, setOnboardingComplete, setStudents, setSubjects, setIsInitialized, setSelectedStudentId } = useStore()
 
   useEffect(() => {
     console.log('[App] useEffect starting initialization')
@@ -90,7 +100,7 @@ export default function RootLayout() {
 
   // Handle navigation based on onboarding status
   useEffect(() => {
-    if (isInitializing || onboardingComplete === null) return
+    if (isInitializing) return
 
     const inOnboarding = (segments[0] as string) === 'onboarding'
 

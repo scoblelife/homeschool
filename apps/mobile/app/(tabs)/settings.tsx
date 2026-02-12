@@ -273,9 +273,11 @@ export default function SettingsScreen() {
                           <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>{student.name}</Text>
                           <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                             <Badge variant="primary">{gradeLabel || 'Unknown'}</Badge>
-                            <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-                              Born {format(new Date(student.dateOfBirth), 'MMM d, yyyy')}
-                            </Text>
+                            {student.dateOfBirth ? (
+                              <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+                                Born {format(new Date(student.dateOfBirth), 'MMM d, yyyy')}
+                              </Text>
+                            ) : null}
                           </View>
                         </View>
                         <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />

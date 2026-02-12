@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Homeschool - NEVCON 2026 One-Page Handout</title>
+  <style>
+    @page {
+      size: letter;
+      margin: 0.5in;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      width: 7.5in;
+      color: #333;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      line-height: 1.4;
+    }
+
+    /* Header */
+    .header {
+      background: #5b4a9e;
+      border-radius: 12px;
+      padding: 20px 24px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .header h1 {
+      font-size: 24pt;
+      font-weight: 700;
+    }
+
+    .header .subtitle {
+      font-size: 10pt;
+      opacity: 0.9;
+    }
+
+    .header-right {
+      text-align: right;
+    }
+
+    .header-badge {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 8pt;
+      font-weight: 600;
+    }
+
+    .header-free {
+      font-size: 13pt;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* Main content area */
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* Screenshot placeholder */
+    .screenshot-area {
+      background: #f8f8fa;
+      border: 2px dashed #d0d0d8;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      text-align: center;
+    }
+
+    .screenshot-area p {
+      color: #999;
+      font-size: 10pt;
+    }
+
+    .screenshot-area img {
+      max-width: 100%;
+      max-height: 240px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Features column */
+    .features-column h2 {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .feature-icon {
+      font-size: 14pt;
+      flex-shrink: 0;
+      width: 22px;
+      text-align: center;
+    }
+
+    .feature-text {
+      font-size: 9.5pt;
+      line-height: 1.4;
+    }
+
+    .feature-text strong {
+      color: #333;
+      display: block;
+      font-size: 10pt;
+    }
+
+    .feature-text span {
+      color: #666;
+    }
+
+    /* Why section */
+    .why-section {
+      background: #f8f0ff;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+
+    .why-section h2 {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #764ba2;
+      margin-bottom: 10px;
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 20px;
+    }
+
+    .why-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 9.5pt;
+    }
+
+    .why-check {
+      color: #764ba2;
+      font-weight: 700;
+      font-size: 11pt;
+    }
+
+    /* Bottom section */
+    .bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px solid #667eea;
+      padding-top: 14px;
+    }
+
+    .bottom-left {
+      flex: 1;
+    }
+
+    .bottom-left .credibility {
+      font-size: 11pt;
+      font-weight: 600;
+      color: #764ba2;
+      font-style: italic;
+      margin-bottom: 6px;
+    }
+
+    .platforms {
+      display: flex;
+      gap: 5px;
+    }
+
+    .platform-badge {
+      font-size: 7.5pt;
+      background: #f0f0ff;
+      color: #667eea;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .bottom-center {
+      text-align: center;
+      flex: 1;
+    }
+
+    .bottom-center .url {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 2px;
+    }
+
+    .bottom-center .scan-text {
+      font-size: 8pt;
+      color: #999;
+    }
+
+    .bottom-right {
+      display: flex;
+      justify-content: flex-end;
+      flex: 0 0 auto;
+    }
+
+    .qr-container {
+      background: white;
+      padding: 6px;
+      border-radius: 8px;
+      border: 2px solid #667eea;
+    }
+
+    .qr-container img {
+      width: 1in;
+      height: 1in;
+      display: block;
+    }
+
+    @media print {
+      body {
+        width: 7.5in;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-icon">📚</div>
+      <div>
+        <h1>Homeschool</h1>
+        <div class="subtitle">Free Homeschool Management App</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="header-badge">NEVCON 2026</div>
+      <div class="header-free">100% Free</div>
+    </div>
+  </div>
+
+  <!-- Main Content: Screenshot + Features -->
+  <div class="content">
+    <!-- Left: Screenshot area -->
+    <div class="screenshot-area">
+      <!-- Replace this with an actual screenshot: -->
+      <!-- <img src="screenshot-dashboard.png" alt="App Dashboard"> -->
+      <p>[ Insert app screenshot here ]<br><br>
+      Take a screenshot of the dashboard<br>with demo data loaded and save<br>as screenshot-dashboard.png</p>
+    </div>
+
+    <!-- Right: Features -->
+    <div class="features-column">
+      <h2>Everything You Need</h2>
+
+      <div class="feature-item">
+        <span class="feature-icon">📊</span>
+        <div class="feature-text">
+          <strong>Track Activities & Milestones</strong>
+          <span>Log worksheets, reading, videos, hands-on projects. Hundreds of grade-level milestones Pre-K through 12th.</span>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <span class="feature-icon">📅</span>
+        <div class="feature-text">
+          <strong>Weekly Lesson Planning</strong>
+          <span>Smart milestone suggestions based on your student's grade level. Drag-and-drop scheduling.</span>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <span class="feature-icon">📋</span>
+        <div class="feature-text">
+          <strong>Portfolio & Progress Reports</strong>
+          <span>Beautiful documentation of your homeschool journey. Print or export anytime.</span>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <span class="feature-icon">📚</span>
+        <div class="feature-text">
+          <strong>Library & ISBN Scanning</strong>
+          <span>Scan book barcodes with your phone. Track reading progress and build your library.</span>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <span class="feature-icon">🔄</span>
+        <div class="feature-text">
+          <strong>Family Sync</strong>
+          <span>Desktop and mobile sync over your home Wi-Fi. No cloud account needed.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Why Section -->
+  <div class="why-section">
+    <h2>Why Homeschool App?</h2>
+    <div class="why-grid">
+      <div class="why-item">
+        <span class="why-check">&#10003;</span>
+        <span>No subscription &mdash; free forever</span>
+      </div>
+      <div class="why-item">
+        <span class="why-check">&#10003;</span>
+        <span>Your data stays on YOUR device</span>
+      </div>
+      <div class="why-item">
+        <span class="why-check">&#10003;</span>
+        <span>Works completely offline</span>
+      </div>
+      <div class="why-item">
+        <span class="why-check">&#10003;</span>
+        <span>Beautiful portfolio reports, ready to print</span>
+      </div>
+      <div class="why-item">
+        <span class="why-check">&#10003;</span>
+        <span>Scan book ISBNs to build your library</span>
+      </div>
+      <div class="why-item">
+        <span class="why-check">&#10003;</span>
+        <span>Mac, Windows, Linux, iOS, Android</span>
+      </div>
+      <div class="why-item">
+        <span class="why-check">&#10003;</span>
+        <span>Multi-student support with color coding</span>
+      </div>
+      <div class="why-item">
+        <span class="why-check">&#10003;</span>
+        <span>Open source &mdash; community driven</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: Credibility + QR Code -->
+  <div class="bottom">
+    <div class="bottom-left">
+      <div class="credibility">"Built by a Nevada homeschool family, for homeschool families."</div>
+      <div class="platforms">
+        <span class="platform-badge">macOS</span>
+        <span class="platform-badge">Windows</span>
+        <span class="platform-badge">Linux</span>
+        <span class="platform-badge">iOS</span>
+        <span class="platform-badge">Android</span>
+      </div>
+    </div>
+    <div class="bottom-center">
+      <div class="url">homeschool.scoble.life</div>
+      <div class="scan-text">Scan to download &rarr;</div>
+    </div>
+    <div class="bottom-right">
+      <div class="qr-container">
+        <img src="../qr-code-purple.png" alt="QR Code">
+      </div>
+    </div>
+  </div>
+</body>
+</html>

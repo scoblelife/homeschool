@@ -15,15 +15,6 @@ A comprehensive desktop and mobile application for homeschool families to:
 - Discover educational resources
 - Plan field trips and events
 
-## Download
-
-Download the latest version for your platform:
-
-- [macOS (Intel)](#) - Coming soon
-- [macOS (Apple Silicon)](#) - Coming soon
-- [Windows](#) - Coming soon
-- [Linux](#) - Coming soon
-
 ## Features
 
 - **Activity Tracking**: Log worksheets, videos, reading, writing, hands-on activities, and more

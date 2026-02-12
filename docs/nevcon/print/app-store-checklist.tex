@@ -1,0 +1,208 @@
+\documentclass[9pt,letterpaper]{article}
+\usepackage[margin=0.5in,top=0.4in,bottom=0.4in]{geometry}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{amssymb}
+\usepackage{wasysym}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\definecolor{mg}{HTML}{666666}
+\definecolor{lg}{HTML}{999999}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\vspace{-0.5em}\rule{\textwidth}{1pt}]
+\titlespacing*{\section}{0pt}{0.5em}{0.2em}
+
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{0pt}
+
+\newcommand{\done}{~\hfill$\bullet$}
+\newcommand{\warn}{~\hfill$\LEFTcircle$}
+\newcommand{\needs}{~\hfill$\circ$}
+\newcommand{\dt}[1]{{\footnotesize\color{lg}--- #1}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\footnotesize\color{lg}\thepage/3}
+\fancyfoot[R]{\footnotesize\color{lg}NEVCON March 5--7, 2026}
+
+\begin{document}
+
+% ============================================================
+\begin{center}
+{\Large\bfseries iOS App Store Checklist}\\[2pt]
+{\small\color{mg}Homeschool --- Apple App Store Submission}
+\end{center}
+\vspace{-0.5em}
+
+\section*{Prerequisites}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Apple Developer account enrolled (\$99/year) \done\\
+    \dt{developer.apple.com/account --- can take 48h to approve}
+  \item App Store Connect app record created\\
+    \dt{Bundle ID: com.scoblelife.homeschool}
+  \item EAS CLI installed and logged in \dt{npm install -g eas-cli \&\& eas login}
+  \item Set EAS secrets: APPLE\_ID, ASC\_APP\_ID, APPLE\_TEAM\_ID
+\end{itemize}
+
+\section*{App Assets (Blocking)}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Replace app icon --- 1024$\times$1024 PNG, no alpha \needs\\
+    \dt{Currently 1x1 placeholder at mobile/assets/icon.png}
+  \item Replace splash icon --- 1024$\times$1024 PNG \needs \dt{mobile/assets/splash-icon.png}
+  \item Screenshots --- iPhone 6.7" (1290$\times$2796), 2--10 required \needs\\
+    \dt{Recommended: Dashboard, Log, Progress, Reports, Library}
+  \item Screenshots --- iPhone 6.5" (1242$\times$2688) \needs \dt{If supporting older devices}
+  \item Screenshots --- iPad Pro 12.9" (2048$\times$2732) \needs \dt{Required: supportsTablet is true}
+\end{itemize}
+
+\section*{App Configuration}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Update version to 1.0.0 in app.json \warn \dt{Currently 0.1.0}
+  \item Remove hardcoded test family invite code \warn \dt{\_layout.tsx --- gate behind \_\_DEV\_\_}
+  \item Verify ITSAppUsesNonExemptEncryption is false \done \dt{Already set}
+  \item Verify privacy descriptions for Camera \& Photo Library \done \dt{Already in infoPlist}
+\end{itemize}
+
+\section*{Store Listing}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item App name, subtitle, description \done \dt{Written in mobile/assets/store/}
+  \item Keywords (100 char max) \done \dt{homeschool, education, learning, tracking\ldots}
+  \item Privacy policy URL \done \dt{homeschool.scoble.life/privacy}
+  \item Support URL \done \dt{homeschool.scoble.life/support}
+  \item Age rating questionnaire \dt{Complete in App Store Connect}
+  \item Category: Education / Productivity \done
+\end{itemize}
+
+\section*{Build \& Submit}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Build production IPA \dt{eas build --platform ios --profile production}
+  \item Test via TestFlight \dt{eas submit --platform ios --profile preview}
+  \item Submit to App Store \dt{eas submit --platform ios --profile production}
+  \item Review takes 24--48h \dt{\textbf{Submit by March 1!}}
+\end{itemize}
+
+\newpage
+
+% ============================================================
+\begin{center}
+{\Large\bfseries Google Play Store Checklist}\\[2pt]
+{\small\color{mg}Homeschool --- Google Play Submission}
+\end{center}
+\vspace{-0.5em}
+
+\section*{Prerequisites}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Google Play Developer account (\$25 one-time) \done\\
+    \dt{play.google.com/console --- identity verification can take days}
+  \item Create Play Store service account JSON for EAS\\
+    \dt{docs.expo.dev/submit/android/ --- save as play-store-service-account.json}
+  \item EAS CLI installed and logged in \dt{npm install -g eas-cli \&\& eas login}
+  \item App record created in Google Play Console
+\end{itemize}
+
+\section*{App Assets (Blocking)}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Replace app icon --- 1024$\times$1024 PNG \needs \dt{Currently 1x1 placeholder}
+  \item Replace adaptive icon --- 1024$\times$1024 PNG \needs \dt{Foreground layer only}
+  \item Feature graphic --- 1024$\times$500 PNG \needs \dt{Required --- banner at top of listing}
+  \item Screenshots --- Phone (min 2, 16:9 or 9:16) \needs\\
+    \dt{Recommended: Dashboard, Log, Progress, Reports, Library}
+  \item Screenshots --- Tablet 7" \dt{Optional but recommended}
+  \item Screenshots --- Tablet 10" \dt{Optional but recommended}
+\end{itemize}
+
+\section*{App Configuration}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Update version to 1.0.0 in app.json \warn \dt{Currently 0.1.0}
+  \item Remove hardcoded test family invite code \warn \dt{\_layout.tsx --- gate behind \_\_DEV\_\_}
+  \item Verify CAMERA permission declared \done \dt{Already in app.json}
+\end{itemize}
+
+\section*{Store Listing \& Compliance}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Short description (80 chars max) \done \dt{Written in mobile/assets/store/}
+  \item Full description (4000 chars max) \done \dt{Google Play version written}
+  \item Privacy policy URL \done \dt{homeschool.scoble.life/privacy}
+  \item Data Safety questionnaire \dt{Declare: no data collected/shared, local only}
+  \item Content rating questionnaire (IARC) \dt{Education category}
+  \item Target audience: NOT children under 13 \warn \dt{App is for parents --- avoids COPPA}
+  \item Ads declaration: No ads \done
+\end{itemize}
+
+\section*{Build \& Submit}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Build production AAB \dt{eas build --platform android --profile production}
+  \item Test via internal track \dt{eas submit --platform android --profile preview}
+  \item Submit to production \dt{eas submit --platform android --profile production}
+  \item Review takes hours to 3 days \dt{\textbf{Submit by March 1!}}
+\end{itemize}
+
+\newpage
+
+% ============================================================
+\begin{center}
+{\Large\bfseries Submission Timeline}\\[2pt]
+{\small\color{mg}Homeschool --- Shared Tasks \& Deadlines}
+\end{center}
+\vspace{-0.5em}
+
+\section*{Shared Tasks (Both Platforms)}
+\begin{itemize}[leftmargin=1.5em, label=$\square$, itemsep=1pt, parsep=0pt, topsep=2pt]
+  \item Design production app icon (1024$\times$1024)\\
+    \dt{Use desktop icon as base. Need PNG with no transparency for iOS.}
+  \item Generate screenshots from running app with demo data\\
+    \dt{Load demo data via Settings, capture key screens on simulators}
+  \item Create feature graphic for Google Play (1024$\times$500)\\
+    \dt{Dark background, app icon, tagline}
+  \item Bump version to 1.0.0 \dt{app.json: ``version'': ``1.0.0''}
+  \item Remove or gate test code in \_layout.tsx \dt{Family invite + auto-sync}
+  \item Full test pass on iOS simulator and Android emulator
+  \item Verify onboarding flow works for brand-new users
+  \item Verify privacy policy page live at homeschool.scoble.life/privacy
+  \item Verify support page live at homeschool.scoble.life/support
+\end{itemize}
+
+\section*{Timeline}
+
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Date} & \textbf{Action} \\
+\midrule
+Feb 10--12 & Design app icon, generate screenshots, create feature graphic \\
+Feb 12--14 & Fix code issues (version bump, remove test code, full test pass) \\
+Feb 14--15 & Build preview builds, test on TestFlight + internal track \\
+Feb 16--17 & Fix any issues found in testing \\
+Feb 18--20 & Submit production builds to both stores \\
+Feb 20--28 & Monitor review status, respond to any rejections quickly \\
+\textbf{Mar 1} & \textbf{DEADLINE --- both apps should be approved by now} \\
+\textbf{Mar 5--7} & \textbf{NEVCON --- apps live in stores, QR codes work!} \\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.6em}
+\section*{Common Rejection Reasons}
+
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Issue} & \textbf{How to Avoid} \\
+\midrule
+Metadata & Screenshots must match actual app UI --- no mockups. \\
+Privacy & Policy must be accessible \& accurate. Mention local-only storage. \\
+Bugs & Test full onboarding flow. Crashes during review = instant rejection. \\
+Permissions & Camera must show clear usage description. Already configured. \\
+Login & No account required = good. Apple rejects forced sign-in. \\
+Kids & Do NOT select ``Made for Kids'' --- triggers COPPA. App is for parents. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{1em}
+\noindent{\footnotesize\color{lg}Legend: $\bullet$ = Done \quad $\LEFTcircle$ = Needs attention \quad $\circ$ = Missing/blocking}
+
+\end{document}

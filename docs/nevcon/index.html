@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <title>NEVCON 2026 - Homeschool App</title>
+  <meta name="description" content="Free homeschool management app. Track progress, plan lessons, generate portfolio reports. Works offline, no subscription.">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 50px 20px 30px;
+      color: white;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .hero .tagline {
+      font-size: 1.3rem;
+      opacity: 0.9;
+      margin-bottom: 15px;
+    }
+
+    .hero .subtitle {
+      font-size: 1.05rem;
+      opacity: 0.85;
+      max-width: 500px;
+      margin: 0 auto 30px;
+      line-height: 1.5;
+    }
+
+    /* Selling Points */
+    .selling-points {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 0 0 40px;
+    }
+
+    .selling-point {
+      background: rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 25px 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      color: white;
+    }
+
+    .selling-point .icon {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+    }
+
+    .selling-point h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .selling-point p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      line-height: 1.5;
+    }
+
+    /* Download Section */
+    .download-card {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 30px;
+      margin: 20px 0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+
+    .download-card h2 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .download-card .desc {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1rem;
+    }
+
+    .download-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .download-group {
+      background: #f8f8fa;
+      border-radius: 16px;
+      padding: 25px 20px;
+    }
+
+    .download-group h3 {
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 15px;
+    }
+
+    .download-group .group-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      margin: 4px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .btn-outline:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+    }
+
+    .platform-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .platform-links a {
+      display: block;
+      padding: 10px 16px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .platform-links a:hover {
+      border-color: #667eea;
+      background: #f0f0ff;
+    }
+
+    .store-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .store-btn {
+      display: block;
+      padding: 10px 16px;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .store-btn:hover {
+      border-color: #667eea;
+      background: #f0f0ff;
+    }
+
+    /* Features Section */
+    .features {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 30px;
+      margin: 20px 0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .feature {
+      display: flex;
+      gap: 15px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #f8f8fa;
+    }
+
+    .feature .feature-icon {
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+
+    .feature h3 {
+      font-size: 1rem;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    .feature p {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Credibility Section */
+    .credibility {
+      text-align: center;
+      padding: 40px 20px;
+      color: white;
+    }
+
+    .credibility-card {
+      background: rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .credibility-card p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .credibility-card .author {
+      font-size: 0.95rem;
+      opacity: 0.85;
+    }
+
+    /* QR Section */
+    .qr-section {
+      text-align: center;
+      padding: 30px 20px;
+      color: white;
+    }
+
+    .qr-section p {
+      opacity: 0.9;
+      margin-bottom: 15px;
+    }
+
+    .qr-code {
+      background: white;
+      display: inline-block;
+      padding: 15px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .qr-code img {
+      display: block;
+      width: 180px;
+      height: 180px;
+    }
+
+    .qr-url {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: white;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      opacity: 0.9;
+    }
+
+    footer a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    .footer-links {
+      margin-bottom: 15px;
+    }
+
+    .footer-note {
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero .tagline {
+        font-size: 1.1rem;
+      }
+
+      .selling-points {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .download-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .features {
+        padding: 30px 20px;
+      }
+
+      .download-card {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="hero-badge">NEVCON 2026 &middot; March 5-7</div>
+      <h1>Homeschool</h1>
+      <p class="tagline">Track your homeschool journey &mdash; free, private, yours.</p>
+      <p class="subtitle">Built by a Nevada homeschool dad for families like yours. No subscriptions, no cloud, no data harvesting.</p>
+    </section>
+
+    <div class="selling-points">
+      <div class="selling-point">
+        <div class="icon">🆓</div>
+        <h3>Free Forever</h3>
+        <p>No subscriptions, no in-app purchases, no hidden costs. Open source.</p>
+      </div>
+      <div class="selling-point">
+        <div class="icon">🔒</div>
+        <h3>Your Data, Your Device</h3>
+        <p>Everything stored locally. Works offline. Nothing uploaded to the cloud.</p>
+      </div>
+      <div class="selling-point">
+        <div class="icon">🏔️</div>
+        <h3>Easy Record-Keeping</h3>
+        <p>Portfolio-ready documentation. Beautiful reports you'll actually want to keep.</p>
+      </div>
+    </div>
+
+    <section class="download-card">
+      <h2>Get Started Today</h2>
+      <p class="desc">Available on every platform your family uses.</p>
+
+      <div class="download-grid">
+        <div class="download-group">
+          <div class="group-icon">💻</div>
+          <h3>Desktop</h3>
+          <div class="platform-links" id="desktopLinks">
+            <a href="#" data-os="mac">macOS (Intel & Apple Silicon)</a>
+            <a href="#" data-os="win">Windows</a>
+            <a href="#" data-os="linux">Linux</a>
+          </div>
+        </div>
+
+        <div class="download-group">
+          <div class="group-icon">📱</div>
+          <h3>Mobile</h3>
+          <div class="store-buttons">
+            <a class="store-btn" href="https://apps.apple.com/app/homeschool" target="_blank" rel="noopener">iOS (App Store)</a>
+            <a class="store-btn" href="https://play.google.com/store/apps/details?id=com.scoblelife.homeschool" target="_blank" rel="noopener">Android (Google Play)</a>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 20px; color: #999; font-size: 0.85rem;">
+        Desktop and mobile apps sync automatically over your home Wi-Fi. No account needed.
+      </p>
+    </section>
+
+    <section class="features">
+      <h2>Everything You Need</h2>
+
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="feature-icon">📊</div>
+          <div>
+            <h3>Track Activities & Milestones K-12</h3>
+            <p>Log worksheets, reading, videos, hands-on projects, and more. Track hundreds of grade-level milestones.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📅</div>
+          <div>
+            <h3>Weekly Lesson Planning</h3>
+            <p>Plan your week with smart milestone suggestions based on your student's grade level.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📋</div>
+          <div>
+            <h3>Portfolio & Progress Reports</h3>
+            <p>Generate beautiful documentation of your homeschool journey. Print or export anytime.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">💾</div>
+          <div>
+            <h3>Works Offline</h3>
+            <p>No internet required. Your data stays on your device, always accessible.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">📚</div>
+          <div>
+            <h3>Library & ISBN Scanning</h3>
+            <p>Scan book barcodes with your phone to build your library. Track reading progress.</p>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🖥️</div>
+          <div>
+            <h3>Mac, Windows, Linux, iOS, Android</h3>
+            <p>Runs on every platform. Family devices sync over local Wi-Fi &mdash; no cloud account needed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="credibility">
+      <div class="credibility-card">
+        <p>"I built this because I couldn't find a homeschool app that respected our family's privacy and didn't charge a monthly fee. It's what I use every day with my own kids."</p>
+        <p class="author">&mdash; A Nevada homeschool dad</p>
+      </div>
+    </section>
+
+    <section class="qr-section">
+      <p>Share this page with other homeschool families:</p>
+      <div class="qr-code">
+        <img src="qr-code-purple.png" alt="QR code to homeschool.scoble.life/nevcon">
+      </div>
+      <p class="qr-url">homeschool.scoble.life/nevcon</p>
+    </section>
+
+    <footer>
+      <div class="footer-links">
+        <a href="../">Home</a>
+        <a href="../help.html">Help</a>
+        <a href="../releases.html">All Releases</a>
+        <a href="../privacy.html">Privacy</a>
+      </div>
+      <p class="footer-note">Free and open source. Made for homeschool families, by a homeschool family.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Track UTM parameters
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.has('utm_source')) {
+        // Add UTM params if someone arrives at /nevcon directly (e.g., typed URL)
+        // This helps distinguish QR scans (which have UTM) from direct visits
+        const hasUtm = params.has('utm_source') || params.has('utm_medium') || params.has('utm_campaign');
+        if (!hasUtm) {
+          // Log as direct visit to /nevcon
+          console.log('NEVCON page: direct visit');
+        }
+      } else {
+        console.log('NEVCON page: UTM source =', params.get('utm_source'), ', medium =', params.get('utm_medium'));
+      }
+    })();
+
+    // Fetch latest release for desktop download links
+    const REPO = 'scoblelife/homeschool';
+
+    function getAssetForOS(assets, os) {
+      if (!assets) return null;
+      return assets.find(function(a) {
+        var name = a.name.toLowerCase();
+        if (os === 'mac') return name.endsWith('.dmg');
+        if (os === 'win') return name.endsWith('.exe');
+        if (os === 'linux') return name.endsWith('.appimage') || name.endsWith('.deb');
+        return false;
+      });
+    }
+
+    async function init() {
+      try {
+        var cached = null;
+        try {
+          var raw = localStorage.getItem('homeschool_releases');
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (Date.now() - parsed.timestamp < 5 * 60 * 1000) {
+              cached = parsed.data;
+            }
+          }
+        } catch (e) {}
+
+        var releases;
+        if (cached) {
+          releases = cached;
+        } else {
+          var response = await fetch('https://api.github.com/repos/' + REPO + '/releases');
+          if (!response.ok) throw new Error('Failed to fetch');
+          releases = await response.json();
+          try {
+            localStorage.setItem('homeschool_releases', JSON.stringify({
+              data: releases,
+              timestamp: Date.now()
+            }));
+          } catch (e) {}
+        }
+
+        var latest = releases.find(function(r) { return !r.draft && r.assets && r.assets.length > 0; });
+        if (!latest) return;
+
+        var links = document.querySelectorAll('#desktopLinks a');
+        links.forEach(function(link) {
+          var os = link.dataset.os;
+          var asset = getAssetForOS(latest.assets, os);
+          if (asset) {
+            link.href = asset.browser_download_url;
+          } else {
+            link.style.opacity = '0.5';
+            link.style.pointerEvents = 'none';
+          }
+        });
+      } catch (err) {
+        console.error('Failed to load releases:', err);
+        // Fall back to releases page
+        var links = document.querySelectorAll('#desktopLinks a');
+        links.forEach(function(link) {
+          link.href = '../releases.html';
+        });
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { analytics } from '../../src/analytics'
 import { useColors } from '../../src/theme/createStyles'
+import { useStore } from '../../src/stores/useStore'
 
 const US_STATES = [
   { code: 'AL', name: 'Alabama' },
@@ -73,6 +74,7 @@ export default function OnboardingState() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const themed = useThemedStyles()
+  const setOnboardingComplete = useStore((s) => s.setOnboardingComplete)
   const [selectedState, setSelectedState] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -97,6 +99,9 @@ export default function OnboardingState() {
         state: selectedState || 'skipped',
       })
 
+      // Update store so _layout.tsx navigation guard allows (tabs)
+      setOnboardingComplete(true)
+
       // Navigate to main app
       router.replace('/(tabs)' as Href)
     } catch (err) {
@@ -109,6 +114,7 @@ export default function OnboardingState() {
   const handleSkip = async () => {
     try {
       await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, 'true')
+      setOnboardingComplete(true)
       router.replace('/(tabs)' as Href)
     } catch (err) {
       console.error('Failed to complete onboarding:', err)

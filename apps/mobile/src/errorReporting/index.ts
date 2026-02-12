@@ -6,7 +6,16 @@
  */
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ErrorUtils } from "react-native";
+
+declare const global: {
+  ErrorUtils?: {
+    getGlobalHandler: () => (error: unknown, isFatal: boolean) => void;
+    setGlobalHandler: (
+      handler: (error: unknown, isFatal: boolean) => void,
+    ) => void;
+  };
+  Promise: typeof Promise;
+};
 
 interface ErrorLog {
   timestamp: string;
@@ -57,10 +66,17 @@ class ErrorReporting {
     // Load existing state
     await this.loadState();
 
-    // Set up global error handler
-    const previousHandler = ErrorUtils.getGlobalHandler();
+    // Set up global error handler (ErrorUtils is a global, not a react-native export in RN 0.81+)
+    const errorUtils = global.ErrorUtils;
+    if (!errorUtils) {
+      console.warn(
+        "[ErrorReporting] ErrorUtils not available, skipping global handler setup",
+      );
+      return;
+    }
+    const previousHandler = errorUtils.getGlobalHandler();
 
-    ErrorUtils.setGlobalHandler((error, isFatal) => {
+    errorUtils.setGlobalHandler((error: unknown, isFatal: boolean) => {
       this.captureError(
         error instanceof Error ? error : new Error(String(error)),
         isFatal ? "uncaughtException" : "error",

@@ -27,6 +27,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@wdio/cli": "^9.24.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7"
   },
@@ -38,7 +39,11 @@
       "esbuild",
       "puppeteer",
       "unrs-resolver"
-    ]
+    ],
+    "overrides": {
+      "react": "19.1.0",
+      "react-dom": "19.1.0"
+    }
   },
   "lint-staged": {
     "apps/desktop/src/renderer/**/*.{ts,tsx}": [
