@@ -21,11 +21,11 @@ export const devices = pgTable(
       .notNull()
       .references(() => families.id, { onDelete: 'cascade' }),
     deviceName: text('device_name').notNull(),
-    pubKey: text('pub_key'),
+    publicKey: text('public_key'),
     lastSeenAt: timestamp('last_seen_at').notNull().defaultNow(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
   },
-  (table) => [index('idx_devices_family_id').on(table.familyId)]
+  (table) => [index('idx_devices_family_id').on(table.familyId)],
 )
 
 export const syncEvents = pgTable(
@@ -42,5 +42,5 @@ export const syncEvents = pgTable(
   },
   (table) => [
     index('idx_sync_events_family_created').on(table.familyId, table.createdAt),
-  ]
+  ],
 )

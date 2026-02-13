@@ -10,9 +10,9 @@
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
-    "drizzle-orm": "^0.44.1",
-    "postgres": "^3.4.0",
-    "ws": "^8.18.0"
+    "drizzle-orm": "^0.45.1",
+    "postgres": "^3.4.8",
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

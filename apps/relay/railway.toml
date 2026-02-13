@@ -1,7 +1,7 @@
 [build]
 builder = "dockerfile"
 dockerfilePath = "Dockerfile"
-watchPatterns = ["apps/relay/**"]
+watchPatterns = ["src/**", "package.json", "tsconfig.json", "Dockerfile", "drizzle.config.ts", "entrypoint.sh"]
 
 [deploy]
 healthcheckPath = "/health"

@@ -6,527 +6,627 @@
  * happens peer-to-peer through WebRTC data channels.
  */
 
-import { createServer, IncomingMessage as HttpIncomingMessage, ServerResponse } from 'http'
+import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { db } from './db/index.js'
 import { families, devices, syncEvents } from './db/schema.js'
 import { eq, and, gt } from 'drizzle-orm'
 
+// ============= Constants =============
+
 const PORT = parseInt(process.env.PORT || '8080', 10)
+if (isNaN(PORT) || PORT < 1 || PORT > 65535) {
+  console.error(`[Server] Invalid PORT: ${process.env.PORT}`)
+  process.exit(1)
+}
+
+const BODY_SIZE_LIMIT_BYTES = 1024 * 256
+const ROOM_AGE_LIMIT_MS = 60 * 60 * 1000
+const PRESENCE_AGE_LIMIT_MS = 2 * 60 * 1000
+const CLEANUP_ROOMS_INTERVAL_MS = 5 * 60 * 1000
+const CLEANUP_PRESENCE_INTERVAL_MS = 60 * 1000
+const ROOM_MESSAGES_COUNT_LIMIT = 100
+const SIGNAL_QUEUE_MESSAGES_COUNT_LIMIT = 50
+
+const SIGNAL_TYPES = new Set(['offer', 'answer', 'ice-candidate'])
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+} as const
 
 // ============= Types =============
 
+type SignalType = 'offer' | 'answer' | 'ice-candidate'
+
 interface SignalingMessage {
   id: number
-  type: 'offer' | 'answer' | 'ice-candidate'
-  from: string
-  to: string
+  type: SignalType
+  source: string
+  target: string
   payload: unknown
   room: string
-  timestamp: number
+  timestampMs: number
 }
 
 interface Room {
   peers: Set<string>
   messages: SignalingMessage[]
-  lastActivity: number
+  activityTimestampMs: number
+}
+
+interface PresenceEntry {
+  publicKey: string
+  timestampMs: number
+}
+
+interface RouteContext {
+  request: IncomingMessage
+  response: ServerResponse
+  url: URL
+  path: string
+  method: string
 }
 
 // ============= State =============
 
-// Signaling rooms: roomId -> Room
 const rooms = new Map<string, Room>()
-let messageIdCounter = 0
-
-// Presence state: familyId -> Map<deviceId, { pubKey, ts }>
-interface PresenceEntry {
-  pubKey: string
-  ts: number
-}
+let messageIdNext = 0
 const presence = new Map<string, Map<string, PresenceEntry>>()
-
-// Signal queues: topic:peerId -> SignalingMessage[]
 const signalQueues = new Map<string, SignalingMessage[]>()
 
 // ============= Helpers =============
 
-function parseBody(req: HttpIncomingMessage): Promise<any> {
+function parseBodyData(request: IncomingMessage): Promise<string> {
   return new Promise((resolve, reject) => {
     let body = ''
-    req.on('data', chunk => body += chunk)
-    req.on('end', () => {
-      try {
-        resolve(body ? JSON.parse(body) : {})
-      } catch (e) {
-        reject(e)
+    let sizeBytes = 0
+
+    request.on('data', (chunk: Buffer | string) => {
+      sizeBytes += typeof chunk === 'string' ? chunk.length : chunk.byteLength
+      if (sizeBytes > BODY_SIZE_LIMIT_BYTES) {
+        reject(new Error(`Body exceeds ${BODY_SIZE_LIMIT_BYTES} bytes`))
+        request.destroy()
+        return
       }
+      body += chunk
     })
-    req.on('error', reject)
+    request.on('end', () => resolve(body))
+    request.on('error', reject)
   })
 }
 
-function sendJson(res: ServerResponse, data: object, status = 200) {
-  res.writeHead(status, {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  })
-  res.end(JSON.stringify(data))
-}
+function parseJsonObject(raw: string): Record<string, unknown> {
+  if (!raw) return {}
 
-function getRoom(roomId: string): Room {
-  let room = rooms.get(roomId)
-  if (!room) {
-    room = { peers: new Set(), messages: [], lastActivity: Date.now() }
-    rooms.set(roomId, room)
+  const parsed: unknown = JSON.parse(raw)
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+    throw new Error('Body must be a JSON object')
   }
-  room.lastActivity = Date.now()
+  return parsed as Record<string, unknown>
+}
+
+async function parseBody(request: IncomingMessage): Promise<Record<string, unknown>> {
+  const raw = await parseBodyData(request)
+  return parseJsonObject(raw)
+}
+
+function isSignalType(value: unknown): value is SignalType {
+  return typeof value === 'string' && SIGNAL_TYPES.has(value)
+}
+
+function sendJson(response: ServerResponse, data: object, statusCode = 200): void {
+  response.writeHead(statusCode, { 'Content-Type': 'application/json', ...CORS_HEADERS })
+  response.end(JSON.stringify(data))
+}
+
+function sendError(response: ServerResponse, message: string, statusCode: number): void {
+  sendJson(response, { error: message }, statusCode)
+}
+
+function truncateId(value: string): string {
+  return `${value.substring(0, 8)}...`
+}
+
+function getOrCreateRoom(roomId: string): Room {
+  const existing = rooms.get(roomId)
+  if (existing) {
+    existing.activityTimestampMs = Date.now()
+    return existing
+  }
+  const room: Room = { peers: new Set(), messages: [], activityTimestampMs: Date.now() }
+  rooms.set(roomId, room)
   return room
 }
 
-// Clean up old rooms (older than 1 hour)
-function cleanupRooms() {
-  const now = Date.now()
-  const maxAge = 60 * 60 * 1000 // 1 hour
+function requireDb(response: ServerResponse): boolean {
+  if (db) return true
+  sendError(response, 'Database not configured', 503)
+  return false
+}
+
+// ============= Cleanup =============
+
+function cleanupRooms(): void {
+  const nowMs = Date.now()
   for (const [roomId, room] of rooms) {
-    if (now - room.lastActivity > maxAge) {
-      rooms.delete(roomId)
-      console.log(`Cleaned up room: ${roomId.substring(0, 8)}...`)
-    }
+    if (nowMs - room.activityTimestampMs <= ROOM_AGE_LIMIT_MS) continue
+    rooms.delete(roomId)
+    console.log(`[Cleanup] Removed stale room: ${truncateId(roomId)}`)
   }
 }
-setInterval(cleanupRooms, 5 * 60 * 1000) // Every 5 minutes
 
-// Clean up stale presence (older than 2 minutes)
-function cleanupPresence() {
-  const now = Date.now()
-  const maxAge = 2 * 60 * 1000 // 2 minutes
-  for (const [familyId, devices] of presence) {
-    for (const [deviceId, entry] of devices) {
-      if (now - entry.ts > maxAge) {
-        devices.delete(deviceId)
-        console.log(`Cleaned up stale presence: ${deviceId.substring(0, 8)}... from family ${familyId.substring(0, 8)}...`)
-      }
+function cleanupPresence(): void {
+  const nowMs = Date.now()
+  for (const [familyId, deviceMap] of presence) {
+    for (const [deviceId, entry] of deviceMap) {
+      if (nowMs - entry.timestampMs <= PRESENCE_AGE_LIMIT_MS) continue
+      deviceMap.delete(deviceId)
+      console.log(`[Cleanup] Removed stale presence: ${truncateId(deviceId)} from ${truncateId(familyId)}`)
     }
-    if (devices.size === 0) {
-      presence.delete(familyId)
-    }
+    if (deviceMap.size === 0) presence.delete(familyId)
   }
 }
-setInterval(cleanupPresence, 60 * 1000) // Every minute
 
-// ============= HTTP Routes =============
+setInterval(cleanupRooms, CLEANUP_ROOMS_INTERVAL_MS)
+setInterval(cleanupPresence, CLEANUP_PRESENCE_INTERVAL_MS)
 
-async function handleHttpRequest(req: HttpIncomingMessage, res: ServerResponse) {
-  const url = new URL(req.url || '/', `http://localhost:${PORT}`)
-  const path = url.pathname
-  const method = req.method || 'GET'
+// ============= Route Handlers =============
 
-  // CORS preflight
-  if (method === 'OPTIONS') {
-    res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    })
-    res.end()
+function handleHealthCheck(context: RouteContext): void {
+  let peerCountTotal = 0
+  for (const room of rooms.values()) {
+    peerCountTotal += room.peers.size
+  }
+  sendJson(context.response, {
+    status: 'ok',
+    roomCount: rooms.size,
+    peerCountTotal,
+    databaseConnected: db !== null,
+  })
+}
+
+async function handleRoomJoin(context: RouteContext, roomId: string): Promise<void> {
+  const body = await parseBody(context.request)
+  const peerId = body.peerId
+
+  if (typeof peerId !== 'string' || peerId.length === 0) {
+    sendError(context.response, 'peerId required (string)', 400)
+    return
+  }
+
+  const room = getOrCreateRoom(roomId)
+  const peersExisting: string[] = []
+  for (const peer of room.peers) {
+    if (peer !== peerId) peersExisting.push(peer)
+  }
+  room.peers.add(peerId)
+
+  console.log(`[Room] Peer ${truncateId(peerId)} joined ${truncateId(roomId)} (${room.peers.size} peers)`)
+  sendJson(context.response, { peers: peersExisting })
+}
+
+async function handleRoomLeave(context: RouteContext, roomId: string): Promise<void> {
+  const body = await parseBody(context.request)
+  const peerId = body.peerId
+
+  if (typeof peerId !== 'string' || peerId.length === 0) {
+    sendError(context.response, 'peerId required (string)', 400)
+    return
+  }
+
+  const room = rooms.get(roomId)
+  if (room) {
+    room.peers.delete(peerId)
+    console.log(`[Room] Peer ${truncateId(peerId)} left ${truncateId(roomId)} (${room.peers.size} peers)`)
+    if (room.peers.size === 0) rooms.delete(roomId)
+  }
+
+  sendJson(context.response, { success: true })
+}
+
+function handleRoomMessages(context: RouteContext, roomId: string): void {
+  const peerId = context.url.searchParams.get('peerId')
+  const afterIdRaw = context.url.searchParams.get('after') || '0'
+  const afterId = parseInt(afterIdRaw, 10)
+
+  if (isNaN(afterId)) {
+    sendError(context.response, 'after must be a number', 400)
+    return
+  }
+
+  const room = rooms.get(roomId)
+  if (!room) {
+    sendJson(context.response, { messages: [] })
+    return
+  }
+
+  const messages = room.messages.filter(
+    message => message.target === peerId && message.id > afterId,
+  )
+  sendJson(context.response, { messages })
+}
+
+async function handleSignalLegacy(context: RouteContext): Promise<void> {
+  const body = await parseBody(context.request)
+  const { room: roomId, from: source, to: target } = body
+
+  if (typeof roomId !== 'string' || typeof source !== 'string' || typeof target !== 'string') {
+    sendError(context.response, 'room, type, from, to required (strings)', 400)
+    return
+  }
+  if (!isSignalType(body.type)) {
+    sendError(context.response, 'type must be offer, answer, or ice-candidate', 400)
+    return
+  }
+
+  const room = getOrCreateRoom(roomId)
+  const message: SignalingMessage = {
+    id: ++messageIdNext, type: body.type, source, target,
+    payload: body.payload, room: roomId, timestampMs: Date.now(),
+  }
+  room.messages.push(message)
+
+  if (room.messages.length > ROOM_MESSAGES_COUNT_LIMIT) {
+    room.messages = room.messages.slice(-ROOM_MESSAGES_COUNT_LIMIT)
+  }
+
+  console.log(`[Signal] ${body.type} from ${truncateId(source)} to ${truncateId(target)}`)
+  sendJson(context.response, { success: true, messageId: message.id })
+}
+
+async function handlePresenceHeartbeat(
+  context: RouteContext, familyId: string, deviceId: string,
+): Promise<void> {
+  const body = await parseBody(context.request)
+  const publicKey = typeof body.publicKey === 'string' ? body.publicKey : ''
+  const deviceName = typeof body.deviceName === 'string' ? body.deviceName : 'Unknown Device'
+
+  if (!presence.has(familyId)) presence.set(familyId, new Map())
+  presence.get(familyId)!.set(deviceId, { publicKey, timestampMs: Date.now() })
+
+  if (!db) {
+    console.log(`[Presence] Heartbeat from ${truncateId(deviceId)} in ${truncateId(familyId)}`)
+    sendJson(context.response, { success: true })
     return
   }
 
   try {
-    // Health check
-    if (path === '/health' && method === 'GET') {
-      sendJson(res, {
-        status: 'ok',
-        rooms: rooms.size,
-        totalPeers: Array.from(rooms.values()).reduce((sum, r) => sum + r.peers.size, 0),
-      })
-      return
-    }
-
-    // Join a room
-    const joinMatch = path.match(/^\/room\/([^/]+)\/join$/)
-    if (joinMatch && method === 'POST') {
-      const roomId = decodeURIComponent(joinMatch[1])
-      const body = await parseBody(req)
-      const peerId = body.peerId
-
-      if (!peerId) {
-        sendJson(res, { error: 'peerId required' }, 400)
-        return
-      }
-
-      const room = getRoom(roomId)
-      const existingPeers = Array.from(room.peers).filter(p => p !== peerId)
-      room.peers.add(peerId)
-
-      console.log(`[Signaling] Peer ${peerId.substring(0, 8)}... joined room ${roomId.substring(0, 8)}... (${room.peers.size} peers)`)
-
-      sendJson(res, { peers: existingPeers })
-      return
-    }
-
-    // Leave a room
-    const leaveMatch = path.match(/^\/room\/([^/]+)\/leave$/)
-    if (leaveMatch && method === 'POST') {
-      const roomId = decodeURIComponent(leaveMatch[1])
-      const body = await parseBody(req)
-      const peerId = body.peerId
-
-      const room = rooms.get(roomId)
-      if (room) {
-        room.peers.delete(peerId)
-        console.log(`[Signaling] Peer ${peerId?.substring(0, 8)}... left room ${roomId.substring(0, 8)}... (${room.peers.size} peers)`)
-
-        // Clean up empty rooms
-        if (room.peers.size === 0) {
-          rooms.delete(roomId)
-        }
-      }
-
-      sendJson(res, { success: true })
-      return
-    }
-
-    // Get messages for a room (for a specific peer)
-    const messagesMatch = path.match(/^\/room\/([^/]+)\/messages$/)
-    if (messagesMatch && method === 'GET') {
-      const roomId = decodeURIComponent(messagesMatch[1])
-      const peerId = url.searchParams.get('peerId')
-      const afterId = parseInt(url.searchParams.get('after') || '0', 10)
-
-      const room = rooms.get(roomId)
-      if (!room) {
-        sendJson(res, { messages: [] })
-        return
-      }
-
-      // Get messages addressed to this peer, after the given ID
-      const messages = room.messages.filter(m =>
-        m.to === peerId && m.id > afterId
-      )
-
-      sendJson(res, { messages })
-      return
-    }
-
-    // Send a signaling message (legacy room-based)
-    if (path === '/signal' && method === 'POST') {
-      const body = await parseBody(req)
-      const { room: roomId, type, from, to, payload } = body
-
-      if (!roomId || !type || !from || !to) {
-        sendJson(res, { error: 'room, type, from, to required' }, 400)
-        return
-      }
-
-      const room = getRoom(roomId)
-      const message: SignalingMessage = {
-        id: ++messageIdCounter,
-        type,
-        from,
-        to,
-        payload,
-        room: roomId,
-        timestamp: Date.now(),
-      }
-      room.messages.push(message)
-
-      // Keep only last 100 messages per room
-      if (room.messages.length > 100) {
-        room.messages = room.messages.slice(-100)
-      }
-
-      console.log(`[Signaling] ${type} from ${from.substring(0, 8)}... to ${to.substring(0, 8)}...`)
-
-      sendJson(res, { success: true, messageId: message.id })
-      return
-    }
-
-    // ============= Presence API =============
-
-    // POST /presence/{familyId}/{deviceId} - heartbeat
-    const presenceMatch = path.match(/^\/presence\/([^/]+)\/([^/]+)$/)
-    if (presenceMatch && method === 'POST') {
-      const familyId = decodeURIComponent(presenceMatch[1])
-      const deviceId = decodeURIComponent(presenceMatch[2])
-      const body = await parseBody(req)
-      const { pubKey, deviceName } = body
-
-      if (!presence.has(familyId)) {
-        presence.set(familyId, new Map())
-      }
-      presence.get(familyId)!.set(deviceId, { pubKey: pubKey || '', ts: Date.now() })
-
-      // Upsert device record in DB for persistence
-      if (db) {
-        try {
-          await db
-            .insert(devices)
-            .values({
-              id: deviceId,
-              familyId,
-              deviceName: deviceName || 'Unknown Device',
-              pubKey: pubKey || null,
-              lastSeenAt: new Date(),
-            })
-            .onConflictDoUpdate({
-              target: devices.id,
-              set: {
-                lastSeenAt: new Date(),
-                pubKey: pubKey || null,
-                deviceName: deviceName || 'Unknown Device',
-              },
-            })
-        } catch (dbError) {
-          console.error(`[Presence] DB upsert failed for device ${deviceId.substring(0, 8)}...:`, dbError)
-        }
-      }
-
-      console.log(`[Presence] Heartbeat from ${deviceId.substring(0, 8)}... in family ${familyId.substring(0, 8)}...`)
-      sendJson(res, { success: true })
-      return
-    }
-
-    // DELETE /presence/{familyId}/{deviceId} - remove presence
-    if (presenceMatch && method === 'DELETE') {
-      const familyId = decodeURIComponent(presenceMatch[1])
-      const deviceId = decodeURIComponent(presenceMatch[2])
-
-      const familyPresence = presence.get(familyId)
-      if (familyPresence) {
-        familyPresence.delete(deviceId)
-        if (familyPresence.size === 0) {
-          presence.delete(familyId)
-        }
-      }
-
-      console.log(`[Presence] Removed ${deviceId.substring(0, 8)}... from family ${familyId.substring(0, 8)}...`)
-      sendJson(res, { success: true })
-      return
-    }
-
-    // GET /presence/{familyId} - get online peers
-    const presenceListMatch = path.match(/^\/presence\/([^/]+)$/)
-    if (presenceListMatch && method === 'GET') {
-      const familyId = decodeURIComponent(presenceListMatch[1])
-
-      const familyPresence = presence.get(familyId)
-      const peers: Array<{ deviceId: string; pubKey: string; ts: number }> = []
-
-      if (familyPresence) {
-        for (const [deviceId, entry] of familyPresence) {
-          peers.push({ deviceId, pubKey: entry.pubKey, ts: entry.ts })
-        }
-      }
-
-      sendJson(res, { peers })
-      return
-    }
-
-    // ============= Family & Sync API (PostgreSQL) =============
-
-    // POST /family - register/upsert a family
-    if (path === '/family' && method === 'POST') {
-      const body = await parseBody(req)
-      const { id, publicKey } = body
-
-      if (!id || !publicKey) {
-        sendJson(res, { error: 'id and publicKey required' }, 400)
-        return
-      }
-
-      if (!db) {
-        sendJson(res, { error: 'Database not configured' }, 503)
-        return
-      }
-
-      await db
-        .insert(families)
-        .values({ id, publicKey })
-        .onConflictDoUpdate({
-          target: families.id,
-          set: { publicKey },
-        })
-
-      console.log(`[Family] Registered/updated family ${id.substring(0, 8)}...`)
-      sendJson(res, { success: true, familyId: id })
-      return
-    }
-
-    // GET /family/{familyId}/devices - list devices in a family
-    const familyDevicesMatch = path.match(/^\/family\/([^/]+)\/devices$/)
-    if (familyDevicesMatch && method === 'GET') {
-      const familyId = decodeURIComponent(familyDevicesMatch[1])
-
-      if (!db) {
-        sendJson(res, { error: 'Database not configured' }, 503)
-        return
-      }
-
-      const deviceList = await db
-        .select()
-        .from(devices)
-        .where(eq(devices.familyId, familyId))
-
-      sendJson(res, { devices: deviceList })
-      return
-    }
-
-    // POST /sync/{familyId} - store a sync event
-    const syncPostMatch = path.match(/^\/sync\/([^/]+)$/)
-    if (syncPostMatch && method === 'POST') {
-      const familyId = decodeURIComponent(syncPostMatch[1])
-      const body = await parseBody(req)
-      const { deviceId, eventType, payload } = body
-
-      if (!deviceId || !eventType || payload === undefined) {
-        sendJson(res, { error: 'deviceId, eventType, and payload required' }, 400)
-        return
-      }
-
-      if (!db) {
-        sendJson(res, { error: 'Database not configured' }, 503)
-        return
-      }
-
-      const result = await db
-        .insert(syncEvents)
-        .values({ familyId, deviceId, eventType, payload })
-        .returning({ id: syncEvents.id })
-
-      console.log(`[Sync] Stored event ${eventType} from ${deviceId.substring(0, 8)}... in family ${familyId.substring(0, 8)}...`)
-      sendJson(res, { success: true, eventId: result[0].id })
-      return
-    }
-
-    // GET /sync/{familyId}?after=<iso-timestamp> - fetch events for catch-up
-    if (syncPostMatch && method === 'GET') {
-      const familyId = decodeURIComponent(syncPostMatch[1])
-      const afterParam = url.searchParams.get('after')
-
-      if (!db) {
-        sendJson(res, { error: 'Database not configured' }, 503)
-        return
-      }
-
-      const afterDate = afterParam ? new Date(afterParam) : new Date(0)
-
-      if (isNaN(afterDate.getTime())) {
-        sendJson(res, { error: 'Invalid after timestamp' }, 400)
-        return
-      }
-
-      const events = await db
-        .select()
-        .from(syncEvents)
-        .where(
-          and(
-            eq(syncEvents.familyId, familyId),
-            gt(syncEvents.createdAt, afterDate)
-          )
-        )
-
-      sendJson(res, { events })
-      return
-    }
-
-    // ============= Signal Queue API =============
-
-    // POST /signal/{topic}/{peerId} - send signal to peer
-    const signalSendMatch = path.match(/^\/signal\/([^/]+)\/([^/]+)$/)
-    if (signalSendMatch && method === 'POST') {
-      const topic = decodeURIComponent(signalSendMatch[1])
-      const peerId = decodeURIComponent(signalSendMatch[2])
-      const body = await parseBody(req)
-
-      const queueKey = `${topic}:${peerId}`
-      if (!signalQueues.has(queueKey)) {
-        signalQueues.set(queueKey, [])
-      }
-
-      const message: SignalingMessage = {
-        id: ++messageIdCounter,
-        type: body.type,
-        from: body.from,
-        to: peerId,
-        payload: body.payload,
-        room: topic,
-        timestamp: Date.now(),
-      }
-      signalQueues.get(queueKey)!.push(message)
-
-      // Keep only last 50 messages per queue
-      const queue = signalQueues.get(queueKey)!
-      if (queue.length > 50) {
-        signalQueues.set(queueKey, queue.slice(-50))
-      }
-
-      console.log(`[Signal] ${body.type} from ${body.from?.substring(0, 8) || 'unknown'}... to ${peerId.substring(0, 8)}...`)
-      sendJson(res, { success: true })
-      return
-    }
-
-    // GET /signal/{topic}/{peerId} - poll signals for peer
-    if (signalSendMatch && method === 'GET') {
-      const topic = decodeURIComponent(signalSendMatch[1])
-      const peerId = decodeURIComponent(signalSendMatch[2])
-
-      const queueKey = `${topic}:${peerId}`
-      const messages = signalQueues.get(queueKey) || []
-
-      // Clear the queue after reading (one-time delivery)
-      signalQueues.delete(queueKey)
-
-      sendJson(res, { messages })
-      return
-    }
-
-    // 404 for unknown routes
-    sendJson(res, { error: 'Not found' }, 404)
+    await db.insert(devices).values({
+      id: deviceId, familyId, deviceName, publicKey: publicKey || null, lastSeenAt: new Date(),
+    }).onConflictDoUpdate({
+      target: devices.id,
+      set: { lastSeenAt: new Date(), publicKey: publicKey || null, deviceName },
+    })
   } catch (error) {
-    console.error('HTTP error:', error)
-    sendJson(res, { error: 'Internal server error' }, 500)
+    console.error(`[Presence] DB upsert failed for ${truncateId(deviceId)}:`, error)
+  }
+
+  console.log(`[Presence] Heartbeat from ${truncateId(deviceId)} in ${truncateId(familyId)}`)
+  sendJson(context.response, { success: true })
+}
+
+function handlePresenceRemove(
+  context: RouteContext, familyId: string, deviceId: string,
+): void {
+  const familyPresence = presence.get(familyId)
+  if (familyPresence) {
+    familyPresence.delete(deviceId)
+    if (familyPresence.size === 0) presence.delete(familyId)
+  }
+
+  console.log(`[Presence] Removed ${truncateId(deviceId)} from ${truncateId(familyId)}`)
+  sendJson(context.response, { success: true })
+}
+
+function handlePresenceList(context: RouteContext, familyId: string): void {
+  const familyPresence = presence.get(familyId)
+  if (!familyPresence) {
+    sendJson(context.response, { peers: [] })
+    return
+  }
+
+  const peers: Array<{ deviceId: string; publicKey: string; timestampMs: number }> = []
+  for (const [deviceId, entry] of familyPresence) {
+    peers.push({ deviceId, publicKey: entry.publicKey, timestampMs: entry.timestampMs })
+  }
+  sendJson(context.response, { peers })
+}
+
+async function handleFamilyRegister(context: RouteContext): Promise<void> {
+  const body = await parseBody(context.request)
+
+  if (typeof body.id !== 'string' || body.id.length === 0) {
+    sendError(context.response, 'id required (string)', 400)
+    return
+  }
+  if (typeof body.publicKey !== 'string' || body.publicKey.length === 0) {
+    sendError(context.response, 'publicKey required (string)', 400)
+    return
+  }
+  if (!requireDb(context.response)) return
+
+  try {
+    await db!.insert(families)
+      .values({ id: body.id, publicKey: body.publicKey })
+      .onConflictDoUpdate({ target: families.id, set: { publicKey: body.publicKey } })
+
+    console.log(`[Family] Registered/updated ${truncateId(body.id)}`)
+    sendJson(context.response, { success: true, familyId: body.id })
+  } catch (error) {
+    console.error(`[Family] DB insert failed for ${truncateId(body.id)}:`, error)
+    sendError(context.response, 'Database operation failed', 500)
+  }
+}
+
+async function handleFamilyDevices(context: RouteContext, familyId: string): Promise<void> {
+  if (!requireDb(context.response)) return
+
+  try {
+    const deviceList = await db!.select().from(devices).where(eq(devices.familyId, familyId))
+    sendJson(context.response, { devices: deviceList })
+  } catch (error) {
+    console.error(`[Family] DB query failed for devices in ${truncateId(familyId)}:`, error)
+    sendError(context.response, 'Database operation failed', 500)
+  }
+}
+
+async function handleSyncStore(context: RouteContext, familyId: string): Promise<void> {
+  const body = await parseBody(context.request)
+
+  if (typeof body.deviceId !== 'string' || body.deviceId.length === 0) {
+    sendError(context.response, 'deviceId required (string)', 400)
+    return
+  }
+  if (typeof body.eventType !== 'string' || body.eventType.length === 0) {
+    sendError(context.response, 'eventType required (string)', 400)
+    return
+  }
+  if (body.payload === undefined || body.payload === null) {
+    sendError(context.response, 'payload required', 400)
+    return
+  }
+  if (!requireDb(context.response)) return
+
+  try {
+    const result = await db!.insert(syncEvents)
+      .values({ familyId, deviceId: body.deviceId, eventType: body.eventType, payload: body.payload })
+      .returning({ id: syncEvents.id })
+
+    if (result.length === 0) {
+      sendError(context.response, 'Failed to store sync event', 500)
+      return
+    }
+    console.log(`[Sync] Stored ${body.eventType} from ${truncateId(body.deviceId)} in ${truncateId(familyId)}`)
+    sendJson(context.response, { success: true, eventId: result[0].id })
+  } catch (error) {
+    console.error(`[Sync] DB insert failed in ${truncateId(familyId)}:`, error)
+    sendError(context.response, 'Database operation failed', 500)
+  }
+}
+
+async function handleSyncFetch(context: RouteContext, familyId: string): Promise<void> {
+  if (!requireDb(context.response)) return
+
+  const afterParam = context.url.searchParams.get('after')
+  const afterDate = afterParam ? new Date(afterParam) : new Date(0)
+
+  if (isNaN(afterDate.getTime())) {
+    sendError(context.response, 'Invalid after timestamp', 400)
+    return
+  }
+
+  try {
+    const events = await db!.select().from(syncEvents)
+      .where(and(eq(syncEvents.familyId, familyId), gt(syncEvents.createdAt, afterDate)))
+    sendJson(context.response, { events })
+  } catch (error) {
+    console.error(`[Sync] DB query failed in ${truncateId(familyId)}:`, error)
+    sendError(context.response, 'Database operation failed', 500)
+  }
+}
+
+async function handleSignalSend(
+  context: RouteContext, topic: string, peerId: string,
+): Promise<void> {
+  const body = await parseBody(context.request)
+
+  if (!isSignalType(body.type)) {
+    sendError(context.response, 'type must be offer, answer, or ice-candidate', 400)
+    return
+  }
+  if (typeof body.from !== 'string' || body.from.length === 0) {
+    sendError(context.response, 'from required (string)', 400)
+    return
+  }
+
+  const queueKey = `${topic}:${peerId}`
+  if (!signalQueues.has(queueKey)) signalQueues.set(queueKey, [])
+
+  const message: SignalingMessage = {
+    id: ++messageIdNext, type: body.type, source: body.from, target: peerId,
+    payload: body.payload, room: topic, timestampMs: Date.now(),
+  }
+  signalQueues.get(queueKey)!.push(message)
+
+  const queue = signalQueues.get(queueKey)!
+  if (queue.length > SIGNAL_QUEUE_MESSAGES_COUNT_LIMIT) {
+    signalQueues.set(queueKey, queue.slice(-SIGNAL_QUEUE_MESSAGES_COUNT_LIMIT))
+  }
+
+  console.log(`[Signal] ${body.type} from ${truncateId(body.from)} to ${truncateId(peerId)}`)
+  sendJson(context.response, { success: true })
+}
+
+function handleSignalPoll(context: RouteContext, topic: string, peerId: string): void {
+  const queueKey = `${topic}:${peerId}`
+  const messages = signalQueues.get(queueKey) || []
+  signalQueues.delete(queueKey)
+  sendJson(context.response, { messages })
+}
+
+// ============= Router =============
+
+const ROUTE_ROOM_JOIN = /^\/room\/([^/]+)\/join$/
+const ROUTE_ROOM_LEAVE = /^\/room\/([^/]+)\/leave$/
+const ROUTE_ROOM_MESSAGES = /^\/room\/([^/]+)\/messages$/
+const ROUTE_PRESENCE_DEVICE = /^\/presence\/([^/]+)\/([^/]+)$/
+const ROUTE_PRESENCE_LIST = /^\/presence\/([^/]+)$/
+const ROUTE_FAMILY_DEVICES = /^\/family\/([^/]+)\/devices$/
+const ROUTE_SYNC = /^\/sync\/([^/]+)$/
+const ROUTE_SIGNAL_QUEUE = /^\/signal\/([^/]+)\/([^/]+)$/
+
+async function routeStaticPaths(context: RouteContext): Promise<boolean> {
+  if (context.path === '/health' && context.method === 'GET') {
+    handleHealthCheck(context)
+    return true
+  }
+  if (context.path === '/family' && context.method === 'POST') {
+    await handleFamilyRegister(context)
+    return true
+  }
+  if (context.path === '/signal' && context.method === 'POST') {
+    await handleSignalLegacy(context)
+    return true
+  }
+  return false
+}
+
+async function routeRoomPaths(context: RouteContext): Promise<boolean> {
+  let match = context.path.match(ROUTE_ROOM_JOIN)
+  if (match && context.method === 'POST') {
+    await handleRoomJoin(context, decodeURIComponent(match[1]))
+    return true
+  }
+
+  match = context.path.match(ROUTE_ROOM_LEAVE)
+  if (match && context.method === 'POST') {
+    await handleRoomLeave(context, decodeURIComponent(match[1]))
+    return true
+  }
+
+  match = context.path.match(ROUTE_ROOM_MESSAGES)
+  if (match && context.method === 'GET') {
+    handleRoomMessages(context, decodeURIComponent(match[1]))
+    return true
+  }
+  return false
+}
+
+async function routePresencePaths(context: RouteContext): Promise<boolean> {
+  const deviceMatch = context.path.match(ROUTE_PRESENCE_DEVICE)
+  if (deviceMatch && context.method === 'POST') {
+    await handlePresenceHeartbeat(context, decodeURIComponent(deviceMatch[1]), decodeURIComponent(deviceMatch[2]))
+    return true
+  }
+  if (deviceMatch && context.method === 'DELETE') {
+    handlePresenceRemove(context, decodeURIComponent(deviceMatch[1]), decodeURIComponent(deviceMatch[2]))
+    return true
+  }
+
+  const listMatch = context.path.match(ROUTE_PRESENCE_LIST)
+  if (listMatch && context.method === 'GET') {
+    handlePresenceList(context, decodeURIComponent(listMatch[1]))
+    return true
+  }
+  return false
+}
+
+async function routeDataPaths(context: RouteContext): Promise<boolean> {
+  const familyMatch = context.path.match(ROUTE_FAMILY_DEVICES)
+  if (familyMatch && context.method === 'GET') {
+    await handleFamilyDevices(context, decodeURIComponent(familyMatch[1]))
+    return true
+  }
+
+  const syncMatch = context.path.match(ROUTE_SYNC)
+  if (syncMatch && context.method === 'POST') {
+    await handleSyncStore(context, decodeURIComponent(syncMatch[1]))
+    return true
+  }
+  if (syncMatch && context.method === 'GET') {
+    await handleSyncFetch(context, decodeURIComponent(syncMatch[1]))
+    return true
+  }
+
+  const signalMatch = context.path.match(ROUTE_SIGNAL_QUEUE)
+  if (signalMatch && context.method === 'POST') {
+    await handleSignalSend(context, decodeURIComponent(signalMatch[1]), decodeURIComponent(signalMatch[2]))
+    return true
+  }
+  if (signalMatch && context.method === 'GET') {
+    handleSignalPoll(context, decodeURIComponent(signalMatch[1]), decodeURIComponent(signalMatch[2]))
+    return true
+  }
+  return false
+}
+
+async function handleRequest(request: IncomingMessage, response: ServerResponse): Promise<void> {
+  const url = new URL(request.url || '/', `http://localhost:${PORT}`)
+  const context: RouteContext = {
+    request, response, url, path: url.pathname, method: request.method || 'GET',
+  }
+
+  if (context.method === 'OPTIONS') {
+    response.writeHead(204, CORS_HEADERS)
+    response.end()
+    return
+  }
+
+  try {
+    const handled = await routeStaticPaths(context)
+      || await routeRoomPaths(context)
+      || await routePresencePaths(context)
+      || await routeDataPaths(context)
+
+    if (!handled) sendError(response, 'Not found', 404)
+  } catch (error) {
+    const isBodyError = error instanceof Error && error.message.includes('Body')
+    const statusCode = isBodyError ? 400 : 500
+    const label = isBodyError ? 'Bad request' : 'Internal server error'
+    console.error(`[Server] ${context.method} ${context.path} failed:`, error)
+    sendError(response, `${label}: ${error instanceof Error ? error.message : 'unknown'}`, statusCode)
   }
 }
 
 // ============= Server Setup =============
 
-const server = createServer(handleHttpRequest)
+const server = createServer(handleRequest)
+
+server.on('error', (error: Error) => {
+  console.error(`[Server] Fatal server error:`, error)
+  process.exit(1)
+})
 
 server.listen(PORT, () => {
   console.log(`Homeschool Sync Signaling Server running on port ${PORT}`)
   console.log(`Database: ${db ? 'connected' : 'not configured (DATABASE_URL missing)'}`)
   console.log(``)
   console.log(`Endpoints:`)
-  console.log(`  GET  /health                         - Health check`)
-  console.log(``)
-  console.log(`  Family & Sync API (PostgreSQL):`)
-  console.log(`  POST /family                         - Register/upsert family`)
-  console.log(`  GET  /family/{familyId}/devices       - List devices in family`)
-  console.log(`  POST /sync/{familyId}                - Store sync event`)
-  console.log(`  GET  /sync/{familyId}?after=<ts>     - Fetch events for catch-up`)
-  console.log(``)
-  console.log(`  Presence API:`)
-  console.log(`  POST /presence/{familyId}/{deviceId} - Heartbeat (body: { pubKey })`)
+  console.log(`  GET  /health                          - Health check`)
+  console.log(`  POST /family                          - Register/upsert family`)
+  console.log(`  GET  /family/{familyId}/devices        - List devices`)
+  console.log(`  POST /sync/{familyId}                 - Store sync event`)
+  console.log(`  GET  /sync/{familyId}?after=<ts>      - Catch-up sync`)
+  console.log(`  POST /presence/{familyId}/{deviceId}  - Heartbeat`)
   console.log(`  DELETE /presence/{familyId}/{deviceId} - Remove presence`)
-  console.log(`  GET  /presence/{familyId}            - Get online peers`)
-  console.log(``)
-  console.log(`  Signal Queue API:`)
-  console.log(`  POST /signal/{topic}/{peerId}        - Send signal to peer`)
-  console.log(`  GET  /signal/{topic}/{peerId}        - Poll signals for peer`)
-  console.log(``)
-  console.log(`  Legacy Room API:`)
-  console.log(`  POST /room/{roomId}/join             - Join a room (body: { peerId })`)
-  console.log(`  POST /room/{roomId}/leave            - Leave a room (body: { peerId })`)
-  console.log(`  GET  /room/{roomId}/messages         - Poll for messages`)
-  console.log(`  POST /signal                         - Send signaling message`)
-  console.log(``)
-  console.log(`WebRTC data flows peer-to-peer after connection is established.`)
+  console.log(`  GET  /presence/{familyId}             - Online peers`)
+  console.log(`  POST /signal/{topic}/{peerId}         - Send signal`)
+  console.log(`  GET  /signal/{topic}/{peerId}         - Poll signals`)
+  console.log(`  POST /room/{roomId}/join              - Join room`)
+  console.log(`  POST /room/{roomId}/leave             - Leave room`)
+  console.log(`  GET  /room/{roomId}/messages           - Room messages`)
+  console.log(`  POST /signal                          - Legacy signal`)
 })
 
 process.on('SIGTERM', () => {
-  console.log('Shutting down...')
+  console.log('[Server] SIGTERM received, shutting down...')
+  server.close()
+  process.exit(0)
+})
+
+process.on('SIGINT', () => {
+  console.log('[Server] SIGINT received, shutting down...')
   server.close()
   process.exit(0)
 })
