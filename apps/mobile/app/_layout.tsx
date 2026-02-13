@@ -45,7 +45,16 @@ export default function RootLayout() {
   const segments = useSegments()
   const [isInitializing, setIsInitializing] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { onboardingComplete, setOnboardingComplete, setStudents, setSubjects, setIsInitialized, setSelectedStudentId } = useStore()
+  const { onboardingComplete, setOnboardingComplete, setStudents, setSubjects, setIsInitialized, setSelectedStudentId, selectedStudentId, students } = useStore()
+
+  // Auto-select first student if none selected or selection is stale
+  useEffect(() => {
+    if (students.length === 0) return
+    const selectionValid = selectedStudentId && students.some((s) => s.id === selectedStudentId)
+    if (!selectionValid) {
+      setSelectedStudentId(students[0].id)
+    }
+  }, [students, selectedStudentId, setSelectedStudentId])
 
   useEffect(() => {
     console.log('[App] useEffect starting initialization')

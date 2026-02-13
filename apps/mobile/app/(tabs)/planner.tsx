@@ -12,7 +12,7 @@ import {
   isToday,
 } from 'date-fns'
 import { useStore } from '../../src/stores/useStore'
-import { getMilestones, updateMilestone, createReward } from '../../src/database'
+import { getMilestones, updateMilestone, createReward, getSuggestedMilestones } from '../../src/database'
 import type { Milestone } from '../../src/types'
 import { StudentSelector } from '../../src/components/StudentSelector'
 import { Card, Badge, Button, EmptyState, Modal } from '../../src/components/ui'
@@ -26,6 +26,7 @@ export default function PlannerScreen() {
   const { selectedStudentId, getSelectedStudent, getSubjectById } = useStore()
   const [currentWeekStart, setCurrentWeekStart] = useState(() => format(getCurrentWeekStart(), 'yyyy-MM-dd'))
   const [milestones, setMilestones] = useState<Milestone[]>([])
+  const [suggestedIds, setSuggestedIds] = useState<Set<string>>(new Set())
   const [refreshing, setRefreshing] = useState(false)
   const [showAddModal, setShowAddModal] = useState(false)
 
@@ -85,6 +86,17 @@ export default function PlannerScreen() {
 
   const goToCurrentWeek = () => {
     setCurrentWeekStart(format(getCurrentWeekStart(), 'yyyy-MM-dd'))
+  }
+
+  const handleAutoSuggest = async () => {
+    if (!selectedStudentId) return
+    try {
+      const suggested = await getSuggestedMilestones(selectedStudentId, 15)
+      setSuggestedIds(new Set(suggested.map((m) => m.id)))
+    } catch (err) {
+      console.error('[Planner] Failed to suggest milestones:', err)
+      Alert.alert('Error', 'Failed to load suggestions')
+    }
   }
 
   const handleToggleComplete = async (milestone: Milestone) => {
@@ -243,8 +255,29 @@ export default function PlannerScreen() {
             </Card>
           </View>
 
+          {/* Suggest Button */}
+          <View style={{ marginTop: 12, flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <TouchableOpacity
+              onPress={handleAutoSuggest}
+              accessibilityLabel="Auto-suggest milestones for this week"
+              accessibilityRole="button"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 6,
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+                borderRadius: 20,
+                backgroundColor: studentColor,
+              }}
+            >
+              <Ionicons name="sparkles" size={16} color={colors.textInverse} />
+              <Text style={{ fontSize: 13, fontWeight: '600', color: colors.textInverse }}>Suggest Focus</Text>
+            </TouchableOpacity>
+          </View>
+
           {/* Milestones List */}
-          <View style={{ marginTop: 16 }}>
+          <View style={{ marginTop: 12 }}>
             {milestones.length === 0 ? (
               <Card>
                 <EmptyState
@@ -265,21 +298,22 @@ export default function PlannerScreen() {
                     <View style={{ gap: 8 }}>
                       {subjectMilestones.map((milestone) => {
                         const isCompleted = milestone.status === 'completed'
+                        const isSuggested = suggestedIds.size > 0 && suggestedIds.has(milestone.id)
                         return (
                           <TouchableOpacity
                             key={milestone.id}
                             onPress={() => handleToggleComplete(milestone)}
                             accessibilityRole="checkbox"
                             accessibilityState={{ checked: isCompleted }}
-                            accessibilityLabel={`${milestone.title}, ${isCompleted ? 'completed' : 'not completed'}`}
+                            accessibilityLabel={`${milestone.title}, ${isCompleted ? 'completed' : 'not completed'}${isSuggested ? ', suggested' : ''}`}
                             style={{
                               flexDirection: 'row',
                               alignItems: 'flex-start',
                               padding: 12,
                               borderRadius: 8,
-                              backgroundColor: isCompleted ? colors.successLight : colors.background,
+                              backgroundColor: isCompleted ? colors.successLight : isSuggested ? studentColor + '15' : colors.background,
                               borderLeftWidth: 3,
-                              borderLeftColor: isCompleted ? colors.success : colors.border,
+                              borderLeftColor: isCompleted ? colors.success : isSuggested ? studentColor : colors.border,
                             }}
                           >
                             <View
@@ -333,6 +367,12 @@ export default function PlannerScreen() {
                                 >
                                   {milestone.status.replace('_', ' ')}
                                 </Badge>
+                                {isSuggested && (
+                                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
+                                    <Ionicons name="sparkles" size={10} color={studentColor} />
+                                    <Text style={{ fontSize: 10, color: studentColor, fontWeight: '500' }}>Focus</Text>
+                                  </View>
+                                )}
                               </View>
                             </View>
                           </TouchableOpacity>

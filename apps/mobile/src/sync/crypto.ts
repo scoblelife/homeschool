@@ -7,11 +7,32 @@
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import * as Crypto from "expo-crypto";
+
+// Polyfill crypto.getRandomValues for tweetnacl's PRNG.
+// React Native's JS engine lacks it, but expo-crypto provides native randomness.
+if (typeof globalThis.crypto === "undefined") {
+  (globalThis as any).crypto = {};
+}
+if (typeof globalThis.crypto.getRandomValues === "undefined") {
+  globalThis.crypto.getRandomValues = <T extends ArrayBufferView>(
+    array: T,
+  ): T => {
+    const bytes = Crypto.getRandomBytes(array.byteLength);
+    const target = new Uint8Array(
+      array.buffer,
+      array.byteOffset,
+      array.byteLength,
+    );
+    target.set(bytes);
+    return array;
+  };
+}
+
 const nacl: any = require("tweetnacl");
 const tweetnaclUtil: any = require("tweetnacl-util");
 const encodeBase64: (data: Uint8Array) => string = tweetnaclUtil.encodeBase64;
 const decodeBase64: (data: string) => Uint8Array = tweetnaclUtil.decodeBase64;
-import * as Crypto from "expo-crypto";
 
 export interface KeyPair {
   publicKey: string; // base64

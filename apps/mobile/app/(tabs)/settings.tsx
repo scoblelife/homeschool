@@ -4,10 +4,13 @@ import { Ionicons } from '@expo/vector-icons'
 import { format } from 'date-fns'
 import { useStore } from '../../src/stores/useStore'
 import { getStudents, createStudent, updateStudent, deleteStudent } from '../../src/database'
+import { seedDemoData } from '../../src/database/seedDemoData'
 import type { Student, CreateStudent, GradeLevel } from '../../src/types'
 import { Card, Button, Modal, Input, EmptyState, Badge, DatePicker } from '../../src/components/ui'
 import { FeedbackModal, FeedbackButton } from '../../src/components/Feedback'
 import { useTheme, useColors } from '../../src/theme/ThemeContext'
+
+const isDemoDataAllowed = __DEV__ || process.env.EXPO_PUBLIC_DEMO_DATA === '1'
 
 const gradeLevels: { value: GradeLevel; label: string }[] = [
   { value: 'pre-k', label: 'Pre-K' },
@@ -295,11 +298,48 @@ export default function SettingsScreen() {
             <FeedbackButton onPress={() => setFeedbackVisible(true)} />
           </View>
 
+          {/* Demo Data — only on emulators and TestFlight builds */}
+          {isDemoDataAllowed && students.length === 0 && (
+            <View style={{ marginBottom: 24 }}>
+              <Text style={{ fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: 12 }}>Developer</Text>
+              <Card>
+                <Button
+                  onPress={() => {
+                    Alert.alert(
+                      'Load Demo Data',
+                      'This will add two sample students, activities, books, milestones, and events.',
+                      [
+                        { text: 'Cancel', style: 'cancel' },
+                        {
+                          text: 'Load',
+                          onPress: async () => {
+                            try {
+                              await seedDemoData()
+                              await loadStudents()
+                              Alert.alert('Done', 'Demo data loaded.')
+                            } catch (err) {
+                              console.error('[Settings] Failed to seed demo data:', err)
+                              Alert.alert('Error', String(err))
+                            }
+                          },
+                        },
+                      ]
+                    )
+                  }}
+                  color={colors.primary}
+                  fullWidth
+                >
+                  Load Demo Data
+                </Button>
+              </Card>
+            </View>
+          )}
+
           {/* App Info */}
           <Card>
             <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 8 }}>About</Text>
             <Text style={{ fontSize: 14, color: colors.textSecondary }}>Homeschool Mobile</Text>
-            <Text style={{ fontSize: 12, color: colors.textTertiary, marginTop: 4 }}>Version 0.1.0</Text>
+            <Text style={{ fontSize: 12, color: colors.textTertiary, marginTop: 4 }}>Version 1.0.0</Text>
             <Text style={{ fontSize: 12, color: colors.textTertiary, marginTop: 8 }}>
               Track activities, milestones, and plan events for your homeschool students.
             </Text>

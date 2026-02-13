@@ -29,6 +29,7 @@ export class WorkerSignalingProvider implements SignalingProvider {
   private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   private messageCallback: ((message: WebRTCSignalingMessage) => void) | null =
     null;
+  private heartbeatFailureLogged = false;
 
   constructor(options: WorkerSignalingOptions) {
     this.pubKey = options.pubKey;
@@ -110,8 +111,15 @@ export class WorkerSignalingProvider implements SignalingProvider {
             this.localId,
             this.pubKey,
           );
+          this.heartbeatFailureLogged = false;
         } catch (err) {
-          console.error("[WorkerSignaling] Heartbeat failed:", err);
+          if (!this.heartbeatFailureLogged) {
+            console.warn(
+              "[WorkerSignaling] Heartbeat failed (suppressing further):",
+              err,
+            );
+            this.heartbeatFailureLogged = true;
+          }
         }
       }
     }, PRESENCE_INTERVAL);

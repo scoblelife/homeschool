@@ -7,8 +7,18 @@ android/app/build/
 ios/build/
 ios/Pods/
 
-# Native Rust libraries (downloaded during prebuild)
+# Native Rust libraries
 native-libs/
+
+# Unrelated apps (save upload time)
+apps/desktop/
+apps/admin-panel/
+apps/relay/
+apps/web/
+signaling/
+
+# Stale lock files (pnpm-lock.yaml is the source of truth)
+package-lock.json
 
 # Local environment files
 .env.local

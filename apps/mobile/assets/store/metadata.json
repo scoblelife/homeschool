@@ -16,19 +16,19 @@
     "education",
     "learning",
     "tracking",
-    "curriculum",
-    "attendance",
-    "portfolio",
+    "progress",
+    "reading",
+    "milestones",
     "unschool",
     "homeschooling",
-    "parent"
+    "offline"
   ],
   "locales": {
     "en-US": {
       "name": "Homeschool",
       "subtitle": "Track Learning, Celebrate Progress",
       "description": "appstore-description.txt",
-      "keywords": "homeschool,education,learning,tracking,curriculum,attendance,portfolio,unschool"
+      "keywords": "homeschool,education,learning,tracking,progress,reading,milestones,unschool,homeschooling,offline"
     }
   }
 }

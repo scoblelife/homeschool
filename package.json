@@ -2,6 +2,7 @@
   "name": "@homeschool/root",
   "version": "0.1.5",
   "private": true,
+  "packageManager": "pnpm@10.29.2",
   "description": "Homeschool management app monorepo",
   "type": "module",
   "author": {

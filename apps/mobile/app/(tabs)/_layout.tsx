@@ -7,7 +7,7 @@ export default function TabLayout() {
   const { isTablet } = useDeviceType()
   const colors = useColors()
 
-  const tabBarHeight = isTablet ? 64 : 50
+  const tabBarHeight = isTablet ? 64 : 62
   const labelFontSize = isTablet ? 12 : 10
 
   return (
@@ -19,7 +19,7 @@ export default function TabLayout() {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           height: tabBarHeight,
-          paddingBottom: isTablet ? 8 : 4,
+          paddingBottom: isTablet ? 8 : 16,
           paddingTop: isTablet ? 8 : 4,
         },
         tabBarLabelStyle: {

@@ -1,47 +1,53 @@
 Log learning in seconds. Stay motivated all year.
 
-Homeschool is the simple, private way to track your homeschool journey. Built by a homeschool parent for homeschool parents, it makes daily logging effortless and turns your data into beautiful insights.
+Homeschool is the fast, private way to track your homeschool journey. Built by a homeschool parent, it makes daily logging effortless and turns your data into clear weekly insights.
 
 QUICK LOGGING
-- Log activities in under 10 seconds with Quick Add
-- Voice logging: "30 minutes of reading for Emma"
-- Timer mode for tracking sessions automatically
-- Recurring activities for your daily routine
-- Photo attachments to document projects
+- Log activities in under 10 seconds with natural text input
+- Type "Math worksheet 30 min" and the app extracts the details
+- One-tap templates for frequently logged activities
+- Six activity types: worksheet, video, reading, writing, hands-on, interactive
+- Support for multiple students with individual profiles
 
-STAY MOTIVATED
-- Daily streaks keep you consistent
-- Weekly summaries show your progress
-- Milestone celebrations for achievements
-- Subject balance alerts keep you on track
-- Year-over-year comparisons show growth
+TRACK PROGRESS
+- Weekly summary: activities completed, hours logged, subjects covered
+- Daily activity history with subject breakdowns
+- Reports by date range (7, 30, or 90 days)
+- See which subjects get the most time and where gaps might be
 
-COMPLIANCE MADE EASY
-- State requirements built-in (all 50 states)
-- Attendance tracking with auto-calculations
-- Hour tracking by subject
-- Curriculum mapping to standards
-- Professional portfolio PDF export
+MILESTONES & GOALS
+- Set learning milestones with target dates
+- Track status from not started through completed
+- Earn stars for completed milestones
+- Weekly wins celebrate your consistency
 
-SYNC ACROSS DEVICES
-- Works offline, syncs when connected
-- No cloud account required
-- Your data stays on your devices
+READING & LIBRARY
+- Track books by title, author, genre, and reading level
+- Log reading sessions with page progress
+- See each student's reading status at a glance
+
+EVENTS & FIELD TRIPS
+- Plan educational outings, co-op meetings, and social events
+- Track dates, locations, costs, and learning outcomes
+- Associate events with subjects and students
+
+CALENDAR & PLANNER
+- Monthly calendar view with activity and event markers
+- Weekly planner with milestone checklists
+- Today dashboard shows your daily overview and weekly stats
+
+FAMILY SYNC
 - Peer-to-peer sync between family devices
-
-BUILT FOR FAMILIES
-- Multiple children with individual tracking
-- Age-appropriate grade levels
-- Field trip and activity planning
-- Co-op group coordination
-- Shared calendars
+- No cloud account required
+- Works offline, syncs when connected
+- Scan a QR code to link devices
 
 PRIVACY FIRST
-- Local-first: your data never leaves your devices
-- No ads, no tracking, no selling your data
-- Open source and transparent
+- Local-first: your data stays on your devices
+- No ads, no tracking, no data collection
+- No account or login required
 - Works completely offline
 
-Whether you're a structured curriculum family or free-range unschoolers, Homeschool adapts to your style. Start your free journey today.
+Whether you follow a structured curriculum or take a flexible approach, Homeschool keeps your records organized without getting in your way.
 
 Questions? Visit homeschool.scoble.life/support
