@@ -7,6 +7,9 @@
  */
 
 import { createServer, IncomingMessage as HttpIncomingMessage, ServerResponse } from 'http'
+import { db } from './db/index.js'
+import { families, devices, syncEvents } from './db/schema.js'
+import { eq, and, gt } from 'drizzle-orm'
 
 const PORT = parseInt(process.env.PORT || '8080', 10)
 
@@ -248,12 +251,37 @@ async function handleHttpRequest(req: HttpIncomingMessage, res: ServerResponse) 
       const familyId = decodeURIComponent(presenceMatch[1])
       const deviceId = decodeURIComponent(presenceMatch[2])
       const body = await parseBody(req)
-      const { pubKey } = body
+      const { pubKey, deviceName } = body
 
       if (!presence.has(familyId)) {
         presence.set(familyId, new Map())
       }
       presence.get(familyId)!.set(deviceId, { pubKey: pubKey || '', ts: Date.now() })
+
+      // Upsert device record in DB for persistence
+      if (db) {
+        try {
+          await db
+            .insert(devices)
+            .values({
+              id: deviceId,
+              familyId,
+              deviceName: deviceName || 'Unknown Device',
+              pubKey: pubKey || null,
+              lastSeenAt: new Date(),
+            })
+            .onConflictDoUpdate({
+              target: devices.id,
+              set: {
+                lastSeenAt: new Date(),
+                pubKey: pubKey || null,
+                deviceName: deviceName || 'Unknown Device',
+              },
+            })
+        } catch (dbError) {
+          console.error(`[Presence] DB upsert failed for device ${deviceId.substring(0, 8)}...:`, dbError)
+        }
+      }
 
       console.log(`[Presence] Heartbeat from ${deviceId.substring(0, 8)}... in family ${familyId.substring(0, 8)}...`)
       sendJson(res, { success: true })
@@ -293,6 +321,113 @@ async function handleHttpRequest(req: HttpIncomingMessage, res: ServerResponse) 
       }
 
       sendJson(res, { peers })
+      return
+    }
+
+    // ============= Family & Sync API (PostgreSQL) =============
+
+    // POST /family - register/upsert a family
+    if (path === '/family' && method === 'POST') {
+      const body = await parseBody(req)
+      const { id, publicKey } = body
+
+      if (!id || !publicKey) {
+        sendJson(res, { error: 'id and publicKey required' }, 400)
+        return
+      }
+
+      if (!db) {
+        sendJson(res, { error: 'Database not configured' }, 503)
+        return
+      }
+
+      await db
+        .insert(families)
+        .values({ id, publicKey })
+        .onConflictDoUpdate({
+          target: families.id,
+          set: { publicKey },
+        })
+
+      console.log(`[Family] Registered/updated family ${id.substring(0, 8)}...`)
+      sendJson(res, { success: true, familyId: id })
+      return
+    }
+
+    // GET /family/{familyId}/devices - list devices in a family
+    const familyDevicesMatch = path.match(/^\/family\/([^/]+)\/devices$/)
+    if (familyDevicesMatch && method === 'GET') {
+      const familyId = decodeURIComponent(familyDevicesMatch[1])
+
+      if (!db) {
+        sendJson(res, { error: 'Database not configured' }, 503)
+        return
+      }
+
+      const deviceList = await db
+        .select()
+        .from(devices)
+        .where(eq(devices.familyId, familyId))
+
+      sendJson(res, { devices: deviceList })
+      return
+    }
+
+    // POST /sync/{familyId} - store a sync event
+    const syncPostMatch = path.match(/^\/sync\/([^/]+)$/)
+    if (syncPostMatch && method === 'POST') {
+      const familyId = decodeURIComponent(syncPostMatch[1])
+      const body = await parseBody(req)
+      const { deviceId, eventType, payload } = body
+
+      if (!deviceId || !eventType || payload === undefined) {
+        sendJson(res, { error: 'deviceId, eventType, and payload required' }, 400)
+        return
+      }
+
+      if (!db) {
+        sendJson(res, { error: 'Database not configured' }, 503)
+        return
+      }
+
+      const result = await db
+        .insert(syncEvents)
+        .values({ familyId, deviceId, eventType, payload })
+        .returning({ id: syncEvents.id })
+
+      console.log(`[Sync] Stored event ${eventType} from ${deviceId.substring(0, 8)}... in family ${familyId.substring(0, 8)}...`)
+      sendJson(res, { success: true, eventId: result[0].id })
+      return
+    }
+
+    // GET /sync/{familyId}?after=<iso-timestamp> - fetch events for catch-up
+    if (syncPostMatch && method === 'GET') {
+      const familyId = decodeURIComponent(syncPostMatch[1])
+      const afterParam = url.searchParams.get('after')
+
+      if (!db) {
+        sendJson(res, { error: 'Database not configured' }, 503)
+        return
+      }
+
+      const afterDate = afterParam ? new Date(afterParam) : new Date(0)
+
+      if (isNaN(afterDate.getTime())) {
+        sendJson(res, { error: 'Invalid after timestamp' }, 400)
+        return
+      }
+
+      const events = await db
+        .select()
+        .from(syncEvents)
+        .where(
+          and(
+            eq(syncEvents.familyId, familyId),
+            gt(syncEvents.createdAt, afterDate)
+          )
+        )
+
+      sendJson(res, { events })
       return
     }
 
@@ -361,9 +496,16 @@ const server = createServer(handleHttpRequest)
 
 server.listen(PORT, () => {
   console.log(`Homeschool Sync Signaling Server running on port ${PORT}`)
+  console.log(`Database: ${db ? 'connected' : 'not configured (DATABASE_URL missing)'}`)
   console.log(``)
   console.log(`Endpoints:`)
   console.log(`  GET  /health                         - Health check`)
+  console.log(``)
+  console.log(`  Family & Sync API (PostgreSQL):`)
+  console.log(`  POST /family                         - Register/upsert family`)
+  console.log(`  GET  /family/{familyId}/devices       - List devices in family`)
+  console.log(`  POST /sync/{familyId}                - Store sync event`)
+  console.log(`  GET  /sync/{familyId}?after=<ts>     - Fetch events for catch-up`)
   console.log(``)
   console.log(`  Presence API:`)
   console.log(`  POST /presence/{familyId}/{deviceId} - Heartbeat (body: { pubKey })`)

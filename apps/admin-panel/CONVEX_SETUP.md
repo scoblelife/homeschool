@@ -34,7 +34,7 @@ After running `npx convex dev`, you'll receive a deployment URL. Add it to your 
 **For the client** (create or update `/admin-panel/client/.env.local`):
 
 ```
-VITE_CONVEX_URL=https://your-deployment-name.convex.cloud
+VITE_CONVEX_URL=https://support.homeschool.scoble.life
 ```
 
 Replace `your-deployment-name` with your actual Convex deployment URL.

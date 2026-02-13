@@ -49,7 +49,7 @@ This will:
 **After you get the deployment URL**, add it to `client/.env.local`:
 
 ```
-VITE_CONVEX_URL=https://your-deployment.convex.cloud
+VITE_CONVEX_URL=https://support.homeschool.scoble.life
 ```
 
 ### 2. Update Components to Use Convex Hooks

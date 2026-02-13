@@ -154,7 +154,7 @@ This will:
 After getting your deployment URL, create `client/.env.local`:
 
 ```bash
-echo "VITE_CONVEX_URL=https://your-deployment.convex.cloud" > client/.env.local
+echo "VITE_CONVEX_URL=https://support.homeschool.scoble.life" > client/.env.local
 ```
 
 ### 3. Test the Application
