@@ -28,10 +28,10 @@ function RootDocument() {
       </head>
       <body>
         <PostHogProvider
-          apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+          apiKey="phc_fyGzmXCbRYcf32kSvxbV1TvOBQDgsJkQ4IVdTU9AkRj"
           options={{
             api_host: '/ingest',
-            ui_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
+            ui_host: 'https://us.i.posthog.com',
             defaults: '2026-01-30',
             capture_exceptions: true,
           }}
