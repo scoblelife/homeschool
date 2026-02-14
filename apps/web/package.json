@@ -10,10 +10,10 @@
     "start": "vinxi start"
   },
   "dependencies": {
-    "@homeschool/shared-types": "workspace:*",
-    "@homeschool/design-tokens": "workspace:*",
-    "@homeschool/ui": "workspace:*",
     "@headlessui/react": "^2.2.4",
+    "@homeschool/design-tokens": "workspace:*",
+    "@homeschool/shared-types": "workspace:*",
+    "@homeschool/ui": "workspace:*",
     "@tanstack/react-router": "^1.120.3",
     "@tanstack/start": "^1.120.3",
     "clsx": "^2.1.1",
@@ -31,6 +31,7 @@
     "drizzle-kit": "^0.31.1",
     "postcss": "^8.5.4",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vite-tsconfig-paths": "^6.1.1"
   }
 }
