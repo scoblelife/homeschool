@@ -31,13 +31,13 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
         ref={ref}
         className={clsx(
           // Base styles
-          'bg-white rounded-xl border border-gray-200 shadow-sm',
+          'bg-neutral-surface rounded-xl border border-neutral-border shadow-sm',
           // Padding
           paddingClasses[padding],
           // Hover effect
           hover && 'transition-shadow duration-200 hover:shadow-md',
           // Interactive (clickable)
-          interactive && 'cursor-pointer hover:border-gray-300 active:scale-[0.99]',
+          interactive && 'cursor-pointer hover:border-neutral-border active:scale-[0.99]',
           // Custom classes
           className
         )}
@@ -77,7 +77,7 @@ export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
     return (
       <Component
         ref={ref}
-        className={clsx('text-base font-semibold text-gray-900', className)}
+        className={clsx('text-base font-semibold text-neutral-text', className)}
         {...props}
       >
         {children}
@@ -95,7 +95,7 @@ export interface CardDescriptionProps extends HTMLAttributes<HTMLParagraphElemen
 export const CardDescription = forwardRef<HTMLParagraphElement, CardDescriptionProps>(
   ({ children, className, ...props }, ref) => {
     return (
-      <p ref={ref} className={clsx('text-sm text-gray-500 mt-1', className)} {...props}>
+      <p ref={ref} className={clsx('text-sm text-neutral-textSecondary mt-1', className)} {...props}>
         {children}
       </p>
     )
@@ -129,7 +129,7 @@ export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
     return (
       <div
         ref={ref}
-        className={clsx('mt-4 pt-4 border-t border-gray-100 flex items-center gap-3', className)}
+        className={clsx('mt-4 pt-4 border-t border-neutral-borderLight flex items-center gap-3', className)}
         {...props}
       >
         {children}

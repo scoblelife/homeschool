@@ -14,7 +14,7 @@ import {
   subYears,
 } from "date-fns";
 import { useStore } from "../stores/useStore";
-import { getStudentColor } from "./Settings";
+import { getStudentColor } from "../utils/studentColors";
 import type { Activity, DailySummary, Subject } from "../../../shared/types";
 
 import { Button } from "../components/ui/Button";

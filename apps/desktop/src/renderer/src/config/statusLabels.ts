@@ -18,8 +18,8 @@ export const universalStatusConfig: Record<
 > = {
   not_started: {
     label: "Not Started",
-    color: "text-gray-600",
-    bg: "bg-gray-100",
+    color: "text-neutral-textSecondary",
+    bg: "bg-neutral-backgroundDeep",
     icon: "○",
   },
   in_progress: {

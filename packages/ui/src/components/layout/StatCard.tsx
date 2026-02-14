@@ -28,7 +28,7 @@ export interface StatCardProps {
 }
 
 const colorClasses = {
-  default: "text-gray-900",
+  default: "text-neutral-text",
   primary: "text-fuchsia-600",
   success: "text-green-600",
   warning: "text-amber-600",
@@ -50,7 +50,7 @@ export function StatCard({
           <div className={clsx("text-3xl font-bold", colorClasses[color])}>
             {value}
           </div>
-          <div className="text-sm text-gray-500 mt-1">{label}</div>
+          <div className="text-sm text-neutral-textSecondary mt-1">{label}</div>
           {trend && (
             <div
               className={clsx(
@@ -87,7 +87,7 @@ export function StatCard({
             </div>
           )}
         </div>
-        {icon && <div className="text-gray-400">{icon}</div>}
+        {icon && <div className="text-neutral-textTertiary">{icon}</div>}
       </div>
     </Card>
   );

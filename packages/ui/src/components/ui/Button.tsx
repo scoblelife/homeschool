@@ -24,10 +24,10 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
     'bg-fuchsia-500 text-white hover:bg-fuchsia-600 focus:ring-fuchsia-500 active:bg-fuchsia-700',
-  secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500 active:bg-gray-300',
+  secondary: 'bg-neutral-backgroundDeep text-neutral-text hover:bg-neutral-border focus:ring-neutral-textSecondary active:bg-neutral-border',
   outline:
-    'bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-gray-500',
-  ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500',
+    'bg-transparent text-neutral-text border border-neutral-border hover:bg-neutral-background hover:border-neutral-border focus:ring-neutral-textSecondary',
+  ghost: 'bg-transparent text-neutral-textSecondary hover:bg-neutral-backgroundDeep hover:text-neutral-text focus:ring-neutral-textSecondary',
   danger: 'bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 active:bg-red-700',
 }
 

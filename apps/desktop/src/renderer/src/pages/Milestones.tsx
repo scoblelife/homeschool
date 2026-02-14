@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { format, parseISO } from "date-fns";
 import { Tab } from "@headlessui/react";
+import { ExternalLink, FileText } from "lucide-react";
 import { useStore } from "../stores/useStore";
 import { useMilestones } from "../hooks/useDatabase";
 import { MilestoneCertificate } from "../features/certificates";
@@ -127,18 +128,18 @@ function MilestoneCard({
 
   return (
     <div
-      className={`p-4 rounded-lg border-l-4 ${
+      className={`group p-4 rounded-lg border-l-4 hover:shadow-md transition-shadow ${
         milestone.status === "completed"
           ? "bg-status-successLight border-l-status-success"
           : milestone.status === "in_progress"
             ? "bg-status-warningLight border-l-status-warning"
-            : "bg-gray-50 border-l-gray-300"
+            : "bg-neutral-background border-l-neutral-border"
       }`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-medium text-gray-900">{milestone.title}</h3>
+            <h3 className="font-medium text-neutral-text">{milestone.title}</h3>
             <span
               className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.bg} ${statusInfo.color}`}
             >
@@ -159,14 +160,16 @@ function MilestoneCard({
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-600 mt-1">{milestone.description}</p>
+          <p className="text-sm text-neutral-textSecondary mt-1">
+            {milestone.description}
+          </p>
           {milestone.targetDate && (
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-neutral-textTertiary mt-2">
               Target: {format(parseISO(milestone.targetDate), "MMM d, yyyy")}
             </p>
           )}
           {milestone.evidenceNotes && (
-            <p className="text-sm text-gray-500 mt-2 italic">
+            <p className="text-sm text-neutral-textSecondary mt-2 italic">
               Notes: {milestone.evidenceNotes}
             </p>
           )}
@@ -185,16 +188,20 @@ function MilestoneCard({
             {showResources && (
               <div className="mt-2 space-y-2">
                 {resources.length === 0 ? (
-                  <p className="text-xs text-gray-400">No resources yet</p>
+                  <p className="text-xs text-neutral-textTertiary">
+                    No resources yet
+                  </p>
                 ) : (
                   resources.map((resource) => (
                     <div
                       key={resource.id}
                       className={`flex items-center gap-2 text-sm bg-white p-2 rounded border`}
                     >
-                      <span className="text-lg">
-                        {resource.type === "url" ? "🔗" : "📄"}
-                      </span>
+                      {resource.type === "url" ? (
+                        <ExternalLink className="w-4 h-4 text-neutral-textSecondary flex-shrink-0" />
+                      ) : (
+                        <FileText className="w-4 h-4 text-neutral-textSecondary flex-shrink-0" />
+                      )}
                       <Button
                         variant="ghost"
                         onClick={() => handleOpenResource(resource)}
@@ -227,13 +234,14 @@ function MilestoneCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* eslint-disable-next-line design-system/pages-use-components-only -- action bar with hover visibility */}
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <select
             value={milestone.status}
             onChange={(e) =>
               onStatusChange(e.target.value as Milestone["status"])
             }
-            className="text-sm border border-gray-300 rounded-lg px-2 py-1"
+            className="text-sm border border-neutral-border rounded-lg px-2 py-1"
           >
             <option value="not_started">Not Started</option>
             <option value="in_progress">In Progress</option>
@@ -286,7 +294,7 @@ function MilestoneCard({
                 `px-4 py-2 rounded-lg text-sm font-medium ${
                   selected
                     ? "bg-brand-primaryLight text-brand-primaryDark"
-                    : "bg-gray-100 text-gray-600"
+                    : "bg-neutral-backgroundDeep text-neutral-textSecondary"
                 }`
               }
             >
@@ -297,7 +305,7 @@ function MilestoneCard({
                 `px-4 py-2 rounded-lg text-sm font-medium ${
                   selected
                     ? "bg-brand-primaryLight text-brand-primaryDark"
-                    : "bg-gray-100 text-gray-600"
+                    : "bg-neutral-backgroundDeep text-neutral-textSecondary"
                 }`
               }
             >
@@ -307,7 +315,7 @@ function MilestoneCard({
           <Tab.Panels>
             <Tab.Panel className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-text mb-1">
                   Title
                 </label>
                 <Input
@@ -320,7 +328,7 @@ function MilestoneCard({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-text mb-1">
                   URL
                 </label>
                 <Input
@@ -347,7 +355,7 @@ function MilestoneCard({
             </Tab.Panel>
             <Tab.Panel className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-text mb-1">
                   Title (optional)
                 </label>
                 <Input
@@ -381,9 +389,8 @@ export default function Milestones(): JSX.Element {
   const { subjects, selectedStudentId, getSelectedStudent, getSubjectById } =
     useStore();
   const selectedStudent = getSelectedStudent();
-  const { milestones, updateMilestone, initializeMilestones } = useMilestones(
-    selectedStudentId || undefined,
-  );
+  const { milestones, updateMilestone, initializeMilestones, isLoading } =
+    useMilestones(selectedStudentId || undefined);
 
   const [filterSubject, setFilterSubject] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<StatusFilter>("all");
@@ -493,10 +500,23 @@ export default function Milestones(): JSX.Element {
       <PageContainer>
         <PageHeader title="Milestones" />
         <Card className="text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-neutral-textSecondary">
             Please select a student or add one in Settings.
           </p>
         </Card>
+      </PageContainer>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <PageHeader title="Milestones" />
+        <div className="flex items-center justify-center py-12">
+          <div className="text-neutral-textSecondary">
+            Loading milestones...
+          </div>
+        </div>
       </PageContainer>
     );
   }
@@ -506,10 +526,10 @@ export default function Milestones(): JSX.Element {
       <PageContainer>
         <PageHeader title="Milestones" />
         <Card className="text-center py-12">
-          <p className="text-gray-500 mb-4">
+          <p className="text-neutral-textSecondary mb-4">
             No milestones set up for {selectedStudent.name} yet.
           </p>
-          <p className="text-sm text-gray-400 mb-6">
+          <p className="text-sm text-neutral-textTertiary mb-6">
             Initialize milestones for {selectedStudent.gradeLevel.toUpperCase()}{" "}
             grade level?
           </p>
@@ -534,7 +554,7 @@ export default function Milestones(): JSX.Element {
       {/* Progress Overview */}
       <Card className="mb-6">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-neutral-text">
             Overall Progress
           </span>
           <span className="text-sm font-semibold text-brand-primary">
@@ -542,7 +562,7 @@ export default function Milestones(): JSX.Element {
           </span>
         </div>
         <div
-          className="w-full bg-gray-200 rounded-full h-3 mb-4"
+          className="w-full bg-neutral-border rounded-full h-3 mb-4"
           role="progressbar"
           aria-valuenow={stats.percentage}
           aria-valuemin={0}
@@ -559,32 +579,32 @@ export default function Milestones(): JSX.Element {
             <div className="text-2xl font-bold text-status-success">
               {stats.completed}
             </div>
-            <div className="text-gray-500">Completed</div>
+            <div className="text-neutral-textSecondary">Completed</div>
           </div>
           <div aria-label={`${stats.inProgress} milestones in progress`}>
             <div className="text-2xl font-bold text-status-warning">
               {stats.inProgress}
             </div>
-            <div className="text-gray-500">In Progress</div>
+            <div className="text-neutral-textSecondary">In Progress</div>
           </div>
           <div aria-label={`${stats.notStarted} milestones not started`}>
-            <div className="text-2xl font-bold text-gray-400">
+            <div className="text-2xl font-bold text-neutral-textTertiary">
               {stats.notStarted}
             </div>
-            <div className="text-gray-500">Not Started</div>
+            <div className="text-neutral-textSecondary">Not Started</div>
           </div>
         </div>
       </Card>
       {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-6">
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-neutral-text mb-1">
             Subject
           </label>
           <select
             value={filterSubject}
             onChange={(e) => setFilterSubject(e.target.value)}
-            className="block w-full px-3 py-1.5 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
+            className="block w-full px-3 py-1.5 border border-neutral-border rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-neutral-border"
           >
             <option value="">All Subjects</option>
             {subjects.map((s) => (
@@ -596,7 +616,7 @@ export default function Milestones(): JSX.Element {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-medium text-neutral-text mb-1">
             Status
           </label>
           <div
@@ -645,10 +665,10 @@ export default function Milestones(): JSX.Element {
             return (
               <Card key={subjectId}>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-neutral-text">
                     {subject?.name}
                   </h2>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-neutral-textSecondary">
                     {subjectCompleted}/{subjectTotal} completed
                   </span>
                 </div>
@@ -674,7 +694,9 @@ export default function Milestones(): JSX.Element {
       </div>
       {Object.keys(groupedMilestones).length === 0 && (
         <Card className="text-center py-8">
-          <p className="text-gray-500">No milestones match your filters.</p>
+          <p className="text-neutral-textSecondary">
+            No milestones match your filters.
+          </p>
         </Card>
       )}
       {/* Edit Milestone Modal */}
@@ -687,19 +709,19 @@ export default function Milestones(): JSX.Element {
         {editingMilestone && (
           <form onSubmit={handleEditSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-text mb-1">
                 Milestone
               </label>
-              <p className="text-gray-700 font-medium">
+              <p className="text-neutral-text font-medium">
                 {editingMilestone.title}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-textSecondary">
                 {editingMilestone.description}
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-text mb-1">
                 Target Date
               </label>
               <Input
@@ -712,7 +734,7 @@ export default function Milestones(): JSX.Element {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-text mb-1">
                 Evidence / Notes
               </label>
               <Textarea

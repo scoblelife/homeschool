@@ -70,7 +70,7 @@ export default function ScannerModal({
 
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-          <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+          <Dialog.Title className="text-lg font-semibold text-neutral-text mb-4">
             Scan Books with Your Phone
           </Dialog.Title>
 
@@ -80,7 +80,7 @@ export default function ScannerModal({
                 className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-primary mb-4"
                 aria-hidden="true"
               />
-              <p className="text-gray-500" role="status">
+              <p className="text-neutral-textSecondary" role="status">
                 Starting scanner...
               </p>
             </div>
@@ -107,17 +107,17 @@ export default function ScannerModal({
             <>
               {/* QR Code */}
               <div className="flex flex-col items-center mb-6">
-                <div className="bg-white p-2 rounded-lg border-2 border-gray-200 mb-3">
+                <div className="bg-white p-2 rounded-lg border-2 border-neutral-border mb-3">
                   <img
                     src={session.qrCodeDataUrl}
                     alt="Scan with phone"
                     className="w-48 h-48"
                   />
                 </div>
-                <p className="text-sm text-gray-500 text-center">
+                <p className="text-sm text-neutral-textSecondary text-center">
                   Scan this QR code with your phone camera
                 </p>
-                <p className="text-xs text-gray-400 text-center mt-1">
+                <p className="text-xs text-neutral-textTertiary text-center mt-1">
                   Opens a webpage where you can scan book barcodes
                 </p>
               </div>
@@ -137,7 +137,7 @@ export default function ScannerModal({
               {/* Scanned Books List */}
               {scannedBooks.length > 0 && (
                 <div className="border-t pt-4" aria-live="polite">
-                  <h4 className="font-medium text-gray-900 text-sm mb-2">
+                  <h4 className="font-medium text-neutral-text text-sm mb-2">
                     Recently Added ({scannedBooks.length})
                   </h4>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -162,11 +162,11 @@ export default function ScannerModal({
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 text-sm truncate">
+                          <p className="font-medium text-neutral-text text-sm truncate">
                             {book.title}
                           </p>
                           {book.author && (
-                            <p className="text-xs text-gray-500 truncate">
+                            <p className="text-xs text-neutral-textSecondary truncate">
                               {book.author}
                             </p>
                           )}

@@ -28,12 +28,14 @@ export default function Curriculum(): JSX.Element {
     null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const selectedStudent = getSelectedStudent();
 
   // Load recent activities for mapping
   useEffect(() => {
     if (selectedStudentId) {
+      setIsLoading(true);
       const endDate = new Date().toISOString().split("T")[0];
       const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
         .toISOString()
@@ -51,7 +53,10 @@ export default function Curriculum(): JSX.Element {
             "[Curriculum] Failed to load recent activities:",
             error,
           );
-        });
+        })
+        .finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
     }
   }, [selectedStudentId]);
 
@@ -66,6 +71,22 @@ export default function Curriculum(): JSX.Element {
     setSelectedActivity(activity);
     setIsModalOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <PageContainer>
+        <PageHeader
+          title="Curriculum Mapping"
+          subtitle="Map activities to learning standards and track coverage"
+        />
+        <div className="flex items-center justify-center py-12">
+          <div className="text-neutral-textSecondary">
+            Loading curriculum data...
+          </div>
+        </div>
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer>

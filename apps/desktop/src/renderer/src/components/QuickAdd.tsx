@@ -70,6 +70,13 @@ export default function QuickAdd({
   const [title, setTitle] = useState("");
   const [duration, setDuration] = useState<number | null>(30);
 
+  // Listen for global Cmd+N shortcut
+  useEffect(() => {
+    const handler = (): void => setIsOpen(true);
+    window.addEventListener("quickadd:open", handler);
+    return () => window.removeEventListener("quickadd:open", handler);
+  }, []);
+
   // Load recent activity patterns
   const loadRecentTemplates = useCallback(async () => {
     try {
@@ -211,15 +218,17 @@ export default function QuickAdd({
   return (
     <>
       {/* Floating Action Button */}
-      <Button
-        variant="primary"
+      {/* FAB uses student-specific color outside the design system component */}
+      {/* eslint-disable-next-line design-system/require-design-system-components */}
+      <button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg hover:shadow-xl text-2xl z-40"
+        className="fixed bottom-6 right-6 w-16 h-16 rounded-full shadow-lg hover:shadow-xl bg-student-purple-600 hover:bg-student-purple-700 active:bg-student-purple-800 text-white text-4xl font-light flex items-center justify-center z-40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-student-purple-500"
         title="Quick Add Activity"
         aria-label="Quick Add Activity"
       >
         +
-      </Button>
+      </button>
 
       {/* Quick Add Modal */}
       <Transition appear show={isOpen} as={Fragment}>
@@ -268,7 +277,7 @@ export default function QuickAdd({
                       <div className="space-y-4">
                         {recentTemplates.length > 0 && (
                           <>
-                            <div className="text-sm font-medium text-gray-500 mb-2">
+                            <div className="text-sm font-medium text-neutral-textSecondary mb-2">
                               Recent Activities
                             </div>
                             <div className="grid grid-cols-2 gap-3">
@@ -288,20 +297,20 @@ export default function QuickAdd({
                                     variant="outline"
                                     onClick={() => handleQuickLog(template)}
                                     disabled={isLoading}
-                                    className="p-3 bg-gray-50 hover:bg-brand-primaryLight rounded-lg text-left justify-start transition-colors border border-gray-200 hover:border-brand-primary"
+                                    className="p-3 bg-neutral-background hover:bg-brand-primaryLight rounded-lg text-left justify-start transition-colors border border-neutral-border hover:border-brand-primary"
                                   >
                                     <div className="flex items-center gap-2 mb-1">
                                       <span className="text-lg">
                                         {typeInfo?.icon}
                                       </span>
-                                      <span className="text-xs text-gray-500">
+                                      <span className="text-xs text-neutral-textSecondary">
                                         {subject?.name}
                                       </span>
                                     </div>
-                                    <div className="font-medium text-gray-900 text-sm truncate">
+                                    <div className="font-medium text-neutral-text text-sm truncate">
                                       {template.title}
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-1">
+                                    <div className="text-xs text-neutral-textSecondary mt-1">
                                       {student?.name}
                                     </div>
                                   </Button>
@@ -311,7 +320,7 @@ export default function QuickAdd({
                           </>
                         )}
 
-                        <div className="pt-4 border-t border-gray-200">
+                        <div className="pt-4 border-t border-neutral-border">
                           <Button
                             variant="primary"
                             onClick={() => setStep("type")}
@@ -335,10 +344,10 @@ export default function QuickAdd({
                                 setSelectedType(type.value);
                                 setStep("details");
                               }}
-                              className="p-3 bg-gray-50 hover:bg-brand-primaryLight rounded-lg text-center flex-col border border-gray-200 hover:border-brand-primary"
+                              className="p-3 bg-neutral-background hover:bg-brand-primaryLight rounded-lg text-center flex-col border border-neutral-border hover:border-brand-primary"
                             >
                               <div className="text-2xl mb-1">{type.icon}</div>
-                              <div className="text-xs text-gray-700">
+                              <div className="text-xs text-neutral-text">
                                 {type.label}
                               </div>
                             </Button>
@@ -381,7 +390,7 @@ export default function QuickAdd({
 
                         {/* Student Selection */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-neutral-text mb-2">
                             Student
                           </label>
                           <div className="flex flex-wrap gap-2">
@@ -425,7 +434,7 @@ export default function QuickAdd({
 
                         {/* Subject Selection */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-neutral-text mb-2">
                             Subject
                           </label>
                           <div className="flex flex-wrap gap-2">
@@ -454,7 +463,7 @@ export default function QuickAdd({
 
                         {/* Title */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-neutral-text mb-2">
                             Activity Title
                           </label>
                           <Input
@@ -477,7 +486,7 @@ export default function QuickAdd({
 
                         {/* Duration Quick Select */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-neutral-text mb-2">
                             Duration (optional)
                           </label>
                           <div className="flex flex-wrap gap-2">

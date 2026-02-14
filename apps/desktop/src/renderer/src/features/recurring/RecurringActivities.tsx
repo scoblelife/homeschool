@@ -210,7 +210,9 @@ export default function RecurringActivities({
   if (isLoading) {
     return (
       <Card className="mb-6">
-        <div className="text-gray-500">Loading scheduled activities...</div>
+        <div className="text-neutral-textSecondary">
+          Loading scheduled activities...
+        </div>
       </Card>
     );
   }
@@ -222,10 +224,10 @@ export default function RecurringActivities({
           <div className="flex items-center gap-3">
             <span className="text-2xl">📅</span>
             <div>
-              <h2 className="font-semibold text-gray-900">
+              <h2 className="font-semibold text-neutral-text">
                 Recurring Activities
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-textSecondary">
                 Set up daily or weekly activities
               </p>
             </div>
@@ -262,10 +264,10 @@ export default function RecurringActivities({
             <div className="flex items-center gap-3">
               <span className="text-2xl">⏰</span>
               <div>
-                <h2 className="font-semibold text-gray-900">
+                <h2 className="font-semibold text-neutral-text">
                   Today's Schedule
                 </h2>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-neutral-textSecondary">
                   {dueActivities.length} activit
                   {dueActivities.length === 1 ? "y" : "ies"} scheduled
                 </p>
@@ -294,10 +296,10 @@ export default function RecurringActivities({
                 >
                   <span className="text-2xl">{typeInfo?.icon}</span>
                   <div className="flex-1">
-                    <div className="font-medium text-gray-900">
+                    <div className="font-medium text-neutral-text">
                       {activity.title}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-neutral-textSecondary">
                       {subject?.name} • {student?.name}
                       {activity.durationMinutes &&
                         ` • ${activity.durationMinutes} min`}
@@ -419,7 +421,7 @@ function ManageRecurringModal({
 
                 <div className="p-6">
                   {activities.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-neutral-textSecondary">
                       <p>No recurring activities set up yet.</p>
                     </div>
                   ) : (
@@ -435,14 +437,14 @@ function ManageRecurringModal({
                         return (
                           <div
                             key={activity.id}
-                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                            className="flex items-center gap-3 p-3 bg-neutral-background rounded-lg"
                           >
                             <span className="text-xl">{typeInfo?.icon}</span>
                             <div className="flex-1">
-                              <div className="font-medium text-gray-900">
+                              <div className="font-medium text-neutral-text">
                                 {activity.title}
                               </div>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-sm text-neutral-textSecondary">
                                 {subject?.name} • {student?.name}
                               </div>
                               <div className="text-xs text-student-blue-600">
@@ -542,7 +544,7 @@ function CreateRecurringModal({
                 <div className="p-6 space-y-4">
                   {/* Activity Type */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-neutral-text mb-2">
                       Activity Type
                     </label>
                     <div className="grid grid-cols-4 gap-2">
@@ -559,7 +561,7 @@ function CreateRecurringModal({
                           className={`p-2 rounded-lg text-center transition-colors ${
                             formData.activityType === type.value
                               ? "bg-student-blue-100 ring-2 ring-student-blue-500"
-                              : "bg-gray-50 hover:bg-gray-100"
+                              : "bg-neutral-background hover:bg-neutral-backgroundDeep"
                           }`}
                         >
                           <div className="text-xl">{type.icon}</div>
@@ -571,7 +573,7 @@ function CreateRecurringModal({
 
                   {/* Student */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-neutral-text mb-2">
                       Student
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -585,7 +587,7 @@ function CreateRecurringModal({
                           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                             formData.studentId === student.id
                               ? "bg-student-blue-100 text-student-blue-700 ring-2 ring-student-blue-500"
-                              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              : "bg-neutral-backgroundDeep text-neutral-textSecondary hover:bg-neutral-border"
                           }`}
                         >
                           {student.name}
@@ -596,7 +598,7 @@ function CreateRecurringModal({
 
                   {/* Subject */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-neutral-text mb-2">
                       Subject
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -610,7 +612,7 @@ function CreateRecurringModal({
                           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                             formData.subjectId === subject.id
                               ? "bg-student-blue-100 text-student-blue-700 ring-2 ring-student-blue-500"
-                              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              : "bg-neutral-backgroundDeep text-neutral-textSecondary hover:bg-neutral-border"
                           }`}
                         >
                           {subject.name}
@@ -621,7 +623,7 @@ function CreateRecurringModal({
 
                   {/* Title */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-neutral-text mb-2">
                       Activity Name
                     </label>
                     <Input
@@ -636,7 +638,7 @@ function CreateRecurringModal({
 
                   {/* Recurrence Pattern */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-neutral-text mb-2">
                       Repeat
                     </label>
                     {}
@@ -651,7 +653,7 @@ function CreateRecurringModal({
                             e.target.value === "custom" ? [1, 3, 5] : null,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-student-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-neutral-border rounded-lg focus:ring-2 focus:ring-student-blue-500 focus:border-transparent"
                     >
                       {recurrenceOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -664,7 +666,7 @@ function CreateRecurringModal({
                   {/* Custom Days */}
                   {formData.recurrencePattern === "custom" && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-neutral-text mb-2">
                         Days
                       </label>
                       <div className="flex flex-wrap gap-2">
@@ -685,7 +687,7 @@ function CreateRecurringModal({
                             className={`w-10 h-10 rounded-full text-sm font-medium transition-colors ${
                               (formData.recurrenceDays || []).includes(index)
                                 ? "bg-student-blue-500 text-white"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                : "bg-neutral-backgroundDeep text-neutral-textSecondary hover:bg-neutral-border"
                             }`}
                           >
                             {day}
@@ -698,7 +700,7 @@ function CreateRecurringModal({
                   {/* Time & Duration */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-neutral-text mb-2">
                         Time (optional)
                       </label>
                       <Input
@@ -713,7 +715,7 @@ function CreateRecurringModal({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-neutral-text mb-2">
                         Duration (min)
                       </label>
                       <Input

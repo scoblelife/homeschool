@@ -389,12 +389,12 @@ export default function SyncSettings(): JSX.Element {
               <div className="text-2xl">🔐</div>
               <div>
                 <p className="font-medium text-brand-primaryDark">
-                  Private P2P Sync
+                  Private Family Sync
                 </p>
                 <p className="text-sm text-neutral-textSecondary mt-1">
                   Your data syncs directly between family devices using
-                  encrypted peer-to-peer connections. No servers, no cloud
-                  storage - your data stays yours.
+                  encrypted direct connections between your family's devices. No
+                  cloud storage - your data stays yours.
                 </p>
               </div>
             </div>
@@ -404,25 +404,37 @@ export default function SyncSettings(): JSX.Element {
             <Button
               variant="ghost"
               onClick={() => setShowCreateModal(true)}
-              className="p-4 border-2 border-dashed border-neutral-border rounded-lg hover:border-brand-primary hover:bg-brand-primary/5 transition-colors text-left"
+              className="p-4 border-2 border-dashed border-neutral-border rounded-lg hover:border-brand-primary hover:bg-brand-primary/5 transition-colors text-left items-start"
             >
-              <div className="text-2xl mb-2">✨</div>
-              <div className="font-medium text-neutral-text">Create Family</div>
-              <p className="text-sm text-neutral-textSecondary mt-1">
-                Start a new family sync group and invite others
-              </p>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl flex-shrink-0">✨</span>
+                <div>
+                  <div className="font-medium text-neutral-text">
+                    Create Family
+                  </div>
+                  <p className="text-sm text-neutral-textSecondary mt-1 font-normal">
+                    Start a new family sync group and invite others
+                  </p>
+                </div>
+              </div>
             </Button>
 
             <Button
               variant="ghost"
               onClick={() => setShowJoinModal(true)}
-              className="p-4 border-2 border-dashed border-neutral-border rounded-lg hover:border-brand-primary hover:bg-brand-primary/5 transition-colors text-left"
+              className="p-4 border-2 border-dashed border-neutral-border rounded-lg hover:border-brand-primary hover:bg-brand-primary/5 transition-colors text-left items-start"
             >
-              <div className="text-2xl mb-2">🔗</div>
-              <div className="font-medium text-neutral-text">Join Family</div>
-              <p className="text-sm text-neutral-textSecondary mt-1">
-                Enter a code from another family device
-              </p>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl flex-shrink-0">🔗</span>
+                <div>
+                  <div className="font-medium text-neutral-text">
+                    Join Family
+                  </div>
+                  <p className="text-sm text-neutral-textSecondary mt-1 font-normal">
+                    Enter a code from another family device
+                  </p>
+                </div>
+              </div>
             </Button>
           </div>
         </div>

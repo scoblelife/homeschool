@@ -88,7 +88,7 @@ export default function Reports(): JSX.Element {
       <PageHeader title="Reports" />
       {!selectedStudentId ? (
         <Card className="text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-neutral-textSecondary">
             Select a student from the sidebar to view reports.
           </p>
         </Card>
@@ -98,7 +98,7 @@ export default function Reports(): JSX.Element {
           <Card className="mb-8">
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-neutral-text">
                   From:
                 </label>
                 <Input
@@ -111,7 +111,9 @@ export default function Reports(): JSX.Element {
                 />
               </div>
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">To:</label>
+                <label className="text-sm font-medium text-neutral-text">
+                  To:
+                </label>
                 <Input
                   type="date"
                   value={dateRange.endDate}
@@ -149,7 +151,7 @@ export default function Reports(): JSX.Element {
           </Card>
 
           {isLoading ? (
-            <div className="text-center py-12 text-gray-500">
+            <div className="text-center py-12 text-neutral-textSecondary">
               Loading reports...
             </div>
           ) : (
@@ -162,37 +164,37 @@ export default function Reports(): JSX.Element {
                 <Card
                   aria-label={`Student: ${selectedStudent?.name}, ${selectedStudent?.gradeLevel}`}
                 >
-                  <div className="text-sm font-medium text-gray-500">
+                  <div className="text-sm font-medium text-neutral-textSecondary">
                     Student
                   </div>
-                  <div className="text-xl font-bold text-gray-900 mt-2">
+                  <div className="text-xl font-bold text-neutral-text mt-2">
                     {selectedStudent?.name}
                   </div>
-                  <div className="text-sm text-gray-500 capitalize">
+                  <div className="text-sm text-neutral-textSecondary capitalize">
                     {selectedStudent?.gradeLevel}
                   </div>
                 </Card>
                 <Card aria-label={`${totalActivities} total activities`}>
-                  <div className="text-sm font-medium text-gray-500">
+                  <div className="text-sm font-medium text-neutral-textSecondary">
                     Total Activities
                   </div>
-                  <div className="text-3xl font-bold text-gray-900 mt-2">
+                  <div className="text-3xl font-bold text-neutral-text mt-2">
                     {totalActivities}
                   </div>
                 </Card>
                 <Card aria-label={`${totalHours} total hours`}>
-                  <div className="text-sm font-medium text-gray-500">
+                  <div className="text-sm font-medium text-neutral-textSecondary">
                     Total Hours
                   </div>
-                  <div className="text-3xl font-bold text-gray-900 mt-2">
+                  <div className="text-3xl font-bold text-neutral-text mt-2">
                     {totalHours}
                   </div>
                 </Card>
                 <Card aria-label={`${dailySummaries.length} active days`}>
-                  <div className="text-sm font-medium text-gray-500">
+                  <div className="text-sm font-medium text-neutral-textSecondary">
                     Active Days
                   </div>
-                  <div className="text-3xl font-bold text-gray-900 mt-2">
+                  <div className="text-3xl font-bold text-neutral-text mt-2">
                     {dailySummaries.length}
                   </div>
                 </Card>
@@ -200,11 +202,11 @@ export default function Reports(): JSX.Element {
 
               {/* Subject Breakdown */}
               <Card className="mb-8" aria-live="polite">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-semibold text-neutral-text mb-4">
                   By Subject
                 </h2>
                 {activitySummary.length === 0 ? (
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-neutral-textSecondary text-sm">
                     No activities in this date range.
                   </p>
                 ) : (
@@ -217,10 +219,10 @@ export default function Reports(): JSX.Element {
                       return (
                         <div key={summary.subjectId}>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="font-medium text-gray-900">
+                            <span className="font-medium text-neutral-text">
                               {summary.subjectName}
                             </span>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-neutral-textSecondary">
                               {summary.totalActivities} activities •{" "}
                               {Math.round((summary.totalMinutes / 60) * 10) /
                                 10}{" "}
@@ -228,7 +230,7 @@ export default function Reports(): JSX.Element {
                             </span>
                           </div>
                           <div
-                            className="w-full bg-gray-200 rounded-full h-2"
+                            className="w-full bg-neutral-border rounded-full h-2"
                             role="progressbar"
                             aria-valuenow={Math.round(percentage)}
                             aria-valuemin={0}
@@ -262,11 +264,11 @@ export default function Reports(): JSX.Element {
 
               {/* Recent Daily Activity */}
               <Card aria-live="polite">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                <h2 className="text-lg font-semibold text-neutral-text mb-4">
                   Daily Activity
                 </h2>
                 {dailySummaries.length === 0 ? (
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-neutral-textSecondary text-sm">
                     No activity in this date range.
                   </p>
                 ) : (
@@ -278,10 +280,10 @@ export default function Reports(): JSX.Element {
                         className="flex items-center justify-between p-3 bg-neutral-backgroundSecondary rounded-lg"
                       >
                         <div>
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-neutral-text">
                             {format(parseISO(day.date), "EEEE, MMMM d")}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-neutral-textSecondary">
                             {day.activitiesCount} activities •{" "}
                             {day.totalMinutes} min
                           </div>

@@ -1,5 +1,21 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { format, parseISO, isPast, isFuture, isToday, addDays } from "date-fns";
+import {
+  BookOpen,
+  TreePine,
+  Users,
+  Calendar,
+  Clock,
+  DollarSign,
+  ExternalLink,
+  AlertTriangle,
+  Phone,
+  Mail,
+  FileText,
+  X,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 
 import { Button } from "../components/ui/Button";
 import { Input, Textarea } from "../components/ui/Input";
@@ -46,8 +62,8 @@ const statusLabels: Record<
 > = {
   not_started: {
     label: "Not Started",
-    color: "text-gray-600",
-    bg: "bg-gray-100",
+    color: "text-neutral-textSecondary",
+    bg: "bg-neutral-backgroundDeep",
   },
   in_progress: {
     label: "In Progress",
@@ -59,13 +75,17 @@ const statusLabels: Record<
     color: "text-status-success",
     bg: "bg-status-successLight",
   },
-  cancelled: { label: "Cancelled", color: "text-gray-600", bg: "bg-gray-100" },
+  cancelled: {
+    label: "Cancelled",
+    color: "text-neutral-textSecondary",
+    bg: "bg-neutral-backgroundDeep",
+  },
 };
 
 const eventCategoryConfig: Record<
   EventCategory,
   {
-    icon: string;
+    icon: React.ReactNode;
     label: string;
     color: string;
     bg: string;
@@ -73,21 +93,21 @@ const eventCategoryConfig: Record<
   }
 > = {
   educational: {
-    icon: "📚",
+    icon: <BookOpen className="w-4 h-4 inline" />,
     label: "Educational",
     color: "text-student-blue-700",
     bg: "bg-student-blue-100",
     description: "Field trips, museum visits, science centers, co-op classes",
   },
   social: {
-    icon: "🌳",
+    icon: <TreePine className="w-4 h-4 inline" />,
     label: "Social",
     color: "text-status-successDark",
     bg: "bg-status-successLight",
     description: "Park days, playdates, game nights",
   },
   coop: {
-    icon: "👥",
+    icon: <Users className="w-4 h-4 inline" />,
     label: "Co-op",
     color: "text-student-purple-700",
     bg: "bg-student-purple-100",
@@ -150,7 +170,12 @@ interface FieldTripCardHeaderProps {
   students: { id: string; name: string }[];
   subjects: { id: string; name: string }[];
   statusInfo: { label: string; color: string; bg: string };
-  categoryConfig: { icon: string; label: string; color: string; bg: string };
+  categoryConfig: {
+    icon: React.ReactNode;
+    label: string;
+    color: string;
+    bg: string;
+  };
   tripDate: Date;
   isUpcoming: boolean;
   isPastTrip: boolean;
@@ -376,7 +401,9 @@ function FieldTripCardHeader({
       <FieldTripCardMetadata trip={trip} tripDate={tripDate} />
 
       {trip.description && (
-        <p className="text-sm text-gray-600 mt-2">{trip.description}</p>
+        <p className="text-sm text-neutral-textSecondary mt-2">
+          {trip.description}
+        </p>
       )}
 
       <FieldTripCardBadges
@@ -390,27 +417,33 @@ function FieldTripCardHeader({
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Visit website for ${trip.title} (opens in new tab)`}
-          className="inline-block mt-2 text-sm text-student-blue-600 hover:underline"
+          className="inline-flex items-center gap-1 mt-2 text-sm text-student-blue-600 hover:underline"
           onClick={(e) => e.stopPropagation()}
         >
-          🔗 Visit Website
+          <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
+          Visit Website
         </a>
       )}
 
       {trip.learningOutcomes && (
         <div className="mt-3 p-2 bg-white/50 rounded text-sm">
-          <strong className="text-gray-700">Learning Outcomes:</strong>
-          <p className="text-gray-600 mt-1">{trip.learningOutcomes}</p>
+          <strong className="text-neutral-text">Learning Outcomes:</strong>
+          <p className="text-neutral-textSecondary mt-1">
+            {trip.learningOutcomes}
+          </p>
         </div>
       )}
 
       {trip.notes && (
-        <p className="text-sm text-gray-500 mt-2 italic">Notes: {trip.notes}</p>
+        <p className="text-sm text-neutral-textSecondary mt-2 italic">
+          Notes: {trip.notes}
+        </p>
       )}
 
       {isPastTrip && trip.status === "not_started" && (
-        <p className="text-sm text-status-warning mt-2">
-          ⚠️ This activity date has passed. Update the status to completed or
+        <p className="inline-flex items-center gap-1 text-sm text-status-warning mt-2">
+          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+          This activity date has passed. Update the status to completed or
           cancelled.
         </p>
       )}
@@ -427,7 +460,12 @@ function FieldTripCardHeader({
 interface FieldTripCardTitleRowProps {
   trip: FieldTrip;
   statusInfo: { label: string; color: string; bg: string };
-  categoryConfig: { icon: string; label: string; color: string; bg: string };
+  categoryConfig: {
+    icon: React.ReactNode;
+    label: string;
+    color: string;
+    bg: string;
+  };
 }
 
 function FieldTripCardTitleRow({
@@ -442,7 +480,7 @@ function FieldTripCardTitleRow({
       >
         {categoryConfig.icon} {categoryConfig.label}
       </span>
-      <h3 className="font-medium text-gray-900">{trip.title}</h3>
+      <h3 className="font-medium text-neutral-text">{trip.title}</h3>
       <span
         className={`text-xs px-2 py-0.5 rounded-full ${statusInfo.bg} ${statusInfo.color}`}
       >
@@ -460,15 +498,19 @@ interface FieldTripCardMetadataProps {
 function FieldTripCardMetadata({ trip, tripDate }: FieldTripCardMetadataProps) {
   return (
     // eslint-disable-next-line design-system/pages-use-components-only -- metadata row with map link, date, time, and cost
-    <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 flex-wrap">
+    <div className="flex items-center gap-2 mt-1 text-sm text-neutral-textSecondary flex-wrap">
       <MapLink location={trip.location} />
       <span>•</span>
-      <span>📅 {format(tripDate, "EEEE, MMMM d, yyyy")}</span>
+      <span>
+        <Calendar className="w-3.5 h-3.5 inline mr-1" />
+        {format(tripDate, "EEEE, MMMM d, yyyy")}
+      </span>
       {(trip.startTime || trip.endTime) && (
         <>
           <span>•</span>
           <span>
-            🕐 {trip.startTime || "?"}
+            <Clock className="w-3.5 h-3.5 inline mr-1" />
+            {trip.startTime || "?"}
             {trip.endTime ? ` - ${trip.endTime}` : ""}
           </span>
         </>
@@ -476,7 +518,10 @@ function FieldTripCardMetadata({ trip, tripDate }: FieldTripCardMetadataProps) {
       {trip.cost && (
         <>
           <span>•</span>
-          <span>💰 ${trip.cost.toFixed(2)}</span>
+          <span>
+            <DollarSign className="w-3.5 h-3.5 inline mr-1" />$
+            {trip.cost.toFixed(2)}
+          </span>
         </>
       )}
     </div>
@@ -543,15 +588,21 @@ function FieldTripTaskProgressButton({
       variant="ghost"
       onClick={onToggleExpand}
       aria-expanded={isExpanded}
-      className="mt-3 flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+      className="mt-3 flex items-center gap-2 text-sm text-neutral-textSecondary hover:text-neutral-text"
     >
-      <span>{isExpanded ? "▼" : "▶"}</span>
+      <span>
+        {isExpanded ? (
+          <ChevronDown className="w-4 h-4 inline" />
+        ) : (
+          <ChevronRight className="w-4 h-4 inline" />
+        )}
+      </span>
       <span>
         Tasks: {completedCount}/{tasks.length}
       </span>
       {tasks.length > 0 && (
         // eslint-disable-next-line design-system/pages-use-components-only -- progress bar visualization
-        <div className="flex-1 max-w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="flex-1 max-w-32 h-2 bg-neutral-border rounded-full overflow-hidden">
           <div
             className="h-full bg-status-success transition-all"
             style={{
@@ -574,12 +625,13 @@ function FieldTripCardActions({
   onStatusChange,
 }: FieldTripCardActionsProps) {
   return (
-    <div className="flex items-center gap-2">
+    // eslint-disable-next-line design-system/pages-use-components-only -- action bar with hover visibility
+    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
       <select
         value={trip.status}
         onChange={(e) => onStatusChange(e.target.value as UniversalStatus)}
         aria-label={`Status for ${trip.title}`}
-        className="text-sm border border-gray-300 rounded-lg px-2 py-1"
+        className="text-sm border border-neutral-border rounded-lg px-2 py-1"
       >
         <option value="not_started">Planned</option>
         <option value="completed">Completed</option>
@@ -597,7 +649,7 @@ function FieldTripCardActions({
         variant="ghost"
         size="sm"
         onClick={onDuplicate}
-        className="text-gray-600 hover:text-gray-800 text-sm"
+        className="text-neutral-textSecondary hover:text-neutral-text text-sm"
       >
         Duplicate
       </Button>
@@ -627,7 +679,7 @@ function FieldTripTaskPhaseGroup({
   const phaseConfig = phaseLabels[phase];
   return (
     <div className="mb-3">
-      <div className="text-xs font-medium text-gray-500 mb-1">
+      <div className="text-xs font-medium text-neutral-textSecondary mb-1">
         {phaseConfig.icon} {phaseConfig.label}
       </div>
       <div className="space-y-1">
@@ -643,10 +695,10 @@ function FieldTripTaskPhaseGroup({
               checked={!!task.completedAt}
               onChange={() => onToggleTask(task.id)}
               aria-label={`Mark task "${task.title}" as ${task.completedAt ? "incomplete" : "complete"}`}
-              className="w-4 h-4 rounded border-gray-300"
+              className="w-4 h-4 rounded border-neutral-border"
             />
             <span
-              className={`flex-1 text-sm ${task.completedAt ? "line-through text-gray-400" : "text-gray-700"}`}
+              className={`flex-1 text-sm ${task.completedAt ? "line-through text-neutral-textTertiary" : "text-neutral-text"}`}
             >
               {task.title}
             </span>
@@ -655,9 +707,9 @@ function FieldTripTaskPhaseGroup({
               size="sm"
               onClick={() => onDeleteTask(task.id)}
               aria-label={`Delete task: ${task.title}`}
-              className="text-gray-400 hover:text-status-error text-xs"
+              className="text-neutral-textTertiary hover:text-status-error text-xs"
             >
-              ✕
+              <X className="w-3.5 h-3.5" />
             </Button>
           </div>
         ))}
@@ -683,7 +735,7 @@ function FieldTripTaskList({
         <select
           value={newTaskPhase}
           onChange={(e) => onNewTaskPhaseChange(e.target.value as TaskPhase)}
-          className="text-sm border border-gray-300 rounded-lg px-2 py-1.5"
+          className="text-sm border border-neutral-border rounded-lg px-2 py-1.5"
         >
           {(
             Object.entries(phaseLabels) as [
@@ -727,7 +779,7 @@ function FieldTripTaskList({
       ))}
 
       {tasks.length === 0 && (
-        <p className="text-sm text-gray-400 text-center py-2">
+        <p className="text-sm text-neutral-textTertiary text-center py-2">
           No tasks yet. Add tasks to track preparation steps.
         </p>
       )}
@@ -763,7 +815,7 @@ function FieldTripContactForm({
 
   return (
     // eslint-disable-next-line design-system/pages-use-components-only -- contact form container
-    <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-2">
+    <div className="mb-3 p-3 bg-white rounded-lg border border-neutral-border space-y-2">
       <Input
         type="text"
         size="sm"
@@ -775,7 +827,7 @@ function FieldTripContactForm({
         <select
           value={newContactRole}
           onChange={(e) => setNewContactRole(e.target.value as ContactRole)}
-          className="text-sm border border-gray-300 rounded px-2 py-1"
+          className="text-sm border border-neutral-border rounded px-2 py-1"
         >
           {(Object.entries(contactRoleLabels) as [ContactRole, string][]).map(
             ([role, label]) => (
@@ -827,15 +879,17 @@ function FieldTripContactItem({
   return (
     <div className="p-2 bg-white/50 rounded">
       <div className="flex items-center justify-between">
-        <div className="text-sm font-medium text-gray-700">{contact.name}</div>
+        <div className="text-sm font-medium text-neutral-text">
+          {contact.name}
+        </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onDeleteContact(contact.id)}
           aria-label={`Delete contact: ${contact.name}`}
-          className="text-gray-400 hover:text-status-error text-xs"
+          className="text-neutral-textTertiary hover:text-status-error text-xs"
         >
-          ✕
+          <X className="w-3.5 h-3.5" />
         </Button>
       </div>
       <div className="flex items-center gap-2 mt-1">
@@ -847,7 +901,7 @@ function FieldTripContactItem({
             })
           }
           aria-label={`Role for contact ${contact.name}`}
-          className="text-xs border border-gray-200 rounded px-1.5 py-0.5 bg-white"
+          className="text-xs border border-neutral-border rounded px-1.5 py-0.5 bg-white"
         >
           {(Object.entries(contactRoleLabels) as [ContactRole, string][]).map(
             ([role, label]) => (
@@ -858,10 +912,10 @@ function FieldTripContactItem({
           )}
         </select>
       </div>
-      <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+      <div className="text-xs text-neutral-textSecondary mt-1 space-y-0.5">
         {contact.phone && (
           <div>
-            📞{" "}
+            <Phone className="w-3 h-3 inline mr-1" />{" "}
             <a
               href={`tel:${contact.phone}`}
               className="hover:text-brand-primary"
@@ -872,7 +926,7 @@ function FieldTripContactItem({
         )}
         {contact.email && (
           <div>
-            ✉️{" "}
+            <Mail className="w-3 h-3 inline mr-1" />{" "}
             <a
               href={`mailto:${contact.email}`}
               className="hover:text-brand-primary"
@@ -882,10 +936,10 @@ function FieldTripContactItem({
           </div>
         )}
         {contact.notes && (
-          <div>
+          <div className="inline-flex items-center gap-1">
             {contact.notes.startsWith("http") ? (
               <>
-                🔗{" "}
+                <ExternalLink className="w-3 h-3 flex-shrink-0" />
                 <a
                   href={contact.notes}
                   target="_blank"
@@ -897,7 +951,10 @@ function FieldTripContactItem({
                 </a>
               </>
             ) : (
-              <>📝 {contact.notes}</>
+              <>
+                <FileText className="w-3 h-3 flex-shrink-0" />
+                {contact.notes}
+              </>
             )}
           </div>
         )}
@@ -915,9 +972,12 @@ function FieldTripContactList({
   const [showContactForm, setShowContactForm] = useState(false);
 
   return (
-    <div className="mt-4 pt-4 border-t border-gray-200">
+    <div className="mt-4 pt-4 border-t border-neutral-border">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-medium text-gray-700">📞 Contacts</div>
+        <div className="text-sm font-medium text-neutral-text">
+          <Phone className="w-3.5 h-3.5 inline mr-1" />
+          Contacts
+        </div>
         <Button
           variant="ghost"
           size="sm"
@@ -948,7 +1008,7 @@ function FieldTripContactList({
         </div>
       ) : (
         !showContactForm && (
-          <p className="text-xs text-gray-400 text-center py-1">
+          <p className="text-xs text-neutral-textTertiary text-center py-1">
             No contacts added
           </p>
         )
@@ -975,7 +1035,7 @@ function FieldTripRSVPForm({ onAddRSVP, onCancel }: FieldTripRSVPFormProps) {
 
   return (
     // eslint-disable-next-line design-system/pages-use-components-only -- RSVP form container
-    <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-2">
+    <div className="mb-3 p-3 bg-white rounded-lg border border-neutral-border space-y-2">
       <Input
         type="text"
         size="sm"
@@ -984,7 +1044,7 @@ function FieldTripRSVPForm({ onAddRSVP, onCancel }: FieldTripRSVPFormProps) {
         placeholder="Family name"
       />
       <div className="flex gap-2 items-center">
-        <label className="text-xs text-gray-600">Attending:</label>
+        <label className="text-xs text-neutral-textSecondary">Attending:</label>
         <Input
           type="number"
           size="sm"
@@ -1017,10 +1077,10 @@ function FieldTripRSVPItem({
     <div className="flex items-center justify-between p-2 bg-white/50 rounded">
       <div className="flex items-center gap-2">
         <div>
-          <div className="text-sm font-medium text-gray-700">
+          <div className="text-sm font-medium text-neutral-text">
             {rsvp.familyName}
           </div>
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-neutral-textSecondary">
             {rsvp.attendingCount}{" "}
             {rsvp.attendingCount === 1 ? "person" : "people"}
           </div>
@@ -1049,9 +1109,9 @@ function FieldTripRSVPItem({
           size="sm"
           onClick={() => onDeleteRSVP(rsvp.id)}
           aria-label={`Delete RSVP: ${rsvp.familyName}`}
-          className="text-gray-400 hover:text-status-error text-xs"
+          className="text-neutral-textTertiary hover:text-status-error text-xs"
         >
-          ✕
+          <X className="w-3.5 h-3.5" />
         </Button>
       </div>
     </div>
@@ -1076,12 +1136,13 @@ function FieldTripRSVPList({
   }, [rsvps]);
 
   return (
-    <div className="mt-4 pt-4 border-t border-gray-200">
+    <div className="mt-4 pt-4 border-t border-neutral-border">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-medium text-gray-700">
-          📝 RSVPs
+        <div className="text-sm font-medium text-neutral-text">
+          <FileText className="w-3.5 h-3.5 inline mr-1" />
+          RSVPs
           {rsvps.length > 0 && (
-            <span className="ml-2 text-xs text-gray-500">
+            <span className="ml-2 text-xs text-neutral-textSecondary">
               ({rsvpSummary.confirmed} confirmed, {rsvpSummary.totalAttending}{" "}
               attending)
             </span>
@@ -1117,7 +1178,7 @@ function FieldTripRSVPList({
         </div>
       ) : (
         !showRSVPForm && (
-          <p className="text-xs text-gray-400 text-center py-1">
+          <p className="text-xs text-neutral-textTertiary text-center py-1">
             No RSVPs yet. Add families to track attendance.
           </p>
         )
@@ -1149,7 +1210,7 @@ function FieldTripExpenseForm({
 
   return (
     // eslint-disable-next-line design-system/pages-use-components-only -- expense form container
-    <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-2">
+    <div className="mb-3 p-3 bg-white rounded-lg border border-neutral-border space-y-2">
       <Input
         type="text"
         size="sm"
@@ -1172,7 +1233,7 @@ function FieldTripExpenseForm({
           onChange={(e) =>
             setNewExpenseCategory(e.target.value as ExpenseCategory)
           }
-          className="text-sm border border-gray-300 rounded px-2 py-1"
+          className="text-sm border border-neutral-border rounded px-2 py-1"
         >
           {(
             Object.entries(expenseCategoryLabels) as [
@@ -1209,11 +1270,11 @@ function FieldTripExpenseItem({
   return (
     <div className="p-2 bg-white/50 rounded">
       <div className="flex items-center justify-between">
-        <div className="text-sm font-medium text-gray-700">
+        <div className="text-sm font-medium text-neutral-text">
           {expense.description}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-neutral-text">
             ${expense.amount.toFixed(2)}
           </span>
           <Button
@@ -1221,9 +1282,9 @@ function FieldTripExpenseItem({
             size="sm"
             onClick={() => onDeleteExpense(expense.id)}
             aria-label={`Delete expense: ${expense.description}`}
-            className="text-gray-400 hover:text-status-error text-xs"
+            className="text-neutral-textTertiary hover:text-status-error text-xs"
           >
-            ✕
+            <X className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>
@@ -1236,7 +1297,7 @@ function FieldTripExpenseItem({
             })
           }
           aria-label={`Category for expense: ${expense.description}`}
-          className="text-xs border border-gray-200 rounded px-1.5 py-0.5 bg-white"
+          className="text-xs border border-neutral-border rounded px-1.5 py-0.5 bg-white"
         >
           {(
             Object.entries(expenseCategoryLabels) as [
@@ -1267,12 +1328,13 @@ function FieldTripExpenseList({
   }, [expenses]);
 
   return (
-    <div className="mt-4 pt-4 border-t border-gray-200">
+    <div className="mt-4 pt-4 border-t border-neutral-border">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm font-medium text-gray-700">
-          💰 Expenses
+        <div className="text-sm font-medium text-neutral-text">
+          <DollarSign className="w-3.5 h-3.5 inline mr-1" />
+          Expenses
           {expenses.length > 0 && (
-            <span className="ml-2 text-xs text-gray-500">
+            <span className="ml-2 text-xs text-neutral-textSecondary">
               (Total: ${expenseTotal.toFixed(2)})
             </span>
           )}
@@ -1307,7 +1369,7 @@ function FieldTripExpenseList({
         </div>
       ) : (
         !showExpenseForm && (
-          <p className="text-xs text-gray-400 text-center py-1">
+          <p className="text-xs text-neutral-textTertiary text-center py-1">
             No expenses recorded yet.
           </p>
         )
@@ -1361,11 +1423,11 @@ function FieldTripCard({
 
   return (
     <div
-      className={`p-4 rounded-lg border-l-4 ${
+      className={`group p-4 rounded-lg border-l-4 hover:shadow-md transition-shadow ${
         trip.status === "completed"
           ? "bg-status-successLight border-l-status-success"
           : trip.status === "cancelled"
-            ? "bg-gray-50 border-l-gray-300"
+            ? "bg-neutral-background border-l-neutral-border"
             : isUpcoming
               ? "bg-student-blue-50 border-l-student-blue-500"
               : "bg-status-warningLight border-l-status-warning"
@@ -1396,7 +1458,7 @@ function FieldTripCard({
         />
       </div>
       {isExpanded && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="mt-4 pt-4 border-t border-neutral-border">
           <FieldTripTaskList
             tasks={tasks}
             newTaskTitle={newTaskTitle}
@@ -1445,26 +1507,30 @@ function FieldTripStats({ stats }: FieldTripStatsProps) {
     <Card className="mb-6">
       <div className="grid grid-cols-4 gap-4 text-center">
         <div>
-          <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-          <div className="text-sm text-gray-500">Total Activities</div>
+          <div className="text-2xl font-bold text-neutral-text">
+            {stats.total}
+          </div>
+          <div className="text-sm text-neutral-textSecondary">
+            Total Activities
+          </div>
         </div>
         <div>
           <div className="text-2xl font-bold text-student-blue-600">
             {stats.upcoming}
           </div>
-          <div className="text-sm text-gray-500">Upcoming</div>
+          <div className="text-sm text-neutral-textSecondary">Upcoming</div>
         </div>
         <div>
           <div className="text-2xl font-bold text-status-success">
             {stats.completed}
           </div>
-          <div className="text-sm text-gray-500">Completed</div>
+          <div className="text-sm text-neutral-textSecondary">Completed</div>
         </div>
         <div>
           <div className="text-2xl font-bold text-status-warning">
             {stats.not_started}
           </div>
-          <div className="text-sm text-gray-500">Planned</div>
+          <div className="text-sm text-neutral-textSecondary">Planned</div>
         </div>
       </div>
     </Card>
@@ -1486,7 +1552,7 @@ function FieldTripFilters({
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filterStatus === status
                 ? "bg-brand-primaryLight text-brand-primaryDark"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                : "bg-neutral-backgroundDeep text-neutral-textSecondary hover:bg-neutral-border"
             }`}
           >
             {status === "all"
@@ -1505,7 +1571,7 @@ function FieldTripFormCategoryPicker({
 }: FieldTripFormCategoryPickerProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-neutral-text mb-1">
         Activity Type
       </label>
       <div className="grid grid-cols-3 gap-2">
@@ -1523,7 +1589,7 @@ function FieldTripFormCategoryPicker({
             className={`p-2 rounded-lg text-center transition-all ${
               eventCategory === category
                 ? `${config.bg} ${config.color} ring-2 ring-offset-1 ring-current`
-                : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                : "bg-neutral-background text-neutral-textSecondary hover:bg-neutral-backgroundDeep"
             }`}
           >
             <div className="text-xl">{config.icon}</div>
@@ -1595,7 +1661,7 @@ function FieldTripFormBasicFields({
   return (
     <>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           Title *
         </label>
         <Input
@@ -1610,7 +1676,7 @@ function FieldTripFormBasicFields({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           Location *
         </label>
         <Input
@@ -1639,7 +1705,7 @@ function FieldTripFormDateCostFields({
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           Date *
         </label>
         <Input
@@ -1653,7 +1719,7 @@ function FieldTripFormDateCostFields({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           Estimated Cost
         </label>
         <Input
@@ -1686,7 +1752,7 @@ function FieldTripFormTimeFields({
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           Start Time
         </label>
         <Input
@@ -1698,7 +1764,7 @@ function FieldTripFormTimeFields({
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           End Time
         </label>
         <Input
@@ -1726,7 +1792,7 @@ function FieldTripFormStudentPicker({
 }: FieldTripFormStudentPickerProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-neutral-text mb-1">
         Students *
       </label>
       <div className="flex flex-wrap gap-2">
@@ -1739,7 +1805,7 @@ function FieldTripFormStudentPicker({
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               selectedStudentIds.includes(student.id)
                 ? "bg-student-purple-100 text-student-purple-700 ring-2 ring-student-purple-500"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                : "bg-neutral-backgroundDeep text-neutral-textSecondary hover:bg-neutral-border"
             }`}
           >
             {student.name}
@@ -1763,7 +1829,7 @@ function FieldTripFormSubjectPicker({
 }: FieldTripFormSubjectPickerProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-neutral-text mb-1">
         Related Subjects
       </label>
       <div className="flex flex-wrap gap-2">
@@ -1776,7 +1842,7 @@ function FieldTripFormSubjectPicker({
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               selectedSubjectIds.includes(subject.id)
                 ? "bg-brand-primaryLight text-brand-primaryDark ring-2 ring-brand-primary"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                : "bg-neutral-backgroundDeep text-neutral-textSecondary hover:bg-neutral-border"
             }`}
           >
             {subject.name}
@@ -1801,7 +1867,7 @@ function FieldTripFormUrlAndText({
   return (
     <>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           Website URL
         </label>
         <Input
@@ -1815,7 +1881,7 @@ function FieldTripFormUrlAndText({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           Description
         </label>
         <Textarea
@@ -1830,7 +1896,7 @@ function FieldTripFormUrlAndText({
 
       {isEditing && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-neutral-text mb-1">
             Learning Outcomes
           </label>
           <Textarea
@@ -1848,7 +1914,7 @@ function FieldTripFormUrlAndText({
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-neutral-text mb-1">
           Notes
         </label>
         <Textarea
@@ -1923,13 +1989,13 @@ function FieldTripDuplicateModal({
     >
       {duplicatingTrip && (
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-neutral-textSecondary">
             Create a copy of{" "}
             <span className="font-medium">{duplicatingTrip.title}</span>
           </p>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               New Date *
             </label>
             <Input
@@ -1941,7 +2007,7 @@ function FieldTripDuplicateModal({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Copy Options
             </label>
             <label className="flex items-center gap-2 text-sm">
@@ -1950,7 +2016,7 @@ function FieldTripDuplicateModal({
                 type="checkbox"
                 checked={duplicateCopyTasks}
                 onChange={(e) => onCopyTasksChange(e.target.checked)}
-                className="rounded border-gray-300 text-student-blue-600 focus:ring-student-blue-500"
+                className="rounded border-neutral-border text-student-blue-600 focus:ring-student-blue-500"
               />
               <span>Copy tasks (will be reset to incomplete)</span>
             </label>
@@ -1960,11 +2026,11 @@ function FieldTripDuplicateModal({
                 type="checkbox"
                 checked={duplicateCopyContacts}
                 onChange={(e) => onCopyContactsChange(e.target.checked)}
-                className="rounded border-gray-300 text-student-blue-600 focus:ring-student-blue-500"
+                className="rounded border-neutral-border text-student-blue-600 focus:ring-student-blue-500"
               />
               <span>Copy contacts</span>
             </label>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-neutral-textSecondary mt-1">
               RSVPs, expenses, and payments are not copied.
             </p>
           </div>
@@ -2582,7 +2648,7 @@ interface FieldTripsEmptyStateProps {
 function FieldTripsEmptyState({ hasTrips }: FieldTripsEmptyStateProps) {
   return (
     <Card className="text-center py-12">
-      <p className="text-gray-500">
+      <p className="text-neutral-textSecondary">
         {!hasTrips
           ? "No activities not_started yet. Start by planning your first activity!"
           : "No activities match your filter."}

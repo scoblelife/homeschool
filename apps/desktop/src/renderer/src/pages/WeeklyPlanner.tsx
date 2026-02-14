@@ -12,6 +12,7 @@ import {
   addDays,
 } from "date-fns";
 import { Dialog, Tab } from "@headlessui/react";
+import { ExternalLink, FileText } from "lucide-react";
 import { useStore } from "../stores/useStore";
 import { useMilestones } from "../hooks/useDatabase";
 import type {
@@ -447,7 +448,7 @@ export default function WeeklyPlanner(): JSX.Element {
       <PageContainer>
         <PageHeader title="Weekly Planner" />
         <Card className="text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-neutral-textSecondary">
             Please select a student or add one in Settings.
           </p>
         </Card>
@@ -520,7 +521,7 @@ export default function WeeklyPlanner(): JSX.Element {
                           Sync Now
                         </Button>
                         {syncRecords.length > 0 && (
-                          <p className="text-xs text-gray-500 text-center">
+                          <p className="text-xs text-neutral-textSecondary text-center">
                             {syncRecords.length} milestone
                             {syncRecords.length !== 1 ? "s" : ""} synced
                           </p>
@@ -554,7 +555,7 @@ export default function WeeklyPlanner(): JSX.Element {
             &larr; Previous Week
           </Button>
           <div className="text-center">
-            <div className="text-lg font-semibold text-gray-900">
+            <div className="text-lg font-semibold text-neutral-text">
               {weekStartFormatted} - {weekEnd}
             </div>
             <Button variant="ghost" size="sm" onClick={goToCurrentWeek}>
@@ -573,7 +574,7 @@ export default function WeeklyPlanner(): JSX.Element {
               className={`py-2 rounded-lg ${
                 isToday(day)
                   ? "bg-brand-primaryLight text-brand-primaryDark font-semibold"
-                  : "bg-gray-50 text-gray-600"
+                  : "bg-neutral-background text-neutral-textSecondary"
               }`}
             >
               <div className="text-xs uppercase">{format(day, "EEE")}</div>
@@ -596,7 +597,9 @@ export default function WeeklyPlanner(): JSX.Element {
             <div className="text-2xl font-bold text-brand-primary">
               {selectedMilestones.length}
             </div>
-            <div className="text-gray-500">Milestones This Week</div>
+            <div className="text-neutral-textSecondary">
+              Milestones This Week
+            </div>
           </div>
           <div
             aria-label={`${selectedMilestones.filter((m) => m.status === "completed").length} milestones completed`}
@@ -607,13 +610,13 @@ export default function WeeklyPlanner(): JSX.Element {
                   .length
               }
             </div>
-            <div className="text-gray-500">Completed</div>
+            <div className="text-neutral-textSecondary">Completed</div>
           </div>
           <div aria-label={`${totalResources} resources`}>
             <div className="text-2xl font-bold text-student-blue-600">
               {totalResources}
             </div>
-            <div className="text-gray-500">Resources</div>
+            <div className="text-neutral-textSecondary">Resources</div>
           </div>
         </div>
       </Card>
@@ -623,11 +626,11 @@ export default function WeeklyPlanner(): JSX.Element {
           <div
             className={`inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary mb-4`}
           ></div>
-          <p className="text-gray-500">Loading milestones...</p>
+          <p className="text-neutral-textSecondary">Loading milestones...</p>
         </Card>
       ) : selectedMilestones.length === 0 ? (
         <Card className="text-center py-12">
-          <p className="text-gray-500 mb-4">
+          <p className="text-neutral-textSecondary mb-4">
             {milestones.length === 0
               ? "No milestones yet. Add some in the Milestones page first, or auto-suggest based on grade level."
               : "No milestones planned for this week."}
@@ -656,7 +659,7 @@ export default function WeeklyPlanner(): JSX.Element {
               const subject = getSubjectById(subjectId);
               return (
                 <Card key={subjectId}>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  <h2 className="text-lg font-semibold text-neutral-text mb-4">
                     {subject?.name}
                   </h2>
                   <div className="space-y-3">
@@ -668,7 +671,7 @@ export default function WeeklyPlanner(): JSX.Element {
                           className={`p-4 rounded-lg border-l-4 ${
                             milestone.status === "completed"
                               ? "bg-status-successLight border-l-status-success"
-                              : "bg-gray-50 border-l-gray-300"
+                              : "bg-neutral-background border-l-neutral-border"
                           }`}
                         >
                           <div className="flex items-start gap-3">
@@ -682,13 +685,13 @@ export default function WeeklyPlanner(): JSX.Element {
                               <h3
                                 className={`font-medium ${
                                   milestone.status === "completed"
-                                    ? "text-gray-400 line-through"
-                                    : "text-gray-900"
+                                    ? "text-neutral-textTertiary line-through"
+                                    : "text-neutral-text"
                                 }`}
                               >
                                 {milestone.title}
                               </h3>
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-neutral-textSecondary">
                                 {milestone.description}
                               </p>
 
@@ -700,7 +703,11 @@ export default function WeeklyPlanner(): JSX.Element {
                                     className={`flex items-center gap-2 text-sm bg-white p-2 rounded border`}
                                   >
                                     <span>
-                                      {resource.type === "url" ? "🔗" : "📄"}
+                                      {resource.type === "url" ? (
+                                        <ExternalLink size={14} />
+                                      ) : (
+                                        <FileText size={14} />
+                                      )}
                                     </span>
                                     <Button
                                       variant="ghost"
@@ -761,8 +768,8 @@ export default function WeeklyPlanner(): JSX.Element {
         <Card className="no-print mt-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium text-gray-900">Ready to go?</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className="font-medium text-neutral-text">Ready to go?</h3>
+              <p className="text-sm text-neutral-textSecondary">
                 Print your weekly plan or open all resources at once.
               </p>
             </div>
@@ -790,12 +797,12 @@ export default function WeeklyPlanner(): JSX.Element {
           <Dialog.Panel
             className={`bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto`}
           >
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+            <Dialog.Title className="text-lg font-semibold text-neutral-text mb-4">
               Add Milestone to Week
             </Dialog.Title>
 
             {availableMilestones.length === 0 ? (
-              <p className="text-gray-500">
+              <p className="text-neutral-textSecondary">
                 All available milestones have been added or completed.
               </p>
             ) : (
@@ -807,7 +814,7 @@ export default function WeeklyPlanner(): JSX.Element {
                       key={milestone.id}
                       variant="ghost"
                       onClick={() => handleAddMilestone(milestone.id)}
-                      className="w-full text-left p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                      className="w-full text-left p-3 rounded-lg border hover:bg-neutral-background transition-colors"
                     >
                       <div className="flex items-center gap-2">
                         <span
@@ -819,7 +826,7 @@ export default function WeeklyPlanner(): JSX.Element {
                           className={`text-xs px-2 py-0.5 rounded-full ${
                             milestone.status === "in_progress"
                               ? "bg-status-warningLight text-status-warning"
-                              : "bg-gray-100 text-gray-600"
+                              : "bg-neutral-backgroundDeep text-neutral-textSecondary"
                           }`}
                         >
                           {milestone.status === "in_progress"
@@ -827,7 +834,7 @@ export default function WeeklyPlanner(): JSX.Element {
                             : "Not Started"}
                         </span>
                       </div>
-                      <h3 className="font-medium text-gray-900 mt-1">
+                      <h3 className="font-medium text-neutral-text mt-1">
                         {milestone.title}
                       </h3>
                     </Button>
@@ -858,7 +865,7 @@ export default function WeeklyPlanner(): JSX.Element {
           <Dialog.Panel
             className={`bg-white rounded-xl shadow-xl max-w-md w-full p-6`}
           >
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+            <Dialog.Title className="text-lg font-semibold text-neutral-text mb-4">
               Add Resource
             </Dialog.Title>
 
@@ -869,7 +876,7 @@ export default function WeeklyPlanner(): JSX.Element {
                     `px-4 py-2 rounded-lg text-sm font-medium ${
                       selected
                         ? "bg-brand-primaryLight text-brand-primaryDark"
-                        : "bg-gray-100 text-gray-600"
+                        : "bg-neutral-backgroundDeep text-neutral-textSecondary"
                     }`
                   }
                 >
@@ -880,7 +887,7 @@ export default function WeeklyPlanner(): JSX.Element {
                     `px-4 py-2 rounded-lg text-sm font-medium ${
                       selected
                         ? "bg-brand-primaryLight text-brand-primaryDark"
-                        : "bg-gray-100 text-gray-600"
+                        : "bg-neutral-backgroundDeep text-neutral-textSecondary"
                     }`
                   }
                 >
@@ -890,7 +897,7 @@ export default function WeeklyPlanner(): JSX.Element {
               <Tab.Panels>
                 <Tab.Panel className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-neutral-text mb-1">
                       Title
                     </label>
                     <Input
@@ -903,7 +910,7 @@ export default function WeeklyPlanner(): JSX.Element {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-neutral-text mb-1">
                       URL
                     </label>
                     <Input
@@ -930,7 +937,7 @@ export default function WeeklyPlanner(): JSX.Element {
                 </Tab.Panel>
                 <Tab.Panel className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-neutral-text mb-1">
                       Title (optional)
                     </label>
                     <Input

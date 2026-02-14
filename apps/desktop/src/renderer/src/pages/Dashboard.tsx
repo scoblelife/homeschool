@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { format, parseISO, isFuture, isToday } from "date-fns";
 import { Link } from "react-router-dom";
-import { getStudentColor } from "./Settings";
+import { BookOpen, Pencil, Target, Bus } from "lucide-react";
+import { getStudentColor } from "../utils/studentColors";
 import QuickAdd from "../components/QuickAdd";
 import { RecurringActivities } from "../features/recurring";
 import { Timer } from "../features/timer";
@@ -192,12 +193,15 @@ export default function Dashboard(): JSX.Element {
           aria-label={`${todaySessions.length} sessions today`}
         >
           <div className="flex items-center gap-3">
-            <IconBadge icon="📚" variant="blue" />
+            <IconBadge
+              icon={<BookOpen className="w-5 h-5 text-student-blue-600" />}
+              variant="blue"
+            />
             <div>
-              <div className="text-sm font-medium text-gray-500">
+              <div className="text-sm font-medium text-neutral-textSecondary">
                 Today's Sessions
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-neutral-text">
                 {todaySessions.length}
               </div>
             </div>
@@ -208,12 +212,15 @@ export default function Dashboard(): JSX.Element {
           aria-label={`${recentActivities.length} recent activities`}
         >
           <div className="flex items-center gap-3">
-            <IconBadge icon="✏️" variant="success" />
+            <IconBadge
+              icon={<Pencil className="w-5 h-5 text-status-success" />}
+              variant="success"
+            />
             <div>
-              <div className="text-sm font-medium text-gray-500">
+              <div className="text-sm font-medium text-neutral-textSecondary">
                 Recent Activities
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-neutral-text">
                 {recentActivities.length}
               </div>
             </div>
@@ -224,10 +231,15 @@ export default function Dashboard(): JSX.Element {
           aria-label={`${subjects.length} subjects`}
         >
           <div className="flex items-center gap-3">
-            <IconBadge icon="🎯" variant="purple" />
+            <IconBadge
+              icon={<Target className="w-5 h-5 text-student-purple-600" />}
+              variant="purple"
+            />
             <div>
-              <div className="text-sm font-medium text-gray-500">Subjects</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-sm font-medium text-neutral-textSecondary">
+                Subjects
+              </div>
+              <div className="text-2xl font-bold text-neutral-text">
                 {subjects.length}
               </div>
             </div>
@@ -266,10 +278,10 @@ export default function Dashboard(): JSX.Element {
         <Card className="mb-6 bg-gradient-to-r from-brand-primaryLight to-student-purple-50 border-brand-primaryLight">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-neutral-text">
                 Learning Progress
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-textSecondary">
                 {milestoneStats.completed} of {milestoneStats.total} milestones
                 completed
               </p>
@@ -291,7 +303,9 @@ export default function Dashboard(): JSX.Element {
               <div className="text-xl font-bold text-status-success">
                 {milestoneStats.completed}
               </div>
-              <div className="text-gray-500 text-xs">Completed</div>
+              <div className="text-neutral-textSecondary text-xs">
+                Completed
+              </div>
             </div>
             <div
               className="bg-white/60 rounded-lg p-2"
@@ -300,18 +314,22 @@ export default function Dashboard(): JSX.Element {
               <div className="text-xl font-bold text-status-warning">
                 {milestoneStats.inProgress}
               </div>
-              <div className="text-gray-500 text-xs">In Progress</div>
+              <div className="text-neutral-textSecondary text-xs">
+                In Progress
+              </div>
             </div>
             <div
               className="bg-white/60 rounded-lg p-2"
               aria-label={`${milestoneStats.total - milestoneStats.completed - milestoneStats.inProgress} milestones not started`}
             >
-              <div className="text-xl font-bold text-gray-400">
+              <div className="text-xl font-bold text-neutral-textTertiary">
                 {milestoneStats.total -
                   milestoneStats.completed -
                   milestoneStats.inProgress}
               </div>
-              <div className="text-gray-500 text-xs">Not Started</div>
+              <div className="text-neutral-textSecondary text-xs">
+                Not Started
+              </div>
             </div>
           </div>
         </Card>
@@ -323,8 +341,8 @@ export default function Dashboard(): JSX.Element {
       {upcomingFieldTrips.length > 0 && (
         <Card className="mb-6 bg-gradient-to-r from-status-warningLight to-student-orange-50 border-status-warningLight">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <span>🚌</span> Upcoming Field Trips
+            <h2 className="text-lg font-semibold text-neutral-text flex items-center gap-2">
+              <Bus className="w-5 h-5" /> Upcoming Field Trips
             </h2>
             <Link
               to="/field-trips"
@@ -343,18 +361,18 @@ export default function Dashboard(): JSX.Element {
               return (
                 <div
                   key={trip.id}
-                  className={`p-4 rounded-lg ${
+                  className={`p-4 rounded-lg transition-colors ${
                     isTripToday
-                      ? "bg-status-warningLight ring-2 ring-status-warning"
-                      : "bg-white/60"
+                      ? "bg-status-warningLight ring-2 ring-status-warning hover:bg-status-warningLight/80"
+                      : "bg-white/60 hover:bg-white/80"
                   }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-neutral-text">
                         {trip.title}
                       </div>
-                      <div className="text-sm text-gray-600 mt-1">
+                      <div className="text-sm text-neutral-textSecondary mt-1">
                         📍 {trip.location}
                       </div>
                       <div className="text-sm text-status-warning mt-1 font-medium">
@@ -386,11 +404,11 @@ export default function Dashboard(): JSX.Element {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Today's Sessions */}
         <Card>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <h2 className="text-lg font-semibold text-neutral-text mb-4">
             Today's Sessions
           </h2>
           {todaySessions.length === 0 ? (
-            <p className="text-gray-500 text-sm">
+            <p className="text-neutral-textSecondary text-sm">
               No sessions scheduled for today.
             </p>
           ) : (
@@ -401,7 +419,7 @@ export default function Dashboard(): JSX.Element {
                 return (
                   <li
                     key={session.id}
-                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                    className="flex items-center gap-3 p-3 bg-neutral-background rounded-lg hover:bg-neutral-backgroundDeep transition-colors"
                   >
                     <div
                       className={`w-2 h-2 rounded-full ${
@@ -409,10 +427,10 @@ export default function Dashboard(): JSX.Element {
                       }`}
                     />
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-neutral-text">
                         {subject?.name}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-neutral-textSecondary">
                         {student?.name}
                         {session.startTime && ` • ${session.startTime}`}
                       </div>
@@ -427,7 +445,7 @@ export default function Dashboard(): JSX.Element {
         {/* Recent Activities */}
         <Card>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-neutral-text">
               Recent Activities
             </h2>
             <Link
@@ -438,7 +456,9 @@ export default function Dashboard(): JSX.Element {
             </Link>
           </div>
           {recentActivities.length === 0 ? (
-            <p className="text-gray-500 text-sm">No activities recorded yet.</p>
+            <p className="text-neutral-textSecondary text-sm">
+              No activities recorded yet.
+            </p>
           ) : (
             <ul className="space-y-3" aria-live="polite">
               {recentActivities.map((activity) => {
@@ -447,7 +467,7 @@ export default function Dashboard(): JSX.Element {
                 return (
                   <li
                     key={activity.id}
-                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                    className="flex items-center gap-3 p-3 bg-neutral-background rounded-lg hover:bg-neutral-backgroundDeep transition-colors"
                   >
                     <div
                       className={`w-2 h-2 rounded-full ${
@@ -455,15 +475,15 @@ export default function Dashboard(): JSX.Element {
                       }`}
                     />
                     <div className="flex-1">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-neutral-text">
                         {activity.title}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-neutral-textSecondary">
                         {subject?.name} •{" "}
                         {activity.activityType.replace("_", " ")}
                       </div>
                     </div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-neutral-textTertiary">
                       {format(parseISO(activity.dateCompleted), "MMM d")}
                     </div>
                   </li>
@@ -478,7 +498,7 @@ export default function Dashboard(): JSX.Element {
       {selectedStudent && suggestedMilestones.length > 0 && (
         <div className="mt-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-neutral-text">
               Focus This Week
             </h2>
             <Link
@@ -497,7 +517,7 @@ export default function Dashboard(): JSX.Element {
                   className={`p-4 rounded-lg border-l-4 ${
                     milestone.status === "in_progress"
                       ? "bg-status-warningLight border-l-status-warning"
-                      : "bg-white border-l-gray-300 border border-gray-200"
+                      : "bg-white border-l-neutral-border border border-neutral-border"
                   }`}
                 >
                   <div className="flex items-start gap-2">
@@ -517,7 +537,7 @@ export default function Dashboard(): JSX.Element {
                       </Badge>
                     )}
                   </div>
-                  <h3 className="font-medium text-gray-900 mt-2 text-sm">
+                  <h3 className="font-medium text-neutral-text mt-2 text-sm">
                     {milestone.title}
                   </h3>
                 </div>
@@ -530,7 +550,9 @@ export default function Dashboard(): JSX.Element {
       {/* Students Overview (if no student selected) */}
       {!selectedStudentId && students.length > 0 && (
         <div className="mt-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Students</h2>
+          <h2 className="text-lg font-semibold text-neutral-text mb-4">
+            Students
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {students.map((student) => {
               const gradeLabels: Record<string, string> = {
@@ -557,10 +579,10 @@ export default function Dashboard(): JSX.Element {
                       {student.name.charAt(0)}
                     </div>
                     <div>
-                      <div className="font-semibold text-gray-900">
+                      <div className="font-semibold text-neutral-text">
                         {student.name}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-neutral-textSecondary">
                         {gradeLabels[student.gradeLevel] || student.gradeLevel}
                       </div>
                     </div>

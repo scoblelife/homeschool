@@ -1,8 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ComponentType } from "react";
+import {
+  FileText,
+  Video,
+  BookOpen,
+  PenLine,
+  Hand,
+  Gamepad2,
+} from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useStore } from "../stores/useStore";
 import { useActivities } from "../hooks/useDatabase";
-import { getStudentColor } from "./Settings";
+import { getStudentColor } from "../utils/studentColors";
 import { SponsoredResourceCard } from "../features/sponsored/SponsoredResourceCard";
 import type {
   Activity,
@@ -21,13 +29,17 @@ import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
 import { ActivityAttachments } from "../features/attachments/ActivityAttachments";
 
-const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
-  { value: "worksheet", label: "Worksheet", icon: "📝" },
-  { value: "video", label: "Video", icon: "🎬" },
-  { value: "reading", label: "Reading", icon: "📖" },
-  { value: "writing", label: "Writing", icon: "✏️" },
-  { value: "hands_on", label: "Hands-on", icon: "🎨" },
-  { value: "interactive", label: "Interactive", icon: "🎮" },
+const activityTypes: {
+  value: ActivityType;
+  label: string;
+  icon: ComponentType<{ className?: string }>;
+}[] = [
+  { value: "worksheet", label: "Worksheet", icon: FileText },
+  { value: "video", label: "Video", icon: Video },
+  { value: "reading", label: "Reading", icon: BookOpen },
+  { value: "writing", label: "Writing", icon: PenLine },
+  { value: "hands_on", label: "Hands-on", icon: Hand },
+  { value: "interactive", label: "Interactive", icon: Gamepad2 },
 ];
 
 export default function Activities(): JSX.Element {
@@ -226,7 +238,7 @@ export default function Activities(): JSX.Element {
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             filterType === ""
               ? "bg-brand-primaryLight text-brand-primaryDark"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              : "bg-neutral-backgroundDeep text-neutral-textSecondary hover:bg-neutral-border"
           }`}
         >
           All
@@ -237,19 +249,22 @@ export default function Activities(): JSX.Element {
             onClick={() => setFilterType(type.value)}
             role="radio"
             aria-checked={filterType === type.value}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${
               filterType === type.value
                 ? "bg-brand-primaryLight text-brand-primaryDark"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                : "bg-neutral-backgroundDeep text-neutral-textSecondary hover:bg-neutral-border"
             }`}
           >
-            {type.icon} {type.label}
+            <type.icon className="w-4 h-4 flex-shrink-0" />
+            {type.label}
           </button>
         ))}
       </div>
       {filteredActivities.length === 0 ? (
         <Card className="text-center py-12">
-          <p className="text-gray-500">No activities recorded yet.</p>
+          <p className="text-neutral-textSecondary">
+            No activities recorded yet.
+          </p>
           <Button
             variant="primary"
             onClick={() => setIsModalOpen(true)}
@@ -269,34 +284,38 @@ export default function Activities(): JSX.Element {
             return (
               <div
                 key={activity.id}
-                className={`bg-white rounded-xl border border-neutral-border shadow-sm p-6 flex items-start gap-4 border-l-4 ${
+                className={`group bg-white rounded-xl border border-neutral-border shadow-sm hover:shadow-md p-6 flex items-start gap-4 border-l-4 transition-shadow ${
                   getStudentColor(student?.color || "fuchsia").border
                 }`}
               >
-                <div className="text-2xl">{typeInfo?.icon}</div>
+                <div className="text-neutral-textSecondary">
+                  {typeInfo ? <typeInfo.icon className="w-7 h-7" /> : null}
+                </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-neutral-text">
                       {activity.title}
                     </span>
                     <Badge size="sm" variant="default" className="rounded-full">
                       {typeInfo?.label}
                     </Badge>
                   </div>
-                  <div className="text-sm text-gray-500 mt-1">
+                  <div className="text-sm text-neutral-textSecondary mt-1">
                     {subject?.name} • {student?.name} •{" "}
                     {format(parseISO(activity.dateCompleted), "MMM d, yyyy")}
                     {activity.durationMinutes &&
                       ` • ${activity.durationMinutes} min`}
                   </div>
                   {activity.bookTitle && (
-                    <div className="text-sm text-gray-600 mt-1">
-                      📚 {activity.bookTitle}
+                    // eslint-disable-next-line design-system/pages-use-components-only -- inline metadata display
+                    <div className="inline-flex items-center gap-1 text-sm text-neutral-textSecondary mt-1">
+                      <BookOpen className="w-4 h-4 flex-shrink-0" />
+                      {activity.bookTitle}
                       {activity.pagesRead && ` (${activity.pagesRead} pages)`}
                     </div>
                   )}
                   {activity.grade !== null && activity.maxGrade !== null && (
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-neutral-textSecondary mt-1">
                       Grade: {activity.grade}/{activity.maxGrade} (
                       {Math.round((activity.grade / activity.maxGrade) * 100)}%)
                     </div>
@@ -310,7 +329,8 @@ export default function Activities(): JSX.Element {
                     <ActivityAttachments activityId={activity.id} />
                   </div>
                 </div>
-                <div className="flex flex-col gap-2">
+                {/* eslint-disable-next-line design-system/pages-use-components-only -- action bar with hover visibility */}
+                <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Button
                     onClick={() => openEditModal(activity)}
                     variant="ghost"
@@ -348,7 +368,9 @@ export default function Activities(): JSX.Element {
                   Tools and materials that match what you're learning
                 </p>
               </div>
-              <span className="text-xs text-gray-500">Sponsored</span>
+              <span className="text-xs text-neutral-textSecondary">
+                Sponsored
+              </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -374,7 +396,7 @@ export default function Activities(): JSX.Element {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Activity Type
             </label>
             <div
@@ -394,10 +416,12 @@ export default function Activities(): JSX.Element {
                   className={`p-2 rounded-lg text-center transition-colors ${
                     formData.activityType === type.value
                       ? "bg-brand-primaryLight ring-2 ring-brand-primary"
-                      : "bg-gray-50 hover:bg-gray-100"
+                      : "bg-neutral-background hover:bg-neutral-backgroundDeep"
                   }`}
                 >
-                  <div className="text-xl">{type.icon}</div>
+                  <div className="flex justify-center">
+                    <type.icon className="w-6 h-6" />
+                  </div>
                   <div className="text-xs mt-1">{type.label}</div>
                 </button>
               ))}
@@ -406,7 +430,7 @@ export default function Activities(): JSX.Element {
 
           {editingActivity ? (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-text mb-1">
                 Student
               </label>
               <Badge size="md" className="px-3 py-1.5">
@@ -415,7 +439,7 @@ export default function Activities(): JSX.Element {
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-text mb-1">
                 Students *
               </label>
               <div
@@ -445,7 +469,7 @@ export default function Activities(): JSX.Element {
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       selectedStudentIds.includes(s.id)
                         ? "bg-student-purple-100 text-student-purple-700 ring-2 ring-student-purple-500"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        : "bg-neutral-backgroundDeep text-neutral-textSecondary hover:bg-neutral-border"
                     }`}
                   >
                     {s.name}
@@ -461,7 +485,7 @@ export default function Activities(): JSX.Element {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Subject
             </label>
             <select
@@ -469,7 +493,7 @@ export default function Activities(): JSX.Element {
               onChange={(e) =>
                 setFormData({ ...formData, subjectId: e.target.value })
               }
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
+              className="block w-full px-3 py-2 border border-neutral-border rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-neutral-border"
               required
             >
               <option value="">Select subject...</option>
@@ -482,7 +506,7 @@ export default function Activities(): JSX.Element {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Title
             </label>
             <Input
@@ -498,7 +522,7 @@ export default function Activities(): JSX.Element {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-text mb-1">
                 Date
               </label>
               <Input
@@ -511,7 +535,7 @@ export default function Activities(): JSX.Element {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-text mb-1">
                 Duration (min)
               </label>
               <Input
@@ -533,7 +557,7 @@ export default function Activities(): JSX.Element {
           {showReadingFields && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-text mb-1">
                   Book Title
                 </label>
                 <Input
@@ -546,7 +570,7 @@ export default function Activities(): JSX.Element {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Pages Read
                   </label>
                   <Input
@@ -564,7 +588,7 @@ export default function Activities(): JSX.Element {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Total Pages
                   </label>
                   <Input
@@ -588,7 +612,7 @@ export default function Activities(): JSX.Element {
           {showGradeFields && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-text mb-1">
                   Score
                 </label>
                 <Input
@@ -605,7 +629,7 @@ export default function Activities(): JSX.Element {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-text mb-1">
                   Max Score
                 </label>
                 <Input
@@ -628,7 +652,7 @@ export default function Activities(): JSX.Element {
 
           {selectedStudentIds.length > 0 && (
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-neutral-text mb-1">
                 Notes {selectedStudentIds.length > 1 && "(per student)"}
               </label>
               {selectedStudentIds.map((studentId) => {

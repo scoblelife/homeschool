@@ -227,10 +227,10 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
               📈
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">
+              <h3 className="font-semibold text-neutral-text">
                 Compliance Tracking
               </h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-textSecondary">
                 {prediction
                   ? `${prediction.currentHours}/${prediction.requiredHours} hours this year`
                   : "Loading predictions..."}
@@ -293,15 +293,15 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
           {/* Progress Bar */}
           <div>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-600">
+              <span className="text-neutral-textSecondary">
                 Progress: {prediction.currentHours} hrs
               </span>
-              <span className="text-gray-600">
+              <span className="text-neutral-textSecondary">
                 Goal: {prediction.requiredHours} hrs
               </span>
             </div>
             <div
-              className="h-4 bg-gray-200 rounded-full overflow-hidden"
+              className="h-4 bg-neutral-border rounded-full overflow-hidden"
               role="progressbar"
               aria-valuenow={Math.round(
                 (prediction.currentHours / prediction.requiredHours) * 100,
@@ -323,7 +323,7 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
                 }}
               />
             </div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-neutral-textSecondary mt-1">
               {Math.round(
                 (prediction.currentHours / prediction.requiredHours) * 100,
               )}
@@ -334,22 +334,28 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
           {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-3">
             <div className="bg-white/60 rounded-lg p-3 text-center">
-              <div className="text-lg font-bold text-gray-900">
+              <div className="text-lg font-bold text-neutral-text">
                 {prediction.projectedHours}
               </div>
-              <div className="text-xs text-gray-500">Projected Hrs</div>
+              <div className="text-xs text-neutral-textSecondary">
+                Projected Hrs
+              </div>
             </div>
             <div className="bg-white/60 rounded-lg p-3 text-center">
-              <div className="text-lg font-bold text-gray-900">
+              <div className="text-lg font-bold text-neutral-text">
                 {prediction.dailyAverage}
               </div>
-              <div className="text-xs text-gray-500">Hrs/Day Avg</div>
+              <div className="text-xs text-neutral-textSecondary">
+                Hrs/Day Avg
+              </div>
             </div>
             <div className="bg-white/60 rounded-lg p-3 text-center">
-              <div className="text-lg font-bold text-gray-900">
+              <div className="text-lg font-bold text-neutral-text">
                 {prediction.daysRemaining}
               </div>
-              <div className="text-xs text-gray-500">Days Left</div>
+              <div className="text-xs text-neutral-textSecondary">
+                Days Left
+              </div>
             </div>
           </div>
 
@@ -373,14 +379,14 @@ Provide 2-3 brief, practical suggestions (max 15 words each) to help catch up. F
           {prediction.suggestions.length > 0 &&
             prediction.status !== "on_track" && (
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
+                <h4 className="text-sm font-medium text-neutral-text mb-2">
                   Suggestions:
                 </h4>
                 <ul className="space-y-1">
                   {prediction.suggestions.map((suggestion, index) => (
                     <li
                       key={index}
-                      className="text-sm text-gray-600 flex items-start gap-2"
+                      className="text-sm text-neutral-textSecondary flex items-start gap-2"
                     >
                       <span className="text-status-warning mt-0.5">•</span>
                       {suggestion}

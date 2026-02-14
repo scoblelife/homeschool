@@ -126,10 +126,10 @@ export function withErrorBoundary<P extends object>(
 export function WidgetErrorFallback(): JSX.Element {
   return (
     <div
-      className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-center"
+      className="p-3 bg-neutral-background border border-neutral-border rounded-lg text-center"
       role="status"
     >
-      <span className="text-sm text-gray-500">Unable to load</span>
+      <span className="text-sm text-neutral-textSecondary">Unable to load</span>
     </div>
   );
 }

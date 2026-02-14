@@ -378,7 +378,7 @@ export function CoopGroupDetail({
                 </h4>
                 <p className="text-sm text-neutral-textSecondary mt-1">
                   Choose what to share with your co-op group. All data is shared
-                  via encrypted peer-to-peer connections - it never touches our
+                  via encrypted direct connections - it never touches our
                   servers.
                 </p>
               </div>

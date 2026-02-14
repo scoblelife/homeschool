@@ -38,7 +38,7 @@ export function PageSection({
   return (
     <section className={clsx("mb-6", className)}>
       {title && (
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">{title}</h2>
+        <h2 className="text-lg font-semibold text-neutral-text mb-4">{title}</h2>
       )}
       {children}
     </section>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Dialog } from "@headlessui/react";
+import { BookOpen, Star } from "lucide-react";
 import { useStore } from "../stores/useStore";
 import ScannerModal from "../components/ScannerModal";
 import type {
@@ -24,8 +25,8 @@ const statusLabels: Record<
 > = {
   not_started: {
     label: "Not Started",
-    color: "text-gray-600",
-    bg: "bg-gray-100",
+    color: "text-neutral-textSecondary",
+    bg: "bg-neutral-backgroundDeep",
   },
   in_progress: {
     label: "Reading",
@@ -65,7 +66,7 @@ function BookCard({
 
   return (
     <div
-      className={`group rounded-xl bg-white border border-gray-200 hover:border-brand-primary hover:shadow-lg transition-all duration-200 overflow-hidden`}
+      className={`group rounded-xl bg-white border border-neutral-border hover:border-brand-primary hover:shadow-lg transition-all duration-200 overflow-hidden`}
     >
       {/* Cover Image Section */}
       <div
@@ -90,7 +91,7 @@ function BookCard({
           className={`cover-fallback absolute inset-0 items-center justify-center text-5xl`}
           style={{ display: book.coverImagePath ? "none" : "flex" }}
         >
-          📚
+          <BookOpen className="w-12 h-12 text-brand-primary opacity-60" />
         </div>
 
         {/* Status Badge */}
@@ -176,27 +177,31 @@ function BookCard({
       {/* Book Info Section */}
       <div className="p-3">
         <h3
-          className="font-semibold text-gray-900 leading-tight line-clamp-2 mb-1"
+          className="font-semibold text-neutral-text leading-tight line-clamp-2 mb-1"
           title={book.title}
         >
           {book.title}
         </h3>
         {book.author && (
-          <p className="text-sm text-gray-500 truncate">{book.author}</p>
+          <p className="text-sm text-neutral-textSecondary truncate">
+            {book.author}
+          </p>
         )}
 
         {/* Metadata Tags */}
         <div className="mt-2 flex flex-wrap gap-1">
           {book.totalPages && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-neutral-textTertiary">
               {book.totalPages} pages
             </span>
           )}
           {book.totalPages && (book.genre || book.readingLevel) && (
-            <span className="text-xs text-gray-300">•</span>
+            <span className="text-xs text-neutral-textTertiary">•</span>
           )}
           {book.genre && (
-            <span className="text-xs text-gray-400">{book.genre}</span>
+            <span className="text-xs text-neutral-textTertiary">
+              {book.genre}
+            </span>
           )}
           {book.readingLevel && (
             <span
@@ -209,14 +214,14 @@ function BookCard({
 
         {/* Student Progress Section */}
         {studentId && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="mt-3 pt-3 border-t border-neutral-border">
             {book.totalPages && (
               <div className="mb-2">
-                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <div className="flex justify-between text-xs text-neutral-textSecondary mb-1">
                   <span>Page {currentPage}</span>
                   <span>{book.totalPages}</span>
                 </div>
-                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div className="w-full bg-neutral-backgroundDeep rounded-full h-1.5">
                   <div
                     className={`h-1.5 rounded-full transition-all duration-300 ${
                       status === "completed"
@@ -236,7 +241,7 @@ function BookCard({
                   onUpdateProgress({ status: e.target.value as ReadingStatus })
                 }
                 aria-label={`Reading status for ${book.title}`}
-                className="text-xs border-0 bg-gray-100 rounded-lg px-2 py-1.5 text-gray-700 focus:ring-2 focus:ring-brand-primary"
+                className="text-xs border-0 bg-neutral-backgroundDeep rounded-lg px-2 py-1.5 text-neutral-text focus:ring-2 focus:ring-brand-primary"
               >
                 <option value="not_started">Not Started</option>
                 <option value="in_progress">Reading</option>
@@ -268,7 +273,7 @@ function BookCard({
                       onClick={() => setShowMenu(false)}
                     />
                     <div
-                      className={`absolute right-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20 min-w-[120px]`}
+                      className={`absolute right-0 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-neutral-border py-1 z-20 min-w-[120px]`}
                     >
                       <Button
                         variant="ghost"
@@ -277,7 +282,7 @@ function BookCard({
                           onEdit();
                           setShowMenu(false);
                         }}
-                        className="w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50"
+                        className="w-full px-3 py-1.5 text-left text-sm text-neutral-text hover:bg-neutral-background"
                       >
                         Edit
                       </Button>
@@ -330,7 +335,15 @@ function BookCard({
 
         {/* Rating */}
         {progress?.rating && (
-          <div className="mt-2 text-sm">{"⭐".repeat(progress.rating)}</div>
+          <div className="mt-2 flex gap-0.5">
+            {Array.from({ length: progress.rating }, (_, i) => (
+              <Star
+                key={i}
+                // eslint-disable-next-line design-system/no-hardcoded-colors -- star rating color
+                className="w-4 h-4 text-amber-400 fill-amber-400"
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>
@@ -520,28 +533,32 @@ export default function Library(): JSX.Element {
         <Card className="mb-6">
           <div className="grid grid-cols-4 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-neutral-text">
                 {stats.total}
               </div>
-              <div className="text-sm text-gray-500">Total Books</div>
+              <div className="text-sm text-neutral-textSecondary">
+                Total Books
+              </div>
             </div>
             <div>
               <div className="text-2xl font-bold text-status-success">
                 {stats.completed}
               </div>
-              <div className="text-sm text-gray-500">Finished</div>
+              <div className="text-sm text-neutral-textSecondary">Finished</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-student-blue-600">
                 {stats.in_progress}
               </div>
-              <div className="text-sm text-gray-500">Reading</div>
+              <div className="text-sm text-neutral-textSecondary">Reading</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-400">
+              <div className="text-2xl font-bold text-neutral-textTertiary">
                 {stats.notStarted}
               </div>
-              <div className="text-sm text-gray-500">Not Started</div>
+              <div className="text-sm text-neutral-textSecondary">
+                Not Started
+              </div>
             </div>
           </div>
         </Card>
@@ -590,7 +607,7 @@ export default function Library(): JSX.Element {
       {/* Book Grid */}
       {filteredBooks.length === 0 ? (
         <Card className="text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-neutral-textSecondary">
             {books.length === 0
               ? "No books in your library yet. Add your first book!"
               : "No books match your search or filters."}
@@ -628,13 +645,13 @@ export default function Library(): JSX.Element {
           <Dialog.Panel
             className={`bg-white rounded-xl shadow-xl max-w-md w-full p-6`}
           >
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+            <Dialog.Title className="text-lg font-semibold text-neutral-text mb-4">
               {editingBook ? "Edit Book" : "Add Book"}
             </Dialog.Title>
 
             <form onSubmit={handleSubmitBook} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-text mb-1">
                   Title *
                 </label>
                 <Input
@@ -648,7 +665,7 @@ export default function Library(): JSX.Element {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-text mb-1">
                   Author
                 </label>
                 <Input
@@ -662,7 +679,7 @@ export default function Library(): JSX.Element {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Total Pages
                   </label>
                   <Input
@@ -681,7 +698,7 @@ export default function Library(): JSX.Element {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Reading Level
                   </label>
                   <Input
@@ -697,7 +714,7 @@ export default function Library(): JSX.Element {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Genre
                   </label>
                   <Input
@@ -711,7 +728,7 @@ export default function Library(): JSX.Element {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     ISBN
                   </label>
                   <Input
@@ -725,7 +742,7 @@ export default function Library(): JSX.Element {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-text mb-1">
                   Notes
                 </label>
                 <Textarea
@@ -767,17 +784,17 @@ export default function Library(): JSX.Element {
           <Dialog.Panel
             className={`bg-white rounded-xl shadow-xl max-w-md w-full p-6`}
           >
-            <Dialog.Title className="text-lg font-semibold text-gray-900 mb-4">
+            <Dialog.Title className="text-lg font-semibold text-neutral-text mb-4">
               Log Reading
             </Dialog.Title>
 
             {loggingBook && (
               <form onSubmit={handleLogReading} className="space-y-4">
                 <div>
-                  <p className="text-gray-700 font-medium">
+                  <p className="text-neutral-text font-medium">
                     {loggingBook.title}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-neutral-textSecondary">
                     Currently on page{" "}
                     {loggingBook.studentProgress?.currentPage || 0}
                     {loggingBook.totalPages && ` of ${loggingBook.totalPages}`}
@@ -785,7 +802,7 @@ export default function Library(): JSX.Element {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Pages Read
                   </label>
                   <Input
@@ -799,7 +816,7 @@ export default function Library(): JSX.Element {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Notes (optional)
                   </label>
                   <Textarea

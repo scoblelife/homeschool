@@ -92,8 +92,8 @@ export function Modal({
               >
                 {/* Header */}
                 {title && (
-                  <div className="border-b border-gray-200 px-6 py-4">
-                    <Dialog.Title className="text-lg font-semibold text-gray-900">
+                  <div className="border-b border-neutral-border px-6 py-4">
+                    <Dialog.Title className="text-lg font-semibold text-neutral-text">
                       {title}
                     </Dialog.Title>
                   </div>
@@ -122,8 +122,8 @@ export interface ModalHeaderProps {
 
 export function ModalHeader({ children, className }: ModalHeaderProps) {
   return (
-    <div className={clsx("border-b border-gray-200 px-6 py-4", className)}>
-      <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900">
+    <div className={clsx("border-b border-neutral-border px-6 py-4", className)}>
+      <Dialog.Title as="h3" className="text-lg font-semibold text-neutral-text">
         {children}
       </Dialog.Title>
     </div>
@@ -154,7 +154,7 @@ export function ModalFooter({ children, className }: ModalFooterProps) {
   return (
     <div
       className={clsx(
-        "border-t border-gray-200 px-6 py-4 bg-gray-50",
+        "border-t border-neutral-border px-6 py-4 bg-neutral-background",
         className,
       )}
     >

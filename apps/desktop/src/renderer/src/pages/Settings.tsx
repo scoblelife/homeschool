@@ -355,38 +355,33 @@ function StudentCard({
       </div>
       <div className="flex gap-2">
         <Button
-          variant="secondary"
+          variant="outline"
+          size="sm"
           onClick={() => onPrintCertificate(student)}
-          className="text-sm flex items-center gap-1"
+          className="whitespace-nowrap"
           title="Print Grade Certificate"
+          leftIcon={
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+              />
+            </svg>
+          }
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-            />
-          </svg>
           Certificate
         </Button>
-        <Button
-          variant="secondary"
-          onClick={() => onEdit(student.id)}
-          className="text-sm"
-        >
+        <Button variant="outline" size="sm" onClick={() => onEdit(student.id)}>
           Edit
         </Button>
-        <Button
-          variant="danger"
-          onClick={() => onDelete(student.id)}
-          className="text-sm"
-        >
+        <Button variant="danger" size="sm" onClick={() => onDelete(student.id)}>
           Delete
         </Button>
       </div>
@@ -884,12 +879,12 @@ function SponsoredContentCard({
             Your Privacy is Protected
           </h4>
           <ul className="space-y-1 list-disc list-inside">
+            <li>Sponsored items are always clearly marked</li>
             <li>
-              We only track anonymous clicks (no student names, no personal
-              information)
+              We only track anonymous click counts on sponsored items — no
+              student names, no personal information
             </li>
-            <li>Sponsors never receive your data</li>
-            <li>All tracking is local to your device</li>
+            <li>Sponsors see aggregate click counts, never your data</li>
             <li>No cookies, no pixels, no third-party analytics</li>
           </ul>
           <p className="mt-3 text-xs text-neutral-textSecondary">

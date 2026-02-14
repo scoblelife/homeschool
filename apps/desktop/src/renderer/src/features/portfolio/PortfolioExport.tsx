@@ -207,22 +207,47 @@ export function PortfolioExport({ students }: Props) {
           <label className="block text-sm font-medium text-neutral-text mb-2">
             Include Sections
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-2">
             {sections.map((section) => (
               <label
                 key={section.id}
-                className="flex items-center gap-2 p-3 rounded-lg border border-neutral-border
-                  hover:bg-neutral-background cursor-pointer"
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors text-sm ${
+                  section.enabled
+                    ? "bg-brand-primaryLight text-brand-primaryDark border border-brand-primary/40"
+                    : "bg-neutral-background text-neutral-textSecondary border border-neutral-border hover:bg-neutral-backgroundDeep"
+                }`}
               >
-                <Input
+                {/* eslint-disable-next-line design-system/require-design-system-components -- sr-only checkbox used for toggle styling */}
+                <input
                   type="checkbox"
                   checked={section.enabled}
                   onChange={() => handleSectionToggle(section.id)}
-                  className="w-4 h-4"
+                  className="sr-only"
                 />
-                <span className="text-sm text-neutral-text">
-                  {section.name}
+                <span
+                  className={`w-4 h-4 flex-shrink-0 rounded flex items-center justify-center ${
+                    section.enabled
+                      ? "bg-brand-primary text-white"
+                      : "border-2 border-neutral-border"
+                  }`}
+                >
+                  {section.enabled && (
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
                 </span>
+                <span className="truncate">{section.name}</span>
               </label>
             ))}
           </div>

@@ -29,8 +29,8 @@ export function PageHeader({
     <div className={clsx("mb-6", className)}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-          {subtitle && <p className="text-gray-500 mt-1">{subtitle}</p>}
+          <h1 className="text-2xl font-bold text-neutral-text">{title}</h1>
+          {subtitle && <p className="text-neutral-textSecondary mt-1">{subtitle}</p>}
         </div>
         {action && <div className="flex-shrink-0 ml-4">{action}</div>}
       </div>

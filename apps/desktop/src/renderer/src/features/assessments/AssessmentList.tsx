@@ -219,7 +219,7 @@ export function AssessmentList({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900">Assessments</h3>
+        <h3 className="text-lg font-semibold text-neutral-text">Assessments</h3>
         <Button size="sm" onClick={() => setShowForm(true)}>
           + Add Assessment
         </Button>
@@ -230,13 +230,13 @@ export function AssessmentList({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto m-4">
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-neutral-text">
                 {editingAssessment ? "Edit Assessment" : "Add Assessment"}
               </h3>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Assessment Name *
                   </label>
                   <Input
@@ -251,7 +251,7 @@ export function AssessmentList({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Type
                   </label>
                   <select
@@ -262,7 +262,7 @@ export function AssessmentList({
                         type: e.target.value as AssessmentType,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-border rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   >
                     {ASSESSMENT_TYPES.map((type) => (
                       <option key={type.value} value={type.value}>
@@ -273,7 +273,7 @@ export function AssessmentList({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Status
                   </label>
                   <select
@@ -284,7 +284,7 @@ export function AssessmentList({
                         status: e.target.value as UniversalStatus,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-border rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   >
                     {ASSESSMENT_STATUSES.map((status) => (
                       <option key={status.value} value={status.value}>
@@ -295,7 +295,7 @@ export function AssessmentList({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Date *
                   </label>
                   <Input
@@ -309,7 +309,7 @@ export function AssessmentList({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Time
                   </label>
                   <Input
@@ -325,7 +325,7 @@ export function AssessmentList({
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Provider
                   </label>
                   <Input
@@ -339,7 +339,7 @@ export function AssessmentList({
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Location
                   </label>
                   <Input
@@ -356,7 +356,7 @@ export function AssessmentList({
                 {formData.status === "completed" && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-neutral-text mb-1">
                         Score
                       </label>
                       <Input
@@ -370,7 +370,7 @@ export function AssessmentList({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-neutral-text mb-1">
                         Percentile
                       </label>
                       <Input
@@ -391,7 +391,7 @@ export function AssessmentList({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-neutral-text mb-1">
                         Grade Equivalent
                       </label>
                       <Input
@@ -408,7 +408,7 @@ export function AssessmentList({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-neutral-text mb-1">
                         Results URL
                       </label>
                       <Input
@@ -427,7 +427,7 @@ export function AssessmentList({
                 )}
 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-text mb-1">
                     Notes
                   </label>
                   <Textarea
@@ -456,9 +456,11 @@ export function AssessmentList({
 
       {/* Assessment List */}
       {assessments.length === 0 ? (
-        <div className="text-center py-8 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">No assessments scheduled yet.</p>
-          <p className="text-sm text-gray-400 mt-1">
+        <div className="text-center py-8 bg-neutral-background rounded-lg">
+          <p className="text-neutral-textSecondary">
+            No assessments scheduled yet.
+          </p>
+          <p className="text-sm text-neutral-textTertiary mt-1">
             Track standardized tests, evaluations, and portfolio reviews.
           </p>
         </div>
@@ -467,21 +469,21 @@ export function AssessmentList({
           {assessments.map((assessment) => (
             <div
               key={assessment.id}
-              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="bg-white border border-neutral-border rounded-lg p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-gray-900">
+                    <h4 className="font-medium text-neutral-text">
                       {assessment.name}
                     </h4>
                     {getStatusBadge(assessment.status)}
                   </div>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-neutral-textSecondary">
                     {getTypeLabel(assessment.type)}
                     {assessment.provider && ` • ${assessment.provider}`}
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-neutral-textSecondary mt-1">
                     {format(parseISO(assessment.date), "MMMM d, yyyy")}
                     {assessment.scheduledTime &&
                       ` at ${assessment.scheduledTime}`}
@@ -493,19 +495,19 @@ export function AssessmentList({
                         Score: {assessment.score}
                       </span>
                       {assessment.percentile && (
-                        <span className="text-gray-600">
+                        <span className="text-neutral-textSecondary">
                           {assessment.percentile}th percentile
                         </span>
                       )}
                       {assessment.gradeEquivalent && (
-                        <span className="text-gray-600">
+                        <span className="text-neutral-textSecondary">
                           GE: {assessment.gradeEquivalent}
                         </span>
                       )}
                     </div>
                   )}
                   {assessment.notes && (
-                    <p className="mt-2 text-sm text-gray-600 italic">
+                    <p className="mt-2 text-sm text-neutral-textSecondary italic">
                       {assessment.notes}
                     </p>
                   )}
@@ -515,7 +517,7 @@ export function AssessmentList({
                     variant="ghost"
                     size="sm"
                     onClick={() => handleEdit(assessment)}
-                    className="p-2 text-gray-400 hover:text-gray-600"
+                    className="p-2 text-neutral-textTertiary hover:text-neutral-textSecondary"
                     title="Edit"
                     aria-label={`Edit ${assessment.name}`}
                   >
@@ -538,7 +540,7 @@ export function AssessmentList({
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDelete(assessment.id)}
-                    className="p-2 text-gray-400 hover:text-status-error"
+                    className="p-2 text-neutral-textTertiary hover:text-status-error"
                     title="Delete"
                     aria-label={`Delete ${assessment.name}`}
                   >

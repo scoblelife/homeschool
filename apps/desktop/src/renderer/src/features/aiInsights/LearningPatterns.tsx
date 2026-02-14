@@ -287,8 +287,10 @@ Be specific with numbers. Make insights actionable. Return only valid JSON.`;
               📊
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">Learning Patterns</h3>
-              <p className="text-sm text-gray-500">
+              <h3 className="font-semibold text-neutral-text">
+                Learning Patterns
+              </h3>
+              <p className="text-sm text-neutral-textSecondary">
                 {patterns.length > 0
                   ? `${patterns.length} insights discovered`
                   : "Analyze learning habits and preferences"}
@@ -356,10 +358,12 @@ Be specific with numbers. Make insights actionable. Return only valid JSON.`;
                       {pattern.category}
                     </span>
                   </div>
-                  <h4 className="font-medium text-gray-900">
+                  <h4 className="font-medium text-neutral-text">
                     {pattern.insight}
                   </h4>
-                  <p className="text-sm text-gray-600 mt-1">{pattern.detail}</p>
+                  <p className="text-sm text-neutral-textSecondary mt-1">
+                    {pattern.detail}
+                  </p>
                 </div>
               </div>
             </div>

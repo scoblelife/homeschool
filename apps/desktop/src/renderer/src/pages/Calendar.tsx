@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import {
   format,
   startOfMonth,
@@ -13,6 +13,22 @@ import {
   isWithinInterval,
   parseISO,
 } from "date-fns";
+import {
+  PenLine,
+  Clapperboard,
+  BookOpen,
+  PencilLine,
+  Palette,
+  Gamepad2,
+  Bus,
+  TreePine,
+  Dice5,
+  HandMetal,
+  GraduationCap,
+  Calendar as CalendarIcon,
+  MapPin,
+  ExternalLink,
+} from "lucide-react";
 import { useStore } from "../stores/useStore";
 import type {
   Session,
@@ -31,61 +47,66 @@ import { Modal } from "../components/ui/Modal";
 import { PageHeader } from "../components/layout/PageHeader";
 import { PageContainer } from "../components/layout/PageContainer";
 
-const activityTypes: { value: ActivityType; label: string; icon: string }[] = [
-  { value: "worksheet", label: "Worksheet", icon: "📝" },
-  { value: "video", label: "Video", icon: "🎬" },
-  { value: "reading", label: "Reading", icon: "📖" },
-  { value: "writing", label: "Writing", icon: "✏️" },
-  { value: "hands_on", label: "Hands-on", icon: "🎨" },
-  { value: "interactive", label: "Interactive", icon: "🎮" },
-];
+const activityTypes: { value: ActivityType; label: string; icon: ReactNode }[] =
+  [
+    { value: "worksheet", label: "Worksheet", icon: <PenLine size={16} /> },
+    { value: "video", label: "Video", icon: <Clapperboard size={16} /> },
+    { value: "reading", label: "Reading", icon: <BookOpen size={16} /> },
+    { value: "writing", label: "Writing", icon: <PencilLine size={16} /> },
+    { value: "hands_on", label: "Hands-on", icon: <Palette size={16} /> },
+    {
+      value: "interactive",
+      label: "Interactive",
+      icon: <Gamepad2 size={16} />,
+    },
+  ];
 
 // Colors for field trip activity types
 const fieldTripTypeColors: Record<
   string,
-  { bg: string; text: string; textDark: string; dot: string; icon: string }
+  { bg: string; text: string; textDark: string; dot: string; icon: ReactNode }
 > = {
   field_trip: {
     bg: "bg-status-warningLight",
     text: "text-status-warning",
     textDark: "text-status-warning",
     dot: "bg-status-warning",
-    icon: "🚌",
+    icon: <Bus size={14} />,
   },
   park_day: {
     bg: "bg-status-successLight",
     text: "text-status-success",
     textDark: "text-status-successDark",
     dot: "bg-status-success",
-    icon: "🌳",
+    icon: <TreePine size={14} />,
   },
   game_night: {
     bg: "bg-student-purple-50",
     text: "text-student-purple-600",
     textDark: "text-student-purple-700",
     dot: "bg-student-purple-500",
-    icon: "🎲",
+    icon: <Dice5 size={14} />,
   },
   playdate: {
     bg: "bg-student-fuchsia-50",
     text: "text-student-fuchsia-600",
     textDark: "text-student-fuchsia-700",
     dot: "bg-student-fuchsia-500",
-    icon: "👋",
+    icon: <HandMetal size={14} />,
   },
   coop_class: {
     bg: "bg-student-blue-50",
     text: "text-student-blue-600",
     textDark: "text-student-blue-700",
     dot: "bg-student-blue-500",
-    icon: "📚",
+    icon: <GraduationCap size={14} />,
   },
   custom: {
-    bg: "bg-gray-50",
-    text: "text-gray-600",
-    textDark: "text-gray-800",
-    dot: "bg-gray-500",
-    icon: "📅",
+    bg: "bg-neutral-background",
+    text: "text-neutral-textSecondary",
+    textDark: "text-neutral-text",
+    dot: "bg-neutral-textSecondary",
+    icon: <CalendarIcon size={14} />,
   },
 };
 
@@ -358,7 +379,7 @@ export default function Calendar(): JSX.Element {
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div
                   key={day}
-                  className="text-center text-sm font-medium text-gray-500 py-2"
+                  className="text-center text-sm font-medium text-neutral-textSecondary py-2"
                 >
                   {day}
                 </div>
@@ -396,8 +417,10 @@ export default function Calendar(): JSX.Element {
                     aria-selected={!!isSelected}
                     aria-current={isToday ? "date" : undefined}
                     className={`aspect-square p-2 rounded-lg text-left transition-colors ${
-                      !isCurrentMonth ? "text-gray-300" : "text-gray-900"
-                    } ${isSelected ? "bg-brand-primaryLight ring-2 ring-brand-primary" : "hover:bg-gray-50"} ${
+                      !isCurrentMonth
+                        ? "text-neutral-textTertiary"
+                        : "text-neutral-text"
+                    } ${isSelected ? "bg-brand-primaryLight ring-2 ring-brand-primary" : "hover:bg-neutral-background"} ${
                       isToday && !isSelected ? "bg-status-warningLight" : ""
                     } ${hasFieldTrip && isCurrentMonth && !isSelected ? firstTripColors?.bg : ""} ${
                       isBusy && isCurrentMonth && !isSelected && !hasFieldTrip
@@ -443,30 +466,40 @@ export default function Calendar(): JSX.Element {
 
             {/* Legend */}
             {/* eslint-disable-next-line design-system/pages-use-components-only -- calendar legend layout */}
-            <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-500">
+            <div className="mt-4 flex flex-wrap gap-4 text-sm text-neutral-textSecondary">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-status-successLight0" />
                 <span>Activities</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-status-warning" />
-                <span>🚌 Field Trip</span>
+                <span className="flex items-center gap-1">
+                  <Bus size={12} /> Field Trip
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-status-successLight0" />
-                <span>🌳 Park Day</span>
+                <span className="flex items-center gap-1">
+                  <TreePine size={12} /> Park Day
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-student-purple-500" />
-                <span>🎲 Game Night</span>
+                <span className="flex items-center gap-1">
+                  <Dice5 size={12} /> Game Night
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-student-fuchsia-500" />
-                <span>👋 Playdate</span>
+                <span className="flex items-center gap-1">
+                  <HandMetal size={12} /> Playdate
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-student-blue-500" />
-                <span>📚 Co-op</span>
+                <span className="flex items-center gap-1">
+                  <GraduationCap size={12} /> Co-op
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-status-error" />
@@ -479,7 +512,7 @@ export default function Calendar(): JSX.Element {
         {/* Selected Day Details */}
         <Card aria-live="polite">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-neutral-text">
               {format(selectedDate, "EEEE, MMMM d")}
             </h2>
             <Button
@@ -495,7 +528,7 @@ export default function Calendar(): JSX.Element {
             {/* Field Trips / Activities */}
             {selectedDayEvents.fieldTrips.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-600 mb-2">
+                <h3 className="text-sm font-medium text-neutral-textSecondary mb-2">
                   Events ({selectedDayEvents.fieldTrips.length})
                 </h3>
                 <ul className="space-y-2">
@@ -519,17 +552,19 @@ export default function Calendar(): JSX.Element {
                               trip.status === "completed"
                                 ? "bg-status-successLight text-status-success"
                                 : trip.status === "cancelled"
-                                  ? "bg-gray-100 text-gray-600"
+                                  ? "bg-neutral-backgroundDeep text-neutral-textSecondary"
                                   : "bg-student-blue-100 text-student-blue-700"
                             }`}
                           >
                             {trip.status}
                           </span>
                         </div>
-                        <div className={`${colors.text} mt-1`}>
-                          📍 {trip.location}
+                        <div
+                          className={`${colors.text} mt-1 flex items-center gap-1`}
+                        >
+                          <MapPin size={12} /> {trip.location}
                         </div>
-                        <div className="text-gray-500 mt-1">
+                        <div className="text-neutral-textSecondary mt-1">
                           {tripStudents.map((s) => s.name).join(", ")}
                         </div>
                         {trip.websiteUrl && (
@@ -537,9 +572,10 @@ export default function Calendar(): JSX.Element {
                             href={trip.websiteUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-student-blue-600 hover:underline mt-1 inline-block"
+                            className="inline-flex items-center gap-1 text-student-blue-600 hover:underline mt-1"
                           >
-                            🔗 Website
+                            <ExternalLink size={12} className="flex-shrink-0" />{" "}
+                            Website
                           </a>
                         )}
                       </li>
@@ -572,11 +608,13 @@ export default function Calendar(): JSX.Element {
 
             {/* Activities */}
             <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-2">
+              <h3 className="text-sm font-medium text-neutral-textSecondary mb-2">
                 Activities ({selectedDayEvents.activities.length})
               </h3>
               {selectedDayEvents.activities.length === 0 ? (
-                <p className="text-sm text-gray-400">No activities logged</p>
+                <p className="text-sm text-neutral-textTertiary">
+                  No activities logged
+                </p>
               ) : (
                 <ul className="space-y-2">
                   {selectedDayEvents.activities.map((activity) => {
@@ -590,11 +628,11 @@ export default function Calendar(): JSX.Element {
                         className="p-2 bg-status-successLight rounded-lg flex items-start justify-between"
                       >
                         <div>
-                          <div className="font-medium text-gray-900 flex items-center gap-2">
+                          <div className="font-medium text-neutral-text flex items-center gap-2">
                             <span>{typeInfo?.icon}</span>
                             {activity.title}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-neutral-textSecondary">
                             {student?.name} • {typeInfo?.label}
                             {activity.durationMinutes &&
                               ` • ${activity.durationMinutes} min`}
@@ -627,7 +665,7 @@ export default function Calendar(): JSX.Element {
       >
         <form onSubmit={handleSubmitActivity} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Activity Type
             </label>
             <div
@@ -647,7 +685,7 @@ export default function Calendar(): JSX.Element {
                   className={`p-2 rounded-lg text-center transition-colors ${
                     formData.activityType === type.value
                       ? "bg-brand-primaryLight ring-2 ring-brand-primary"
-                      : "bg-gray-50 hover:bg-gray-100"
+                      : "bg-neutral-background hover:bg-neutral-backgroundDeep"
                   }`}
                 >
                   <div className="text-xl">{type.icon}</div>
@@ -658,7 +696,7 @@ export default function Calendar(): JSX.Element {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Student
             </label>
             <select
@@ -666,7 +704,7 @@ export default function Calendar(): JSX.Element {
               onChange={(e) =>
                 setFormData({ ...formData, studentId: e.target.value })
               }
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
+              className="block w-full px-3 py-2 border border-neutral-border rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-neutral-border"
               required
             >
               <option value="">Select student...</option>
@@ -679,7 +717,7 @@ export default function Calendar(): JSX.Element {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Subject
             </label>
             <select
@@ -687,7 +725,7 @@ export default function Calendar(): JSX.Element {
               onChange={(e) =>
                 setFormData({ ...formData, subjectId: e.target.value })
               }
-              className="block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-gray-400"
+              className="block w-full px-3 py-2 border border-neutral-border rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary text-sm hover:border-neutral-border"
               required
             >
               <option value="">Select subject...</option>
@@ -700,7 +738,7 @@ export default function Calendar(): JSX.Element {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Title
             </label>
             <Input
@@ -715,7 +753,7 @@ export default function Calendar(): JSX.Element {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Duration (minutes)
             </label>
             <Input
@@ -734,7 +772,7 @@ export default function Calendar(): JSX.Element {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-text mb-1">
               Notes
             </label>
             <Textarea

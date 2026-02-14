@@ -26,10 +26,10 @@ const sizeClasses: Record<InputSize, string> = {
 const baseClasses =
   'block w-full border rounded-lg shadow-sm transition-all duration-200 ' +
   'focus:outline-none focus:ring-2 focus:ring-offset-0 ' +
-  'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50'
+  'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-neutral-background'
 
 const stateClasses = {
-  default: 'border-gray-300 hover:border-gray-400 focus:ring-fuchsia-500 focus:border-fuchsia-500',
+  default: 'border-neutral-border hover:border-neutral-border focus:ring-fuchsia-500 focus:border-fuchsia-500',
   error: 'border-red-300 focus:ring-red-500 focus:border-red-500',
 }
 
@@ -39,7 +39,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       return (
         <div className="relative">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-textTertiary">
               {leftIcon}
             </div>
           )}
@@ -56,7 +56,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-neutral-textTertiary">
               {rightIcon}
             </div>
           )}
@@ -116,7 +116,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
     return (
       <label
         ref={ref}
-        className={clsx('block text-sm font-medium text-gray-700 mb-1', className)}
+        className={clsx('block text-sm font-medium text-neutral-text mb-1', className)}
         {...props}
       >
         {children}
@@ -145,7 +145,7 @@ export function FormField({ label, htmlFor, required, error, hint, children }: F
       </Label>
       {children}
       {error && <p className="text-sm text-red-600">{error}</p>}
-      {hint && !error && <p className="text-sm text-gray-500">{hint}</p>}
+      {hint && !error && <p className="text-sm text-neutral-textSecondary">{hint}</p>}
     </div>
   )
 }

@@ -239,10 +239,10 @@ Only return the JSON array, no other text.`;
               💡
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">
+              <h3 className="font-semibold text-neutral-text">
                 AI Activity Suggestions
               </h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-textSecondary">
                 {suggestions.length > 0
                   ? `${suggestions.length} suggestion${suggestions.length !== 1 ? "s" : ""} available`
                   : needsAttention > 0
@@ -305,10 +305,10 @@ Only return the JSON array, no other text.`;
               <div className="flex items-start gap-3">
                 <span className="text-lg">📚</span>
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">
+                  <h4 className="font-medium text-neutral-text">
                     {suggestion.subject}
                   </h4>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-neutral-textSecondary mt-1">
                     {suggestion.reason}
                   </p>
                   <div className="mt-3 space-y-2">
@@ -318,7 +318,7 @@ Only return the JSON array, no other text.`;
                         className="flex items-start gap-2 text-sm"
                       >
                         <span className="text-emerald-500 mt-0.5">•</span>
-                        <span className="text-gray-700">{idea}</span>
+                        <span className="text-neutral-text">{idea}</span>
                       </div>
                     ))}
                   </div>

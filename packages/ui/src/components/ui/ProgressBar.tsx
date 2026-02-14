@@ -20,7 +20,7 @@ export interface ProgressBarProps {
 }
 
 const variantClasses: Record<ProgressVariant, string> = {
-  default: 'bg-gray-500',
+  default: 'bg-neutral-textSecondary',
   primary: 'bg-fuchsia-500',
   success: 'bg-green-500',
   warning: 'bg-amber-500',
@@ -48,15 +48,15 @@ export function ProgressBar({
     <div className={clsx('w-full', className)}>
       {(showLabel || label) && (
         <div className="flex justify-between items-center mb-1">
-          {label && <span className="text-sm text-gray-700">{label}</span>}
+          {label && <span className="text-sm text-neutral-text">{label}</span>}
           {showLabel && (
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-neutral-textSecondary">
               {Math.round(percentage)}%
             </span>
           )}
         </div>
       )}
-      <div className={clsx('w-full bg-gray-200 rounded-full overflow-hidden', sizeClasses[size])}>
+      <div className={clsx('w-full bg-neutral-border rounded-full overflow-hidden', sizeClasses[size])}>
         <div
           className={clsx(
             'h-full rounded-full transition-all duration-300 ease-out',
@@ -85,7 +85,7 @@ export interface CircularProgressProps {
 }
 
 const circularVariantClasses: Record<ProgressVariant, string> = {
-  default: 'text-gray-500',
+  default: 'text-neutral-textSecondary',
   primary: 'text-fuchsia-500',
   success: 'text-green-500',
   warning: 'text-amber-500',
@@ -117,7 +117,7 @@ export function CircularProgress({
           fill="none"
           stroke="currentColor"
           strokeWidth={strokeWidth}
-          className="text-gray-200"
+          className="text-neutral-border"
         />
         {/* Progress circle */}
         <circle
@@ -134,7 +134,7 @@ export function CircularProgress({
         />
       </svg>
       {showLabel && (
-        <span className="absolute text-xs font-medium text-gray-700">
+        <span className="absolute text-xs font-medium text-neutral-text">
           {Math.round(percentage)}%
         </span>
       )}

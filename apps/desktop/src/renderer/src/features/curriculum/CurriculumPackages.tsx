@@ -195,7 +195,7 @@ export function CurriculumPackages() {
 
   if (isLoading) {
     return (
-      <div className="text-center text-gray-500 py-8">
+      <div className="text-center text-neutral-textSecondary py-8">
         Loading curriculum packages...
       </div>
     );
@@ -206,10 +206,10 @@ export function CurriculumPackages() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-neutral-text dark:text-white">
             Curriculum Packages
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-neutral-textSecondary dark:text-neutral-textTertiary mt-1">
             Track the commercial curriculum products your family uses
           </p>
         </div>
@@ -223,15 +223,17 @@ export function CurriculumPackages() {
         <div className="bg-gradient-to-r from-brand-primaryLight to-student-purple-50 border-2 border-brand-primary/20 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+              <h3 className="font-medium text-neutral-text dark:text-white flex items-center gap-2">
                 <SparklesIcon className="w-5 h-5 text-brand-primary" />
                 Featured Curriculum Partners
               </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-neutral-textSecondary dark:text-neutral-textTertiary">
                 Click to add or learn more about these trusted curricula
               </p>
             </div>
-            <span className="text-xs text-gray-500">Sponsored</span>
+            <span className="text-xs text-neutral-textSecondary">
+              Sponsored
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -249,10 +251,10 @@ export function CurriculumPackages() {
 
       {/* Add/Edit Form */}
       {showAddForm && (
-        <Card className="bg-gray-50 dark:bg-gray-800">
+        <Card className="bg-neutral-background dark:bg-neutral-text">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium text-gray-900 dark:text-white">
+              <h3 className="font-medium text-neutral-text dark:text-white">
                 {editingId ? "Edit Package" : "Add New Package"}
               </h3>
               <Button type="button" onClick={resetForm} variant="ghost">
@@ -398,10 +400,10 @@ export function CurriculumPackages() {
       {packages.length === 0 && !showAddForm ? (
         <Card className="text-center py-12">
           <div className="text-4xl mb-4">📚</div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+          <h3 className="text-lg font-medium text-neutral-text dark:text-white mb-2">
             No Curriculum Packages Yet
           </h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-4">
+          <p className="text-neutral-textSecondary dark:text-neutral-textTertiary mb-4">
             Track the curriculum products your family uses for homeschooling.
           </p>
           <Button onClick={() => setShowAddForm(true)}>
@@ -424,17 +426,17 @@ export function CurriculumPackages() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-medium text-gray-900 dark:text-white">
+                      <h3 className="font-medium text-neutral-text dark:text-white">
                         {pkg.name}
                       </h3>
                       {!pkg.isActive && (
-                        <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
+                        <span className="px-2 py-0.5 text-xs bg-neutral-backgroundDeep text-neutral-textSecondary rounded">
                           Inactive
                         </span>
                       )}
                     </div>
                     {pkg.publisher && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-neutral-textSecondary dark:text-neutral-textTertiary">
                         by {pkg.publisher}
                       </p>
                     )}
@@ -461,7 +463,7 @@ export function CurriculumPackages() {
                     </div>
 
                     {pkg.notes && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                      <p className="text-sm text-neutral-textSecondary dark:text-neutral-textTertiary mt-2">
                         {pkg.notes}
                       </p>
                     )}

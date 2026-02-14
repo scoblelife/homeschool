@@ -188,7 +188,7 @@ export function CoverageReport({ studentId, gradeLevel }: Props) {
           <h3 className="text-lg font-semibold text-neutral-text mb-4">
             Uncovered Standards ({report.uncoveredStandards.length})
           </h3>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+          <div className="space-y-3">
             {report.uncoveredStandards.map((standard) => (
               <div
                 key={standard.id}

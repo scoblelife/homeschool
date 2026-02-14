@@ -18,7 +18,7 @@ import {
   addDays,
 } from "date-fns";
 import { useStore } from "../stores/useStore";
-import { getStudentColor } from "./Settings";
+import { getStudentColor } from "../utils/studentColors";
 import { AIWeeklySummary } from "../features/aiInsights";
 import type {
   ActivitySummary,
@@ -210,7 +210,7 @@ export default function WeeklySummary(): JSX.Element {
       />
       {isLoading ? (
         <div
-          className="text-center py-12 text-gray-500"
+          className="text-center py-12 text-neutral-textSecondary"
           aria-live="polite"
           aria-busy="true"
         >
@@ -218,7 +218,7 @@ export default function WeeklySummary(): JSX.Element {
         </div>
       ) : students.length === 0 ? (
         <Card className="text-center py-12">
-          <p className="text-gray-500">
+          <p className="text-neutral-textSecondary">
             No students added yet. Add students in Settings to see weekly
             summaries.
           </p>
@@ -227,12 +227,12 @@ export default function WeeklySummary(): JSX.Element {
         <>
           {/* Family Overview */}
           <Card className="mb-8 bg-gradient-to-r from-brand-primaryLight to-student-purple-50 border-brand-primaryLight">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <h2 className="text-lg font-semibold text-neutral-text mb-4">
               Family Overview
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-white/60 rounded-lg p-4 text-center">
-                <div className="text-sm font-medium text-gray-500">
+                <div className="text-sm font-medium text-neutral-textSecondary">
                   Total Activities
                 </div>
                 <div className="text-3xl font-bold text-brand-primary mt-1">
@@ -248,7 +248,7 @@ export default function WeeklySummary(): JSX.Element {
                 </div>
               </div>
               <div className="bg-white/60 rounded-lg p-4 text-center">
-                <div className="text-sm font-medium text-gray-500">
+                <div className="text-sm font-medium text-neutral-textSecondary">
                   Total Hours
                 </div>
                 <div className="text-3xl font-bold text-brand-primary mt-1">
@@ -267,7 +267,7 @@ export default function WeeklySummary(): JSX.Element {
                 </div>
               </div>
               <div className="bg-white/60 rounded-lg p-4 text-center">
-                <div className="text-sm font-medium text-gray-500">
+                <div className="text-sm font-medium text-neutral-textSecondary">
                   Students Active
                 </div>
                 <div className="text-3xl font-bold text-brand-primary mt-1">
@@ -279,7 +279,7 @@ export default function WeeklySummary(): JSX.Element {
                 </div>
               </div>
               <div className="bg-white/60 rounded-lg p-4 text-center">
-                <div className="text-sm font-medium text-gray-500">
+                <div className="text-sm font-medium text-neutral-textSecondary">
                   Avg Per Day
                 </div>
                 <div className="text-3xl font-bold text-brand-primary mt-1">
@@ -307,10 +307,10 @@ export default function WeeklySummary(): JSX.Element {
                       {student.name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-neutral-text">
                         {student.name}
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-neutral-textSecondary">
                         {student.gradeLevel}
                       </p>
                     </div>
@@ -318,22 +318,26 @@ export default function WeeklySummary(): JSX.Element {
 
                   {/* Stats Grid */}
                   <div className="grid grid-cols-3 gap-4 mb-4">
-                    <div className="text-center p-3 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-center p-3 bg-neutral-background rounded-lg">
+                      <div className="text-2xl font-bold text-neutral-text">
                         {current.totalActivities}
                       </div>
-                      <div className="text-xs text-gray-500">Activities</div>
+                      <div className="text-xs text-neutral-textSecondary">
+                        Activities
+                      </div>
                       <div
                         className={`text-xs mt-1 ${getChangeColor(change.activities)}`}
                       >
                         {formatChange(change.activities)}
                       </div>
                     </div>
-                    <div className="text-center p-3 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-center p-3 bg-neutral-background rounded-lg">
+                      <div className="text-2xl font-bold text-neutral-text">
                         {Math.round((current.totalMinutes / 60) * 10) / 10}
                       </div>
-                      <div className="text-xs text-gray-500">Hours</div>
+                      <div className="text-xs text-neutral-textSecondary">
+                        Hours
+                      </div>
                       <div
                         className={`text-xs mt-1 ${getChangeColor(change.minutes)}`}
                       >
@@ -343,11 +347,13 @@ export default function WeeklySummary(): JSX.Element {
                         )}
                       </div>
                     </div>
-                    <div className="text-center p-3 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-center p-3 bg-neutral-background rounded-lg">
+                      <div className="text-2xl font-bold text-neutral-text">
                         {current.activeDays}
                       </div>
-                      <div className="text-xs text-gray-500">Days Active</div>
+                      <div className="text-xs text-neutral-textSecondary">
+                        Days Active
+                      </div>
                       <div
                         className={`text-xs mt-1 ${getChangeColor(change.days)}`}
                       >
@@ -358,7 +364,7 @@ export default function WeeklySummary(): JSX.Element {
 
                   {/* Week Activity Heatmap */}
                   <div className="mb-4">
-                    <div className="text-xs font-medium text-gray-500 mb-2">
+                    <div className="text-xs font-medium text-neutral-textSecondary mb-2">
                       Activity by Day
                     </div>
                     <div className="flex gap-1">
@@ -371,7 +377,7 @@ export default function WeeklySummary(): JSX.Element {
                         const intensity =
                           count === 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : 3;
                         const intensityColors = [
-                          "bg-gray-100",
+                          "bg-neutral-backgroundDeep",
                           "bg-status-successLight",
                           "bg-status-success",
                           "bg-status-successDark",
@@ -386,7 +392,7 @@ export default function WeeklySummary(): JSX.Element {
                             <div
                               className={`h-8 rounded ${intensityColors[intensity]}`}
                             />
-                            <div className="text-xs text-gray-500 mt-1">
+                            <div className="text-xs text-neutral-textSecondary mt-1">
                               {format(day, "EEE")}
                             </div>
                           </div>
@@ -398,7 +404,7 @@ export default function WeeklySummary(): JSX.Element {
                   {/* Subject Breakdown */}
                   {current.activities.length > 0 && (
                     <div>
-                      <div className="text-xs font-medium text-gray-500 mb-2">
+                      <div className="text-xs font-medium text-neutral-textSecondary mb-2">
                         By Subject
                       </div>
                       <div className="space-y-2">
@@ -411,16 +417,16 @@ export default function WeeklySummary(): JSX.Element {
                           return (
                             <div key={activity.subjectId}>
                               <div className="flex justify-between text-xs mb-1">
-                                <span className="font-medium text-gray-700">
+                                <span className="font-medium text-neutral-text">
                                   {activity.subjectName}
                                 </span>
-                                <span className="text-gray-500">
+                                <span className="text-neutral-textSecondary">
                                   {activity.totalActivities} •{" "}
                                   {Math.round(activity.totalMinutes)} min
                                 </span>
                               </div>
                               <div
-                                className="h-1.5 bg-gray-200 rounded-full"
+                                className="h-1.5 bg-neutral-border rounded-full"
                                 role="progressbar"
                                 aria-valuenow={Math.round(percentage)}
                                 aria-valuemin={0}
@@ -440,7 +446,7 @@ export default function WeeklySummary(): JSX.Element {
                   )}
 
                   {current.totalActivities === 0 && (
-                    <p className="text-center text-gray-400 text-sm py-4">
+                    <p className="text-center text-neutral-textTertiary text-sm py-4">
                       No activities this week
                     </p>
                   )}
@@ -471,7 +477,7 @@ export default function WeeklySummary(): JSX.Element {
 
           {/* Combined Subject Breakdown */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <h2 className="text-lg font-semibold text-neutral-text mb-4">
               Subject Distribution (All Students)
             </h2>
             {(() => {
@@ -507,7 +513,7 @@ export default function WeeklySummary(): JSX.Element {
 
               if (sortedSubjects.length === 0) {
                 return (
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-neutral-textSecondary text-sm">
                     No activities recorded this week.
                   </p>
                 );
@@ -523,17 +529,17 @@ export default function WeeklySummary(): JSX.Element {
                     return (
                       <div key={subject.name}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-neutral-text">
                             {subject.name}
                           </span>
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-neutral-textSecondary">
                             {subject.activities} activities •{" "}
                             {Math.round((subject.minutes / 60) * 10) / 10} hrs (
                             {Math.round(percentage)}%)
                           </span>
                         </div>
                         <div
-                          className="w-full bg-gray-200 rounded-full h-2"
+                          className="w-full bg-neutral-border rounded-full h-2"
                           role="progressbar"
                           aria-valuenow={Math.round(percentage)}
                           aria-valuemin={0}
