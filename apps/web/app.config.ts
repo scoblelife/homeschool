@@ -14,5 +14,10 @@ export default defineConfig({
   },
   server: {
     preset: 'node-server',
+    routeRules: {
+      '/ingest/**': {
+        proxy: { to: 'https://us.i.posthog.com/**' },
+      },
+    },
   },
 })

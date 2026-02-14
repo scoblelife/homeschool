@@ -1,5 +1,5 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router'
-import { PostHogProvider } from 'posthog-js/react'
+import { PostHogProvider } from '@posthog/react'
 import appCss from '../styles/globals.css?url'
 
 export const Route = createRootRoute({
@@ -30,7 +30,9 @@ function RootDocument() {
         <PostHogProvider
           apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
           options={{
-            api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
+            api_host: '/ingest',
+            ui_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
+            defaults: '2026-01-30',
             capture_exceptions: true,
           }}
         >

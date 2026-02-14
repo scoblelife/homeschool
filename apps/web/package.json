@@ -14,6 +14,7 @@
     "@homeschool/design-tokens": "workspace:*",
     "@homeschool/shared-types": "workspace:*",
     "@homeschool/ui": "workspace:*",
+    "@posthog/react": "^1.7.1",
     "@tanstack/react-router": "^1.120.3",
     "@tanstack/start": "^1.120.3",
     "clsx": "^2.1.1",

@@ -1,5 +1,5 @@
 import { Input, Select } from '@homeschool/ui'
-import { usePostHog } from 'posthog-js/react'
+import { usePostHog } from '@posthog/react'
 import type { GradeLevel, ActivityType } from '@homeschool/shared-types'
 
 interface PlanFiltersProps {

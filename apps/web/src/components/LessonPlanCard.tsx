@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, Badge } from '@homeschool/ui'
-import { usePostHog } from 'posthog-js/react'
+import { usePostHog } from '@posthog/react'
 import type { LessonPlan } from '@homeschool/shared-types'
 import { VoteButton } from './VoteButton'
 

@@ -1,5 +1,5 @@
 import { Button } from '@homeschool/ui'
-import { usePostHog } from 'posthog-js/react'
+import { usePostHog } from '@posthog/react'
 
 interface VoteButtonProps {
   planId: string
