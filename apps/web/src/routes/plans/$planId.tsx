@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@homeschool/ui'
-import { usePostHog } from '@posthog/react'
+import { usePostHog } from 'posthog-js/react'
 
 export const Route = createFileRoute('/plans/$planId')({
   component: PlanDetailPage,

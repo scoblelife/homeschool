@@ -484,15 +484,12 @@ importers:
       '@homeschool/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@posthog/react':
-        specifier: ^1.7.1
-        version: 1.7.1(@types/react@18.3.28)(posthog-js@1.347.2)(react@19.1.0)
       '@tanstack/react-router':
         specifier: 1.120.20
         version: 1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@tanstack/start':
         specifier: ^1.120.3
-        version: 1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+        version: 1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -516,7 +513,7 @@ importers:
         version: 19.1.0(react@19.1.0)
       vinxi:
         specifier: 0.5.3
-        version: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+        version: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     devDependencies:
       '@types/react':
         specifier: ^18.3.20
@@ -526,7 +523,7 @@ importers:
         version: 18.3.7(@types/react@18.3.28)
       '@vitejs/plugin-react':
         specifier: ^4.4.1
-        version: 4.7.0(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+        version: 4.7.0(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.24(postcss@8.5.6)
@@ -544,7 +541,7 @@ importers:
         version: 5.9.3
       vite-tsconfig-paths:
         specifier: ^6.1.1
-        version: 6.1.1(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+        version: 6.1.1(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
 
   packages/design-tokens:
     devDependencies:
@@ -3213,16 +3210,6 @@ packages:
 
   '@posthog/core@1.22.0':
     resolution: {integrity: sha512-WkmOnq95aAOu6yk6r5LWr5cfXsQdpVbWDCwOxQwxSne8YV6GuZET1ziO5toSQXgrgbdcjrSz2/GopAfiL6iiAA==}
-
-  '@posthog/react@1.7.1':
-    resolution: {integrity: sha512-x2u7zRjsCpZoZUuvaJRgKWMJWbCPmLO49iXjOx9PdgOB/v5jwphZTj9ZmFZWkXgobdjmqQvVtXaLTMxcb0537g==}
-    peerDependencies:
-      '@types/react': '>=16.8.0'
-      posthog-js: '>=1.257.2'
-      react: 19.1.0
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
 
   '@posthog/types@1.347.2':
     resolution: {integrity: sha512-aT+r/7jXOzPmUHO6sutoWzczPcYIZyhmWt1f1OvY4zKC7Pwp/ZsJWKFTxjV02p0PZz96AE83eLTe7w7b6tjhIw==}
@@ -13758,6 +13745,7 @@ snapshots:
       - graphql
       - supports-color
       - utf-8-validate
+    optional: true
 
   '@expo/cli@54.0.23(expo-router@6.0.23)(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))':
     dependencies:
@@ -13890,6 +13878,7 @@ snapshots:
     optionalDependencies:
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0)
+    optional: true
 
   '@expo/devtools@0.1.8(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -13966,7 +13955,7 @@ snapshots:
       postcss: 8.4.49
       resolve-from: 5.0.0
     optionalDependencies:
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -14047,7 +14036,7 @@ snapshots:
       '@expo/json-file': 10.0.8
       '@react-native/normalize-colors': 0.81.5
       debug: 4.4.3
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       resolve-from: 5.0.0
       semver: 7.7.4
       xml2js: 0.6.0
@@ -14069,6 +14058,7 @@ snapshots:
       expo-font: 14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0)
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0)
+    optional: true
 
   '@expo/vector-icons@15.0.3(expo-font@14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -14957,13 +14947,6 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
 
-  '@posthog/react@1.7.1(@types/react@18.3.28)(posthog-js@1.347.2)(react@19.1.0)':
-    dependencies:
-      posthog-js: 1.347.2
-      react: 19.1.0
-    optionalDependencies:
-      '@types/react': 18.3.28
-
   '@posthog/types@1.347.2': {}
 
   '@promptbook/utils@0.69.5':
@@ -15602,6 +15585,7 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0)
     optionalDependencies:
       '@types/react': 18.3.28
+    optional: true
 
   '@react-native/virtualized-lists@0.81.5(@types/react@19.1.17)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -16163,7 +16147,7 @@ snapshots:
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.4.19(tsx@4.21.0)(yaml@2.8.2)
 
-  '@tanstack/directive-functions-plugin@1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
+  '@tanstack/directive-functions-plugin@1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
     dependencies:
       '@babel/code-frame': 7.26.2
       '@babel/core': 7.29.0
@@ -16176,7 +16160,7 @@ snapshots:
       babel-dead-code-elimination: 1.0.12
       dedent: 1.7.1
       tiny-invariant: 1.3.3
-      vite: 6.1.4(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 6.1.4(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -16207,7 +16191,7 @@ snapshots:
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
 
-  '@tanstack/react-start-client@1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
+  '@tanstack/react-start-client@1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
     dependencies:
       '@tanstack/react-router': 1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@tanstack/router-core': 1.120.19
@@ -16218,7 +16202,7 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
-      vinxi: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vinxi: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -16264,7 +16248,7 @@ snapshots:
       - xml2js
       - yaml
 
-  '@tanstack/react-start-plugin@1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
+  '@tanstack/react-start-plugin@1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
     dependencies:
       '@babel/code-frame': 7.26.2
       '@babel/core': 7.29.0
@@ -16276,7 +16260,7 @@ snapshots:
       '@tanstack/router-utils': 1.158.0
       babel-dead-code-elimination: 1.0.12
       tiny-invariant: 1.3.3
-      vite: 6.1.4(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 6.1.4(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -16291,11 +16275,11 @@ snapshots:
       - tsx
       - yaml
 
-  '@tanstack/react-start-router-manifest@1.120.19(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
+  '@tanstack/react-start-router-manifest@1.120.19(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
     dependencies:
       '@tanstack/router-core': 1.120.19
       tiny-invariant: 1.3.3
-      vinxi: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vinxi: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -16384,7 +16368,7 @@ snapshots:
     optionalDependencies:
       '@tanstack/react-router': 1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
-  '@tanstack/router-plugin@1.120.20(@tanstack/react-router@1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))':
+  '@tanstack/router-plugin@1.120.20(@tanstack/react-router@1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-syntax-jsx': 7.28.6(@babel/core@7.29.0)
@@ -16405,7 +16389,7 @@ snapshots:
       zod: 3.25.76
     optionalDependencies:
       '@tanstack/react-router': 1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      vite: 6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -16423,7 +16407,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/server-functions-plugin@1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
+  '@tanstack/server-functions-plugin@1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
     dependencies:
       '@babel/code-frame': 7.26.2
       '@babel/core': 7.29.0
@@ -16432,7 +16416,7 @@ snapshots:
       '@babel/template': 7.28.6
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.0
-      '@tanstack/directive-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/directive-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       babel-dead-code-elimination: 1.0.12
       dedent: 1.7.1
       tiny-invariant: 1.3.3
@@ -16451,11 +16435,11 @@ snapshots:
       - tsx
       - yaml
 
-  '@tanstack/start-api-routes@1.120.19(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
+  '@tanstack/start-api-routes@1.120.19(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
     dependencies:
       '@tanstack/router-core': 1.120.19
       '@tanstack/start-server-core': 1.120.19
-      vinxi: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vinxi: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -16508,22 +16492,22 @@ snapshots:
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
 
-  '@tanstack/start-config@1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
+  '@tanstack/start-config@1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
     dependencies:
       '@tanstack/react-router': 1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@tanstack/react-start-plugin': 1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/react-start-plugin': 1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       '@tanstack/router-generator': 1.120.20(@tanstack/react-router@1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
-      '@tanstack/router-plugin': 1.120.20(@tanstack/react-router@1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
-      '@tanstack/server-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/router-plugin': 1.120.20(@tanstack/react-router@1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+      '@tanstack/server-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       '@tanstack/start-server-functions-handler': 1.120.19
-      '@vitejs/plugin-react': 4.7.0(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+      '@vitejs/plugin-react': 4.7.0(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       import-meta-resolve: 4.2.0
       nitropack: 2.13.1(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)
       ofetch: 1.5.1
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
-      vinxi: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
-      vite: 6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vinxi: 0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       zod: 3.25.76
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -16585,9 +16569,9 @@ snapshots:
       tiny-warning: 1.0.3
       unctx: 2.5.0
 
-  '@tanstack/start-server-functions-client@1.120.19(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
+  '@tanstack/start-server-functions-client@1.120.19(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
     dependencies:
-      '@tanstack/server-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/server-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       '@tanstack/start-server-functions-fetcher': 1.131.50
     transitivePeerDependencies:
       - '@types/node'
@@ -16616,9 +16600,9 @@ snapshots:
       '@tanstack/start-server-core': 1.120.19
       tiny-invariant: 1.3.3
 
-  '@tanstack/start-server-functions-server@1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
+  '@tanstack/start-server-functions-server@1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
     dependencies:
-      '@tanstack/server-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/server-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       tiny-invariant: 1.3.3
     transitivePeerDependencies:
       - '@types/node'
@@ -16635,9 +16619,9 @@ snapshots:
       - tsx
       - yaml
 
-  '@tanstack/start-server-functions-ssr@1.120.19(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
+  '@tanstack/start-server-functions-ssr@1.120.19(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)':
     dependencies:
-      '@tanstack/server-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/server-functions-plugin': 1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       '@tanstack/start-client-core': 1.120.19
       '@tanstack/start-server-core': 1.120.19
       '@tanstack/start-server-functions-fetcher': 1.131.50
@@ -16657,17 +16641,17 @@ snapshots:
       - tsx
       - yaml
 
-  '@tanstack/start@1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
+  '@tanstack/start@1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)':
     dependencies:
-      '@tanstack/react-start-client': 1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
-      '@tanstack/react-start-router-manifest': 1.120.19(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/react-start-client': 1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/react-start-router-manifest': 1.120.19(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       '@tanstack/react-start-server': 1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      '@tanstack/start-api-routes': 1.120.19(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
-      '@tanstack/start-config': 1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
-      '@tanstack/start-server-functions-client': 1.120.19(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/start-api-routes': 1.120.19(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/start-config': 1.120.20(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(terser@5.46.0)(tsx@4.21.0)(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+      '@tanstack/start-server-functions-client': 1.120.19(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       '@tanstack/start-server-functions-handler': 1.120.19
-      '@tanstack/start-server-functions-server': 1.120.17(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
-      '@tanstack/start-server-functions-ssr': 1.120.19(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/start-server-functions-server': 1.120.17(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      '@tanstack/start-server-functions-ssr': 1.120.19(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -17166,18 +17150,6 @@ snapshots:
       '@types/babel__core': 7.20.5
       react-refresh: 0.17.0
       vite: 5.4.21(@types/node@20.19.33)(lightningcss@1.31.1)(terser@5.46.0)
-    transitivePeerDependencies:
-      - supports-color
-
-  '@vitejs/plugin-react@4.7.0(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))':
-    dependencies:
-      '@babel/core': 7.29.0
-      '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.29.0)
-      '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.29.0)
-      '@rolldown/pluginutils': 1.0.0-beta.27
-      '@types/babel__core': 7.20.5
-      react-refresh: 0.17.0
-      vite: 6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -17895,7 +17867,7 @@ snapshots:
       resolve-from: 5.0.0
     optionalDependencies:
       '@babel/runtime': 7.28.6
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
     transitivePeerDependencies:
       - '@babel/core'
       - supports-color
@@ -19742,6 +19714,7 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0)
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   expo-asset@12.0.12(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -19776,6 +19749,7 @@ snapshots:
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0)
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   expo-constants@18.0.13(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)):
     dependencies:
@@ -19826,6 +19800,7 @@ snapshots:
     dependencies:
       expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0)
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0)
+    optional: true
 
   expo-file-system@19.0.21(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)):
     dependencies:
@@ -19838,6 +19813,7 @@ snapshots:
       fontfaceobserver: 2.3.0
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0)
+    optional: true
 
   expo-font@14.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -19854,7 +19830,7 @@ snapshots:
 
   expo-keep-awake@15.0.8(expo@54.0.33)(react@19.1.0):
     dependencies:
-      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0)
+      expo: 54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       react: 19.1.0
 
   expo-linking@8.0.11(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0):
@@ -19899,6 +19875,7 @@ snapshots:
       invariant: 2.2.4
       react: 19.1.0
       react-native: 0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0)
+    optional: true
 
   expo-modules-core@3.0.29(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -20107,6 +20084,7 @@ snapshots:
       - graphql
       - supports-color
       - utf-8-validate
+    optional: true
 
   expo@54.0.33(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -24270,6 +24248,7 @@ snapshots:
       - bufferutil
       - supports-color
       - utf-8-validate
+    optional: true
 
   react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0):
     dependencies:
@@ -26126,7 +26105,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vinxi@0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
+  vinxi@0.5.3(@types/node@22.19.11)(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0))(encoding@0.1.13)(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-syntax-jsx': 7.28.6(@babel/core@7.29.0)
@@ -26160,7 +26139,7 @@ snapshots:
       unctx: 2.5.0
       unenv: 1.10.0
       unstorage: 1.17.4(db0@0.3.4(drizzle-orm@0.44.7(@libsql/client-wasm@0.17.0)(@opentelemetry/api@1.9.0)(@types/sql.js@1.4.9)(expo-sqlite@16.0.10(expo@54.0.33)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@18.3.28)(react@19.1.0))(react@19.1.0))(postgres@3.4.8)(sql.js@1.13.0)))(ioredis@5.9.2)
-      vite: 6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
       zod: 3.25.76
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -26207,12 +26186,12 @@ snapshots:
       - xml2js
       - yaml
 
-  vite-tsconfig-paths@6.1.1(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)):
+  vite-tsconfig-paths@6.1.1(typescript@5.9.3)(vite@6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)):
     dependencies:
       debug: 4.4.3
       globrex: 0.1.2
       tsconfck: 3.1.6(typescript@5.9.3)
-      vite: 6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite: 6.4.1(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -26228,7 +26207,7 @@ snapshots:
       lightningcss: 1.31.1
       terser: 5.46.0
 
-  vite@6.1.4(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
+  vite@6.1.4(@types/node@22.19.11)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:
       esbuild: 0.24.2
       postcss: 8.5.6
@@ -26236,24 +26215,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 22.19.11
       fsevents: 2.3.3
-      jiti: 1.21.7
-      lightningcss: 1.31.1
-      terser: 5.46.0
-      tsx: 4.21.0
-      yaml: 2.8.2
-
-  vite@6.4.1(@types/node@22.19.11)(jiti@1.21.7)(lightningcss@1.31.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
-    dependencies:
-      esbuild: 0.25.12
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
-      postcss: 8.5.6
-      rollup: 4.57.1
-      tinyglobby: 0.2.15
-    optionalDependencies:
-      '@types/node': 22.19.11
-      fsevents: 2.3.3
-      jiti: 1.21.7
+      jiti: 2.6.1
       lightningcss: 1.31.1
       terser: 5.46.0
       tsx: 4.21.0

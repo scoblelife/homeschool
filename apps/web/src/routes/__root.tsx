@@ -1,5 +1,5 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router'
-import { PostHogProvider } from '@posthog/react'
+import { PostHogProvider } from 'posthog-js/react'
 import appCss from '../styles/globals.css?url'
 
 export const Route = createRootRoute({
