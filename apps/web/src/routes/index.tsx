@@ -181,7 +181,6 @@ const CAPABILITIES = [
   'Set and track learning milestones',
   'Keep a reading library with page-level progress',
   'Works offline, syncs across devices',
-  'Nevada homeschool compliance ready',
 ] as const
 
 function CapabilitiesSection() {
