@@ -1,7 +1,7 @@
 # Multi-stage build for minimal image size
 
 # Build stage
-FROM rust:1.83-alpine AS builder
+FROM rust:1.88-alpine AS builder
 
 # Install build dependencies
 RUN apk add --no-cache musl-dev protobuf-dev
