@@ -36,7 +36,7 @@ function HeroSection() {
           </div>
           <div className="flex-shrink-0">
             <PhoneFrame
-              src="/screenshots/01-today.png"
+              src="/screenshots/01-today.webp"
               alt="Homeschool app dashboard showing daily activities, upcoming events, and milestone progress"
             />
           </div>
@@ -111,7 +111,7 @@ function FeatureShowcase() {
         <FeatureRow
           title="Log activities in seconds"
           description="Tap to log worksheets, videos, reading, writing, and hands-on work. Quick Repeat lets you re-log yesterday's favorites with one tap. Track both kids at once."
-          screenshot="/screenshots/02-log.png"
+          screenshot="/screenshots/02-log.webp"
           alt="Activity logging screen with quick-repeat cards and student tabs"
           reverse={true}
         />
@@ -120,7 +120,7 @@ function FeatureShowcase() {
         <FeatureRow
           title="See their progress at a glance"
           description="Weekly wins show what you accomplished. Subject breakdowns and milestone progress bars help you see where things stand without digging through records."
-          screenshot="/screenshots/03-progress.png"
+          screenshot="/screenshots/03-progress.webp"
           alt="Progress screen showing weekly wins, milestone progress, and subject breakdown"
           reverse={false}
         />
@@ -129,7 +129,7 @@ function FeatureShowcase() {
         <FeatureRow
           title="Track their reading journey"
           description="Keep a running library of everything they read. Track page progress, mark grade levels, and search or filter to find any book."
-          screenshot="/screenshots/04-library.png"
+          screenshot="/screenshots/04-library.webp"
           alt="Book library with reading progress bars, search, and filters"
           reverse={true}
         />
@@ -138,7 +138,7 @@ function FeatureShowcase() {
         <FeatureRow
           title="Set goals and celebrate wins"
           description="Define milestones with star ratings and target dates. Watch status badges update as your kids work toward their goals."
-          screenshot="/screenshots/05-milestones.png"
+          screenshot="/screenshots/05-milestones.webp"
           alt="Milestones list with star ratings, status badges, and descriptions"
           reverse={false}
         />
