@@ -119,9 +119,8 @@ ESLint enforces: `no-hardcoded-colors`, `require-design-system-components`, `no-
 
 - `build.yml` — Desktop builds on `v*` tags (Mac/Win/Linux)
 - `mobile-build.yml` — Mobile builds on `apps/mobile/**` changes
-- `web-deploy.yml` — Railway deploy on `apps/web/**` or `packages/**` changes
 - `typecheck.yml` — Full typecheck on all PRs
 
 ## Deployment
 
-All on Railway: signaling (`signaling/railway.toml`), web (`apps/web/railway.toml`), relay (`apps/relay/railway.toml`).
+All on Railway with GitHub service auto-deploy: signaling (`signaling/railway.toml`), web (`apps/web/railway.toml`), relay (`apps/relay/railway.toml`).
