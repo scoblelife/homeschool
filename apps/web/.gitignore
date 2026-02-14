@@ -1,1 +1,4 @@
 .env
+.output/
+.vinxi/
+app.config.timestamp_*
