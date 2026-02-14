@@ -1,18 +1,18 @@
 name: Mobile Build
 
-# Builds run locally on Depot/GitHub runners — zero EAS build credits consumed.
-# EAS is only used for credential management and store submission.
+# Two build strategies:
+#   --local (default): Builds on CI runner — zero EAS credits consumed
+#   EAS cloud: Builds on EAS servers — uses credits but more reliable
 #
 # Runner strategy:
-#   - Type check + Android build: Depot Linux (fast, $0.004/min)
-#   - iOS build: GitHub macOS (has Xcode, free tier)
-#     → Switch to depot-macos-latest if on Depot Startup plan for 2x speed
-#   - Store submission: Depot Linux (just uploads to EAS)
+#   - Type check + Android local build: Depot Linux
+#   - iOS local build: GitHub macOS (has Xcode)
+#   - EAS cloud builds + store submission: Depot Linux (just triggers EAS)
 #
 # Setup required:
-#   1. Connect GitHub org to Depot: https://depot.dev/docs/github-actions/quickstart
-#   2. Set EXPO_TOKEN secret in GitHub repo settings
-#   3. Run `eas credentials` locally once to set up signing credentials
+#   1. Set EXPO_TOKEN secret in GitHub repo settings
+#   2. Run `eas credentials` locally once to set up signing credentials
+#   3. For Play Store: upload service account JSON to EAS secrets
 
 on:
   push:
@@ -47,6 +47,14 @@ on:
           - development
           - preview
           - production
+      build_mode:
+        description: 'Build mode'
+        required: true
+        default: 'local'
+        type: choice
+        options:
+          - local
+          - cloud
       submit:
         description: 'Submit to stores after build'
         required: false
@@ -57,10 +65,11 @@ env:
   NODE_VERSION: '20'
   JAVA_VERSION: '17'
   BUILD_PROFILE: ${{ github.event.inputs.profile || 'preview' }}
+  BUILD_MODE: ${{ github.event.inputs.build_mode || 'local' }}
 
 jobs:
   # ──────────────────────────────────────────────────
-  # Type check (runs on every push + PR, no EAS needed)
+  # Type check (runs on every push + PR)
   # ──────────────────────────────────────────────────
   typecheck:
     runs-on: depot-ubuntu-latest
@@ -68,8 +77,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
@@ -80,12 +87,14 @@ jobs:
       - run: pnpm --filter @homeschool/mobile typecheck
 
   # ──────────────────────────────────────────────────
-  # Android build — Depot Linux, eas build --local
+  # Android build — local on Depot Linux
   # ──────────────────────────────────────────────────
-  build-android:
+  build-android-local:
     if: |
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_dispatch' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
+      (
+        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+        (github.event_name == 'workflow_dispatch' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
+      ) && (github.event.inputs.build_mode || 'local') == 'local'
     needs: typecheck
     runs-on: depot-ubuntu-latest
     defaults:
@@ -95,8 +104,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
@@ -116,25 +123,33 @@ jobs:
       - run: pnpm install --frozen-lockfile
         working-directory: .
 
-      - name: Build Android locally
-        run: eas build --platform android --profile ${{ env.BUILD_PROFILE }} --local --non-interactive --output ./build-android.apk
+      - name: Build Android (APK for preview, AAB for production)
+        run: |
+          if [ "$BUILD_PROFILE" = "production" ]; then
+            eas build --platform android --profile $BUILD_PROFILE --local --non-interactive --output ./build-android.aab
+          else
+            eas build --platform android --profile $BUILD_PROFILE --local --non-interactive --output ./build-android.apk
+          fi
         env:
           HYPERSWARM_NATIVE: '0'
 
       - uses: actions/upload-artifact@v4
         with:
           name: android-${{ env.BUILD_PROFILE }}
-          path: apps/mobile/build-android.apk
+          path: |
+            apps/mobile/build-android.apk
+            apps/mobile/build-android.aab
+          if-no-files-found: error
 
   # ──────────────────────────────────────────────────
-  # iOS build — macOS runner, eas build --local
-  # Uses GitHub macOS (free tier, has Xcode).
-  # For faster builds, switch to: depot-macos-latest
+  # iOS build — local on macOS runner
   # ──────────────────────────────────────────────────
-  build-ios:
+  build-ios-local:
     if: |
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_dispatch' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'))
+      (
+        (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+        (github.event_name == 'workflow_dispatch' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'))
+      ) && (github.event.inputs.build_mode || 'local') == 'local'
     needs: typecheck
     runs-on: macos-latest
     defaults:
@@ -144,8 +159,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
@@ -171,18 +184,68 @@ jobs:
           path: apps/mobile/build-ios.ipa
 
   # ──────────────────────────────────────────────────
-  # Store submission — EAS only (what only Expo can do)
-  # Downloads built artifacts and submits via eas submit
+  # EAS cloud builds — triggers builds on EAS servers
+  # More reliable, uses EAS build credits
   # ──────────────────────────────────────────────────
-  submit-ios:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.submit == 'true' && (github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all')
-    needs: build-ios
+  build-cloud:
+    if: |
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.build_mode == 'cloud'
+    needs: typecheck
     runs-on: depot-ubuntu-latest
     defaults:
       run:
         working-directory: apps/mobile
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: .
+
+      - name: Determine platforms
+        id: platforms
+        run: |
+          PLATFORM="${{ github.event.inputs.platform }}"
+          if [ "$PLATFORM" = "all" ]; then
+            echo "flags=--platform all" >> $GITHUB_OUTPUT
+          else
+            echo "flags=--platform $PLATFORM" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build on EAS
+        run: eas build ${{ steps.platforms.outputs.flags }} --profile ${{ env.BUILD_PROFILE }} --non-interactive --no-wait
+        env:
+          HYPERSWARM_NATIVE: '0'
+
+  # ──────────────────────────────────────────────────
+  # Submit iOS to App Store / TestFlight
+  # ──────────────────────────────────────────────────
+  submit-ios:
+    if: |
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.submit == 'true' &&
+      (github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all')
+    needs: build-ios-local
+    runs-on: depot-ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
         with:
@@ -198,18 +261,26 @@ jobs:
           name: ios-${{ env.BUILD_PROFILE }}
           path: apps/mobile/
 
-      - name: Submit to TestFlight
-        run: eas submit --platform ios --path ./build-ios.ipa --non-interactive
+      - name: Submit to App Store Connect
+        run: eas submit --platform ios --path ./build-ios.ipa --profile ${{ env.BUILD_PROFILE }} --non-interactive
 
+  # ──────────────────────────────────────────────────
+  # Submit Android to Google Play
+  # ──────────────────────────────────────────────────
   submit-android:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.submit == 'true' && (github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all')
-    needs: build-android
+    if: |
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.submit == 'true' &&
+      (github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all')
+    needs: build-android-local
     runs-on: depot-ubuntu-latest
     defaults:
       run:
         working-directory: apps/mobile
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
         with:
@@ -225,5 +296,10 @@ jobs:
           name: android-${{ env.BUILD_PROFILE }}
           path: apps/mobile/
 
-      - name: Submit to Play Store
-        run: eas submit --platform android --path ./build-android.apk --non-interactive
+      - name: Submit to Google Play
+        run: |
+          if [ -f ./build-android.aab ]; then
+            eas submit --platform android --path ./build-android.aab --profile ${{ env.BUILD_PROFILE }} --non-interactive
+          else
+            eas submit --platform android --path ./build-android.apk --profile ${{ env.BUILD_PROFILE }} --non-interactive
+          fi
