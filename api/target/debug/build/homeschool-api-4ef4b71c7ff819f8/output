@@ -1,6 +1,0 @@
-cargo:rerun-if-changed=../proto/homeschool/v1/common.proto
-cargo:rerun-if-changed=../proto/homeschool/v1/auth.proto
-cargo:rerun-if-changed=../proto/homeschool/v1/lesson_plans.proto
-cargo:rerun-if-changed=../proto/homeschool/v1/moderation.proto
-cargo:rerun-if-changed=../proto/homeschool/v1/social.proto
-cargo:rerun-if-changed=../proto

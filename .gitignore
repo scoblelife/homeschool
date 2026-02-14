@@ -35,6 +35,8 @@ play-store-service-account.json
 # Convex deployment state (contains deployment-specific URLs)
 .convex/deployment_url
 native/hyperswarm-mobile/target/
+api/target/
+signaling/target/
 
 *storybook.log
 storybook-static

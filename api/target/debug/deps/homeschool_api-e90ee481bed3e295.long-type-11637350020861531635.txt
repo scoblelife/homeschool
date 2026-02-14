@@ -1,3 +1,0 @@
-ResponseBody<http_body_util::combinators::box_body::UnsyncBoxBody<prost::bytes::Bytes, Status>, GrpcEosErrorsAsFailures>
-ResponseBody<http_body_util::combinators::box_body::UnsyncBoxBody<prost::bytes::Bytes, Status>, GrpcEosErrorsAsFailures>: Default
-Service<axum::http::Request<http_body_util::combinators::box_body::UnsyncBoxBody<prost::bytes::Bytes, Status>>>
