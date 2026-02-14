@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package homeschool.v1;
+
+import "homeschool/v1/common.proto";
+
+service LessonPlanService {
+  rpc ListPlans(ListPlansRequest) returns (ListPlansResponse);
+  rpc GetPlan(GetPlanRequest) returns (LessonPlan);
+  rpc CreatePlan(CreatePlanRequest) returns (LessonPlan);
+  rpc UpdatePlan(UpdatePlanRequest) returns (LessonPlan);
+  rpc DeletePlan(DeletePlanRequest) returns (Empty);
+  rpc PublishPlan(PublishPlanRequest) returns (PublishPlanResponse);
+  rpc ForkPlan(ForkPlanRequest) returns (LessonPlan);
+  rpc ListFamilyPlans(ListFamilyPlansRequest) returns (ListPlansResponse);
+  rpc FlagPlan(FlagPlanRequest) returns (Empty);
+}
+
+enum PlanScope {
+  PLAN_SCOPE_FAMILY = 0;
+  PLAN_SCOPE_COMMUNITY = 1;
+}
+
+enum QuarantineStatus {
+  QUARANTINE_PENDING = 0;
+  QUARANTINE_APPROVED = 1;
+  QUARANTINE_REJECTED = 2;
+}
+
+enum PlanStatus {
+  PLAN_DRAFT = 0;
+  PLAN_PUBLISHED = 1;
+  PLAN_ARCHIVED = 2;
+  PLAN_FLAGGED = 3;
+  PLAN_REMOVED = 4;
+}
+
+message LessonPlan {
+  string id = 1;
+  string author_id = 2;
+  string title = 3;
+  string description = 4;
+  string grade_level = 5;
+  string subject = 6;
+  string activity_type = 7;
+  int32 duration_minutes = 8;
+  repeated string materials = 9;
+  string instructions = 10;
+  repeated string objectives = 11;
+  PlanStatus status = 12;
+  PlanScope scope = 13;
+  QuarantineStatus quarantine_status = 14;
+  int32 vote_count = 15;
+  int32 view_count = 16;
+  int32 fork_count = 17;
+  optional string forked_from_id = 18;
+  optional string family_id = 19;
+  string created_at = 20;
+  string updated_at = 21;
+}
+
+message ListPlansRequest {
+  optional string subject = 1;
+  optional string grade_level = 2;
+  optional string activity_type = 3;
+  optional string sort_by = 4;
+  optional string cursor = 5;
+  int32 limit = 6;
+}
+
+message ListPlansResponse {
+  repeated LessonPlan plans = 1;
+  optional string next_cursor = 2;
+  int32 total_count = 3;
+}
+
+message GetPlanRequest {
+  string id = 1;
+}
+
+message CreatePlanRequest {
+  string title = 1;
+  string description = 2;
+  string grade_level = 3;
+  string subject = 4;
+  string activity_type = 5;
+  int32 duration_minutes = 6;
+  repeated string materials = 7;
+  string instructions = 8;
+  repeated string objectives = 9;
+  PlanScope scope = 10;
+}
+
+message UpdatePlanRequest {
+  string id = 1;
+  optional string title = 2;
+  optional string description = 3;
+  optional string grade_level = 4;
+  optional string subject = 5;
+  optional string activity_type = 6;
+  optional int32 duration_minutes = 7;
+  repeated string materials = 8;
+  optional string instructions = 9;
+  repeated string objectives = 10;
+}
+
+message DeletePlanRequest {
+  string id = 1;
+}
+
+message PublishPlanRequest {
+  string id = 1;
+}
+
+message PublishPlanResponse {
+  LessonPlan plan = 1;
+  QuarantineStatus quarantine_status = 2;
+  string message = 3;
+}
+
+message ForkPlanRequest {
+  string id = 1;
+}
+
+message ListFamilyPlansRequest {
+  optional string cursor = 1;
+  int32 limit = 2;
+}
+
+message FlagPlanRequest {
+  string id = 1;
+  string reason = 2;
+}

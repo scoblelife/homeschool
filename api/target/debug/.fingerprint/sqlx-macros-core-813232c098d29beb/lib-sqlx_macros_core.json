@@ -1,0 +1,36 @@
+{
+  "rustc": 12211934750107851607,
+  "features": "[\"_rt-tokio\", \"_tls-rustls-ring-webpki\", \"chrono\", \"default\", \"derive\", \"json\", \"macros\", \"migrate\", \"postgres\", \"sqlx-postgres\", \"tokio\", \"uuid\"]",
+  "declared_features": "[\"_rt-async-std\", \"_rt-tokio\", \"_sqlite\", \"_tls-native-tls\", \"_tls-rustls-aws-lc-rs\", \"_tls-rustls-ring-native-roots\", \"_tls-rustls-ring-webpki\", \"async-std\", \"bigdecimal\", \"bit-vec\", \"chrono\", \"default\", \"derive\", \"ipnet\", \"ipnetwork\", \"json\", \"mac_address\", \"macros\", \"migrate\", \"mysql\", \"postgres\", \"rust_decimal\", \"sqlite\", \"sqlite-unbundled\", \"sqlx-mysql\", \"sqlx-postgres\", \"sqlx-sqlite\", \"time\", \"tokio\", \"uuid\"]",
+  "target": 961973412475639632,
+  "profile": 12675354917325698667,
+  "path": 1052988813933666825,
+  "deps": [
+    [530211389790465181, "hex", false, 10678605359156382533],
+    [1528297757488249563, "url", false, 14937864672186988181],
+    [3405707034081185165, "dotenvy", false, 3873582587599296590],
+    [3722963349756955755, "once_cell", false, 9967855994037129640],
+    [3890005768372083955, "sqlx_postgres", false, 7697807410081042131],
+    [4289358735036141001, "proc_macro2", false, 8043208158006284704],
+    [6100504282945712449, "quote", false, 1107673971032934102],
+    [9857275760291862238, "sha2", false, 2101899859670345922],
+    [10776111606377762245, "sqlx_core", false, 8387328586305574800],
+    [12170264697963848012, "either", false, 13885818947688686603],
+    [12891030758458664808, "tokio", false, 14423460957910053836],
+    [13077543566650298139, "heck", false, 6838537850795438578],
+    [13548984313718623784, "serde", false, 10418400243666291347],
+    [13795362694956882968, "serde_json", false, 4057111957645770002],
+    [16481788516996869299, "syn", false, 15501060935977066022]
+  ],
+  "local": [
+    {
+      "CheckDepInfo": {
+        "dep_info": "debug/.fingerprint/sqlx-macros-core-813232c098d29beb/dep-lib-sqlx_macros_core",
+        "checksum": false
+      }
+    }
+  ],
+  "rustflags": [],
+  "config": 2069994364910194474,
+  "compile_kind": 0
+}

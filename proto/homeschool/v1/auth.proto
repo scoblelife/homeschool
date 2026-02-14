@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package homeschool.v1;
+
+service AuthService {
+  rpc Register(RegisterRequest) returns (AuthResponse);
+  rpc Login(LoginRequest) returns (AuthResponse);
+  rpc RefreshToken(RefreshRequest) returns (AuthResponse);
+  rpc GetMe(GetMeRequest) returns (UserProfile);
+}
+
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  string display_name = 3;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message RefreshRequest {
+  string refresh_token = 1;
+}
+
+message GetMeRequest {}
+
+message AuthResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  UserProfile user = 3;
+}
+
+message UserProfile {
+  string id = 1;
+  string display_name = 2;
+  string email = 3;
+  bool is_verified = 4;
+  bool is_moderator = 5;
+  bool is_banned = 6;
+  optional string family_id = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}

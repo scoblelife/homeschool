@@ -1,0 +1,11 @@
+/Users/sscoble/Projects/homeschool/api/target/debug/deps/tonic_web-1f1578dfd6f0bb80.d: /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/lib.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/call.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/client.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/layer.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/service.rs
+
+/Users/sscoble/Projects/homeschool/api/target/debug/deps/libtonic_web-1f1578dfd6f0bb80.rlib: /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/lib.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/call.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/client.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/layer.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/service.rs
+
+/Users/sscoble/Projects/homeschool/api/target/debug/deps/libtonic_web-1f1578dfd6f0bb80.rmeta: /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/lib.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/call.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/client.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/layer.rs /Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/service.rs
+
+/Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/lib.rs:
+/Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/call.rs:
+/Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/client.rs:
+/Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/layer.rs:
+/Users/sscoble/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tonic-web-0.12.3/src/service.rs:

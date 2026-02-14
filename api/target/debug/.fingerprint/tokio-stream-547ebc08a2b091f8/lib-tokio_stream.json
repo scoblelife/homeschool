@@ -1,0 +1,24 @@
+{
+  "rustc": 12211934750107851607,
+  "features": "[\"default\", \"fs\", \"net\", \"time\"]",
+  "declared_features": "[\"default\", \"fs\", \"full\", \"io-util\", \"net\", \"signal\", \"sync\", \"time\", \"tokio-util\"]",
+  "target": 13526430384360234991,
+  "profile": 5925448066594685647,
+  "path": 17134330541301207186,
+  "deps": [
+    [1906322745568073236, "pin_project_lite", false, 7217445897972062321],
+    [7620660491849607393, "futures_core", false, 3531033144714042404],
+    [12891030758458664808, "tokio", false, 12674342805443269770]
+  ],
+  "local": [
+    {
+      "CheckDepInfo": {
+        "dep_info": "debug/.fingerprint/tokio-stream-547ebc08a2b091f8/dep-lib-tokio_stream",
+        "checksum": false
+      }
+    }
+  ],
+  "rustflags": [],
+  "config": 2069994364910194474,
+  "compile_kind": 0
+}

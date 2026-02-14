@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package homeschool.v1;
+
+import "homeschool/v1/common.proto";
+
+service SocialService {
+  rpc ToggleVote(ToggleVoteRequest) returns (VoteResponse);
+  rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse);
+  rpc CreateComment(CreateCommentRequest) returns (Comment);
+  rpc DeleteComment(DeleteCommentRequest) returns (Empty);
+  rpc ListTags(ListTagsRequest) returns (ListTagsResponse);
+  rpc AddTags(AddTagsRequest) returns (Empty);
+  rpc ListCollections(ListCollectionsRequest) returns (ListCollectionsResponse);
+  rpc CreateCollection(CreateCollectionRequest) returns (Collection);
+  rpc AddToCollection(AddToCollectionRequest) returns (Empty);
+}
+
+message ToggleVoteRequest {
+  string lesson_plan_id = 1;
+}
+
+message VoteResponse {
+  bool voted = 1;
+  int32 vote_count = 2;
+}
+
+message ListCommentsRequest {
+  string lesson_plan_id = 1;
+}
+
+message ListCommentsResponse {
+  repeated Comment comments = 1;
+}
+
+message Comment {
+  string id = 1;
+  string user_id = 2;
+  string lesson_plan_id = 3;
+  optional string parent_comment_id = 4;
+  string content = 5;
+  string author_display_name = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message CreateCommentRequest {
+  string lesson_plan_id = 1;
+  optional string parent_comment_id = 2;
+  string content = 3;
+}
+
+message DeleteCommentRequest {
+  string id = 1;
+}
+
+message Tag {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  int32 usage_count = 4;
+  string created_at = 5;
+}
+
+message ListTagsRequest {
+  optional string query = 1;
+}
+
+message ListTagsResponse {
+  repeated Tag tags = 1;
+}
+
+message AddTagsRequest {
+  string lesson_plan_id = 1;
+  repeated string tag_names = 2;
+}
+
+message Collection {
+  string id = 1;
+  string user_id = 2;
+  string name = 3;
+  optional string description = 4;
+  bool is_public = 5;
+  int32 item_count = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message ListCollectionsRequest {
+  optional string user_id = 1;
+}
+
+message ListCollectionsResponse {
+  repeated Collection collections = 1;
+}
+
+message CreateCollectionRequest {
+  string name = 1;
+  optional string description = 2;
+  bool is_public = 3;
+}
+
+message AddToCollectionRequest {
+  string collection_id = 1;
+  string lesson_plan_id = 2;
+}

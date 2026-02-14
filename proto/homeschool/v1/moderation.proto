@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package homeschool.v1;
+
+service ModerationService {
+  rpc ListQueue(ListQueueRequest) returns (ListQueueResponse);
+  rpc ResolveItem(ResolveItemRequest) returns (ModerationQueueItem);
+  rpc ListCriteria(ListCriteriaRequest) returns (ListCriteriaResponse);
+  rpc CreateCriterion(CreateCriterionRequest) returns (ModerationCriterion);
+  rpc UpdateCriterion(UpdateCriterionRequest) returns (ModerationCriterion);
+  rpc RerunModeration(RerunModerationRequest) returns (ModerationResult);
+}
+
+enum EvaluationType {
+  EVALUATION_AUTO = 0;
+  EVALUATION_MANUAL = 1;
+}
+
+message ModerationQueueItem {
+  string id = 1;
+  string content_type = 2;
+  string content_id = 3;
+  optional string reported_by = 4;
+  optional string reason = 5;
+  bool auto_flagged = 6;
+  optional string moderator_id = 7;
+  optional string resolution = 8;
+  optional string resolved_at = 9;
+  string created_at = 10;
+}
+
+message ModerationCriterion {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  bool is_active = 4;
+  EvaluationType evaluation_type = 5;
+  int32 evaluation_order = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message ModerationResult {
+  string lesson_plan_id = 1;
+  bool all_passed = 2;
+  repeated CriterionResultMessage results = 3;
+}
+
+message CriterionResultMessage {
+  string criterion_id = 1;
+  string criterion_name = 2;
+  bool passed = 3;
+  optional string reason = 4;
+}
+
+message ListQueueRequest {
+  optional string status = 1;
+  optional string cursor = 2;
+  int32 limit = 3;
+}
+
+message ListQueueResponse {
+  repeated ModerationQueueItem items = 1;
+  optional string next_cursor = 2;
+  int32 total_count = 3;
+}
+
+message ResolveItemRequest {
+  string id = 1;
+  string resolution = 2;
+  optional string reason = 3;
+}
+
+message ListCriteriaRequest {}
+
+message ListCriteriaResponse {
+  repeated ModerationCriterion criteria = 1;
+}
+
+message CreateCriterionRequest {
+  string name = 1;
+  string description = 2;
+  EvaluationType evaluation_type = 3;
+  int32 evaluation_order = 4;
+}
+
+message UpdateCriterionRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string description = 3;
+  optional bool is_active = 4;
+  optional int32 evaluation_order = 5;
+}
+
+message RerunModerationRequest {
+  string lesson_plan_id = 1;
+}
