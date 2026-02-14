@@ -20,7 +20,8 @@ export type AnalyticsEvent =
   | "sync_connected"
   | "sync_disconnected"
   | "onboarding_started"
-  | "onboarding_completed";
+  | "onboarding_completed"
+  | "demo_data_loaded";
 
 interface EventData {
   event: AnalyticsEvent;

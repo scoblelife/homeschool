@@ -8,14 +8,21 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native'
 import { useRouter, Href } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { createStudent } from '../../src/database'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { createStudent, getStudents } from '../../src/database'
+import { seedDemoData } from '../../src/database/seedDemoData'
 import { useStore } from '../../src/stores/useStore'
 import type { GradeLevel } from '../../src/types'
 import { analytics } from '../../src/analytics'
 import { useColors } from '../../src/theme/createStyles'
+import { DatePicker } from '../../src/components/ui'
+
+const isDemoDataAllowed = __DEV__ || process.env.EXPO_PUBLIC_DEMO_DATA === '1'
+const ONBOARDING_COMPLETE_KEY = '@homeschool/onboarding_complete'
 
 const COLORS = [
   { name: 'Fuchsia', value: '#d946ef' },
@@ -45,6 +52,7 @@ const GRADE_LEVELS: { value: string; label: string }[] = [
 
 interface StudentForm {
   name: string
+  dateOfBirth: string
   gradeLevel: string
   color: string
 }
@@ -52,18 +60,18 @@ interface StudentForm {
 export default function OnboardingStudents() {
   const router = useRouter()
   const insets = useSafeAreaInsets()
-  const { setStudents, setSelectedStudentId } = useStore()
+  const { setStudents, setSelectedStudentId, setOnboardingComplete } = useStore()
   const themed = useThemedStyles()
 
   const [students, setLocalStudents] = useState<StudentForm[]>([
-    { name: '', gradeLevel: '', color: COLORS[0].value },
+    { name: '', dateOfBirth: '', gradeLevel: '', color: COLORS[0].value },
   ])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const addStudent = () => {
     const nextColor = COLORS[students.length % COLORS.length].value
-    setLocalStudents([...students, { name: '', gradeLevel: '', color: nextColor }])
+    setLocalStudents([...students, { name: '', dateOfBirth: '', gradeLevel: '', color: nextColor }])
   }
 
   const removeStudent = (index: number) => {
@@ -78,11 +86,37 @@ export default function OnboardingStudents() {
     setLocalStudents(updated)
   }
 
+  const handleDemoData = async () => {
+    setIsSubmitting(true)
+    setError(null)
+
+    try {
+      await seedDemoData({ skipExistingCheck: true })
+      const studentsData = await getStudents()
+      setStudents(studentsData)
+      if (studentsData.length > 0) {
+        setSelectedStudentId(studentsData[0].id)
+      }
+
+      analytics.track('demo_data_loaded', { source: 'onboarding' })
+
+      // Mark onboarding complete and go straight to main app
+      await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, 'true')
+      setOnboardingComplete(true)
+      router.replace('/(tabs)' as Href)
+    } catch (err) {
+      console.error('[Onboarding] Failed to seed demo data:', err)
+      setError(String(err))
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   const handleSubmit = async () => {
-    const validStudents = students.filter((s) => s.name.trim() && s.gradeLevel)
+    const validStudents = students.filter((s) => s.name.trim() && s.gradeLevel && s.dateOfBirth)
 
     if (validStudents.length === 0) {
-      setError('Please add at least one student with a name and grade level')
+      setError('Please add at least one student with a name, date of birth, and grade level')
       return
     }
 
@@ -94,7 +128,7 @@ export default function OnboardingStudents() {
       for (const student of validStudents) {
         const created = await createStudent({
           name: student.name.trim(),
-          dateOfBirth: '', // Optional, can be set later in settings
+          dateOfBirth: student.dateOfBirth,
           gradeLevel: student.gradeLevel as GradeLevel,
           color: student.color,
         })
@@ -136,6 +170,27 @@ export default function OnboardingStudents() {
           Who will you be tracking? You can always add more later.
         </Text>
 
+        {isDemoDataAllowed && (
+          <TouchableOpacity
+            style={themed.demoButton}
+            onPress={() => {
+              Alert.alert(
+                'Load Demo Data',
+                'This will add two sample students with activities, books, milestones, and events — then skip straight to the app.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Load Demo Data', onPress: handleDemoData },
+                ]
+              )
+            }}
+            disabled={isSubmitting}
+            accessibilityLabel="Load demo data instead of adding students"
+            accessibilityRole="button"
+          >
+            <Text style={themed.demoButtonText}>Use Demo Data Instead</Text>
+          </TouchableOpacity>
+        )}
+
         {students.map((student, index) => (
           <View key={index} style={themed.studentCard}>
             <View style={styles.cardHeader}>
@@ -158,6 +213,13 @@ export default function OnboardingStudents() {
               value={student.name}
               onChangeText={(value) => updateStudent(index, 'name', value)}
               autoCapitalize="words"
+            />
+
+            <DatePicker
+              label="Date of Birth"
+              value={student.dateOfBirth}
+              onChange={(date) => updateStudent(index, 'dateOfBirth', date)}
+              placeholder="Select date of birth"
             />
 
             <Text style={themed.label}>Grade Level</Text>
@@ -293,6 +355,8 @@ function useThemedStyles() {
     gradeChipTextSelected: { color: colors.textInverse, fontWeight: '500' as const },
     colorCircleSelected: { borderWidth: 3, borderColor: colors.text },
     addButtonText: { fontSize: 16, color: colors.primary, fontWeight: '600' as const },
+    demoButton: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, borderRadius: 12, paddingVertical: 14, alignItems: 'center' as const, marginBottom: 20 },
+    demoButtonText: { fontSize: 15, color: colors.textSecondary, fontWeight: '500' as const },
     error: { fontSize: 14, color: colors.error, textAlign: 'center' as const, marginTop: 8 },
     footer: { paddingHorizontal: 20, paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.surface },
     button: { backgroundColor: colors.primary, paddingVertical: 16, borderRadius: 12, alignItems: 'center' as const },

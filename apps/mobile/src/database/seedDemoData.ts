@@ -8,14 +8,20 @@ import { v4 as uuid } from "uuid";
  *
  * Safe to call on a non-empty database — checks for existing students first.
  */
-export async function seedDemoData(): Promise<void> {
+interface SeedOptions {
+  skipExistingCheck?: boolean;
+}
+
+export async function seedDemoData(options?: SeedOptions): Promise<void> {
   const db = await getDatabase();
 
-  const existing = await db.getFirstAsync<{ count: number }>(
-    "SELECT COUNT(*) as count FROM students",
-  );
-  if (existing && existing.count > 0) {
-    throw new Error("Database already has students. Clear data first.");
+  if (!options?.skipExistingCheck) {
+    const existing = await db.getFirstAsync<{ count: number }>(
+      "SELECT COUNT(*) as count FROM students",
+    );
+    if (existing && existing.count > 0) {
+      throw new Error("Database already has students. Clear data first.");
+    }
   }
 
   const now = new Date();
