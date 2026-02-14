@@ -11,7 +11,7 @@ import type {
   Student, Subject, Session, Activity, Milestone, MilestoneTemplate,
   MilestoneResource, WeeklyPlan, CalendarBusyEvent, Book, StudentBook,
   BookWithProgress, FieldTrip, FieldTripActivity, Assessment,
-  SubjectChoreMapping, StudentReward, FamilyGoal, RecurringActivity,
+  StudentReward, FamilyGoal, RecurringActivity,
   ActivityAttachment, ActivityTask, ActivityContact, ActivityRSVP,
   ActivityExpense, ActivityPayment, AttendanceRecord, LearningStandard,
   ActivityStandardMapping, CustomStandard, CurriculumPackage,
@@ -23,12 +23,12 @@ import type {
   SyncStatus, SyncPeerInfo, SyncLogStats, SyncRecoveryStatus,
   SyncRecoveryResult, SyncBackup, AIConfig, AICompleteOptions,
   StateRequirement, ComplianceDeadline, ComplianceDocumentData,
-  GeneratedDocument, EmailSummaryConfig, WeeklySummaryEmailData
+  GeneratedDocument
 } from './entities'
 import type {
   CreateStudent, UpdateStudent, CreateSession, UpdateSession,
   CreateActivity, UpdateActivity, CreateMilestone, UpdateMilestone,
-  CreateAssessment, UpdateAssessment, CreateChoreMapping,
+  CreateAssessment, UpdateAssessment,
   CreateReward, CreateFamilyGoal, UpdateFamilyGoal,
   CreateRecurringActivity, UpdateRecurringActivity,
   CreateResource, CreateBook, UpdateBook, UpdateStudentBook,
@@ -185,12 +185,6 @@ export interface DatabaseAPI {
   getCalendarSyncRecordsForWeek: (weekStart: string) => Promise<CalendarSyncRecord[]>
   upsertCalendarSyncRecord: (milestoneId: string, weekStart: string, googleEventId: string, calendarId: string) => Promise<CalendarSyncRecord>
 
-  // Skylight Chore Mappings
-  getChoreMappings: () => Promise<SubjectChoreMapping[]>
-  getChoreMapping: (subjectId: string) => Promise<SubjectChoreMapping | null>
-  upsertChoreMapping: (data: CreateChoreMapping) => Promise<SubjectChoreMapping>
-  deleteChoreMapping: (subjectId: string) => Promise<void>
-
   // Rewards
   getStudentRewards: (studentId: string, weekStart?: string) => Promise<StudentReward[]>
   getStudentStarTotals: (studentId: string) => Promise<{ weeklyTotal: number; allTimeTotal: number }>
@@ -235,10 +229,6 @@ export interface DatabaseAPI {
   deleteAttachment: (id: string) => Promise<boolean>
   openAttachmentFile: (filePath: string) => Promise<void>
   getAttachmentsForActivities: (activityIds: string[]) => Promise<Record<string, ActivityAttachment[]>>
-
-  // Email Summary
-  sendWeeklySummaryEmail: (data: WeeklySummaryEmailData, config: EmailSummaryConfig) => Promise<{ success: boolean; error?: string }>
-  generateEmailPreview: (data: WeeklySummaryEmailData) => Promise<string>
 
   // Attendance
   getAttendanceRecords: (studentId: string, startDate: string, endDate: string) => Promise<AttendanceRecord[]>
@@ -420,6 +410,17 @@ export interface UmbrellaSchoolAPI {
     reportId: string,
     format: 'html' | 'pdf'
   ) => Promise<{ success: boolean; content?: string; filePath?: string; error?: string }>
+}
+
+export interface StateRequirementsOTAAPI {
+  stateRequirementsGetData: () => Promise<unknown>
+  stateRequirementsGetUpdateStatus: () => Promise<{
+    lastChecked: string | null
+    dataVersion: string | null
+    source: string
+  }>
+  stateRequirementsCheckForUpdate: () => Promise<boolean>
+  onStateRequirementsUpdated: (callback: () => void) => () => void
 }
 
 export interface SponsorshipAPI {

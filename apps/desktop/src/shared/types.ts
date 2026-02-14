@@ -2,10 +2,10 @@
 export * from '@homeschool/shared-types'
 
 // Electron-specific: window.api global declaration
-import type { DatabaseAPI, SyncAPI, AIAPI, ComplianceAPI, UmbrellaSchoolAPI, SponsorshipAPI } from '@homeschool/shared-types'
+import type { DatabaseAPI, SyncAPI, AIAPI, ComplianceAPI, UmbrellaSchoolAPI, SponsorshipAPI, StateRequirementsOTAAPI } from '@homeschool/shared-types'
 
 declare global {
   interface Window {
-    api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI & SponsorshipAPI
+    api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI & SponsorshipAPI & StateRequirementsOTAAPI
   }
 }

@@ -4,7 +4,7 @@ import {
   useHourTrackingStore,
   type StateHourRequirements,
 } from "./hourTrackingStore";
-import stateRequirements from "../../../../data/stateRequirements.json";
+import { useStateRequirements } from "../../hooks/useStateRequirements";
 
 interface Props {
   studentId?: string;
@@ -14,6 +14,7 @@ export function HourReport({ studentId }: Props) {
   const { students, getSelectedStudent } = useStore();
   const { summary, isLoading, loadSummary, getSchoolYearDateRange } =
     useHourTrackingStore();
+  const { data: stateRequirements } = useStateRequirements();
   const [selectedStudentId, setSelectedStudentId] = useState(studentId || "");
   const [schoolYear, setSchoolYear] = useState("");
   const [selectedState, setSelectedState] = useState("NV");

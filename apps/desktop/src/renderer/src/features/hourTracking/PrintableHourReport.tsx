@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useStore } from "../../stores/useStore";
 import type { ActivitySummary } from "../../../../shared/types";
-import stateRequirements from "../../../../data/stateRequirements.json";
+import { useStateRequirements } from "../../hooks/useStateRequirements";
 import { Button } from "../../components/ui/Button";
 
 interface Props {
@@ -16,6 +16,7 @@ export function PrintableHourReport({
   selectedState,
 }: Props) {
   const { students } = useStore();
+  const { data: stateRequirements } = useStateRequirements();
   const [activitySummary, setActivitySummary] = useState<ActivitySummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const printRef = useRef<HTMLDivElement>(null);

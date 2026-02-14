@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type {
   DatabaseAPI,
   SyncAPI,
+  StateRequirementsOTAAPI,
   CreateStudent,
   UpdateStudent,
   CreateSession,
@@ -31,7 +32,6 @@ import type {
   UpdateActivityExpense,
   CreateActivityPayment,
   UpdateActivityPayment,
-  CreateChoreMapping,
   CreateReward,
   CreateFamilyGoal,
   UpdateFamilyGoal,
@@ -40,8 +40,6 @@ import type {
   CreateRecurringActivity,
   UpdateRecurringActivity,
   ActivityAttachment,
-  WeeklySummaryEmailData,
-  EmailSummaryConfig,
   CreateAttendanceRecord,
   AttendanceRecord,
   PortfolioConfig,
@@ -99,7 +97,7 @@ import type {
   UpdateUmbrellaSchoolReport
 } from '../shared/types'
 
-const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
+const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI & StateRequirementsOTAAPI = {
   // Students
   getStudents: () => ipcRenderer.invoke('db:students:getAll'),
   getStudent: (id: string) => ipcRenderer.invoke('db:students:get', id),
@@ -289,12 +287,6 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
   deleteCalendarSyncRecordsForWeek: (weekStart: string) =>
     ipcRenderer.invoke('calendar:sync:deleteWeek', weekStart),
 
-  // Skylight Chore Mappings
-  getChoreMappings: () => ipcRenderer.invoke('chore:mappings:getAll'),
-  getChoreMapping: (subjectId: string) => ipcRenderer.invoke('chore:mapping:get', subjectId),
-  upsertChoreMapping: (data: CreateChoreMapping) => ipcRenderer.invoke('chore:mapping:upsert', data),
-  deleteChoreMapping: (subjectId: string) => ipcRenderer.invoke('chore:mapping:delete', subjectId),
-
   // Rewards
   getStudentRewards: (studentId: string, weekStart?: string) =>
     ipcRenderer.invoke('rewards:getForStudent', studentId, weekStart),
@@ -406,12 +398,6 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
     ipcRenderer.invoke('attachments:openFile', filePath) as Promise<void>,
   getAttachmentsForActivities: (activityIds: string[]) =>
     ipcRenderer.invoke('attachments:getForActivities', activityIds) as Promise<Record<string, ActivityAttachment[]>>,
-
-  // Email Summary
-  sendWeeklySummaryEmail: (data: WeeklySummaryEmailData, config: EmailSummaryConfig) =>
-    ipcRenderer.invoke('email:sendWeeklySummary', data, config) as Promise<{ success: boolean; error?: string }>,
-  generateEmailPreview: (data: WeeklySummaryEmailData) =>
-    ipcRenderer.invoke('email:generatePreview', data) as Promise<string>,
 
   // Attendance
   getAttendanceRecords: (studentId: string, startDate: string, endDate: string) =>
@@ -608,6 +594,26 @@ const api: DatabaseAPI & SyncAPI & AIAPI & ComplianceAPI & UmbrellaSchoolAPI = {
     ipcRenderer.invoke('ai:complete', prompt, options) as Promise<{ success: boolean; response?: string; error?: string }>,
   aiClearCache: () =>
     ipcRenderer.invoke('ai:clearCache') as Promise<{ success: boolean }>,
+
+  // ============ State Requirements OTA API ============
+
+  stateRequirementsGetData: () =>
+    ipcRenderer.invoke('stateRequirements:getData'),
+  stateRequirementsGetUpdateStatus: () =>
+    ipcRenderer.invoke('stateRequirements:getUpdateStatus') as Promise<{
+      lastChecked: string | null
+      dataVersion: string | null
+      source: string
+    }>,
+  stateRequirementsCheckForUpdate: () =>
+    ipcRenderer.invoke('stateRequirements:checkForUpdate') as Promise<boolean>,
+  onStateRequirementsUpdated: (callback: () => void) => {
+    const handler = () => callback()
+    ipcRenderer.on('stateRequirements:updated', handler)
+    return () => {
+      ipcRenderer.removeListener('stateRequirements:updated', handler)
+    }
+  },
 
   // ============ Compliance API ============
 

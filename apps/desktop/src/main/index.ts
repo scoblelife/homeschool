@@ -7,6 +7,8 @@ import { registerSyncIPC, shutdownSync } from './sync-ipc'
 import { errorReporting } from '../errorReporting'
 import { registerAIHandlers } from '../ai'
 import { registerComplianceIpcHandlers } from './compliance-ipc'
+import { initStateRequirementsUpdater } from './stateRequirementsUpdater'
+import { registerStateRequirementsIPC } from './state-requirements-ipc'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -86,6 +88,18 @@ app.whenReady().then(async () => {
   } catch (err) {
     console.error('[Main] Failed to register compliance IPC:', err)
   }
+
+  // Register state requirements OTA handlers (optional - falls back to bundled data)
+  try {
+    registerStateRequirementsIPC()
+  } catch (err) {
+    console.error('[Main] Failed to register state requirements IPC:', err)
+  }
+
+  // Start background OTA update check for state requirements (non-blocking)
+  initStateRequirementsUpdater().catch((err) => {
+    console.warn('[Main] State requirements updater failed:', err)
+  })
 
   // Always create window, even if initialization partially failed
   createWindow()

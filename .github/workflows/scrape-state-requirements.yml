@@ -1,0 +1,58 @@
+name: Scrape State Requirements
+
+on:
+  schedule:
+    # Monday 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install scraper dependencies
+        working-directory: scripts/scrape-hslda
+        run: npm install
+
+      - name: Run scraper
+        working-directory: scripts/scrape-hslda
+        run: npx tsx scrape.ts
+
+      - name: Check for changes
+        id: diff
+        run: |
+          git diff --quiet docs/data/ apps/desktop/src/data/stateRequirements.json || echo "changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create Pull Request
+        if: steps.diff.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(data): update state requirements from HSLDA'
+          title: 'chore(data): update state requirements from HSLDA'
+          body: |
+            Automated weekly scrape of HSLDA state legal pages.
+
+            **Please review changes carefully** — this is legal/regulatory data that affects compliance guidance.
+
+            ---
+            _Created by the weekly HSLDA scraper workflow._
+          branch: automated/state-requirements-update
+          labels: |
+            automated
+            data-update
+          delete-branch: true
