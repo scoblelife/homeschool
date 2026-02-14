@@ -29,6 +29,9 @@ npm-debug.log*
 .env.local
 .env.*.local
 
+# Google Play service account key
+play-store-service-account.json
+
 # Convex deployment state (contains deployment-specific URLs)
 .convex/deployment_url
 native/hyperswarm-mobile/target/
@@ -42,3 +45,8 @@ session-plans/
 
 # pnpm
 pnpm-debug.log*
+
+# Mobile build artifacts
+*.aab
+*.apk
+*.ipa

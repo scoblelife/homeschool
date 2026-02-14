@@ -3,9 +3,10 @@ node_modules/
 
 # Build outputs
 dist/
-android/app/build/
-ios/build/
-ios/Pods/
+
+# Native directories from expo run (EAS runs prebuild itself)
+apps/mobile/android/
+apps/mobile/ios/
 
 # Native Rust libraries
 native-libs/
