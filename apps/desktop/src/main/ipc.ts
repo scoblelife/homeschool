@@ -14,7 +14,6 @@ import {
   booksRepo,
   fieldTripsRepo,
   calendarSyncRepo,
-  choreMappingsRepo,
   rewardsRepo,
   familyGoalsRepo,
   recurringRepo,
@@ -61,7 +60,6 @@ import type {
   UpdateActivityExpense,
   CreateActivityPayment,
   UpdateActivityPayment,
-  CreateChoreMapping,
   CreateReward,
   CreateFamilyGoal,
   UpdateFamilyGoal,
@@ -647,23 +645,6 @@ export function registerIpcHandlers(): void {
     return calendarSyncRepo.deleteSyncRecordsForWeek(weekStart)
   })
 
-  // Skylight Chore Mappings
-  ipcMain.handle('chore:mappings:getAll', async () => {
-    return choreMappingsRepo.getChoreMappings()
-  })
-
-  ipcMain.handle('chore:mapping:get', async (_, subjectId: string) => {
-    return choreMappingsRepo.getChoreMapping(subjectId)
-  })
-
-  ipcMain.handle('chore:mapping:upsert', async (_, data: CreateChoreMapping) => {
-    return choreMappingsRepo.upsertChoreMapping(data)
-  })
-
-  ipcMain.handle('chore:mapping:delete', async (_, subjectId: string) => {
-    return choreMappingsRepo.deleteChoreMapping(subjectId)
-  })
-
   // Rewards
   ipcMain.handle('rewards:getForStudent', async (_, studentId: string, weekStart?: string) => {
     return rewardsRepo.getStudentRewards(studentId, weekStart)
@@ -916,62 +897,6 @@ export function registerIpcHandlers(): void {
       result[key] = value
     })
     return result
-  })
-
-  // Email Summary
-  ipcMain.handle('email:sendWeeklySummary', async (_, data: {
-    weekStart: string
-    weekEnd: string
-    students: Array<{
-      name: string
-      gradeLevel: string
-      totalActivities: number
-      totalMinutes: number
-      activeDays: number
-      subjects: Array<{ name: string; activities: number; minutes: number }>
-    }>
-    familyTotalActivities: number
-    familyTotalMinutes: number
-  }, config: {
-    enabled: boolean
-    recipientEmail: string
-    method: 'mailto' | 'resend'
-    resendApiKey?: string
-  }) => {
-    const { sendWeeklySummary } = await import('../features/emailSummary')
-    const summaryData = {
-      weekStart: new Date(data.weekStart),
-      weekEnd: new Date(data.weekEnd),
-      students: data.students,
-      familyTotalActivities: data.familyTotalActivities,
-      familyTotalMinutes: data.familyTotalMinutes,
-    }
-    return sendWeeklySummary(summaryData, config)
-  })
-
-  ipcMain.handle('email:generatePreview', async (_, data: {
-    weekStart: string
-    weekEnd: string
-    students: Array<{
-      name: string
-      gradeLevel: string
-      totalActivities: number
-      totalMinutes: number
-      activeDays: number
-      subjects: Array<{ name: string; activities: number; minutes: number }>
-    }>
-    familyTotalActivities: number
-    familyTotalMinutes: number
-  }) => {
-    const { generateEmailPreview } = await import('../features/emailSummary')
-    const summaryData = {
-      weekStart: new Date(data.weekStart),
-      weekEnd: new Date(data.weekEnd),
-      students: data.students,
-      familyTotalActivities: data.familyTotalActivities,
-      familyTotalMinutes: data.familyTotalMinutes,
-    }
-    return generateEmailPreview(summaryData)
   })
 
   // Attendance
