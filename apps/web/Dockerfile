@@ -22,6 +22,10 @@ COPY packages/ui/ packages/ui/
 COPY apps/web/ apps/web/
 COPY tsconfig.base.json ./
 
+# Accept build-time env vars so Vite can inline VITE_* into the client bundle
+ARG VITE_PUBLIC_POSTHOG_KEY
+ARG VITE_PUBLIC_POSTHOG_HOST
+
 # Build design tokens then web app
 RUN pnpm --filter @homeschool/design-tokens build
 RUN pnpm --filter @homeschool/web build
