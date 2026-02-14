@@ -1,10 +1,15 @@
 /// <reference types="vinxi/types/client" />
 import { hydrateRoot } from 'react-dom/client'
 import { StartClient } from '@tanstack/start'
+import posthog from 'posthog-js'
 import { createRouter } from './router'
 
-// PostHog is initialized via PostHogProvider in __root.tsx
-// using environment variables VITE_PUBLIC_POSTHOG_KEY and VITE_PUBLIC_POSTHOG_HOST
+posthog.init('phc_fyGzmXCbRYcf32kSvxbV1TvOBQDgsJkQ4IVdTU9AkRj', {
+  api_host: '/ingest',
+  ui_host: 'https://us.i.posthog.com',
+  defaults: '2026-01-30',
+  capture_exceptions: true,
+})
 
 const router = createRouter()
 

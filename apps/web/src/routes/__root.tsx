@@ -1,5 +1,4 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router'
-import { PostHogProvider } from '@posthog/react'
 import appCss from '../styles/globals.css?url'
 
 export const Route = createRootRoute({
@@ -27,15 +26,6 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
-        <PostHogProvider
-          apiKey="phc_fyGzmXCbRYcf32kSvxbV1TvOBQDgsJkQ4IVdTU9AkRj"
-          options={{
-            api_host: '/ingest',
-            ui_host: 'https://us.i.posthog.com',
-            defaults: '2026-01-30',
-            capture_exceptions: true,
-          }}
-        >
           <div className="min-h-screen flex flex-col bg-neutral-background">
             <SiteHeader />
             <main className="flex-1">
@@ -43,7 +33,6 @@ function RootDocument() {
             </main>
             <SiteFooter />
           </div>
-        </PostHogProvider>
         <Scripts />
       </body>
     </html>
