@@ -63,7 +63,7 @@ export function formatRequirements(state: StateRequirements): string[] {
   const requirements: string[] = []
 
   if (state.requiresNotification) {
-    requirements.push('Annual notification to school district required')
+    requirements.push('Notification required')
   }
 
   if (state.requiredDaysPerYear) {
