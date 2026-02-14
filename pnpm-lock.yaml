@@ -484,6 +484,9 @@ importers:
       '@homeschool/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@posthog/react':
+        specifier: ^1.7.1
+        version: 1.7.1(@types/react@18.3.28)(posthog-js@1.347.2)(react@19.1.0)
       '@tanstack/react-router':
         specifier: 1.120.20
         version: 1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -502,6 +505,9 @@ importers:
       posthog-js:
         specifier: ^1.347.2
         version: 1.347.2
+      posthog-node:
+        specifier: ^5.24.15
+        version: 5.24.15
       react:
         specifier: 19.1.0
         version: 19.1.0
@@ -3207,6 +3213,16 @@ packages:
 
   '@posthog/core@1.22.0':
     resolution: {integrity: sha512-WkmOnq95aAOu6yk6r5LWr5cfXsQdpVbWDCwOxQwxSne8YV6GuZET1ziO5toSQXgrgbdcjrSz2/GopAfiL6iiAA==}
+
+  '@posthog/react@1.7.1':
+    resolution: {integrity: sha512-x2u7zRjsCpZoZUuvaJRgKWMJWbCPmLO49iXjOx9PdgOB/v5jwphZTj9ZmFZWkXgobdjmqQvVtXaLTMxcb0537g==}
+    peerDependencies:
+      '@types/react': '>=16.8.0'
+      posthog-js: '>=1.257.2'
+      react: 19.1.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   '@posthog/types@1.347.2':
     resolution: {integrity: sha512-aT+r/7jXOzPmUHO6sutoWzczPcYIZyhmWt1f1OvY4zKC7Pwp/ZsJWKFTxjV02p0PZz96AE83eLTe7w7b6tjhIw==}
@@ -9766,6 +9782,10 @@ packages:
   posthog-js@1.347.2:
     resolution: {integrity: sha512-hDbsSU30gfNhC11cBYSPpwUYB4DglbCN2G8W8NPIR/KXhT03shmuxabra/uaoI4blkr8SSSpxwvYV4gGa3hXrA==}
 
+  posthog-node@5.24.15:
+    resolution: {integrity: sha512-0QnWVOZAPwEAlp+r3r0jIGfk2IaNYM/2YnEJJhBMJZXs4LpHcTu7mX42l+e95o9xX87YpVuZU0kOkmtQUxgnOA==}
+    engines: {node: ^20.20.0 || >=22.22.0}
+
   postject@1.0.0-alpha.6:
     resolution: {integrity: sha512-b9Eb8h2eVqNE8edvKdwqkrY6O7kAwmI8kcnBv1NScolYJbo59XUF0noFq+lxbC1yN20bmC0WBEbDC5H/7ASb0A==}
     engines: {node: '>=14.0.0'}
@@ -14936,6 +14956,13 @@ snapshots:
   '@posthog/core@1.22.0':
     dependencies:
       cross-spawn: 7.0.6
+
+  '@posthog/react@1.7.1(@types/react@18.3.28)(posthog-js@1.347.2)(react@19.1.0)':
+    dependencies:
+      posthog-js: 1.347.2
+      react: 19.1.0
+    optionalDependencies:
+      '@types/react': 18.3.28
 
   '@posthog/types@1.347.2': {}
 
@@ -23727,6 +23754,10 @@ snapshots:
       preact: 10.28.3
       query-selector-shadow-dom: 1.0.1
       web-vitals: 5.1.0
+
+  posthog-node@5.24.15:
+    dependencies:
+      '@posthog/core': 1.22.0
 
   postject@1.0.0-alpha.6:
     dependencies:
