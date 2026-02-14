@@ -32,11 +32,11 @@
     "test:e2e": "npx playwright test --config=e2e/playwright.config.ts"
   },
   "dependencies": {
-    "@homeschool/shared-types": "workspace:*",
-    "@homeschool/design-tokens": "workspace:*",
-    "@homeschool/ui": "workspace:*",
     "@electron-toolkit/utils": "^3.0.0",
     "@headlessui/react": "^2.2.4",
+    "@homeschool/design-tokens": "workspace:*",
+    "@homeschool/shared-types": "workspace:*",
+    "@homeschool/ui": "workspace:*",
     "@roamhq/wrtc": "^0.9.1",
     "@tailwindcss/typography": "^0.5.19",
     "@types/ws": "^8.18.1",
@@ -48,6 +48,7 @@
     "googleapis": "^169.0.0",
     "hypercore": "^11.21.6",
     "hyperswarm": "^4.16.0",
+    "lucide-react": "^0.563.0",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
