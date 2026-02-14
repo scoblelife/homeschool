@@ -1,13 +1,16 @@
 import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useDeviceType } from '../../src/hooks/useDeviceType'
 import { useColors } from '../../src/theme/ThemeContext'
 
 export default function TabLayout() {
   const { isTablet } = useDeviceType()
   const colors = useColors()
+  const insets = useSafeAreaInsets()
 
-  const tabBarHeight = isTablet ? 64 : 62
+  const bottomInset = Math.max(insets.bottom, 12)
+  const tabBarHeight = (isTablet ? 56 : 50) + bottomInset
   const labelFontSize = isTablet ? 12 : 10
 
   return (
@@ -19,7 +22,7 @@ export default function TabLayout() {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
           height: tabBarHeight,
-          paddingBottom: isTablet ? 8 : 16,
+          paddingBottom: bottomInset,
           paddingTop: isTablet ? 8 : 4,
         },
         tabBarLabelStyle: {
