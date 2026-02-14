@@ -170,3 +170,93 @@
   --z-index-modal: 1050;
   --z-index-tooltip: 1100;
 }
+
+/* High Contrast Mode Overrides */
+.high-contrast {
+  /* Status backgrounds: jump 3-4 shades darker */
+  --colors-status-success-light: #86efac; /* green-300 */
+  --colors-status-warning-light: #fcd34d; /* amber-300 */
+  --colors-status-error-light: #fca5a5; /* red-300 */
+  --colors-status-info-light: #93c5fd; /* blue-300 */
+  --colors-status-success: #16a34a; /* green-600 */
+  --colors-status-warning: #d97706; /* amber-600 */
+  --colors-status-error: #dc2626; /* red-600 */
+  --colors-status-info: #2563eb; /* blue-600 */
+
+  /* Brand: stronger tints */
+  --colors-brand-primary-light: #f5d0fe; /* fuchsia-200 */
+
+  /* Neutrals: much stronger separation */
+  --colors-neutral-text: #111827; /* gray-900, near-black */
+  --colors-neutral-text-secondary: #374151; /* gray-700, was gray-500 */
+  --colors-neutral-text-tertiary: #4b5563; /* gray-600, was gray-400 */
+  --colors-neutral-background: #e5e7eb; /* gray-200, was gray-50 */
+  --colors-neutral-background-deep: #d1d5db; /* gray-300, was gray-100 */
+  --colors-neutral-border: #9ca3af; /* gray-400, was gray-200 */
+  --colors-neutral-border-light: #d1d5db; /* gray-300, was gray-100 */
+  --colors-neutral-separator: #9ca3af; /* gray-400 */
+  --colors-neutral-skeleton: #9ca3af; /* gray-400 */
+
+  /* Shadows: stronger */
+  --shadows-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
+  --shadows-base: 0 1px 4px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.12);
+  --shadows-md: 0 4px 8px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12);
+}
+
+/* Text: bolder across the board */
+.high-contrast .text-neutral-textSecondary {
+  font-weight: 600;
+}
+
+.high-contrast .text-neutral-textTertiary {
+  font-weight: 600;
+}
+
+/* Borders: thicker everywhere */
+.high-contrast .border {
+  border-width: 2px;
+}
+
+.high-contrast .border-l-4 {
+  border-left-width: 6px;
+}
+
+.high-contrast [class*="rounded-lg"][class*="border"] {
+  border-width: 2px;
+}
+
+/* Cards and surfaces: visible outlines */
+.high-contrast [class*="shadow-sm"],
+.high-contrast [class*="shadow-base"] {
+  outline: 1px solid #9ca3af;
+}
+
+/* Status badges: bold text */
+.high-contrast .rounded-full[class*="bg-status-"],
+.high-contrast .rounded-full[class*="bg-neutral-backgroundDeep"] {
+  font-weight: 700;
+}
+
+/* Inputs and selects: stronger borders */
+.high-contrast input,
+.high-contrast select,
+.high-contrast textarea {
+  border-width: 2px;
+  border-color: #6b7280; /* gray-500 */
+}
+
+.high-contrast input:focus,
+.high-contrast select:focus,
+.high-contrast textarea:focus {
+  border-color: #a21caf; /* fuchsia-700 */
+  outline-width: 2px;
+}
+
+/* Buttons: stronger contrast */
+.high-contrast button[class*="bg-fuchsia"] {
+  font-weight: 700;
+}
+
+.high-contrast button[class*="border"] {
+  border-width: 2px;
+}
