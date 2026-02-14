@@ -1,11 +1,26 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, FormField } from '@homeschool/ui'
+import { usePostHog } from '@posthog/react'
 
 export const Route = createFileRoute('/plans/new')({
   component: NewPlanPage,
 })
 
 function NewPlanPage() {
+  const posthog = usePostHog()
+
+  const handleSaveDraft = () => {
+    posthog.capture('lesson_plan_draft_saved', {
+      action: 'save_draft',
+    })
+  }
+
+  const handlePublish = () => {
+    posthog.capture('lesson_plan_published', {
+      action: 'publish',
+    })
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-bold text-neutral-text mb-8">Create Lesson Plan</h1>
@@ -33,8 +48,8 @@ function NewPlanPage() {
             </FormField>
 
             <div className="flex justify-end gap-3 pt-4">
-              <Button variant="secondary">Save Draft</Button>
-              <Button variant="primary">Publish</Button>
+              <Button variant="secondary" onClick={handleSaveDraft}>Save Draft</Button>
+              <Button variant="primary" onClick={handlePublish}>Publish</Button>
             </div>
           </form>
         </CardContent>

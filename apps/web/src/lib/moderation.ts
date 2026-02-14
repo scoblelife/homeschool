@@ -2,6 +2,7 @@ import { db } from '../db'
 import { moderationQueue } from '../db/schema'
 import { v4 as uuidv4 } from 'uuid'
 import type { ModerationContentType } from '@homeschool/shared-types'
+import { getPostHogClient } from './posthog-server'
 
 interface ModerationResult {
   approved: boolean
@@ -29,12 +30,29 @@ export async function flagForReview(
   reportedBy: string | undefined,
   reason: string | undefined
 ): Promise<void> {
+  const moderationId = uuidv4()
+
   await db.insert(moderationQueue).values({
-    id: uuidv4(),
+    id: moderationId,
     contentType,
     contentId,
     reportedBy: reportedBy ?? null,
     reason: reason ?? null,
     autoFlagged: false,
+  })
+
+  // Track content flagged event server-side
+  const posthog = getPostHogClient()
+  posthog.capture({
+    distinctId: reportedBy ?? 'anonymous',
+    event: 'content_flagged',
+    properties: {
+      moderation_id: moderationId,
+      content_type: contentType,
+      content_id: contentId,
+      reason: reason ?? null,
+      auto_flagged: false,
+      source: 'server',
+    },
   })
 }

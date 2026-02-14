@@ -1,0 +1,55 @@
+{
+  "/Users/sscoble/Projects/homeschool/apps/web/src/styles/globals.css": {
+    "file": "assets/globals-BojpTL0f.css",
+    "src": "/Users/sscoble/Projects/homeschool/apps/web/src/styles/globals.css"
+  },
+  "_Radio-DNU_UGtN.js": {
+    "file": "assets/Radio-DNU_UGtN.js",
+    "name": "Radio"
+  },
+  "_ssr-D_kjpLqi.js": {
+    "file": "assets/ssr-D_kjpLqi.js",
+    "name": "ssr",
+    "dynamicImports": [
+      "src/routes/index.tsx?tsr-split=component",
+      "src/routes/plans/index.tsx?tsr-split=component",
+      "src/routes/plans/new.tsx?tsr-split=component",
+      "src/routes/plans/$planId.tsx?tsr-split=component"
+    ],
+    "assets": ["assets/globals-BojpTL0f.css"]
+  },
+  "src/routes/index.tsx?tsr-split=component": {
+    "file": "assets/index-Crag6g7Y.js",
+    "name": "index",
+    "src": "src/routes/index.tsx?tsr-split=component",
+    "isDynamicEntry": true
+  },
+  "src/routes/plans/$planId.tsx?tsr-split=component": {
+    "file": "assets/_planId-Bm54Fdr8.js",
+    "name": "_planId",
+    "src": "src/routes/plans/$planId.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": ["_Radio-DNU_UGtN.js", "_ssr-D_kjpLqi.js"]
+  },
+  "src/routes/plans/index.tsx?tsr-split=component": {
+    "file": "assets/index-CxAw7SFz.js",
+    "name": "index",
+    "src": "src/routes/plans/index.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": ["_Radio-DNU_UGtN.js"]
+  },
+  "src/routes/plans/new.tsx?tsr-split=component": {
+    "file": "assets/new-B61wtW-V.js",
+    "name": "new",
+    "src": "src/routes/plans/new.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": ["_Radio-DNU_UGtN.js"]
+  },
+  "virtual:$vinxi/handler/ssr": {
+    "file": "ssr.js",
+    "name": "ssr",
+    "src": "virtual:$vinxi/handler/ssr",
+    "isEntry": true,
+    "imports": ["_ssr-D_kjpLqi.js"]
+  }
+}

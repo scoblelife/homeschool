@@ -1,15 +1,30 @@
 import { Card, CardContent, CardHeader, CardTitle, Badge } from '@homeschool/ui'
+import { usePostHog } from '@posthog/react'
 import type { LessonPlan } from '@homeschool/shared-types'
 import { VoteButton } from './VoteButton'
 
 interface LessonPlanCardProps {
   plan: LessonPlan
   onVote?: (planId: string) => void
+  onClick?: (planId: string) => void
 }
 
-export function LessonPlanCard({ plan, onVote }: LessonPlanCardProps) {
+export function LessonPlanCard({ plan, onVote, onClick }: LessonPlanCardProps) {
+  const posthog = usePostHog()
+
+  const handleCardClick = () => {
+    posthog.capture('lesson_plan_clicked', {
+      plan_id: plan.id,
+      plan_title: plan.title,
+      plan_status: plan.status,
+      grade_level: plan.gradeLevel,
+      subject: plan.subject,
+    })
+    onClick?.(plan.id)
+  }
+
   return (
-    <Card>
+    <Card className="cursor-pointer" onClick={handleCardClick}>
       <CardHeader>
         <div className="flex items-start justify-between">
           <CardTitle>{plan.title}</CardTitle>

@@ -1,4 +1,5 @@
 import { Input, Select } from '@homeschool/ui'
+import { usePostHog } from '@posthog/react'
 import type { GradeLevel, ActivityType } from '@homeschool/shared-types'
 
 interface PlanFiltersProps {
@@ -8,6 +9,8 @@ interface PlanFiltersProps {
 }
 
 export function PlanFilters({ onSearchChange, onGradeLevelChange, onActivityTypeChange }: PlanFiltersProps) {
+  const posthog = usePostHog()
+
   const gradeLevels = [
     { value: '', label: 'All Grade Levels' },
     { value: 'pre-k', label: 'Pre-K' },
@@ -29,21 +32,46 @@ export function PlanFilters({ onSearchChange, onGradeLevelChange, onActivityType
     { value: 'interactive', label: 'Interactive' },
   ]
 
+  const handleSearchChange = (value: string) => {
+    if (value.length > 2) {
+      posthog.capture('lesson_plan_search', {
+        query: value,
+      })
+    }
+    onSearchChange?.(value)
+  }
+
+  const handleGradeLevelChange = (value: GradeLevel | '') => {
+    posthog.capture('lesson_plan_filtered', {
+      filter_type: 'grade_level',
+      filter_value: value || 'all',
+    })
+    onGradeLevelChange?.(value)
+  }
+
+  const handleActivityTypeChange = (value: ActivityType | '') => {
+    posthog.capture('lesson_plan_filtered', {
+      filter_type: 'activity_type',
+      filter_value: value || 'all',
+    })
+    onActivityTypeChange?.(value)
+  }
+
   return (
     <div className="flex gap-4 flex-wrap">
       <Input
         placeholder="Search lesson plans..."
-        onChange={(e) => onSearchChange?.(e.target.value)}
+        onChange={(e) => handleSearchChange(e.target.value)}
         className="max-w-md"
       />
       <Select
         options={gradeLevels}
-        onChange={(value) => onGradeLevelChange?.(value as GradeLevel | '')}
+        onChange={(value) => handleGradeLevelChange(value as GradeLevel | '')}
         placeholder="Grade Level"
       />
       <Select
         options={activityTypes}
-        onChange={(value) => onActivityTypeChange?.(value as ActivityType | '')}
+        onChange={(value) => handleActivityTypeChange(value as ActivityType | '')}
         placeholder="Activity Type"
       />
     </div>

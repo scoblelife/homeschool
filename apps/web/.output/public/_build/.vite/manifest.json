@@ -1,0 +1,57 @@
+{
+  "/Users/sscoble/Projects/homeschool/apps/web/src/styles/globals.css": {
+    "file": "assets/globals-BojpTL0f.css",
+    "src": "/Users/sscoble/Projects/homeschool/apps/web/src/styles/globals.css"
+  },
+  "_Radio-BnwCUpkH.js": {
+    "file": "assets/Radio-BnwCUpkH.js",
+    "name": "Radio",
+    "imports": ["_client--yp6wFA5.js"]
+  },
+  "_client--yp6wFA5.js": {
+    "file": "assets/client--yp6wFA5.js",
+    "name": "client",
+    "dynamicImports": [
+      "src/routes/index.tsx?tsr-split=component",
+      "src/routes/plans/index.tsx?tsr-split=component",
+      "src/routes/plans/new.tsx?tsr-split=component",
+      "src/routes/plans/$planId.tsx?tsr-split=component"
+    ],
+    "assets": ["assets/globals-BojpTL0f.css"]
+  },
+  "src/routes/index.tsx?tsr-split=component": {
+    "file": "assets/index-CSUsdDnW.js",
+    "name": "index",
+    "src": "src/routes/index.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": ["_client--yp6wFA5.js"]
+  },
+  "src/routes/plans/$planId.tsx?tsr-split=component": {
+    "file": "assets/_planId-3-LxTz8A.js",
+    "name": "_planId",
+    "src": "src/routes/plans/$planId.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": ["_client--yp6wFA5.js", "_Radio-BnwCUpkH.js"]
+  },
+  "src/routes/plans/index.tsx?tsr-split=component": {
+    "file": "assets/index-DznUBFbk.js",
+    "name": "index",
+    "src": "src/routes/plans/index.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": ["_client--yp6wFA5.js", "_Radio-BnwCUpkH.js"]
+  },
+  "src/routes/plans/new.tsx?tsr-split=component": {
+    "file": "assets/new-CQNjPInE.js",
+    "name": "new",
+    "src": "src/routes/plans/new.tsx?tsr-split=component",
+    "isDynamicEntry": true,
+    "imports": ["_client--yp6wFA5.js", "_Radio-BnwCUpkH.js"]
+  },
+  "virtual:$vinxi/handler/client": {
+    "file": "assets/client-D2rL3bAx.js",
+    "name": "client",
+    "src": "virtual:$vinxi/handler/client",
+    "isEntry": true,
+    "imports": ["_client--yp6wFA5.js"]
+  }
+}

@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, CardContent, CardHeader, CardTitle, Badge, Button } from '@homeschool/ui'
+import { usePostHog } from '@posthog/react'
 
 export const Route = createFileRoute('/plans/$planId')({
   component: PlanDetailPage,
@@ -7,6 +8,13 @@ export const Route = createFileRoute('/plans/$planId')({
 
 function PlanDetailPage() {
   const { planId } = Route.useParams()
+  const posthog = usePostHog()
+
+  const handleFork = () => {
+    posthog.capture('lesson_plan_forked', {
+      plan_id: planId,
+    })
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -19,7 +27,7 @@ function PlanDetailPage() {
             </div>
             <div className="flex items-center gap-2">
               <Badge variant="info">Draft</Badge>
-              <Button variant="secondary" size="sm">
+              <Button variant="secondary" size="sm" onClick={handleFork}>
                 Fork
               </Button>
             </div>
