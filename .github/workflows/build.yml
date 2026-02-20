@@ -80,7 +80,7 @@ jobs:
   release:
     needs: build
     if: always() && startsWith(github.ref, 'refs/tags/v') && !cancelled()
-    runs-on: depot-ubuntu-24.04
+    runs-on: depot-ubuntu-24.04-arm
     permissions:
       contents: write
 
