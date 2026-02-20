@@ -72,7 +72,7 @@ jobs:
   # Type check (runs on every push + PR)
   # ──────────────────────────────────────────────────
   typecheck:
-    runs-on: depot-ubuntu-latest
+    runs-on: depot-ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
 
@@ -96,7 +96,7 @@ jobs:
         (github.event_name == 'workflow_dispatch' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
       ) && (github.event.inputs.build_mode || 'local') == 'local'
     needs: typecheck
-    runs-on: depot-ubuntu-latest
+    runs-on: depot-ubuntu-24.04-arm
     defaults:
       run:
         working-directory: apps/mobile
@@ -151,7 +151,7 @@ jobs:
         (github.event_name == 'workflow_dispatch' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'))
       ) && (github.event.inputs.build_mode || 'local') == 'local'
     needs: typecheck
-    runs-on: macos-latest
+    runs-on: depot-ubuntu-24.04-arm
     defaults:
       run:
         working-directory: apps/mobile
@@ -192,7 +192,7 @@ jobs:
       github.event_name == 'workflow_dispatch' &&
       github.event.inputs.build_mode == 'cloud'
     needs: typecheck
-    runs-on: depot-ubuntu-latest
+    runs-on: depot-ubuntu-24.04-arm
     defaults:
       run:
         working-directory: apps/mobile
@@ -238,7 +238,7 @@ jobs:
       github.event.inputs.submit == 'true' &&
       (github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all')
     needs: build-ios-local
-    runs-on: depot-ubuntu-latest
+    runs-on: depot-ubuntu-24.04-arm
     defaults:
       run:
         working-directory: apps/mobile
@@ -273,7 +273,7 @@ jobs:
       github.event.inputs.submit == 'true' &&
       (github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all')
     needs: build-android-local
-    runs-on: depot-ubuntu-latest
+    runs-on: depot-ubuntu-24.04-arm
     defaults:
       run:
         working-directory: apps/mobile
