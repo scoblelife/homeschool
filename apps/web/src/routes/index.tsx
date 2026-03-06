@@ -56,22 +56,50 @@ function NevconCallout() {
   )
 }
 
-const GITHUB_RELEASES_URL = 'https://github.com/sscoble/homeschool/releases/latest'
+const DOWNLOAD_BASE = 'https://github.com/scoblelife/homeschool/releases/download/v0.1.5'
+const RELEASES_URL = 'https://github.com/scoblelife/homeschool/releases/latest'
+
+const DOWNLOADS = {
+  macArm: { label: 'macOS (Apple Silicon)', file: 'Homeschool-0.1.5-arm64.dmg' },
+  macIntel: { label: 'macOS (Intel)', file: 'Homeschool-0.1.5-x64.dmg' },
+  windows: { label: 'Windows', file: 'Homeschool-0.1.5-Setup.exe' },
+  linuxAppImage: { label: 'Linux (.AppImage)', file: 'Homeschool-0.1.5.AppImage' },
+  linuxDeb: { label: 'Linux (.deb)', file: 'Homeschool-0.1.5.deb' },
+} as const
+
+function usePlatformDownload(): { label: string; url: string } {
+  if (typeof navigator === 'undefined') {
+    return { label: 'Download for Mac', url: `${DOWNLOAD_BASE}/${DOWNLOADS.macArm.file}` }
+  }
+  const ua = navigator.userAgent
+  if (ua.includes('Win')) {
+    return { label: 'Download for Windows', url: `${DOWNLOAD_BASE}/${DOWNLOADS.windows.file}` }
+  }
+  if (ua.includes('Linux')) {
+    return { label: 'Download for Linux', url: `${DOWNLOAD_BASE}/${DOWNLOADS.linuxAppImage.file}` }
+  }
+  return { label: 'Download for Mac', url: `${DOWNLOAD_BASE}/${DOWNLOADS.macArm.file}` }
+}
 
 function DownloadButtons() {
+  const primary = usePlatformDownload()
+  const linkClass = 'underline hover:text-student-purple-700'
+
   return (
     <div className="space-y-4">
       <a
-        href={GITHUB_RELEASES_URL}
+        href={primary.url}
         className="inline-flex items-center gap-2 bg-student-purple-600 text-neutral-textInverse font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity text-lg"
       >
-        Download for Desktop
+        {primary.label}
       </a>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-textSecondary">
-        <a href={GITHUB_RELEASES_URL} className="underline hover:text-student-purple-700">macOS (Apple Silicon)</a>
-        <a href={GITHUB_RELEASES_URL} className="underline hover:text-student-purple-700">macOS (Intel)</a>
-        <a href={GITHUB_RELEASES_URL} className="underline hover:text-student-purple-700">Windows</a>
-        <a href={GITHUB_RELEASES_URL} className="underline hover:text-student-purple-700">Linux</a>
+        <a href={`${DOWNLOAD_BASE}/${DOWNLOADS.macArm.file}`} className={linkClass}>{DOWNLOADS.macArm.label}</a>
+        <a href={`${DOWNLOAD_BASE}/${DOWNLOADS.macIntel.file}`} className={linkClass}>{DOWNLOADS.macIntel.label}</a>
+        <a href={`${DOWNLOAD_BASE}/${DOWNLOADS.windows.file}`} className={linkClass}>{DOWNLOADS.windows.label}</a>
+        <a href={`${DOWNLOAD_BASE}/${DOWNLOADS.linuxAppImage.file}`} className={linkClass}>{DOWNLOADS.linuxAppImage.label}</a>
+        <a href={`${DOWNLOAD_BASE}/${DOWNLOADS.linuxDeb.file}`} className={linkClass}>{DOWNLOADS.linuxDeb.label}</a>
+        <a href={RELEASES_URL} className={linkClass}>All downloads</a>
       </div>
       <div className="flex items-center gap-2 text-sm text-neutral-textSecondary">
         <span className="inline-block bg-student-purple-100 text-student-purple-700 font-medium px-2 py-0.5 rounded text-xs">Coming Soon</span>
