@@ -28,8 +28,9 @@ function HeroSection() {
               <span className="block text-student-purple-700">without the paperwork</span>
             </h1>
             <p className="text-lg text-neutral-textSecondary mb-4 max-w-xl">
-              Log activities, track progress, and stay organized — so you can
-              spend more time teaching and less time record-keeping.
+              A free desktop app for logging activities, tracking progress, and
+              staying organized — so you can spend more time teaching and less
+              time record-keeping.
             </p>
             <NevconCallout />
             <DownloadButtons />
@@ -55,17 +56,27 @@ function NevconCallout() {
   )
 }
 
+const GITHUB_RELEASES_URL = 'https://github.com/sscoble/homeschool/releases/latest'
+
 function DownloadButtons() {
   return (
-    <div className="space-y-3">
-      <p className="text-sm font-semibold text-student-purple-700">Coming Soon</p>
-      <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-neutral-textSecondary">
-        <span>macOS: Apple Silicon | Intel</span>
-        <span>Windows: Intel | Arm</span>
-        <span>Linux: Intel | Arm</span>
+    <div className="space-y-4">
+      <a
+        href={GITHUB_RELEASES_URL}
+        className="inline-flex items-center gap-2 bg-student-purple-600 text-neutral-textInverse font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-opacity text-lg"
+      >
+        Download for Desktop
+      </a>
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-neutral-textSecondary">
+        <a href={GITHUB_RELEASES_URL} className="underline hover:text-student-purple-700">macOS (Apple Silicon)</a>
+        <a href={GITHUB_RELEASES_URL} className="underline hover:text-student-purple-700">macOS (Intel)</a>
+        <a href={GITHUB_RELEASES_URL} className="underline hover:text-student-purple-700">Windows</a>
+        <a href={GITHUB_RELEASES_URL} className="underline hover:text-student-purple-700">Linux</a>
       </div>
-      <div className="flex gap-x-6 text-sm text-neutral-textSecondary">
-        <span>App Store</span>
+      <div className="flex items-center gap-2 text-sm text-neutral-textSecondary">
+        <span className="inline-block bg-student-purple-100 text-student-purple-700 font-medium px-2 py-0.5 rounded text-xs">Coming Soon</span>
+        <span>iOS App Store</span>
+        <span className="text-neutral-border">|</span>
         <span>Google Play</span>
       </div>
     </div>
@@ -152,14 +163,14 @@ function NevconSection() {
     <section className="bg-student-purple-50 py-10 sm:py-14">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl font-bold text-neutral-text mb-2">
-          Come see us at NEVCON 2026
+          Find us at NEVCON 2026
         </h2>
         <p className="text-lg text-neutral-textSecondary mb-2">
           March 5-7, 2026 at Sam's Town Hotel, Las Vegas
         </p>
         <p className="text-neutral-textSecondary mb-5 max-w-xl mx-auto">
           We're a Nevada homeschool family building the tool we wished we had.
-          Stop by and say hi — we'd love to show you the app in person.
+          Stop by and say hi — we'd love to show you the app and help you get started.
         </p>
         <a
           href="https://nevcon.org"
@@ -180,7 +191,7 @@ const CAPABILITIES = [
   'Monitor progress across subjects and kids',
   'Set and track learning milestones',
   'Keep a reading library with page-level progress',
-  'Works offline, syncs across devices',
+  'Free and works offline — your data stays on your computer',
 ] as const
 
 function CapabilitiesSection() {
