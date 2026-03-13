@@ -102,9 +102,9 @@ function DownloadButtons() {
         <a href={RELEASES_URL} className={linkClass}>All downloads</a>
       </div>
       <div className="flex items-center gap-2 text-sm text-neutral-textSecondary">
-        <span className="inline-block bg-student-purple-100 text-student-purple-700 font-medium px-2 py-0.5 rounded text-xs">Coming Soon</span>
-        <span>iOS App Store</span>
+        <a href="https://apps.apple.com/us/app/scoble-life-homeschool/id6759132824" className={linkClass}>iOS App Store</a>
         <span className="text-neutral-border">|</span>
+        <span className="inline-block bg-student-purple-100 text-student-purple-700 font-medium px-2 py-0.5 rounded text-xs">Coming Soon</span>
         <span>Google Play</span>
       </div>
     </div>
