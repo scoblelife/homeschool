@@ -1,5 +1,5 @@
 /**
- * Demo seed data for NEVCON 2026 live demos.
+ * Demo seed data for live demos.
  *
  * Populates the database with realistic sample data for two students
  * (Pre-K and 1st Grade) covering ~3 weeks of homeschool activities.

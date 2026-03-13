@@ -108,14 +108,6 @@ function FooterLinks() {
       <a href="/support.html" className="text-neutral-textSecondary hover:text-student-purple-700 transition-colors">
         Support
       </a>
-      <a
-        href="https://nevcon.org"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-neutral-textSecondary hover:text-student-purple-700 transition-colors"
-      >
-        NEVCON
-      </a>
     </div>
   )
 }

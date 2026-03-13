@@ -32,7 +32,6 @@ function HeroSection() {
               staying organized — so you can spend more time teaching and less
               time record-keeping.
             </p>
-            <NevconCallout />
             <DownloadButtons />
           </div>
           <div className="flex-shrink-0">
@@ -44,15 +43,6 @@ function HeroSection() {
         </div>
       </div>
     </section>
-  )
-}
-
-function NevconCallout() {
-  return (
-    <div className="mb-5 inline-flex items-center gap-2 bg-neutral-surface border border-neutral-border rounded-lg px-4 py-2 text-sm">
-      <span className="font-semibold text-student-purple-700">NEVCON 2026</span>
-      <span className="text-neutral-textSecondary">March 5-7 in Las Vegas</span>
-    </div>
   )
 }
 
@@ -186,33 +176,6 @@ function FeatureShowcase() {
   )
 }
 
-function NevconSection() {
-  return (
-    <section className="bg-student-purple-50 py-10 sm:py-14">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-3xl font-bold text-neutral-text mb-2">
-          Find us at NEVCON 2026
-        </h2>
-        <p className="text-lg text-neutral-textSecondary mb-2">
-          March 5-7, 2026 at Sam's Town Hotel, Las Vegas
-        </p>
-        <p className="text-neutral-textSecondary mb-5 max-w-xl mx-auto">
-          We're a Nevada homeschool family building the tool we wished we had.
-          Stop by and say hi — we'd love to show you the app and help you get started.
-        </p>
-        <a
-          href="https://nevcon.org"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block bg-student-purple-600 text-neutral-textInverse font-medium px-6 py-3 rounded-lg hover:opacity-90 transition-opacity"
-        >
-          Visit nevcon.org
-        </a>
-      </div>
-    </section>
-  )
-}
-
 const CAPABILITIES = [
   'Track daily activities by subject',
   'Log worksheets, videos, reading, writing, and hands-on work',
@@ -245,7 +208,6 @@ function HomePage() {
     <div>
       <HeroSection />
       <FeatureShowcase />
-      <NevconSection />
       <CapabilitiesSection />
     </div>
   )
