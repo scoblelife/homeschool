@@ -12,10 +12,9 @@ export interface RTCIceServer {
 }
 
 // Signaling server URL
-// For local development: http://localhost:8080
-// For production: https://homeschool-signaling.fly.dev
+// For local development, set HOMESCHOOL_SIGNALING_URL=http://localhost:8080
 export const SIGNALING_SERVER_URL =
-  process.env.HOMESCHOOL_SIGNALING_URL || 'http://localhost:8080'
+  process.env.HOMESCHOOL_SIGNALING_URL || 'https://sync.homeschool.scoble.life'
 
 // Alias for signaling server
 export const WORKER_URL = SIGNALING_SERVER_URL

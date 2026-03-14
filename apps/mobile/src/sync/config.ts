@@ -24,14 +24,12 @@ const SERVER_HOST =
 const SERVER_PORT = process.env.EXPO_PUBLIC_SERVER_PORT || "8080";
 
 // Signaling server URL
-// For local development: http://localhost:8080 (iOS) or http://10.0.2.2:8080 (Android)
-// For production: https://homeschool-signaling.fly.dev
+// For local development, set EXPO_PUBLIC_SIGNALING_URL=http://localhost:8080
 const getSignalingUrl = (): string => {
   if (process.env.EXPO_PUBLIC_SIGNALING_URL) {
     return process.env.EXPO_PUBLIC_SIGNALING_URL;
   }
-  // Use local server for development
-  return `http://${SERVER_HOST}:${SERVER_PORT}`;
+  return "https://sync.homeschool.scoble.life";
 };
 
 export const SIGNALING_SERVER_URL = getSignalingUrl();

@@ -9,10 +9,13 @@ config({ path: '.env' })
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()],
+    plugins: [externalizeDepsPlugin({ exclude: ['qrcode'] })],
     define: {
       'process.env.GOOGLE_CLIENT_ID': JSON.stringify(process.env.GOOGLE_CLIENT_ID || ''),
-      'process.env.GOOGLE_CLIENT_SECRET': JSON.stringify(process.env.GOOGLE_CLIENT_SECRET || '')
+      'process.env.GOOGLE_CLIENT_SECRET': JSON.stringify(process.env.GOOGLE_CLIENT_SECRET || ''),
+      'process.env.HOMESCHOOL_SIGNALING_URL': JSON.stringify(
+        process.env.HOMESCHOOL_SIGNALING_URL || 'https://sync.homeschool.scoble.life'
+      )
     },
     build: {
       rollupOptions: {
