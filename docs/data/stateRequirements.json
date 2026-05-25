@@ -2,7 +2,7 @@
   "states": {
     "TX": {
       "name": "Texas",
-      "requiresNotification": false,
+      "requiresNotification": true,
       "requiresApproval": false,
       "requiredSubjects": [
         "reading",
@@ -17,8 +17,10 @@
       "recordKeepingRequired": false,
       "parentQualifications": null,
       "notes": "No notification required. Homeschools are considered private schools. Must teach reading, spelling, grammar, math, and good citizenship in a bona fide manner. Compulsory ages 6-19.",
-      "resources": ["https://hslda.org/legal/texas"],
-      "regulationLevel": "minimal"
+      "resources": [
+        "https://hslda.org/legal/texas"
+      ],
+      "regulationLevel": "low"
     },
     "CA": {
       "name": "California",
@@ -31,7 +33,9 @@
       "recordKeepingRequired": true,
       "parentQualifications": null,
       "notes": "Three homeschool options available. Notification required. No assessment required. No teacher qualifications required except under option 3. Most families file the Private School Affidavit (PSA) annually. Compulsory ages 6-18.",
-      "resources": ["https://hslda.org/legal/california"],
+      "resources": [
+        "https://hslda.org/legal/california"
+      ],
       "regulationLevel": "low"
     },
     "NC": {
@@ -43,14 +47,16 @@
       "requiredDaysPerYear": null,
       "assessmentRequired": true,
       "recordKeepingRequired": true,
-      "parentQualifications": "required (see HSLDA for details)",
+      "parentQualifications": "Yes",
       "notes": "Notification required. No state-mandated subjects. Assessment required. Teacher qualifications required. One homeschool option available. Compulsory ages 7-16.",
-      "resources": ["https://hslda.org/legal/north-carolina"],
-      "regulationLevel": "moderate"
+      "resources": [
+        "https://hslda.org/legal/north-carolina"
+      ],
+      "regulationLevel": "low"
     },
     "FL": {
       "name": "Florida",
-      "requiresNotification": false,
+      "requiresNotification": true,
       "requiresApproval": false,
       "requiredSubjects": null,
       "requiredHoursPerYear": null,
@@ -59,7 +65,9 @@
       "recordKeepingRequired": true,
       "parentQualifications": null,
       "notes": "Three homeschool options available. Notification and assessment only required under option 1. No state-mandated subjects. No teacher qualifications for parents. Compulsory ages 6-16.",
-      "resources": ["https://hslda.org/legal/florida"],
+      "resources": [
+        "https://hslda.org/legal/florida"
+      ],
       "regulationLevel": "low"
     },
     "GA": {
@@ -77,9 +85,11 @@
       "requiredDaysPerYear": null,
       "assessmentRequired": true,
       "recordKeepingRequired": true,
-      "parentQualifications": "required (see HSLDA for details)",
+      "parentQualifications": "Yes",
       "notes": "Notification required. State-mandated subjects and assessment required. Teacher qualifications required. HSLDA classifies as low regulation. Compulsory ages 6-16.",
-      "resources": ["https://hslda.org/legal/georgia"],
+      "resources": [
+        "https://hslda.org/legal/georgia"
+      ],
       "regulationLevel": "low"
     },
     "VA": {
@@ -93,7 +103,9 @@
       "recordKeepingRequired": true,
       "parentQualifications": null,
       "notes": "Four homeschool options available. Notification required. No state-mandated subjects. Assessment only required under option 1. No teacher qualifications required. Compulsory ages 5-18.",
-      "resources": ["https://hslda.org/legal/virginia"],
+      "resources": [
+        "https://hslda.org/legal/virginia"
+      ],
       "regulationLevel": "low"
     },
     "OH": {
@@ -118,7 +130,9 @@
       "recordKeepingRequired": true,
       "parentQualifications": null,
       "notes": "Two homeschool options available. Notification required. State-mandated subjects required. No assessment required. No teacher qualifications required. HSLDA classifies as low regulation. Compulsory ages 6-18.",
-      "resources": ["https://hslda.org/legal/ohio"],
+      "resources": [
+        "https://hslda.org/legal/ohio"
+      ],
       "regulationLevel": "low"
     },
     "PA": {
@@ -144,8 +158,10 @@
       "recordKeepingRequired": true,
       "parentQualifications": null,
       "notes": "Four homeschool options available. Notification required. State-mandated subjects required. Assessment and teacher qualifications only required under option 1. Compulsory ages 6-18.",
-      "resources": ["https://hslda.org/legal/pennsylvania"],
-      "regulationLevel": "moderate"
+      "resources": [
+        "https://hslda.org/legal/pennsylvania"
+      ],
+      "regulationLevel": "low"
     },
     "NY": {
       "name": "New York",
@@ -171,8 +187,10 @@
       "recordKeepingRequired": true,
       "parentQualifications": null,
       "notes": "Notification required. State-mandated subjects required. Assessment required. IHIP (Individualized Home Instruction Plan) and quarterly reports required. Instructors must be 'competent' but no formal teacher qualifications. No immunization requirements. Compulsory ages 6-16/17.",
-      "resources": ["https://hslda.org/legal/new-york"],
-      "regulationLevel": "high"
+      "resources": [
+        "https://hslda.org/legal/new-york"
+      ],
+      "regulationLevel": "low"
     },
     "NV": {
       "name": "Nevada",
@@ -185,59 +203,95 @@
       "recordKeepingRequired": true,
       "parentQualifications": null,
       "notes": "Notification required (Notice of Intent). State-mandated subjects per HSLDA. No assessment required. No teacher qualifications required. HSLDA classifies as low regulation. Compulsory ages 6-18.",
-      "resources": ["https://hslda.org/legal/nevada"],
+      "resources": [
+        "https://hslda.org/legal/nevada"
+      ],
       "regulationLevel": "low"
     }
   },
   "regulationLevels": {
     "minimal": {
       "description": "No notification required, few or no requirements",
-      "states": ["TX"]
+      "states": []
     },
     "low": {
       "description": "Low regulation per HSLDA",
-      "states": ["NV", "CA", "FL", "GA", "VA", "OH"]
+      "states": [
+        "TX",
+        "CA",
+        "NC",
+        "FL",
+        "GA",
+        "VA",
+        "OH",
+        "PA",
+        "NY",
+        "NV"
+      ]
     },
     "moderate": {
       "description": "Notification required, some testing or record-keeping",
-      "states": ["NC", "PA"]
+      "states": []
     },
     "high": {
       "description": "Notification, testing, and detailed record-keeping required",
-      "states": ["NY"]
+      "states": []
     }
   },
   "commonSubjects": [
     {
       "id": "reading",
       "name": "Reading",
-      "aliases": ["language_arts", "english"]
+      "aliases": [
+        "language_arts",
+        "english"
+      ]
     },
     {
       "id": "mathematics",
       "name": "Mathematics",
-      "aliases": ["math", "arithmetic"]
+      "aliases": [
+        "math",
+        "arithmetic"
+      ]
     },
-    { "id": "science", "name": "Science", "aliases": [] },
+    {
+      "id": "science",
+      "name": "Science",
+      "aliases": []
+    },
     {
       "id": "social_studies",
       "name": "Social Studies",
-      "aliases": ["history", "geography", "civics"]
+      "aliases": [
+        "history",
+        "geography",
+        "civics"
+      ]
     },
     {
       "id": "health",
       "name": "Health",
-      "aliases": ["health_physiology", "safety"]
+      "aliases": [
+        "health_physiology",
+        "safety"
+      ]
     },
     {
       "id": "physical_education",
       "name": "Physical Education",
-      "aliases": ["pe"]
+      "aliases": [
+        "pe"
+      ]
     },
     {
       "id": "fine_arts",
       "name": "Fine Arts",
-      "aliases": ["art", "music", "visual_arts"]
+      "aliases": [
+        "art",
+        "music",
+        "visual_arts"
+      ]
     }
   ]
 }
